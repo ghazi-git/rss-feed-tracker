@@ -1,0 +1,29 @@
+{
+  "name": "rss-feed-tracker",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "solid-js": "1.9.8"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "2.1.0",
+    "@eslint/js": "9.33.0",
+    "@types/chrome": "0.1.1",
+    "eslint": "9.33.0",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-solid": "0.14.5",
+    "globals": "16.3.0",
+    "lefthook": "1.12.3",
+    "stylelint": "16.23.1",
+    "stylelint-config-standard": "39.0.0",
+    "vite": "7.1.1",
+    "vite-plugin-solid": "2.11.8",
+    "vite-plugin-zip-pack": "1.2.4"
+  }
+}

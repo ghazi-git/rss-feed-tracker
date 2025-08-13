@@ -1,0 +1,11 @@
+#  Refer for explanation to following link:
+#  https://lefthook.dev/configuration/
+pre-commit:
+  jobs:
+    - run: npx eslint --fix "{staged_files}"
+      glob: "*.{js,jsx}"
+      stage_fixed: true
+
+    - run: npx stylelint --fix "{staged_files}"
+      glob: "*.css"
+      stage_fixed: true
