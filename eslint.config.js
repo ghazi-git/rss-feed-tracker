@@ -1,6 +1,6 @@
 import js from "@eslint/js";
-import {defineConfig} from "eslint/config";
-import importPlugin from 'eslint-plugin-import';
+import { defineConfig } from "eslint/config";
+import importPlugin from "eslint-plugin-import";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import solid from "eslint-plugin-solid/configs/recommended";
 import globals from "globals";
@@ -8,7 +8,7 @@ import globals from "globals";
 export default defineConfig([
   {
     files: ["**/*.{js,jsx}"],
-    plugins: {js},
+    plugins: { js },
     extends: ["js/recommended"],
     languageOptions: {
       globals: globals.browser,
@@ -17,13 +17,13 @@ export default defineConfig([
           jsx: true,
         },
       },
-    }
+    },
   },
   solid,
   {
     plugins: {
       "simple-import-sort": simpleImportSort,
-      "import": importPlugin,
+      import: importPlugin,
     },
     rules: {
       "simple-import-sort/imports": "error",
