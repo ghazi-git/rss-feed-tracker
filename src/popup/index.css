@@ -1,34 +1,62 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  color: rgb(255 255 255 / 87%);
-  background-color: #242424;
-  font-synthesis: none;
-  text-rendering: optimizelegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import url("open-props/style");
+@import url("open-props/normalize");
+@import url("open-props/buttons");
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #fff;
-  }
+html {
+  --brand-0: #d0def7;
+  --brand-1: #a3bdee;
+  --brand-2: #779de3;
+  --brand-3: #4b7bd7;
+  --brand-4: #1e57c9;
+  --brand-5: #133e95;
+  --brand-6: #092764;
+  --brand-7: #031236;
+  --brand-8: #00030f;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 450px;
-  min-height: 100vh;
+  --brand: var(--brand-4);
+
+  inline-size: 500px;
+  block-size: 590px;
+  font-family: var(--font-humanist);
+  font-size: var(--font-size-2);
 }
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@media (prefers-color-scheme: dark) {
+  body {
+    --brand: var(--brand-0);
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--font-weight-4);
+  max-inline-size: unset;
+}
+
+h1 {
+  font-size: var(--font-size-5);
+}
+
+h2 {
+  font-size: var(--font-size-4);
+}
+
+h3 {
+  font-size: var(--font-size-3);
+}
+
+p,
+ul,
+ol,
+dl,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-2);
 }

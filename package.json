@@ -8,6 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "open-props": "1.7.16",
     "solid-js": "1.9.8"
   },
   "devDependencies": {
