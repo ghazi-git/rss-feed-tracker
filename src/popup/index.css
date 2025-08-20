@@ -16,9 +16,11 @@ html {
 
 body {
   --brand: var(--brand-4);
+  --header-size: 50px;
 
   inline-size: 500px;
   block-size: 590px;
+  min-block-size: unset;
   font-family: var(--font-humanist);
   font-size: var(--font-size-2);
 }
@@ -27,6 +29,10 @@ body {
   body {
     --brand: var(--brand-0);
   }
+}
+
+#root {
+  block-size: 100%;
 }
 
 h1,
