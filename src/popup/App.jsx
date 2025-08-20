@@ -2,6 +2,7 @@ import { Route, Router, useNavigate } from "@solidjs/router";
 
 import Body from "@/popup/components/Body.jsx";
 import Header from "@/popup/components/Header.jsx";
+import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
 
 function Layout(props) {
   return (
@@ -16,7 +17,7 @@ function App() {
   return (
     <Router root={Layout}>
       <Route path="/feeds" component={() => <div>Have feeds</div>} />
-      <Route path="/no-feeds-yet" component={() => <div>NO Feeds</div>} />
+      <Route path="/no-feeds-yet" component={NoFeedsYet} />
       <Route path="/bookmarks" component={() => <div>Bookmarks</div>} />
       <Route path="/settings" component={() => <div>Settings</div>} />
       <Route

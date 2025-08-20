@@ -1,0 +1,19 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--size-00);
+  cursor: pointer;
+  border-radius: var(--border-size-4);
+  padding: var(--size-2);
+}
+
+.card:hover {
+  background-color: var(--surface-2);
+}
+
+.card svg {
+  inline-size: var(--size-11);
+  block-size: auto;
+}

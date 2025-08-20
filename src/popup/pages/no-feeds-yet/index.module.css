@@ -1,0 +1,14 @@
+.container {
+  block-size: 100%;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--size-5);
+}
+
+.add-feed-folder {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  gap: var(--size-2);
+}
