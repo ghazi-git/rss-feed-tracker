@@ -1,0 +1,13 @@
+.field-wrapper {
+  margin-block-end: var(--size-3);
+}
+
+.field-wrapper label {
+  display: block;
+  margin-block-end: var(--size-1);
+}
+
+.required-asterisk {
+  color: var(--error-color);
+  margin-inline-start: var(--size-1);
+}

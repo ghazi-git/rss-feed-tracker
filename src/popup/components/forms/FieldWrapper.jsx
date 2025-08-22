@@ -1,0 +1,19 @@
+import { Show } from "solid-js";
+
+import styles from "./FieldWrapper.module.css";
+
+export function FieldWrapper(props) {
+  return (
+    <div class={styles["field-wrapper"]}>
+      <Show when={props.label}>
+        <label for={props.id}>
+          {props.label}
+          <Show when={props.required}>
+            <span class={styles["required-asterisk"]}>*</span>
+          </Show>
+        </label>
+      </Show>
+      {props.children}
+    </div>
+  );
+}

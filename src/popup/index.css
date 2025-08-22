@@ -17,6 +17,7 @@ html {
 body {
   --brand: var(--brand-4);
   --header-size: 50px;
+  --error-color: var(--red-12);
 
   inline-size: 500px;
   block-size: 590px;
@@ -28,6 +29,7 @@ body {
 @media (prefers-color-scheme: dark) {
   body {
     --brand: var(--brand-0);
+    --error-color: var(--red-3);
   }
 }
 
