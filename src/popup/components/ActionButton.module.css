@@ -1,0 +1,16 @@
+.button {
+  /* stylelint-disable custom-property-pattern */
+  --_highlight-dark: hsl(var(--gray-5-hsl) / 25%);
+  --_text: var(--surface-1);
+  /* stylelint-enable custom-property-pattern */
+
+  font-weight: var(--font-weight-4);
+  text-shadow: none;
+  background-color: var(--brand);
+  border-color: var(--brand);
+}
+
+.button[disabled] {
+  background-color: var(--brand-2);
+  border-color: var(--brand-2);
+}
