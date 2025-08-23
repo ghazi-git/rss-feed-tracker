@@ -1,0 +1,5 @@
+.select {
+  appearance: base-select; /* stylelint-disable-line declaration-property-value-no-unknown */
+  inline-size: 100%;
+  padding-inline: var(--size-relative-4);
+}
