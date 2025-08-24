@@ -15,9 +15,13 @@ html {
 }
 
 body {
-  --brand: var(--brand-4);
+  --brand-light: var(--brand-4);
+  --brand-dark: var(--brand-0);
+  --brand: var(--brand-light);
   --header-size: 50px;
-  --error-color: var(--red-12);
+  --error-color-light: var(--red-12);
+  --error-color-dark: var(--red-3);
+  --error-color: var(--error-color-light);
 
   inline-size: 500px;
   block-size: 590px;
@@ -28,8 +32,8 @@ body {
 
 @media (prefers-color-scheme: dark) {
   body {
-    --brand: var(--brand-0);
-    --error-color: var(--red-3);
+    --brand: var(--brand-dark);
+    --error-color: var(--error-color-dark);
   }
 }
 
