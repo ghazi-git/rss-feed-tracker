@@ -11,6 +11,7 @@ export default function SelectField(props) {
     "options",
     "label",
     "class",
+    "value",
   ]);
 
   return (
@@ -21,7 +22,17 @@ export default function SelectField(props) {
     >
       <select class={`${styles.select} ${extra.class ?? ""}`} {...selectProps}>
         <For each={extra.options}>
-          {({ label, ...rest }) => <option {...rest}>{label}</option>}
+          {({ label, value, ...rest }) => {
+            let selected = false;
+            if ((!value && !extra.value) || value === extra.value) {
+              selected = "selected";
+            }
+            return (
+              <option value={value ?? ""} selected={selected} {...rest}>
+                {label}
+              </option>
+            );
+          }}
         </For>
       </select>
     </FieldWrapper>
