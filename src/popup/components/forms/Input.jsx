@@ -5,7 +5,7 @@ import { setId } from "@/popup/components/forms/utils.js";
 
 import styles from "./Input.module.css";
 
-export function InputField(props) {
+export default function InputField(props) {
   const propsWithId = setId(props);
 
   return (
