@@ -4,11 +4,12 @@ import ActionButton from "@/popup/components/ActionButton.jsx";
 import ButtonContainer from "@/popup/components/ButtonContainer.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
+import PageTitle from "@/popup/components/PageTitle.jsx";
 
 export default function AddFolder() {
   const [formdata, setFormdata] = createStore({
-    name: "Test",
-    parent: "News",
+    name: "",
+    parent: "",
   });
   const options = [
     { label: "None (i.e. Top-level Folder)", value: "" },
@@ -18,6 +19,7 @@ export default function AddFolder() {
   ];
   return (
     <>
+      <PageTitle text="Add Folder" margin={true} />
       <form
         onSubmit={(event) => {
           event.preventDefault();

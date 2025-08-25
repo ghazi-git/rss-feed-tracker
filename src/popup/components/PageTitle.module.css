@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-2);
+}
+
+.container svg {
+  inline-size: var(--size-7);
+  padding: var(--size-2);
+  cursor: pointer;
+}
+
+.container svg:hover {
+  background-color: var(--surface-2);
+  border-radius: var(--radius-2);
+}
+
+.extra-margin {
+  margin-block-end: var(--size-2);
+}
