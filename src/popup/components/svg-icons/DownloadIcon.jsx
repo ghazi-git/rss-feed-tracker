@@ -1,4 +1,4 @@
-export default function DownloadIcon() {
+export default function DownloadIcon(props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,6 +6,7 @@ export default function DownloadIcon() {
       viewBox="0 0 24 24"
       stroke-width="1.5"
       stroke="currentColor"
+      {...props}
     >
       <path
         stroke-linecap="round"

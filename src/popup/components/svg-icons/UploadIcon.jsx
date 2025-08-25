@@ -1,4 +1,4 @@
-export default function () {
+export default function UploadIcon(props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,6 +6,7 @@ export default function () {
       viewBox="0 0 24 24"
       stroke-width="1.5"
       stroke="currentColor"
+      {...props}
     >
       <path
         stroke-linecap="round"
