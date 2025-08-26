@@ -1,0 +1,53 @@
+.radio-group {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.radio-group label {
+  flex-grow: 1;
+  text-align: center;
+  background-color: var(--surface-2);
+  padding: var(--size-1) var(--size-2);
+  border-inline: var(--border-size-1) solid var(--surface-4);
+}
+
+.radio-group label:first-child {
+  border-start-start-radius: var(--border-size-3);
+  border-end-start-radius: var(--border-size-3);
+  border-inline-start: var(--border-size-1) solid var(--surface-2);
+}
+
+.radio-group label:last-child {
+  border-start-end-radius: var(--border-size-3);
+  border-end-end-radius: var(--border-size-3);
+  border-inline-end: var(--border-size-1) solid var(--surface-2);
+}
+
+.radio-group label:focus-within {
+  /* match the outline styles used for :focus-visible in normalize.css */
+  outline: 2px solid var(--brand);
+  outline-offset: 5px;
+  z-index: var(--layer-1); /* avoid hiding the outline */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .radio-group label:focus-within {
+    transition: outline-offset 250ms var(--ease-2);
+  }
+}
+
+.radio-group label:has(input:checked) {
+  background-color: var(--brand);
+  color: var(--surface-1);
+  border-inline: var(--border-size-1) solid var(--brand);
+}
+
+.radio-group input {
+  /* avoiding display none so the radios are still focusable when navigating
+   the form with a keyboard */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
