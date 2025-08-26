@@ -1,0 +1,7 @@
+.anchor {
+  color: var(--text-1);
+}
+
+.anchor:hover {
+  text-decoration: none;
+}
