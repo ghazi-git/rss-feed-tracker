@@ -1,3 +1,35 @@
+import { createStore } from "solid-js/store";
+
+import ActionButton from "@/popup/components/ActionButton.jsx";
+import ButtonContainer from "@/popup/components/ButtonContainer.jsx";
+import InputField from "@/popup/components/forms/Input.jsx";
+import PageTitle from "@/popup/components/PageTitle.jsx";
+
 export default function ImportFeeds() {
-  return <div>Import Feeds</div>;
+  const [formdata, setFormdata] = createStore({
+    file: "",
+  });
+  return (
+    <>
+      <PageTitle text="Import Feeds" margin={true} />
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          console.log("formdata", formdata);
+        }}
+      >
+        <InputField
+          type="file"
+          name="file"
+          label="OPML File"
+          required="required"
+          accept=".xml"
+          onChange={(e) => setFormdata("file", e.target.files[0])}
+        />
+        <ButtonContainer>
+          <ActionButton type="submit">Save</ActionButton>
+        </ButtonContainer>
+      </form>
+    </>
+  );
 }
