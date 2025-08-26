@@ -11,7 +11,7 @@ export default function InputField(props) {
   return (
     <FieldWrapper
       label={propsWithId.label}
-      id={propsWithId.id}
+      labelFor={propsWithId.id}
       required={propsWithId.required}
     >
       <Input {...propsWithId} />

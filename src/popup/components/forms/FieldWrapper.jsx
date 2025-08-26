@@ -6,7 +6,7 @@ export function FieldWrapper(props) {
   return (
     <div class={styles["field-wrapper"]}>
       <Show when={props.label}>
-        <label for={props.id}>
+        <label for={props.labelFor} id={props.labelId}>
           {props.label}
           <Show when={props.required}>
             <span class={styles["required-asterisk"]}>*</span>

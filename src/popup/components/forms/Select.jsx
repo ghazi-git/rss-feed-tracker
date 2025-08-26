@@ -17,7 +17,7 @@ export default function SelectField(props) {
   return (
     <FieldWrapper
       label={extra.label}
-      id={selectProps.id}
+      labelFor={selectProps.id}
       required={selectProps.required}
     >
       <select class={`${styles.select} ${extra.class ?? ""}`} {...selectProps}>
