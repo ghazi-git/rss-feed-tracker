@@ -1,0 +1,10 @@
+.field-wrapper {
+  margin-block-end: var(--size-3);
+}
+
+.field-wrapper label {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-2);
+}
