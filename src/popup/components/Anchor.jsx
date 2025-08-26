@@ -21,7 +21,9 @@ export default function Anchor(props) {
           !event.shiftKey &&
           !event.metaKey
         ) {
-          extra.onClick();
+          if (extra.onClick) {
+            extra.onClick();
+          }
           return;
         }
         event.preventDefault();

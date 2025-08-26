@@ -6,6 +6,7 @@ import AddFeed from "@/popup/pages/add-feed/index.jsx";
 import AddFolder from "@/popup/pages/add-folder/index.jsx";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
+import Settings from "@/popup/pages/Settings.jsx";
 
 function Layout(props) {
   return (
@@ -25,7 +26,7 @@ function App() {
       <Route path="/add-folder" component={AddFolder} />
       <Route path="/import-feeds" component={ImportFeeds} />
       <Route path="/bookmarks" component={() => <div>Bookmarks</div>} />
-      <Route path="/settings" component={() => <div>Settings</div>} />
+      <Route path="/settings" component={Settings} />
       <Route
         path="*"
         component={() => {
