@@ -1,44 +1,39 @@
-import { useLocation, useNavigate } from "@solidjs/router";
+import { useLocation } from "@solidjs/router";
 import { createSignal } from "solid-js";
+
+import Anchor from "@/popup/components/Anchor.jsx";
 
 import styles from "./Header.module.css";
 
 export default function Header() {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = createSignal(getCurrentTab());
 
   return (
     <header class={styles.header}>
-      <div
+      <Anchor
+        href="/"
         class={styles.tab}
         classList={{ [styles.active]: activeTab() === "feeds" }}
-        onClick={() => {
-          setActiveTab("feeds");
-          navigate("/");
-        }}
+        onClick={() => setActiveTab("feeds")}
       >
         Feeds
-      </div>
-      <div
+      </Anchor>
+      <Anchor
+        href="/bookmarks"
         class={`${styles.tab} ${styles.bookmarks}`}
         classList={{ [styles.active]: activeTab() === "bookmarks" }}
-        onClick={() => {
-          setActiveTab("bookmarks");
-          navigate("/bookmarks");
-        }}
+        onClick={() => setActiveTab("bookmarks")}
       >
         Bookmarks
-      </div>
-      <div
+      </Anchor>
+      <Anchor
+        href="/settings"
         class={styles.tab}
         classList={{ [styles.active]: activeTab() === "settings" }}
-        onClick={() => {
-          setActiveTab("settings");
-          navigate("/settings");
-        }}
+        onClick={() => setActiveTab("settings")}
       >
         Settings
-      </div>
+      </Anchor>
     </header>
   );
 }

@@ -21,6 +21,11 @@
   border-block-end-color: var(--surface-1);
 }
 
+.tab:focus-visible {
+  z-index: var(--layer-1);
+  outline-offset: -2px;
+}
+
 .bookmarks {
   border-inline: 3px solid var(--surface-4);
 }
