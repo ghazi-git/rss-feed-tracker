@@ -28,6 +28,8 @@ export default function Anchor(props) {
       }}
       onContextMenu={(event) => event.preventDefault()}
       onAuxClick={(event) => event.preventDefault()}
+      activeClass=""
+      inactiveClass=""
       {...rest}
     />
   );
