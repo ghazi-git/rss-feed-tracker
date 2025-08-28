@@ -13,14 +13,14 @@
 }
 
 .radio-group label:first-child {
-  border-start-start-radius: var(--border-size-3);
-  border-end-start-radius: var(--border-size-3);
+  border-start-start-radius: var(--radius-2);
+  border-end-start-radius: var(--radius-2);
   border-inline-start: var(--border-size-1) solid var(--surface-2);
 }
 
 .radio-group label:last-child {
-  border-start-end-radius: var(--border-size-3);
-  border-end-end-radius: var(--border-size-3);
+  border-start-end-radius: var(--radius-2);
+  border-end-end-radius: var(--radius-2);
   border-inline-end: var(--border-size-1) solid var(--surface-2);
 }
 
