@@ -1,6 +1,7 @@
 @import url("open-props/style");
 @import url("open-props/normalize");
 @import url("open-props/buttons");
+@import url("solid-notifications/index.css");
 
 html {
   --brand-0: #d0def7;
@@ -33,6 +34,16 @@ body {
   html {
     --brand: var(--brand-dark);
     --error-color: var(--error-color-dark);
+  }
+
+  :root {
+    /* todo maybe follow the styling guide of the notifications package after
+        adding explicit light/dark theme switch
+        https://solid-notifications.vercel.app/guides#customization-via-css-variables */
+    --sn-toast-text-color: var(--text-1);
+    --sn-toast-bg-color: var(--surface-2);
+    --sn-dismiss-btn-color: #bfc5cf;
+    --sn-dismiss-btn-hover-color: #f9fafb;
   }
 }
 

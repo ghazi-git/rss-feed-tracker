@@ -1,4 +1,5 @@
 import { Show } from "solid-js";
+import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
 import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
@@ -20,7 +21,8 @@ export default function PostsFilter(props) {
             count={props.unreadCount}
             onClick={(event) => {
               event.preventDefault();
-              console.log("marked as read");
+              dismissToast();
+              showToast("Marked as read (not really though)");
             }}
           />
         </Show>

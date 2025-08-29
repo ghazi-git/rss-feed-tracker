@@ -1,4 +1,5 @@
 import { Show } from "solid-js";
+import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon.jsx";
@@ -22,7 +23,8 @@ export default function FolderChild(props) {
             count={props.node.unreadCount}
             onClick={(event) => {
               event.preventDefault();
-              console.log("marked as read");
+              dismissToast();
+              showToast("Marked as read (not really though)");
             }}
           />
         </Show>
