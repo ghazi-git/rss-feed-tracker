@@ -12,9 +12,6 @@ html {
   --brand-6: #092764;
   --brand-7: #031236;
   --brand-8: #00030f;
-}
-
-body {
   --brand-light: var(--brand-4);
   --brand-dark: var(--brand-0);
   --brand: var(--brand-light);
@@ -22,7 +19,9 @@ body {
   --error-color-light: var(--red-12);
   --error-color-dark: var(--red-3);
   --error-color: var(--error-color-light);
+}
 
+body {
   inline-size: 500px;
   block-size: 590px;
   min-block-size: unset;
@@ -31,7 +30,7 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-  body {
+  html {
     --brand: var(--brand-dark);
     --error-color: var(--error-color-dark);
   }
