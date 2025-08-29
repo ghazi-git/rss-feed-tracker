@@ -1,0 +1,28 @@
+.filter-options {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border: var(--border-size-2) solid var(--surface-4);
+  border-radius: var(--radius-2);
+}
+
+.filter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--size-1);
+  background-color: var(--surface-2);
+  padding: var(--size-1) var(--size-2);
+}
+
+.unread {
+  border-inline-end: var(--border-size-1) solid var(--surface-4);
+}
+
+.all {
+  border-inline-start: var(--border-size-1) solid var(--surface-4);
+}
+
+.active {
+  background-color: var(--surface-1);
+}
