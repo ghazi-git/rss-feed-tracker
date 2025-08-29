@@ -1,3 +1,4 @@
+import { useNavigate } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import ActionButton from "@/popup/components/ActionButton.jsx";
@@ -8,6 +9,7 @@ import SelectField from "@/popup/components/forms/Select.jsx";
 import PageTitle from "@/popup/components/PageTitle.jsx";
 
 export default function AddFeed() {
+  const navigate = useNavigate();
   const [formdata, setFormdata] = createStore({
     url: "",
     name: "",
@@ -34,6 +36,7 @@ export default function AddFeed() {
         onSubmit={(event) => {
           event.preventDefault();
           console.log("formdata", formdata);
+          navigate("/home");
         }}
       >
         <InputField

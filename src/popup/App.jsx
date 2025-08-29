@@ -6,7 +6,9 @@ import AddFeed from "@/popup/pages/add-feed/index.jsx";
 import AddFolder from "@/popup/pages/add-folder/index.jsx";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
+import Node from "@/popup/pages/node/index.jsx";
 import Settings from "@/popup/pages/Settings.jsx";
+import { NODES } from "@/popup/utils/dummy-data.js";
 
 function Layout(props) {
   return (
@@ -20,7 +22,24 @@ function Layout(props) {
 function App() {
   return (
     <Router root={Layout}>
-      <Route path="/feeds" component={() => <div>Have feeds</div>} />
+      <Route
+        path="/home"
+        component={() => {
+          const navigate = useNavigate();
+          const rootNode = NODES.find((node) => node.parentId === null);
+          if (!rootNode) {
+            // todo create a new one then redirect to the no feeds yet page
+            navigate("/no-feeds-yet", { replace: true });
+          } else {
+            navigate(`/home/nodes/${rootNode.id}`, { replace: true });
+          }
+        }}
+      />
+      <Route path="/home/nodes/:id" component={Node} />
+      <Route
+        path="/home/nodes/:id/posts"
+        component={() => <div>Posts Page</div>}
+      />
       <Route path="/no-feeds-yet" component={NoFeedsYet} />
       <Route path="/add-feed" component={AddFeed} />
       <Route path="/add-folder" component={AddFolder} />
@@ -33,7 +52,7 @@ function App() {
           const navigate = useNavigate();
           const hasFeeds = window.localStorage.getItem("hasFeeds");
           if (hasFeeds) {
-            navigate("/feeds", { replace: true });
+            navigate("/home", { replace: true });
           } else {
             navigate("/no-feeds-yet", { replace: true });
           }

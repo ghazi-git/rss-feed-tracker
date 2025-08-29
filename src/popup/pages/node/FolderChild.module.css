@@ -1,0 +1,26 @@
+.child {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-3);
+  padding: var(--size-2) var(--size-3);
+  border: var(--border-size-1) solid var(--surface-4);
+  border-radius: var(--radius-2);
+}
+
+.icon {
+  position: relative;
+}
+
+.icon > :first-child {
+  inline-size: var(--size-7);
+  block-size: var(--size-7);
+}
+
+.icon:has(> :nth-child(2)) > :last-child {
+  /* styles applied only if there is more than one child, i.e. applied
+   to the unread count */
+  position: absolute;
+  inset-block-start: var(--size-00);
+  inset-inline-end: var(--size-000);
+}
