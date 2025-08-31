@@ -1,0 +1,12 @@
+.metadata {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-2);
+  color: var(--text-2);
+  font-size: var(--font-size-0);
+}
+
+.separator {
+  font-size: var(--font-size-00);
+}
