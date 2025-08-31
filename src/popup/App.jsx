@@ -8,6 +8,7 @@ import AddFolder from "@/popup/pages/add-folder/index.jsx";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
 import Node from "@/popup/pages/node/index.jsx";
+import NodePosts from "@/popup/pages/node-posts/index.jsx";
 import Settings from "@/popup/pages/Settings.jsx";
 import { NODES } from "@/popup/utils/dummy-data.js";
 
@@ -45,10 +46,7 @@ function App() {
           }}
         />
         <Route path="/home/nodes/:id" component={Node} />
-        <Route
-          path="/home/nodes/:id/posts"
-          component={() => <div>Posts Page</div>}
-        />
+        <Route path="/home/nodes/:id/posts" component={NodePosts} />
         <Route path="/no-feeds-yet" component={NoFeedsYet} />
         <Route path="/add-feed" component={AddFeed} />
         <Route path="/add-folder" component={AddFolder} />
