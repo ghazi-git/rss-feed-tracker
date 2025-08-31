@@ -1,3 +1,4 @@
+import { useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import ActionButton from "@/popup/components/ActionButton.jsx";
@@ -9,9 +10,14 @@ export default function ImportFeeds() {
   const [formdata, setFormdata] = createStore({
     file: "",
   });
+  const [searchParams] = useSearchParams();
   return (
     <>
-      <PageTitle text="Import Feeds" margin={true} />
+      <PageTitle
+        text="Import Feeds"
+        previousUrl={searchParams.previousUrl ?? "/home"}
+        margin={true}
+      />
       <form
         onSubmit={(event) => {
           event.preventDefault();

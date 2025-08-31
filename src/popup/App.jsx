@@ -41,7 +41,14 @@ function App() {
               // todo create a new one then redirect to the no feeds yet page
               navigate("/no-feeds-yet", { replace: true });
             } else {
-              navigate(`/home/nodes/${rootNode.id}`, { replace: true });
+              const rootNodeChildren = NODES.filter(
+                (node) => node.parentId === rootNode.id,
+              );
+              if (rootNodeChildren.length === 0) {
+                navigate("/no-feeds-yet", { replace: true });
+              } else {
+                navigate(`/home/nodes/${rootNode.id}`, { replace: true });
+              }
             }
           }}
         />

@@ -19,10 +19,14 @@ export default function Settings() {
     { label: "6 hours", value: "6h" },
     { label: "1 day", value: "1d" },
   ];
+  const previousUrl = new URLSearchParams({ previousUrl: "/settings" });
   return (
     <>
       <div class={styles["import-export"]}>
-        <ActionCard text="Import Feeds" href="/import-feeds">
+        <ActionCard
+          text="Import Feeds"
+          href={`/import-feeds?${previousUrl.toString()}`}
+        >
           <UploadIcon />
         </ActionCard>
         <ActionCard

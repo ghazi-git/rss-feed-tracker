@@ -8,7 +8,7 @@ export default function PageTitle(props) {
     <div
       class={`${styles.container} ${props.margin ? styles["extra-margin"] : ""}`}
     >
-      <Anchor href="#" onClick={() => history.back()}>
+      <Anchor href={props.previousUrl}>
         <PreviousIcon />
       </Anchor>
       <h2>{props.text}</h2>

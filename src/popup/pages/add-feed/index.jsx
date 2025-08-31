@@ -31,7 +31,7 @@ export default function AddFeed() {
   ];
   return (
     <>
-      <PageTitle text="Add Feed" margin={true} />
+      <PageTitle text="Add Feed" previousUrl="/home" margin={true} />
       <form
         onSubmit={(event) => {
           event.preventDefault();
