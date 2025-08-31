@@ -1,9 +1,10 @@
-import { useLocation, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 import { createSignal, Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
 import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
+import { isPostsPage } from "@/popup/utils/posts.js";
 
 import styles from "./PostsFilter.module.css";
 
@@ -43,9 +44,7 @@ export default function PostsFilter(props) {
 }
 
 function getCurrentFilter() {
-  const location = useLocation();
-  const regex = /^\/home\/nodes\/\d+\/posts/;
-  if (!regex.test(location.pathname)) return null;
+  if (!isPostsPage()) return null;
 
   const [searchParams] = useSearchParams();
   return searchParams.unread === "true" ? "unread" : "all";
