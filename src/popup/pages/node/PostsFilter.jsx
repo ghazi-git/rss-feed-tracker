@@ -25,6 +25,7 @@ export default function PostsFilter(props) {
             count={props.unreadCount}
             onClick={(event) => {
               event.preventDefault();
+              event.stopPropagation();
               dismissToast();
               showToast("Marked as read (not really though)");
             }}
