@@ -13,11 +13,11 @@ export default function Posts(props) {
 }
 
 function Post(props) {
-  const [showTooltip, setSowTooltip] = createSignal(false);
+  const [showTooltip, setShowTooltip] = createSignal(false);
   let titleRef;
   onMount(() => {
     if (titleRef.scrollHeight > titleRef.clientHeight) {
-      setSowTooltip(true);
+      setShowTooltip(true);
     }
   });
 
