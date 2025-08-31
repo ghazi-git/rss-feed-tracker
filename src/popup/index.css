@@ -22,14 +22,6 @@ html {
   --error-color: var(--error-color-light);
 }
 
-body {
-  inline-size: 500px;
-  block-size: 590px;
-  min-block-size: unset;
-  font-family: var(--font-humanist);
-  font-size: var(--font-size-2);
-}
-
 @media (prefers-color-scheme: dark) {
   html {
     --brand: var(--brand-dark);
@@ -47,8 +39,17 @@ body {
   }
 }
 
+body {
+  inline-size: 500px;
+  block-size: 100%;
+  min-block-size: 600px;
+  font-family: var(--font-humanist);
+  font-size: var(--font-size-2);
+}
+
 #root {
   block-size: 100%;
+  min-block-size: 100%;
 }
 
 h1,

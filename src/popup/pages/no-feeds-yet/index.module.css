@@ -1,5 +1,4 @@
 .container {
-  block-size: 100%;
   display: grid;
   justify-items: center;
   align-content: center;

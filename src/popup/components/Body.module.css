@@ -1,4 +1,4 @@
 .body {
   padding: var(--size-3);
-  block-size: calc(100% - var(--header-size));
+  min-block-size: calc(100% - var(--header-size));
 }
