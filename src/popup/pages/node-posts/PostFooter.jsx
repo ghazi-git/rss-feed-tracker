@@ -1,3 +1,5 @@
+import { createSignal, onMount } from "solid-js";
+
 import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle.jsx";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle.jsx";
@@ -6,6 +8,14 @@ import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes.js";
 import styles from "./PostFooter.module.css";
 
 export default function PostFooter(props) {
+  const [showTooltip, setShowTooltip] = createSignal(false);
+  let feedNameRef;
+  onMount(() => {
+    if (feedNameRef.scrollWidth > feedNameRef.clientWidth) {
+      setShowTooltip(true);
+    }
+  });
+
   return (
     <div class={styles.footer}>
       <div class={styles["feed-favicon"]}>
@@ -14,7 +24,12 @@ export default function PostFooter(props) {
           name={props.post.feed.name}
         />
       </div>
-      <div class={styles["feed-name"]} dir="auto">
+      <div
+        ref={feedNameRef}
+        class={styles["feed-name"]}
+        dir="auto"
+        title={showTooltip() ? props.post.feed.name : ""}
+      >
         {props.post.feed.name}
       </div>
       <span class={styles.separator}>◆</span>
