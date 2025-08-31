@@ -178,7 +178,7 @@ export const POSTS = [
     publishedAt: 1756285534722,
     receivedAt: 1756325534722,
     unread: false,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 9,
   },
   {
@@ -222,7 +222,7 @@ export const POSTS = [
     publishedAt: 1755800000000,
     receivedAt: 1756325534722,
     unread: false,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 9,
   },
   {
@@ -233,7 +233,7 @@ export const POSTS = [
     publishedAt: 1756184852000,
     receivedAt: 1756325534722,
     unread: true,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 8,
   },
   {
@@ -299,7 +299,7 @@ export const POSTS = [
     publishedAt: 1756190852000,
     receivedAt: 1756325534722,
     unread: false,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 8,
   },
   {
@@ -365,7 +365,7 @@ export const POSTS = [
     publishedAt: 1718029634722,
     receivedAt: 1756325534722,
     unread: true,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 10,
   },
   {
@@ -398,7 +398,7 @@ export const POSTS = [
     publishedAt: 1719266200000,
     receivedAt: 1756325534722,
     unread: true,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 11,
   },
   {
@@ -476,7 +476,7 @@ export const POSTS = [
     publishedAt: 1756209534722,
     receivedAt: 1756325534722,
     unread: true,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 12,
   },
   {
@@ -510,7 +510,7 @@ export const POSTS = [
     publishedAt: 1756222534722,
     receivedAt: 1756325534722,
     unread: false,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 12,
   },
   {
@@ -521,7 +521,7 @@ export const POSTS = [
     publishedAt: 1755980000000,
     receivedAt: 1756325534722,
     unread: false,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 13,
   },
   {
@@ -533,7 +533,7 @@ export const POSTS = [
     publishedAt: 1756050000000,
     receivedAt: 1756325534722,
     unread: true,
-    bookmarked: false,
+    bookmarked: true,
     feedId: 13,
   },
   {
