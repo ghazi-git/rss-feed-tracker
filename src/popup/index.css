@@ -14,8 +14,11 @@ html {
   --brand-7: #031236;
   --brand-8: #00030f;
   --brand-light: var(--brand-4);
-  --brand-dark: var(--brand-0);
+  --brand-dark: var(--brand-1);
   --brand: var(--brand-light);
+  --brand-complementary-light: #c9901e;
+  --brand-complementary-dark: #e0bd86;
+  --brand-complementary: var(--brand-complementary-light);
   --header-size: 50px;
   --error-color-light: var(--red-12);
   --error-color-dark: var(--red-3);
@@ -27,6 +30,7 @@ html {
 @media (prefers-color-scheme: dark) {
   html {
     --brand: var(--brand-dark);
+    --brand-complementary: var(--brand-complementary-dark);
     --error-color: var(--error-color-dark);
   }
 

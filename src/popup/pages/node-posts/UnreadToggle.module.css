@@ -1,0 +1,19 @@
+.unread-toggle > * {
+  inline-size: 12px;
+  block-size: 12px;
+  border-radius: 50%;
+  filter: blur(1px);
+  transition: transform 200ms var(--ease-1);
+}
+
+.unread-toggle > *:hover {
+  transform: scale(150%);
+}
+
+.unread {
+  background-color: var(--brand);
+}
+
+.read {
+  background-color: var(--surface-4);
+}

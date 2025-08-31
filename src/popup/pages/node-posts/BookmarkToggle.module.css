@@ -1,0 +1,16 @@
+.bookmark-toggle {
+  inline-size: var(--size-3);
+  block-size: var(--size-3);
+}
+
+.bookmark-toggle > * {
+  transition: transform 200ms var(--ease-1);
+}
+
+.bookmark-toggle > *:hover {
+  transform: scale(150%);
+}
+
+.bookmarked {
+  color: var(--brand-complementary);
+}
