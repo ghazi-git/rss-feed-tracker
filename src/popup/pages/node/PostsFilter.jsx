@@ -1,4 +1,5 @@
-import { Show } from "solid-js";
+import { useLocation, useSearchParams } from "@solidjs/router";
+import { createSignal, Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
@@ -7,13 +8,15 @@ import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
 import styles from "./PostsFilter.module.css";
 
 export default function PostsFilter(props) {
+  const [activeFilter, setActiveFilter] = createSignal(getCurrentFilter());
+
   return (
     <div class={styles["filter-options"]}>
       <Anchor
-        class={`${styles.filter} ${styles.unread}`}
         href={`/home/nodes/${props.nodeId}/posts?unread=true`}
-        activeClass={styles.active}
-        end={true}
+        class={`${styles.filter} ${styles.unread}`}
+        classList={{ [styles.active]: activeFilter() === "unread" }}
+        onClick={() => setActiveFilter("unread")}
       >
         <span>Unread</span>
         <Show when={props.unreadCount}>
@@ -28,13 +31,22 @@ export default function PostsFilter(props) {
         </Show>
       </Anchor>
       <Anchor
-        class={`${styles.filter} ${styles.all}`}
         href={`/home/nodes/${props.nodeId}/posts`}
-        activeClass={styles.active}
-        end={true}
+        class={`${styles.filter} ${styles.all}`}
+        classList={{ [styles.active]: activeFilter() === "all" }}
+        onClick={() => setActiveFilter("all")}
       >
         <span>All</span>
       </Anchor>
     </div>
   );
+}
+
+function getCurrentFilter() {
+  const location = useLocation();
+  const regex = /^\/home\/nodes\/\d+\/posts/;
+  if (!regex.test(location.pathname)) return null;
+
+  const [searchParams] = useSearchParams();
+  return searchParams.unread === "true" ? "unread" : "all";
 }
