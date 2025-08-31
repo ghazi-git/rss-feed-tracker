@@ -1,8 +1,6 @@
 import { createSignal, For, onMount } from "solid-js";
 
-import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle.jsx";
-import PostMetadata from "@/popup/pages/node-posts/PostMetadata.jsx";
-import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle.jsx";
+import PostFooter from "@/popup/pages/node-posts/PostFooter.jsx";
 
 import styles from "./Posts.module.css";
 
@@ -33,17 +31,7 @@ function Post(props) {
       >
         {props.post.title}
       </div>
-      <div class={styles.footer}>
-        <PostMetadata
-          feedName={props.post.feed.name}
-          feedFavicon={props.post.feed.favicon}
-          publishedAt={props.post.publishedAt}
-        />
-        <div class={styles.actions}>
-          <BookmarkToggle bookmarked={props.post.bookmarked} />
-          <UnreadToggle unread={props.post.unread} />
-        </div>
-      </div>
+      <PostFooter post={props.post} />
     </div>
   );
 }

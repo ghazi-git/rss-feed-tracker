@@ -1,0 +1,39 @@
+.footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-2);
+  font-size: var(--font-size-0);
+}
+
+.feed-favicon > * {
+  inline-size: var(--size-3);
+  block-size: var(--size-3);
+  font-size: var(--font-size-00);
+}
+
+.feed-name {
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.separator {
+  color: var(--text-2);
+  font-size: var(--font-size-00);
+}
+
+.published-at {
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+
+.actions {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--size-2);
+}

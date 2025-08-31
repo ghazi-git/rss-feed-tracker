@@ -19,17 +19,3 @@
   overflow: hidden;
   margin-block-end: var(--size-1);
 }
-
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--size-3);
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: var(--size-2);
-}
