@@ -1,0 +1,35 @@
+.posts {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: var(--size-2);
+}
+
+.post {
+  padding: var(--size-2);
+  border: var(--border-size-1) solid var(--surface-4);
+  border-radius: var(--radius-2);
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: block-axis; /* stylelint-disable-line property-no-deprecated */
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-block-end: var(--size-1);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--size-3);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--size-2);
+}
