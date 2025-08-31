@@ -20,6 +20,8 @@ html {
   --error-color-light: var(--red-12);
   --error-color-dark: var(--red-3);
   --error-color: var(--error-color-light);
+
+  overflow-block: auto;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,6 +45,7 @@ body {
   inline-size: 500px;
   block-size: 100%;
   min-block-size: 600px;
+  overflow-block: auto;
   font-family: var(--font-humanist);
   font-size: var(--font-size-2);
 }
