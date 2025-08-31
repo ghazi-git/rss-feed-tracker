@@ -1,7 +1,13 @@
 .container {
-  display: grid;
-  justify-items: center;
-  align-content: center;
+  inline-size: max-content;
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: var(--size-5);
 }
 
