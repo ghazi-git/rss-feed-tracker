@@ -1,4 +1,4 @@
-import { For } from "solid-js";
+import { createSignal, For, onMount } from "solid-js";
 
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle.jsx";
 import PostMetadata from "@/popup/pages/node-posts/PostMetadata.jsx";
@@ -15,9 +15,22 @@ export default function Posts(props) {
 }
 
 function Post(props) {
+  const [showTooltip, setSowTooltip] = createSignal(false);
+  let titleRef;
+  onMount(() => {
+    if (titleRef.scrollHeight > titleRef.clientHeight) {
+      setSowTooltip(true);
+    }
+  });
+
   return (
     <div class={styles.post}>
-      <div class={styles.title} dir="auto">
+      <div
+        ref={titleRef}
+        title={showTooltip() ? props.post.title : ""}
+        class={styles.title}
+        dir="auto"
+      >
         {props.post.title}
       </div>
       <div class={styles.footer}>
