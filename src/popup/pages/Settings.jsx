@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { showToast } from "solid-notifications";
 
 import Checkbox from "@/popup/components/forms/Checkbox.jsx";
 import RadioGroup from "@/popup/components/forms/RadioGroup.jsx";
@@ -27,7 +28,7 @@ export default function Settings() {
         <ActionCard
           text="Export Feeds"
           href="#"
-          onClick={() => console.log("exporting")}
+          onClick={() => showToast("Exporting feeds")}
         >
           <DownloadIcon />
         </ActionCard>
