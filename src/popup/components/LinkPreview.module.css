@@ -1,0 +1,21 @@
+.link-preview {
+  z-index: var(--layer-1);
+  position: fixed;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  background-color: var(--surface-2);
+  padding: 0 var(--size-1);
+  border-start-end-radius: var(--radius-2);
+  pointer-events: none;
+  font-size: 14px;
+  max-inline-size: calc(100% - var(--size-3));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 500ms var(--ease-1);
+}
+
+.visible {
+  opacity: 1;
+}

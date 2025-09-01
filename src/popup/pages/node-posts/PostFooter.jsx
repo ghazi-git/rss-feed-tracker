@@ -2,6 +2,7 @@ import { singleLineEllipsis } from "@/popup/directives/ellipsis.js";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle.jsx";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle.jsx";
+import { hideLinkPreview } from "@/popup/store/link-preview.js";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes.js";
 
 import styles from "./PostFooter.module.css";
@@ -29,7 +30,13 @@ export default function PostFooter(props) {
       >
         {humanizeTimestamp(props.post.publishedAt)}
       </div>
-      <div class={styles.actions}>
+      <div
+        class={styles.actions}
+        onMouseOver={(event) => {
+          event.stopPropagation();
+          hideLinkPreview();
+        }}
+      >
         <BookmarkToggle bookmarked={props.post.bookmarked} />
         <UnreadToggle unread={props.post.unread} />
       </div>

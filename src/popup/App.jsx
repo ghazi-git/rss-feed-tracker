@@ -3,6 +3,7 @@ import { Toaster, ToastProvider } from "solid-notifications";
 
 import Body from "@/popup/components/Body.jsx";
 import Header from "@/popup/components/Header.jsx";
+import LinkPreview from "@/popup/components/LinkPreview.jsx";
 import AddFeed from "@/popup/pages/add-feed/index.jsx";
 import AddFolder from "@/popup/pages/add-folder/index.jsx";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
@@ -17,6 +18,7 @@ function Layout(props) {
     <>
       <Header />
       <Body>{props.children}</Body>
+      <LinkPreview />
     </>
   );
 }

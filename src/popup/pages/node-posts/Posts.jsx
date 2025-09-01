@@ -2,6 +2,10 @@ import { A } from "@solidjs/router";
 import { createSignal, For, onMount } from "solid-js";
 
 import PostFooter from "@/popup/pages/node-posts/PostFooter.jsx";
+import {
+  hideLinkPreview,
+  showLinkPreview,
+} from "@/popup/store/link-preview.js";
 
 import styles from "./Posts.module.css";
 
@@ -37,6 +41,12 @@ function Post(props) {
           event.preventDefault();
           openTab(props.post.url);
         }
+      }}
+      onMouseOver={() => {
+        showLinkPreview(props.post.url);
+      }}
+      onMouseOut={() => {
+        hideLinkPreview();
       }}
       draggable="false"
       activeClass=""
