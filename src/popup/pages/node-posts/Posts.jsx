@@ -1,3 +1,4 @@
+import { A } from "@solidjs/router";
 import { createSignal, For, onMount } from "solid-js";
 
 import PostFooter from "@/popup/pages/node-posts/PostFooter.jsx";
@@ -22,7 +23,25 @@ function Post(props) {
   });
 
   return (
-    <div class={styles.post}>
+    <A
+      href={props.post.url}
+      class={styles.post}
+      onClick={(event) => {
+        event.preventDefault();
+        const active = !event.ctrlKey;
+        openTab(props.post.url, active);
+      }}
+      onContextMenu={(event) => event.preventDefault()}
+      onAuxClick={(event) => {
+        if (event.button === 1) {
+          event.preventDefault();
+          openTab(props.post.url);
+        }
+      }}
+      draggable="false"
+      activeClass=""
+      inactiveClass=""
+    >
       <div
         ref={titleRef}
         title={showTooltip() ? props.post.title : ""}
@@ -32,6 +51,10 @@ function Post(props) {
         {props.post.title}
       </div>
       <PostFooter post={props.post} />
-    </div>
+    </A>
   );
+}
+
+function openTab(url, active = false) {
+  chrome.tabs.create({ url, active }); /* eslint-disable-line no-undef */
 }
