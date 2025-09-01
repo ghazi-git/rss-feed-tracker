@@ -6,11 +6,13 @@ import styles from "./UnreadToggle.module.css";
 export default function UnreadToggle(props) {
   const markAsRead = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     dismissToast();
     showToast("Marked as read");
   };
   const markAsUnread = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     dismissToast();
     showToast("Marked as unread");
   };

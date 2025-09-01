@@ -9,11 +9,13 @@ import styles from "./BookmarkToggle.module.css";
 export default function BookmarkToggle(props) {
   const deleteBookmark = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     dismissToast();
     showToast("Bookmark deleted");
   };
   const createBookmark = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     dismissToast();
     showToast("Bookmark deleted");
   };
