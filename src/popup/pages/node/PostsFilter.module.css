@@ -15,6 +15,10 @@
   padding: var(--size-1) var(--size-2);
 }
 
+.filter:focus-visible {
+  z-index: var(--layer-1);
+}
+
 .unread {
   border-inline-end: var(--border-size-1) solid var(--surface-4);
 }
