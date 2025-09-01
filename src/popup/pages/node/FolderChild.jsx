@@ -3,6 +3,7 @@ import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon.jsx";
+import { singleLineEllipsis } from "@/popup/directives/ellipsis.js";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
 import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
 
@@ -29,7 +30,9 @@ export default function FolderChild(props) {
           />
         </Show>
       </div>
-      <span>{props.node.name}</span>
+      <span use:singleLineEllipsis={props.node.name} dir="auto">
+        {props.node.name}
+      </span>
     </Anchor>
   );
 }
