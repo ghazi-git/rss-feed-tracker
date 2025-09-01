@@ -1,4 +1,4 @@
-import { useNavigate } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import ActionButton from "@/popup/components/ActionButton.jsx";
@@ -29,9 +29,13 @@ export default function AddFeed() {
     { label: "News", value: "News" },
     { label: "Other", value: "Other" },
   ];
+  const [searchParams] = useSearchParams();
   return (
     <>
-      <PageTitle text="Add Feed" previousUrl="/home" />
+      <PageTitle
+        text="Add Feed"
+        previousUrl={searchParams.previousUrl ?? "/home"}
+      />
       <form
         onSubmit={(event) => {
           event.preventDefault();

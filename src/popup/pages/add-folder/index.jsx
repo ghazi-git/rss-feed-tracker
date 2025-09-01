@@ -1,3 +1,4 @@
+import { useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import ActionButton from "@/popup/components/ActionButton.jsx";
@@ -17,9 +18,13 @@ export default function AddFolder() {
     { label: "News", value: "News" },
     { label: "Other", value: "Other" },
   ];
+  const [searchParams] = useSearchParams();
   return (
     <>
-      <PageTitle text="Add Folder" previousUrl="/home" />
+      <PageTitle
+        text="Add Folder"
+        previousUrl={searchParams.previousUrl ?? "/home"}
+      />
       <form
         onSubmit={(event) => {
           event.preventDefault();

@@ -1,0 +1,11 @@
+.no-children {
+  inline-size: max-content;
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-content: center;
+  align-items: center;
+  gap: var(--size-2);
+}
