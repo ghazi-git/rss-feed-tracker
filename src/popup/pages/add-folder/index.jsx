@@ -19,7 +19,7 @@ export default function AddFolder() {
   ];
   return (
     <>
-      <PageTitle text="Add Folder" previousUrl="/home" margin={true} />
+      <PageTitle text="Add Folder" previousUrl="/home" />
       <form
         onSubmit={(event) => {
           event.preventDefault();

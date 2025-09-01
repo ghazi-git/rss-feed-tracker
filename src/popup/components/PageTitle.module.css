@@ -3,6 +3,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: var(--size-2);
+  margin-block-end: var(--size-2);
 }
 
 .container svg {
@@ -14,8 +15,4 @@
 .container svg:hover {
   background-color: var(--surface-2);
   border-radius: var(--radius-2);
-}
-
-.extra-margin {
-  margin-block-end: var(--size-2);
 }

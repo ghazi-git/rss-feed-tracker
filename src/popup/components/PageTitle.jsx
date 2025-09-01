@@ -5,9 +5,7 @@ import styles from "./PageTitle.module.css";
 
 export default function PageTitle(props) {
   return (
-    <div
-      class={`${styles.container} ${props.margin ? styles["extra-margin"] : ""}`}
-    >
+    <div class={styles.container}>
       <Anchor href={props.previousUrl}>
         <PreviousIcon />
       </Anchor>

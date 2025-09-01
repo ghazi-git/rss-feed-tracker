@@ -16,7 +16,6 @@ export default function ImportFeeds() {
       <PageTitle
         text="Import Feeds"
         previousUrl={searchParams.previousUrl ?? "/home"}
-        margin={true}
       />
       <form
         onSubmit={(event) => {
