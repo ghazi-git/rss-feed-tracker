@@ -1,11 +1,26 @@
 .node-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
   gap: var(--size-2);
   margin-block-end: var(--size-2);
 }
 
-.node-header:has(> :nth-child(2)) {
-  justify-content: space-between;
+.previous-url {
+  flex-shrink: 0;
+}
+
+.node-header > :last-child {
+  margin-inline-start: auto;
+}
+
+.previous-icon {
+  inline-size: var(--size-7);
+  padding: var(--size-2);
+}
+
+.previous-url:focus-visible,
+.previous-icon:hover {
+  background-color: var(--surface-2);
+  border-radius: var(--radius-2);
 }

@@ -1,6 +1,8 @@
 import { Show } from "solid-js";
 
-import PageTitle from "@/popup/components/PageTitle.jsx";
+import Anchor from "@/popup/components/Anchor.jsx";
+import PreviousIcon from "@/popup/components/svg-icons/PreviousIcon.jsx";
+import { singleLineEllipsis } from "@/popup/directives/ellipsis.js";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import { isPostsPage } from "@/popup/utils/posts.js";
 
@@ -18,7 +20,12 @@ export default function NodeHeader(props) {
   return (
     <div class={styles["node-header"]}>
       <Show when={props.node.parentId || isPostsPage()}>
-        <PageTitle text={props.node.name} previousUrl={previousUrl()} />
+        <Anchor href={previousUrl()} class={styles["previous-url"]}>
+          <PreviousIcon class={styles["previous-icon"]} />
+        </Anchor>
+        <h2 use:singleLineEllipsis={props.node.name} dir="auto">
+          {props.node.name}
+        </h2>
       </Show>
       <PostsFilter
         unreadCount={props.node.unreadCount}
