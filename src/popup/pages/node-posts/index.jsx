@@ -9,7 +9,7 @@ export default function NodePosts() {
   const [searchParams] = useSearchParams();
   const params = useParams();
   const node = () => NODES.find((n) => n.id === parseInt(params.id));
-  const posts = createMemo(() => {
+  const allPosts = createMemo(() => {
     if (!node()) return [];
 
     let posts;
@@ -40,22 +40,25 @@ export default function NodePosts() {
       }));
     }
 
-    if (searchParams.unread === "true") {
-      posts = posts.filter((post) => post.unread);
-    }
-
     posts.sort((a, b) => b.publishedAt - a.publishedAt);
     return posts;
+  });
+  const filteredPosts = createMemo(() => {
+    if (searchParams.unread === "true") {
+      return allPosts().filter((post) => post.unread);
+    } else {
+      return allPosts();
+    }
   });
 
   return (
     <Show when={node()} fallback={<h2>Feed not Found</h2>}>
-      <NodeHeader node={node()} />
+      <NodeHeader node={node()} showFilter={allPosts().length > 0} />
       <Show
-        when={posts().length > 0}
+        when={filteredPosts().length > 0}
         fallback={<div>No posts published yet.</div>}
       >
-        <Posts posts={posts()} />
+        <Posts posts={filteredPosts()} />
       </Show>
     </Show>
   );

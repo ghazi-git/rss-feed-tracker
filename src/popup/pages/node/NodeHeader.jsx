@@ -27,10 +27,13 @@ export default function NodeHeader(props) {
           {props.node.name}
         </h2>
       </Show>
-      <PostsFilter
-        unreadCount={props.node.unreadCount}
-        nodeId={props.node.id}
-      />
+      <Show when={props.showFilter}>
+        <PostsFilter
+          unreadCount={props.node.unreadCount}
+          nodeId={props.node.id}
+          class={styles["posts-filter"]}
+        />
+      </Show>
     </div>
   );
 }

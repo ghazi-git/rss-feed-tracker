@@ -10,7 +10,7 @@
   flex-shrink: 0;
 }
 
-.node-header > :last-child {
+.node-header > .posts-filter {
   margin-inline-start: auto;
 }
 

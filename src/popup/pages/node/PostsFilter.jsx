@@ -12,7 +12,7 @@ export default function PostsFilter(props) {
   const [activeFilter, setActiveFilter] = createSignal(getCurrentFilter());
 
   return (
-    <div class={styles["filter-options"]}>
+    <div class={`${props.class} ${styles["filter-options"]}`}>
       <Anchor
         href={`/home/nodes/${props.nodeId}/posts?unread=true`}
         class={`${styles.filter} ${styles.unread}`}
