@@ -1,15 +1,30 @@
 import { Show } from "solid-js";
-import { showToast } from "solid-notifications";
+import { dismissToast, showToast } from "solid-notifications";
 
 import styles from "./UnreadToggle.module.css";
 
 export default function UnreadToggle(props) {
+  const markAsRead = (event) => {
+    event.preventDefault();
+    dismissToast();
+    showToast("Marked as read");
+  };
+  const markAsUnread = (event) => {
+    event.preventDefault();
+    dismissToast();
+    showToast("Marked as unread");
+  };
   return (
     <div class={styles["unread-toggle"]}>
       <Show when={props.unread}>
         <div
           class={styles.unread}
-          onClick={() => showToast("Marked as read")}
+          onClick={markAsRead}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              markAsRead(event);
+            }
+          }}
           title="Mark as read"
           role="button"
           tabindex="0"
@@ -18,7 +33,12 @@ export default function UnreadToggle(props) {
       <Show when={!props.unread}>
         <div
           class={styles.read}
-          onClick={() => showToast("Marked as unread")}
+          onClick={markAsUnread}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              markAsUnread(event);
+            }
+          }}
           title="Mark as unread"
           role="button"
           tabindex="0"

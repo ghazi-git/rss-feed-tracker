@@ -19,6 +19,11 @@ export default function UnreadCount(props) {
       title="Mark all as read"
       role="button"
       tabindex="0"
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          props.onClick(event);
+        }
+      }}
     >
       {count()}
     </span>

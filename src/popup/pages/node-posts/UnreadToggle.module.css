@@ -6,6 +6,7 @@
   transition: transform 200ms var(--ease-1);
 }
 
+.unread-toggle > *:focus-visible,
 .unread-toggle > *:hover {
   transform: scale(150%);
 }
