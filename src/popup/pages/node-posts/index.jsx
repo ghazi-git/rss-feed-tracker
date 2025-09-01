@@ -5,6 +5,8 @@ import NodeHeader from "@/popup/pages/node/NodeHeader.jsx";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";
 import { NODES, POSTS } from "@/popup/utils/dummy-data.js";
 
+import styles from "./index.module.css";
+
 export default function NodePosts() {
   const [searchParams] = useSearchParams();
   const params = useParams();
@@ -50,13 +52,20 @@ export default function NodePosts() {
       return allPosts();
     }
   });
+  const noPostsMsg = () => {
+    if (searchParams.unread === "true") {
+      return "No unread posts";
+    } else {
+      return "No posts published yet";
+    }
+  };
 
   return (
     <Show when={node()} fallback={<h2>Feed not Found</h2>}>
       <NodeHeader node={node()} showFilter={allPosts().length > 0} />
       <Show
         when={filteredPosts().length > 0}
-        fallback={<div>No posts published yet.</div>}
+        fallback={<h3 class={styles["no-posts"]}>{noPostsMsg()}</h3>}
       >
         <Posts posts={filteredPosts()} />
       </Show>
