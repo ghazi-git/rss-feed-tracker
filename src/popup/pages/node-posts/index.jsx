@@ -1,11 +1,10 @@
 import { useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
+import NoPosts from "@/popup/components/NoPosts.jsx";
 import NodeHeader from "@/popup/pages/node/NodeHeader.jsx";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";
 import { NODES, POSTS } from "@/popup/utils/dummy-data.js";
-
-import styles from "./index.module.css";
 
 export default function NodePosts() {
   const [searchParams] = useSearchParams();
@@ -65,7 +64,7 @@ export default function NodePosts() {
       <NodeHeader node={node()} showFilter={allPosts().length > 0} />
       <Show
         when={filteredPosts().length > 0}
-        fallback={<h3 class={styles["no-posts"]}>{noPostsMsg()}</h3>}
+        fallback={<NoPosts msg={noPostsMsg()} />}
       >
         <Posts posts={filteredPosts()} />
       </Show>
