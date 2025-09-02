@@ -1,11 +1,12 @@
 import BackLink from "@/popup/components/BackLink.jsx";
 import PageHeaderWrapper from "@/popup/components/PageHeaderWrapper.jsx";
+import PageTitle from "@/popup/components/PageTitle.jsx";
 
 export default function PageHeader(props) {
   return (
     <PageHeaderWrapper>
       <BackLink url={props.previousUrl} />
-      <h2>{props.text}</h2>
+      <PageTitle title={props.text} />
     </PageHeaderWrapper>
   );
 }
