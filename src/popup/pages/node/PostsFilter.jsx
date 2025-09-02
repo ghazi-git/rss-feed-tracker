@@ -1,20 +1,18 @@
-import { useSearchParams } from "@solidjs/router";
 import { createSignal, Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
 import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
-import { isPostsPage } from "@/popup/utils/posts.js";
 
 import styles from "./PostsFilter.module.css";
 
 export default function PostsFilter(props) {
-  const [activeFilter, setActiveFilter] = createSignal(getCurrentFilter());
+  const [activeFilter, setActiveFilter] = createSignal(props.initialFilter);
 
   return (
     <div class={`${props.class} ${styles["filter-options"]}`}>
       <Anchor
-        href={`/home/nodes/${props.nodeId}/posts?unread=true`}
+        href={`${props.pageUrl}?unread=true`}
         class={`${styles.filter} ${styles.unread}`}
         classList={{ [styles.active]: activeFilter() === "unread" }}
         onClick={() => setActiveFilter("unread")}
@@ -33,7 +31,7 @@ export default function PostsFilter(props) {
         </Show>
       </Anchor>
       <Anchor
-        href={`/home/nodes/${props.nodeId}/posts`}
+        href={props.pageUrl}
         class={`${styles.filter} ${styles.all}`}
         classList={{ [styles.active]: activeFilter() === "all" }}
         onClick={() => setActiveFilter("all")}
@@ -42,11 +40,4 @@ export default function PostsFilter(props) {
       </Anchor>
     </div>
   );
-}
-
-function getCurrentFilter() {
-  if (!isPostsPage()) return null;
-
-  const [searchParams] = useSearchParams();
-  return searchParams.unread === "true" ? "unread" : "all";
 }
