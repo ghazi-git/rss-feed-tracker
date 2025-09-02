@@ -5,14 +5,3 @@
   gap: var(--size-2);
   margin-block-end: var(--size-2);
 }
-
-.container svg {
-  inline-size: var(--size-7);
-  padding: var(--size-2);
-}
-
-.container a:focus-visible,
-.container svg:hover {
-  background-color: var(--surface-2);
-  border-radius: var(--radius-2);
-}

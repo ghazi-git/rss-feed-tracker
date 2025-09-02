@@ -1,0 +1,15 @@
+import Anchor from "@/popup/components/Anchor.jsx";
+import PreviousIcon from "@/popup/components/svg-icons/PreviousIcon.jsx";
+
+import styles from "./BackLink.module.css";
+
+export default function BackLink(props) {
+  return (
+    <Anchor
+      href={props.url}
+      class={`${styles["back-link"]} ${props.class ?? ""}`}
+    >
+      <PreviousIcon />
+    </Anchor>
+  );
+}
