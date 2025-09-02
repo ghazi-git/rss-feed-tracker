@@ -1,10 +1,15 @@
 import { useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
+import BackLink from "@/popup/components/BackLink.jsx";
 import NoPosts from "@/popup/components/NoPosts.jsx";
-import NodeHeader from "@/popup/pages/node/NodeHeader.jsx";
+import PageHeaderWrapper from "@/popup/components/PageHeaderWrapper.jsx";
+import PageTitle from "@/popup/components/PageTitle.jsx";
+import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";
 import { NODES, POSTS } from "@/popup/utils/dummy-data.js";
+
+import styles from "./index.module.css";
 
 export default function NodePosts() {
   const [searchParams] = useSearchParams();
@@ -58,10 +63,28 @@ export default function NodePosts() {
       return "No posts published yet";
     }
   };
+  const previousUrl = () => {
+    if (node().type === "folder") {
+      return `/home/nodes/${node().id}`;
+    } else {
+      return `/home/nodes/${node().parentId}`;
+    }
+  };
 
   return (
-    <Show when={node()} fallback={<h2>Feed not Found</h2>}>
-      <NodeHeader node={node()} showFilter={allPosts().length > 0} />
+    <Show when={node()} fallback={<h2>Feed/Folder not Found</h2>}>
+      <PageHeaderWrapper>
+        <BackLink url={previousUrl()} class={styles["previous-url"]} />
+        <PageTitle title={node().name} />
+        <Show when={allPosts().length > 0}>
+          <PostsFilter
+            unreadCount={node().unreadCount}
+            pageUrl={`/home/nodes/${node().id}/posts`}
+            initialFilter={searchParams.unread === "true" ? "unread" : "all"}
+            class={styles["posts-filter"]}
+          />
+        </Show>
+      </PageHeaderWrapper>
       <Show
         when={filteredPosts().length > 0}
         fallback={<NoPosts msg={noPostsMsg()} />}
