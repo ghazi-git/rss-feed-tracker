@@ -6,6 +6,7 @@ import Header from "@/popup/components/Header.jsx";
 import LinkPreview from "@/popup/components/LinkPreview.jsx";
 import AddFeed from "@/popup/pages/add-feed/index.jsx";
 import AddFolder from "@/popup/pages/add-folder/index.jsx";
+import Bookmarks from "@/popup/pages/Bookmarks.jsx";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
 import Node from "@/popup/pages/node/index.jsx";
@@ -60,7 +61,7 @@ function App() {
         <Route path="/add-feed" component={AddFeed} />
         <Route path="/add-folder" component={AddFolder} />
         <Route path="/import-feeds" component={ImportFeeds} />
-        <Route path="/bookmarks" component={() => <div>Bookmarks</div>} />
+        <Route path="/bookmarks" component={Bookmarks} />
         <Route path="/settings" component={Settings} />
         <Route
           path="*"
