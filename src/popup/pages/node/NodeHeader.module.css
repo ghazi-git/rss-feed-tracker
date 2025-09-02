@@ -1,4 +1,5 @@
 .node-header {
+  block-size: 40px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
