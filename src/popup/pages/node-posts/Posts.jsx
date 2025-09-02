@@ -42,12 +42,10 @@ function Post(props) {
           openTab(props.post.url);
         }
       }}
-      onMouseOver={() => {
-        showLinkPreview(props.post.url);
-      }}
-      onMouseOut={() => {
-        hideLinkPreview();
-      }}
+      onMouseOver={() => showLinkPreview(props.post.url)}
+      onMouseOut={() => hideLinkPreview()}
+      onFocus={() => showLinkPreview(props.post.url)}
+      onBlur={() => hideLinkPreview()}
       draggable="false"
       activeClass=""
       inactiveClass=""

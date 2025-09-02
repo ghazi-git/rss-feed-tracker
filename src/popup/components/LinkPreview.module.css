@@ -8,7 +8,7 @@
   border-start-end-radius: var(--radius-2);
   pointer-events: none;
   font-size: 14px;
-  max-inline-size: calc(100% - var(--size-3));
+  max-inline-size: calc(100% - var(--size-10));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
