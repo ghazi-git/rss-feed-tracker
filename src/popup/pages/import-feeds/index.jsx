@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 import ActionButton from "@/popup/components/ActionButton.jsx";
 import ButtonContainer from "@/popup/components/ButtonContainer.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
-import PageTitle from "@/popup/components/PageTitle.jsx";
+import PageHeader from "@/popup/components/PageHeader.jsx";
 
 export default function ImportFeeds() {
   const [formdata, setFormdata] = createStore({
@@ -13,7 +13,7 @@ export default function ImportFeeds() {
   const [searchParams] = useSearchParams();
   return (
     <>
-      <PageTitle
+      <PageHeader
         text="Import Feeds"
         previousUrl={searchParams.previousUrl ?? "/home"}
       />

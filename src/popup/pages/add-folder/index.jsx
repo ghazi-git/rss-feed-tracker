@@ -5,7 +5,7 @@ import ActionButton from "@/popup/components/ActionButton.jsx";
 import ButtonContainer from "@/popup/components/ButtonContainer.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
-import PageTitle from "@/popup/components/PageTitle.jsx";
+import PageHeader from "@/popup/components/PageHeader.jsx";
 
 export default function AddFolder() {
   const [formdata, setFormdata] = createStore({
@@ -21,7 +21,7 @@ export default function AddFolder() {
   const [searchParams] = useSearchParams();
   return (
     <>
-      <PageTitle
+      <PageHeader
         text="Add Folder"
         previousUrl={searchParams.previousUrl ?? "/home"}
       />

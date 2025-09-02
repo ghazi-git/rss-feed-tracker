@@ -6,7 +6,7 @@ import ButtonContainer from "@/popup/components/ButtonContainer.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
 import RadioGroup from "@/popup/components/forms/RadioGroup.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
-import PageTitle from "@/popup/components/PageTitle.jsx";
+import PageHeader from "@/popup/components/PageHeader.jsx";
 
 export default function AddFeed() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function AddFeed() {
   const [searchParams] = useSearchParams();
   return (
     <>
-      <PageTitle
+      <PageHeader
         text="Add Feed"
         previousUrl={searchParams.previousUrl ?? "/home"}
       />
