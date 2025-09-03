@@ -1,0 +1,7 @@
+.triangle {
+  transition: transform 200ms var(--ease-1);
+}
+
+.up {
+  transform: rotate(180deg);
+}
