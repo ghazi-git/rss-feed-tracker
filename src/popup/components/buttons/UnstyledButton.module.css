@@ -1,0 +1,16 @@
+.unstyled {
+  /* stylelint-disable custom-property-pattern */
+  --_highlight-size: 0;
+  --_bg: transparent;
+  /* stylelint-enable custom-property-pattern */
+
+  box-shadow: none;
+  border: none;
+  border-radius: var(--radius-2);
+  padding: var(--size-1);
+}
+
+.unstyled:focus-visible,
+.unstyled:not([disabled]):hover {
+  background-color: var(--surface-2);
+}

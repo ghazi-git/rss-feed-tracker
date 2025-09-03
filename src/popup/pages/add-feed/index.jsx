@@ -1,8 +1,8 @@
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
-import ActionButton from "@/popup/components/ActionButton.jsx";
 import ButtonContainer from "@/popup/components/ButtonContainer.jsx";
+import ActionButton from "@/popup/components/buttons/ActionButton.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
 import RadioGroup from "@/popup/components/forms/RadioGroup.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
