@@ -11,7 +11,7 @@ import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
 import Node from "@/popup/pages/node/index.jsx";
 import NodePosts from "@/popup/pages/node-posts/index.jsx";
-import Settings from "@/popup/pages/Settings.jsx";
+import Preferences from "@/popup/pages/Preferences.jsx";
 import { NODES } from "@/popup/utils/dummy-data.js";
 
 function Layout(props) {
@@ -62,7 +62,7 @@ function App() {
         <Route path="/add-folder" component={AddFolder} />
         <Route path="/import-feeds" component={ImportFeeds} />
         <Route path="/bookmarks" component={Bookmarks} />
-        <Route path="/settings" component={Settings} />
+        <Route path="/preferences" component={Preferences} />
         <Route
           path="*"
           component={() => {

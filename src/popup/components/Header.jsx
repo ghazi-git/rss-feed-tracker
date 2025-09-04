@@ -13,10 +13,10 @@ export default function Header() {
       <Anchor
         href="/"
         class={styles.tab}
-        classList={{ [styles.active]: activeTab() === "feeds" }}
-        onClick={() => setActiveTab("feeds")}
+        classList={{ [styles.active]: activeTab() === "library" }}
+        onClick={() => setActiveTab("library")}
       >
-        Feeds
+        Library
       </Anchor>
       <Anchor
         href="/bookmarks"
@@ -27,12 +27,12 @@ export default function Header() {
         Bookmarks
       </Anchor>
       <Anchor
-        href="/settings"
+        href="/preferences"
         class={styles.tab}
-        classList={{ [styles.active]: activeTab() === "settings" }}
-        onClick={() => setActiveTab("settings")}
+        classList={{ [styles.active]: activeTab() === "preferences" }}
+        onClick={() => setActiveTab("preferences")}
       >
-        Settings
+        Preferences
       </Anchor>
     </header>
   );
@@ -43,9 +43,9 @@ function getCurrentTab() {
   const url = location.pathname;
   if (url.startsWith("/bookmarks")) {
     return "bookmarks";
-  } else if (url.startsWith("/settings")) {
-    return "settings";
+  } else if (url.startsWith("/preferences")) {
+    return "preferences";
   } else {
-    return "feeds";
+    return "library";
   }
 }

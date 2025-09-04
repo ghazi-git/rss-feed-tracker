@@ -3,7 +3,7 @@ export const NODES = [
   {
     type: "folder",
     id: 1,
-    name: "Feeds",
+    name: "My Feeds",
     parentId: null,
     createdAt: 1756325534722,
     unreadCount: 16,

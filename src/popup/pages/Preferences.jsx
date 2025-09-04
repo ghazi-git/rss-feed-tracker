@@ -7,9 +7,9 @@ import DownloadIcon from "@/popup/components/svg-icons/DownloadIcon.jsx";
 import UploadIcon from "@/popup/components/svg-icons/UploadIcon.jsx";
 import ActionCard from "@/popup/pages/no-feeds-yet/ActionCard.jsx";
 
-import styles from "./Settings.module.css";
+import styles from "./Preferences.module.css";
 
-export default function Settings() {
+export default function Preferences() {
   const [unread, setUnread] = createSignal(true);
   const [frequency, setFrequency] = createSignal("2h");
   const frequencies = [
@@ -19,7 +19,7 @@ export default function Settings() {
     { label: "6 hours", value: "6h" },
     { label: "1 day", value: "1d" },
   ];
-  const previousUrl = new URLSearchParams({ previousUrl: "/settings" });
+  const previousUrl = new URLSearchParams({ previousUrl: "/preferences" });
   return (
     <>
       <div class={styles["import-export"]}>
