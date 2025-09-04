@@ -1,0 +1,16 @@
+.page-title-button {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-1);
+  min-inline-size: 0;
+}
+
+.node-actions {
+  flex-shrink: 0;
+}
+
+.node-actions svg {
+  margin-block-start: var(--size-1);
+  inline-size: var(--size-3);
+}

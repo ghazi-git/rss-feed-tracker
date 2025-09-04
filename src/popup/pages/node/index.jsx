@@ -2,8 +2,8 @@ import { Navigate, useParams } from "@solidjs/router";
 import { Show } from "solid-js";
 
 import BackLink from "@/popup/components/BackLink.jsx";
+import PageTitleButton from "@/popup/components/buttons/PageTitleButton.jsx";
 import PageHeaderWrapper from "@/popup/components/PageHeaderWrapper.jsx";
-import PageTitle from "@/popup/components/PageTitle.jsx";
 import FolderChildren from "@/popup/pages/node/FolderChildren.jsx";
 import styles from "@/popup/pages/node/index.module.css";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
@@ -21,13 +21,16 @@ export default function Node() {
         fallback={<Navigate href={`/home/nodes/${node().id}/posts`} />}
       >
         <PageHeaderWrapper>
-          <Show when={node().parentId}>
+          <Show
+            when={node().parentId}
+            fallback={<div class={styles["previous-url-placeholder"]} />}
+          >
             <BackLink
               url={`/home/nodes/${node().parentId}`}
               class={styles["previous-url"]}
             />
-            <PageTitle title={node().name} />
           </Show>
+          <PageTitleButton title={node().name} />
           <Show when={hasChildren()}>
             <PostsFilter
               unreadCount={node().unreadCount}

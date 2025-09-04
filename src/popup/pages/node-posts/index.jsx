@@ -2,9 +2,9 @@ import { useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
 import BackLink from "@/popup/components/BackLink.jsx";
+import PageTitleButton from "@/popup/components/buttons/PageTitleButton.jsx";
 import NoPosts from "@/popup/components/NoPosts.jsx";
 import PageHeaderWrapper from "@/popup/components/PageHeaderWrapper.jsx";
-import PageTitle from "@/popup/components/PageTitle.jsx";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";
 import { NODES, POSTS } from "@/popup/utils/dummy-data.js";
@@ -75,7 +75,7 @@ export default function NodePosts() {
     <Show when={node()} fallback={<h2>Feed/Folder not Found</h2>}>
       <PageHeaderWrapper>
         <BackLink url={previousUrl()} class={styles["previous-url"]} />
-        <PageTitle title={node().name} />
+        <PageTitleButton title={node().name} />
         <Show when={allPosts().length > 0}>
           <PostsFilter
             unreadCount={node().unreadCount}
