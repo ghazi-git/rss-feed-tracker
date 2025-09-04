@@ -8,6 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@floating-ui/dom": "1.7.4",
     "@solidjs/router": "0.15.3",
     "open-props": "1.7.16",
     "solid-js": "1.9.8",
