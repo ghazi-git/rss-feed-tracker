@@ -43,7 +43,10 @@ export default function PageTitleButton(props) {
             Export Feeds
           </MenuItem>
           <Separator />
-          <MenuItem onClick={() => showToast("show 'are you sure dialog'")}>
+          <MenuItem
+            class={styles.delete}
+            onClick={() => showToast("show 'are you sure dialog'")}
+          >
             Delete
           </MenuItem>
         </Show>
@@ -53,7 +56,10 @@ export default function PageTitleButton(props) {
             Reload
           </MenuItem>
           <Separator />
-          <MenuItem onClick={() => showToast("show 'are you sure dialog'")}>
+          <MenuItem
+            class={styles.delete}
+            onClick={() => showToast("show 'are you sure dialog'")}
+          >
             Delete
           </MenuItem>
         </Show>

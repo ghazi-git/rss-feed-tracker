@@ -14,3 +14,11 @@
   margin-block-start: var(--size-1);
   inline-size: var(--size-3);
 }
+
+.delete {
+  color: var(--error-color);
+}
+
+.delete:focus {
+  background-color: var(--error-color);
+}
