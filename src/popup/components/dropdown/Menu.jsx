@@ -34,8 +34,6 @@ export default function Menu(props) {
               focusItem("next");
             } else if (event.key === "ArrowUp") {
               focusItem("previous");
-            } else if (event.key === "Enter" || event.key === "Space") {
-              // todo activate menu item
             } else if (event.key === "Home" || event.key === "PageUp") {
               focusItem("first");
             } else if (event.key === "End" || event.key === "PageDown") {

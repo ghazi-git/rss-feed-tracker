@@ -12,6 +12,14 @@ export default function MenuItem(props) {
     "onClick",
   ]);
   const { registerItem, closeMenu, unregisterItem } = useDropdownContext();
+  const onItemClicked = (event) => {
+    if (extra.onClick) {
+      extra.onClick(event);
+    }
+    if (!extra.keepOpenOnClick) {
+      closeMenu();
+    }
+  };
   onCleanup(() => {
     unregisterItem(ref);
   });
@@ -22,12 +30,10 @@ export default function MenuItem(props) {
         registerItem(elt);
         ref = elt;
       }}
-      onClick={(event) => {
-        if (!extra.keepOpenOnClick) {
-          closeMenu();
-        }
-        if (extra.onClick) {
-          extra.onClick(event);
+      onClick={onItemClicked}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          onItemClicked(event);
         }
       }}
       class={`${styles["dropdown-menu-item"]} ${extra.class ?? ""}`}
