@@ -5,6 +5,11 @@ import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
 
 import styles from "./Menu.module.css";
 
+/**
+ * Accessibility implementation details are based on this link
+ * https://www.w3.org/WAI/ARIA/apg/patterns/menubar/
+ * aria-disabled and submenu work not done since they are not needed (not yet at least)
+ */
 export default function Menu(props) {
   const [extra, rest] = splitProps(props, ["class"]);
   const { store, registerMenuRef, closeMenu, focusItem } = useDropdownContext();
@@ -19,6 +24,7 @@ export default function Menu(props) {
           }}
           class={`${styles.menu} ${store.open ? styles["menu-visible"] : ""} ${extra.class ?? ""}`}
           role="menu"
+          aria-labelledby={store.triggerId}
           onKeyDown={(event) => {
             if (event.key === "Tab") {
               closeMenu();

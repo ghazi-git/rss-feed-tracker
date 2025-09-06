@@ -5,6 +5,10 @@ import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
 
 import styles from "./MenuTrigger.module.css";
 
+/**
+ * Accessibility implementation details are based on this link
+ * https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/
+ */
 export default function MenuTrigger(props) {
   const [extra, rest] = splitProps(props, ["class"]);
   const { store, registerTriggerRef, openMenu, focusItem } =
@@ -12,6 +16,7 @@ export default function MenuTrigger(props) {
 
   return (
     <UnstyledButton
+      id={store.triggerId}
       class={`${styles["menu-trigger"]} ${extra.class ?? ""}`}
       ref={(elt) => {
         registerTriggerRef(elt);

@@ -7,6 +7,7 @@ import { DropdownContext } from "./context.jsx";
 export default function Dropdown(props) {
   const [store, setStore] = createStore({
     triggerRef: null,
+    triggerId: _generateMenuId(),
     menuRef: null,
     menuId: _generateMenuId(),
     open: null,
