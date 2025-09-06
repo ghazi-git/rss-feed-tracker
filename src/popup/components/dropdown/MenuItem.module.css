@@ -1,0 +1,11 @@
+.dropdown-menu-item {
+  padding: var(--size-1) var(--size-2);
+  border-radius: var(--radius-2);
+  cursor: pointer;
+}
+
+.dropdown-menu-item:hover,
+.dropdown-menu-item:focus {
+  background-color: var(--brand);
+  color: var(--surface-1);
+}

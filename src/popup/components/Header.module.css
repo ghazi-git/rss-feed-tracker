@@ -3,6 +3,10 @@
   display: flex;
   justify-content: space-evenly;
   align-items: stretch;
+
+  /* ensure header is above an open dropdown menu */
+  position: relative;
+  z-index: var(--layer-1);
 }
 
 .tab {

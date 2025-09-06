@@ -1,0 +1,4 @@
+.separator {
+  margin-block: var(--size-1);
+  background-color: var(--surface-4);
+}

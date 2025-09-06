@@ -30,7 +30,7 @@ export default function Node() {
               class={styles["previous-url"]}
             />
           </Show>
-          <PageTitleButton title={node().name} />
+          <PageTitleButton title={node().name} nodeType={node().type} />
           <Show when={hasChildren()}>
             <PostsFilter
               unreadCount={node().unreadCount}

@@ -1,0 +1,40 @@
+import { splitProps } from "solid-js";
+
+import UnstyledButton from "@/popup/components/buttons/UnstyledButton.jsx";
+import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
+
+import styles from "./MenuTrigger.module.css";
+
+export default function MenuTrigger(props) {
+  const [extra, rest] = splitProps(props, ["class"]);
+  const { store, registerTriggerRef, openMenu, focusItem } =
+    useDropdownContext();
+
+  return (
+    <UnstyledButton
+      class={`${styles["menu-trigger"]} ${extra.class ?? ""}`}
+      ref={(elt) => {
+        registerTriggerRef(elt);
+      }}
+      aria-haspopup="true"
+      aria-expanded={store.open}
+      aria-controls={store.open ? store.menuId : undefined}
+      onClick={() => {
+        if (!store.open) {
+          openMenu();
+          focusItem("first");
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowDown") {
+          openMenu();
+          focusItem("first");
+        } else if (event.key === "ArrowUp") {
+          openMenu();
+          focusItem("last");
+        }
+      }}
+      {...rest}
+    />
+  );
+}
