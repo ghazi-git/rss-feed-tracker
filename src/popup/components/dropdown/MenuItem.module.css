@@ -4,7 +4,6 @@
   cursor: pointer;
 }
 
-.dropdown-menu-item:hover,
 .dropdown-menu-item:focus {
   background-color: var(--brand);
   color: var(--surface-1);

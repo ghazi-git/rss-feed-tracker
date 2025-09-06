@@ -11,7 +11,8 @@ export default function MenuItem(props) {
     "keepOpenOnClick",
     "onClick",
   ]);
-  const { registerItem, closeMenu, unregisterItem } = useDropdownContext();
+  const { registerItem, closeMenu, unregisterItem, focusItemByRef } =
+    useDropdownContext();
   const onItemClicked = (event) => {
     if (extra.onClick) {
       extra.onClick(event);
@@ -35,6 +36,9 @@ export default function MenuItem(props) {
         if (event.key === "Enter" || event.key === " ") {
           onItemClicked(event);
         }
+      }}
+      onMouseEnter={() => {
+        focusItemByRef(ref);
       }}
       class={`${styles["dropdown-menu-item"]} ${extra.class ?? ""}`}
       tabindex="-1"
