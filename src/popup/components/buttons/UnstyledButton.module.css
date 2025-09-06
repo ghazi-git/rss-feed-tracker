@@ -8,6 +8,7 @@
   border: none;
   border-radius: var(--radius-2);
   padding: var(--size-1);
+  font-weight: var(--font-weight-4);
 }
 
 .unstyled:focus-visible,
