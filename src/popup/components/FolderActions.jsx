@@ -1,4 +1,5 @@
 import { useNavigate } from "@solidjs/router";
+import { Show } from "solid-js";
 import { showToast } from "solid-notifications";
 
 import MenuItem from "@/popup/components/dropdown/MenuItem.jsx";
@@ -6,7 +7,7 @@ import Separator from "@/popup/components/dropdown/Separator.jsx";
 
 import styles from "./FolderActions.module.css";
 
-export default function FolderActions() {
+export default function FolderActions(props) {
   const navigate = useNavigate();
   return (
     <>
@@ -26,13 +27,15 @@ export default function FolderActions() {
       >
         Export Feeds
       </MenuItem>
-      <Separator />
-      <MenuItem
-        class={styles.delete}
-        onClick={() => showToast("show 'are you sure dialog'")}
-      >
-        Delete
-      </MenuItem>
+      <Show when={!props.isRoot}>
+        <Separator />
+        <MenuItem
+          class={styles.delete}
+          onClick={() => showToast("show 'are you sure dialog'")}
+        >
+          Delete
+        </MenuItem>
+      </Show>
     </>
   );
 }

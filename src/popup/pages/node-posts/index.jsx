@@ -75,7 +75,11 @@ export default function NodePosts() {
     <Show when={node()} fallback={<h2>Feed/Folder not Found</h2>}>
       <PageHeaderWrapper>
         <BackLink url={previousUrl()} class={styles["previous-url"]} />
-        <PageTitleButton title={node().name} nodeType={node().type} />
+        <PageTitleButton
+          title={node().name}
+          nodeType={node().type}
+          isRoot={node().parentId === null}
+        />
         <Show when={allPosts().length > 0}>
           <PostsFilter
             unreadCount={node().unreadCount}

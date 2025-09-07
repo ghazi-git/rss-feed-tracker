@@ -21,7 +21,7 @@ export default function PageTitleButton(props) {
       </MenuTrigger>
       <Menu>
         <Show when={props.nodeType === "folder"} fallback={<FeedActions />}>
-          <FolderActions />
+          <FolderActions isRoot={props.isRoot} />
         </Show>
       </Menu>
     </Dropdown>
