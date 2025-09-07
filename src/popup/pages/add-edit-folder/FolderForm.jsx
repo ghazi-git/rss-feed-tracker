@@ -4,6 +4,7 @@ import ActionButton from "@/popup/components/buttons/ActionButton.jsx";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
+import { NODES } from "@/popup/utils/dummy-data.js";
 
 export default function FolderForm(props) {
   return (
@@ -30,4 +31,14 @@ export default function FolderForm(props) {
       </ButtonContainer>
     </form>
   );
+}
+
+export function getParentOptions() {
+  return NODES.filter((n) => n.type === "folder").map((n) => {
+    if (n.parentId) {
+      return { label: n.name, value: n.id };
+    } else {
+      return { label: `${n.name} (Top-level Folder)`, value: n.id };
+    }
+  });
 }

@@ -3,8 +3,9 @@ import { createEffect, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import PageHeader from "@/popup/components/PageHeader.jsx";
-import FolderForm from "@/popup/pages/add-folder/FolderForm.jsx";
-import { getParentOptions } from "@/popup/pages/add-folder/parent-options.js";
+import FolderForm, {
+  getParentOptions,
+} from "@/popup/pages/add-edit-folder/FolderForm.jsx";
 import { NODES } from "@/popup/utils/dummy-data.js";
 
 export default function EditFolder() {

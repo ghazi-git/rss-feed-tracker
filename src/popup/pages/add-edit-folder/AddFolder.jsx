@@ -2,8 +2,9 @@ import { useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import PageHeader from "@/popup/components/PageHeader.jsx";
-import FolderForm from "@/popup/pages/add-folder/FolderForm.jsx";
-import { getParentOptions } from "@/popup/pages/add-folder/parent-options.js";
+import FolderForm, {
+  getParentOptions,
+} from "@/popup/pages/add-edit-folder/FolderForm.jsx";
 
 export default function AddFolder() {
   const [formdata, setFormdata] = createStore({
