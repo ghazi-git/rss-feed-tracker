@@ -4,9 +4,10 @@ import { Toaster, ToastProvider } from "solid-notifications";
 import Body from "@/popup/components/Body.jsx";
 import Header from "@/popup/components/Header.jsx";
 import LinkPreview from "@/popup/components/LinkPreview.jsx";
+import AddFeed from "@/popup/pages/add-edit-feed/AddFeed.jsx";
+import EditFeed from "@/popup/pages/add-edit-feed/EditFeed.jsx";
 import AddFolder from "@/popup/pages/add-edit-folder/AddFolder.jsx";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder.jsx";
-import AddFeed from "@/popup/pages/add-feed/index.jsx";
 import Bookmarks from "@/popup/pages/Bookmarks.jsx";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
@@ -60,6 +61,7 @@ function App() {
         <Route path="/home/nodes/:id/posts" component={NodePosts} />
         <Route path="/no-feeds-yet" component={NoFeedsYet} />
         <Route path="/add-feed" component={AddFeed} />
+        <Route path="/feeds/:id" component={EditFeed} />
         <Route path="/add-folder" component={AddFolder} />
         <Route path="/folders/:id" component={EditFolder} />
         <Route path="/import-feeds" component={ImportFeeds} />

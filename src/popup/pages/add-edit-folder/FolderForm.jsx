@@ -22,7 +22,7 @@ export default function FolderForm(props) {
           name="parent"
           label="Parent Folder"
           options={props.parentOptions}
-          value={props.formdata.parent}
+          value={parseInt(props.formdata.parent)}
           onChange={(e) => props.setFormdata("parent", e.target.value)}
         />
       </Show>

@@ -42,8 +42,11 @@ export default function FolderChild(props) {
           <ThreeDotIcon class={styles["post-actions-icon"]} />
         </MenuTrigger>
         <Menu>
-          <Show when={props.node.type === "folder"} fallback={<FeedActions />}>
-            <FolderActions nodeId={props.node.id} />
+          <Show
+            when={props.node.type === "folder"}
+            fallback={<FeedActions feedId={props.node.id} />}
+          >
+            <FolderActions folderId={props.node.id} />
           </Show>
         </Menu>
       </Dropdown>

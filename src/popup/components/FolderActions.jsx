@@ -14,7 +14,7 @@ export default function FolderActions(props) {
   const editUrl = () => {
     const currentUrl = `${location.pathname}${location.search}`;
     const searchString = getSearchString({ previousUrl: currentUrl });
-    return `/folders/${props.nodeId}?${searchString}`;
+    return `/folders/${props.folderId}?${searchString}`;
   };
 
   return (

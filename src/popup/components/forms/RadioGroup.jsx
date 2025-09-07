@@ -7,6 +7,20 @@ import styles from "./RadioGroup.module.css";
 
 export default function RadioGroup(props) {
   const propsWithId = setId(props);
+  const options = () => {
+    return props.options.map(({ label, value }, index) => {
+      const updatedOption = {
+        label,
+        value,
+        id: `id_${propsWithId.name}_${index}`,
+      };
+      if (value === propsWithId.value) {
+        return { label, value, checked: "checked" };
+      } else {
+        return updatedOption;
+      }
+    });
+  };
 
   return (
     <FieldWrapper
@@ -19,21 +33,16 @@ export default function RadioGroup(props) {
         role="group"
         aria-labelledby={propsWithId.id}
       >
-        <For each={propsWithId.options}>
-          {({ label, value }, index) => {
-            let checked = false;
-            if (value === propsWithId.value) {
-              checked = "checked";
-            }
+        <For each={options()}>
+          {({ label, id, ...rest }) => {
             return (
-              <label for={`id_${propsWithId.name}_${index()}`}>
+              <label for={id}>
                 <input
                   type="radio"
                   name={propsWithId.name}
-                  id={`id_${propsWithId.name}_${index()}`}
-                  value={value}
-                  checked={checked}
+                  id={id}
                   onChange={propsWithId.onChange}
+                  {...rest}
                 />
                 {label}
               </label>
