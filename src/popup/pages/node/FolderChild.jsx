@@ -9,8 +9,8 @@ import FeedActions from "@/popup/components/FeedActions.jsx";
 import FolderActions from "@/popup/components/FolderActions.jsx";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon.jsx";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon.jsx";
-import { singleLineEllipsis } from "@/popup/directives/ellipsis.js";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
+import NodeName from "@/popup/pages/node/NodeName.jsx";
 import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
 
 import styles from "./FolderChild.module.css";
@@ -36,9 +36,7 @@ export default function FolderChild(props) {
           />
         </Show>
       </div>
-      <span use:singleLineEllipsis={props.node.name} dir="auto">
-        {props.node.name}
-      </span>
+      <NodeName name={props.node.name} />
       <Dropdown placement="bottom-end" fallbackPlacement="left">
         <MenuTrigger onClick={(event) => event.preventDefault()}>
           <ThreeDotIcon class={styles["post-actions-icon"]} />
