@@ -1,23 +1,15 @@
 import { useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
-import ActionButton from "@/popup/components/buttons/ActionButton.jsx";
-import ButtonContainer from "@/popup/components/buttons/ButtonContainer.jsx";
-import InputField from "@/popup/components/forms/Input.jsx";
-import SelectField from "@/popup/components/forms/Select.jsx";
 import PageHeader from "@/popup/components/PageHeader.jsx";
+import FolderForm from "@/popup/pages/add-folder/FolderForm.jsx";
+import { getParentOptions } from "@/popup/pages/add-folder/parent-options.js";
 
 export default function AddFolder() {
   const [formdata, setFormdata] = createStore({
     name: "",
     parent: "",
   });
-  const options = [
-    { label: "None (i.e. Top-level Folder)", value: "" },
-    { label: "Dev", value: "Dev" },
-    { label: "News", value: "News" },
-    { label: "Other", value: "Other" },
-  ];
   const [searchParams] = useSearchParams();
   return (
     <>
@@ -25,31 +17,15 @@ export default function AddFolder() {
         text="Add Folder"
         previousUrl={searchParams.previousUrl ?? "/home"}
       />
-      <form
+      <FolderForm
+        formdata={formdata}
+        setFormdata={setFormdata}
+        parentOptions={getParentOptions()}
         onSubmit={(event) => {
           event.preventDefault();
           console.log("formdata", formdata);
         }}
-      >
-        <InputField
-          type="text"
-          name="name"
-          label="Name"
-          required="required"
-          value={formdata.name}
-          onInput={(e) => setFormdata("name", e.target.value)}
-        />
-        <SelectField
-          name="parent"
-          label="Parent Folder"
-          options={options}
-          value={formdata.parent}
-          onChange={(e) => setFormdata("parent", e.target.value)}
-        />
-        <ButtonContainer>
-          <ActionButton type="submit">Save</ActionButton>
-        </ButtonContainer>
-      </form>
+      />
     </>
   );
 }

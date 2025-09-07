@@ -5,6 +5,7 @@ import Body from "@/popup/components/Body.jsx";
 import Header from "@/popup/components/Header.jsx";
 import LinkPreview from "@/popup/components/LinkPreview.jsx";
 import AddFeed from "@/popup/pages/add-feed/index.jsx";
+import EditFolder from "@/popup/pages/add-folder/EditFolder.jsx";
 import AddFolder from "@/popup/pages/add-folder/index.jsx";
 import Bookmarks from "@/popup/pages/Bookmarks.jsx";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
@@ -60,6 +61,7 @@ function App() {
         <Route path="/no-feeds-yet" component={NoFeedsYet} />
         <Route path="/add-feed" component={AddFeed} />
         <Route path="/add-folder" component={AddFolder} />
+        <Route path="/folders/:id" component={EditFolder} />
         <Route path="/import-feeds" component={ImportFeeds} />
         <Route path="/bookmarks" component={Bookmarks} />
         <Route path="/preferences" component={Preferences} />
