@@ -1,0 +1,7 @@
+.delete {
+  color: var(--error-color);
+}
+
+.delete:focus {
+  background-color: var(--error-color);
+}
