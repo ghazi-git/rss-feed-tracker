@@ -13,6 +13,16 @@ export default function SelectField(props) {
     "class",
     "value",
   ]);
+  const options = () => {
+    return props.options.map(({ value, ...rest }) => {
+      const updatedOption = { ...rest, value: value ?? "" };
+      if ((!value && !extra.value) || value === extra.value) {
+        return { ...updatedOption, selected: "selected" };
+      } else {
+        return updatedOption;
+      }
+    });
+  };
 
   return (
     <FieldWrapper
@@ -21,18 +31,8 @@ export default function SelectField(props) {
       required={selectProps.required}
     >
       <select class={`${styles.select} ${extra.class ?? ""}`} {...selectProps}>
-        <For each={extra.options}>
-          {({ label, value, ...rest }) => {
-            let selected = false;
-            if ((!value && !extra.value) || value === extra.value) {
-              selected = "selected";
-            }
-            return (
-              <option value={value ?? ""} selected={selected} {...rest}>
-                {label}
-              </option>
-            );
-          }}
+        <For each={options()}>
+          {({ label, ...rest }) => <option {...rest}>{label}</option>}
         </For>
       </select>
     </FieldWrapper>
