@@ -33,6 +33,7 @@ export default function Node() {
           <PageTitleButton
             title={node().name}
             nodeType={node().type}
+            nodeId={node().id}
             isRoot={node().parentId === null}
           />
           <Show when={hasChildren()}>

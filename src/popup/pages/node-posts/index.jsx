@@ -78,6 +78,7 @@ export default function NodePosts() {
         <PageTitleButton
           title={node().name}
           nodeType={node().type}
+          nodeId={node().id}
           isRoot={node().parentId === null}
         />
         <Show when={allPosts().length > 0}>

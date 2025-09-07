@@ -1,17 +1,25 @@
-import { useNavigate } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 import { Show } from "solid-js";
 import { showToast } from "solid-notifications";
 
 import MenuItem from "@/popup/components/dropdown/MenuItem.jsx";
 import Separator from "@/popup/components/dropdown/Separator.jsx";
+import { getSearchString } from "@/popup/utils/urls.js";
 
 import styles from "./FolderActions.module.css";
 
 export default function FolderActions(props) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const editUrl = () => {
+    const currentUrl = `${location.pathname}${location.search}`;
+    const searchString = getSearchString({ previousUrl: currentUrl });
+    return `/folders/${props.nodeId}?${searchString}`;
+  };
+
   return (
     <>
-      <MenuItem onClick={() => navigate("/add-folder")}>Edit</MenuItem>
+      <MenuItem onClick={() => navigate(editUrl())}>Edit</MenuItem>
       <MenuItem onClick={() => showToast("Reloading Feeds...")}>
         Reload
       </MenuItem>
