@@ -12,7 +12,8 @@ import styles from "./Menu.module.css";
  */
 export default function Menu(props) {
   const [extra, rest] = splitProps(props, ["class"]);
-  const { store, registerMenuRef, closeMenu, focusItem } = useDropdownContext();
+  const { store, registerMenuRef, closeMenu, focusItem, focusTrigger } =
+    useDropdownContext();
 
   return (
     <Show when={store.open}>
@@ -28,14 +29,14 @@ export default function Menu(props) {
           onKeyDown={(event) => {
             if (event.key === "Tab") {
               closeMenu();
-              store.triggerRef.focus();
+              focusTrigger();
               if (event.shiftKey) {
                 // so that focus stays on the trigger
                 event.preventDefault();
               }
             } else if (event.key === "Escape") {
               closeMenu();
-              store.triggerRef.focus();
+              focusTrigger();
             } else if (event.key === "ArrowDown") {
               focusItem("next");
             } else if (event.key === "ArrowUp") {
