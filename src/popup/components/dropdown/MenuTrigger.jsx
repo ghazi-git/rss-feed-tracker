@@ -27,11 +27,13 @@ export default function MenuTrigger(props) {
       onClick={() => {
         if (!store.open) {
           openMenu();
-          focusItem("first");
         }
       }}
       onKeyDown={(event) => {
-        if (event.key === "ArrowDown") {
+        if (event.key === "Enter" || event.key === " ") {
+          openMenu();
+          focusItem("first");
+        } else if (event.key === "ArrowDown") {
           openMenu();
           focusItem("first");
         } else if (event.key === "ArrowUp") {
