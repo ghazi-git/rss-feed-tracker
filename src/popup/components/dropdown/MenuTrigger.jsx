@@ -35,6 +35,7 @@ export default function MenuTrigger(props) {
         }
         if (extra.openMenuOnClick && !store.open) {
           openMenu();
+          focusItem("first");
         }
       }}
       onKeyDown={(event) => {

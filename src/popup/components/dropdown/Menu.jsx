@@ -35,6 +35,7 @@ export default function Menu(props) {
                 event.preventDefault();
               }
             } else if (event.key === "Escape") {
+              event.preventDefault();
               closeMenu();
               focusTrigger();
             } else if (event.key === "ArrowDown") {
