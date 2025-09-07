@@ -32,7 +32,11 @@ export default function Dropdown(props) {
   const _updatePosition = () => {
     computePosition(store.triggerRef, store.menuRef, {
       placement: props.placement || "bottom-start",
-      middleware: [offset(4), flip()],
+      middleware: [
+        offset(4),
+        flip(),
+        accountForHeader(props.fallbackPlacement),
+      ],
     }).then(({ x, y }) => {
       Object.assign(store.menuRef.style, {
         left: `${x}px`,
@@ -147,4 +151,34 @@ function _getCurrentlyFocusedIndex(items) {
 function _generateMenuId() {
   const uuid = crypto.randomUUID();
   return `menu-${uuid.slice(0, 8)}`;
+}
+
+/**
+ * By default, the placement of the dropdown menu does not account for
+ * the header. So, there are cases when the first items in the menu will
+ * be hidden by the header. This is where this middleware helps provide
+ * a fallback placement for the dropdown to avoid the issue.
+ *
+ * The middleware was added mainly to avoid the dropdown menu of a FolderChild
+ * being hidden by the header. This happens when the flip middleware displays
+ * the menu to the top since there is no space left at the bottom.
+ */
+function accountForHeader(fallbackPlacement) {
+  return {
+    name: "accountForHeader",
+    fn(state) {
+      if (fallbackPlacement) {
+        const headerSize = getComputedStyle(
+          document.documentElement,
+        ).getPropertyValue("--header-size");
+        // header size + a bit of leeway
+        const threshold = parseInt(headerSize) + 16;
+        if (state.y <= threshold && state.rects.reference.y > threshold) {
+          return { reset: { placement: fallbackPlacement } };
+        }
+      }
+
+      return {};
+    },
+  };
 }
