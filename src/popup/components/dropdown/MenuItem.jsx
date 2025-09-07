@@ -1,4 +1,4 @@
-import { onCleanup, splitProps } from "solid-js";
+import { mergeProps, onCleanup, splitProps } from "solid-js";
 
 import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
 
@@ -6,9 +6,10 @@ import styles from "./MenuItem.module.css";
 
 export default function MenuItem(props) {
   let ref;
-  const [extra, rest] = splitProps(props, [
+  const propsWithDefaults = mergeProps({ closeMenuOnClick: true }, props);
+  const [extra, rest] = splitProps(propsWithDefaults, [
     "class",
-    "keepOpenOnClick",
+    "closeMenuOnClick",
     "onClick",
   ]);
   const { registerItem, closeMenu, unregisterItem, focusItemByRef } =
@@ -17,7 +18,7 @@ export default function MenuItem(props) {
     if (extra.onClick) {
       extra.onClick(event);
     }
-    if (!extra.keepOpenOnClick) {
+    if (extra.closeMenuOnClick) {
       closeMenu();
     }
   };

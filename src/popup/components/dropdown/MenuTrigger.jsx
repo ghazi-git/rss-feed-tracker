@@ -1,4 +1,4 @@
-import { splitProps } from "solid-js";
+import { mergeProps, splitProps } from "solid-js";
 
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton.jsx";
 import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
@@ -10,7 +10,12 @@ import styles from "./MenuTrigger.module.css";
  * https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/
  */
 export default function MenuTrigger(props) {
-  const [extra, rest] = splitProps(props, ["class"]);
+  const propsWithDefaults = mergeProps({ openMenuOnClick: true }, props);
+  const [extra, rest] = splitProps(propsWithDefaults, [
+    "class",
+    "openMenuOnClick",
+    "onClick",
+  ]);
   const { store, registerTriggerRef, openMenu, focusItem } =
     useDropdownContext();
 
@@ -24,8 +29,11 @@ export default function MenuTrigger(props) {
       aria-haspopup="true"
       aria-expanded={store.open}
       aria-controls={store.open ? store.menuId : undefined}
-      onClick={() => {
-        if (!store.open) {
+      onClick={(event) => {
+        if (extra.onClick) {
+          extra.onClick(event);
+        }
+        if (extra.openMenuOnClick && !store.open) {
           openMenu();
         }
       }}

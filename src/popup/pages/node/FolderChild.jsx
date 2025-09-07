@@ -2,7 +2,11 @@ import { Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
-import UnstyledButton from "@/popup/components/buttons/UnstyledButton.jsx";
+import Dropdown from "@/popup/components/dropdown/Dropdown.jsx";
+import Menu from "@/popup/components/dropdown/Menu.jsx";
+import MenuTrigger from "@/popup/components/dropdown/MenuTrigger.jsx";
+import FeedActions from "@/popup/components/FeedActions.jsx";
+import FolderActions from "@/popup/components/FolderActions.jsx";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon.jsx";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon.jsx";
 import { singleLineEllipsis } from "@/popup/directives/ellipsis.js";
@@ -35,13 +39,16 @@ export default function FolderChild(props) {
       <span use:singleLineEllipsis={props.node.name} dir="auto">
         {props.node.name}
       </span>
-      <UnstyledButton
-        onClick={(event) => {
-          event.preventDefault();
-        }}
-      >
-        <ThreeDotIcon class={styles["post-actions-icon"]} />
-      </UnstyledButton>
+      <Dropdown placement="bottom-end" fallbackPlacement="left">
+        <MenuTrigger onClick={(event) => event.preventDefault()}>
+          <ThreeDotIcon class={styles["post-actions-icon"]} />
+        </MenuTrigger>
+        <Menu>
+          <Show when={props.node.type === "folder"} fallback={<FeedActions />}>
+            <FolderActions />
+          </Show>
+        </Menu>
+      </Dropdown>
     </Anchor>
   );
 }
