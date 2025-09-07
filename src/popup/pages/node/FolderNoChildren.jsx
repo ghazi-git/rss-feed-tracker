@@ -1,25 +1,20 @@
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon.jsx";
 import RssIcon from "@/popup/components/svg-icons/RssIcon.jsx";
 import ActionCard from "@/popup/pages/no-feeds-yet/ActionCard.jsx";
+import { getSearchString } from "@/popup/utils/urls.js";
 
 import styles from "./FolderNoChildren.module.css";
 
 export default function FolderNoChildren(props) {
   const previousUrl = () =>
-    new URLSearchParams({ previousUrl: `/home/nodes/${props.folderId}` });
+    getSearchString({ previousUrl: `/home/nodes/${props.folderId}` });
 
   return (
     <div class={styles["no-children"]}>
-      <ActionCard
-        text="Add Feed"
-        href={`/add-feed?${previousUrl().toString()}`}
-      >
+      <ActionCard text="Add Feed" href={`/add-feed?${previousUrl()}`}>
         <RssIcon />
       </ActionCard>
-      <ActionCard
-        text="Add Folder"
-        href={`/add-folder?${previousUrl().toString()}`}
-      >
+      <ActionCard text="Add Folder" href={`/add-folder?${previousUrl()}`}>
         <FolderIcon />
       </ActionCard>
     </div>

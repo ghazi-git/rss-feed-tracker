@@ -6,6 +6,7 @@ import RadioGroup from "@/popup/components/forms/RadioGroup.jsx";
 import DownloadIcon from "@/popup/components/svg-icons/DownloadIcon.jsx";
 import UploadIcon from "@/popup/components/svg-icons/UploadIcon.jsx";
 import ActionCard from "@/popup/pages/no-feeds-yet/ActionCard.jsx";
+import { getSearchString } from "@/popup/utils/urls.js";
 
 import styles from "./Preferences.module.css";
 
@@ -19,14 +20,11 @@ export default function Preferences() {
     { label: "6 hours", value: "6h" },
     { label: "1 day", value: "1d" },
   ];
-  const previousUrl = new URLSearchParams({ previousUrl: "/preferences" });
+  const previousUrl = getSearchString({ previousUrl: "/preferences" });
   return (
     <>
       <div class={styles["import-export"]}>
-        <ActionCard
-          text="Import Feeds"
-          href={`/import-feeds?${previousUrl.toString()}`}
-        >
+        <ActionCard text="Import Feeds" href={`/import-feeds?${previousUrl}`}>
           <UploadIcon />
         </ActionCard>
         <ActionCard
