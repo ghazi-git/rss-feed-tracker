@@ -7,11 +7,11 @@ import FolderForm, {
 } from "@/popup/pages/add-edit-folder/FolderForm.jsx";
 
 export default function AddFolder() {
+  const [searchParams] = useSearchParams();
   const [formdata, setFormdata] = createStore({
     name: "",
-    parent: "",
+    parent: parseInt(searchParams.parentFolderId) || null,
   });
-  const [searchParams] = useSearchParams();
   return (
     <>
       <PageHeader

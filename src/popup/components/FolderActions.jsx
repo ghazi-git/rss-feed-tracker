@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "@solidjs/router";
-import { Show } from "solid-js";
+import { createMemo, Show } from "solid-js";
 import { showToast } from "solid-notifications";
 
 import MenuItem from "@/popup/components/dropdown/MenuItem.jsx";
@@ -11,11 +11,22 @@ import styles from "./FolderActions.module.css";
 export default function FolderActions(props) {
   const navigate = useNavigate();
   const location = useLocation();
-  const editUrl = () => {
+  const prevUrlSearchString = createMemo(() => {
     const currentUrl = `${location.pathname}${location.search}`;
-    const searchString = getSearchString({ previousUrl: currentUrl });
-    return `/folders/${props.folderId}?${searchString}`;
-  };
+    return getSearchString({ previousUrl: currentUrl });
+  });
+  const editUrl = createMemo(
+    () => `/folders/${props.folderId}?${prevUrlSearchString()}`,
+  );
+  const addFeedUrl = createMemo(() => {
+    return `/add-feed?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
+  });
+  const addFolderUrl = createMemo(() => {
+    return `/add-folder?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
+  });
+  const importFeedsUrl = createMemo(() => {
+    return `/import-feeds?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
+  });
 
   return (
     <>
@@ -24,10 +35,10 @@ export default function FolderActions(props) {
         Reload
       </MenuItem>
       <Separator />
-      <MenuItem onClick={() => navigate("/add-feed")}>Add Feed</MenuItem>
-      <MenuItem onClick={() => navigate("/add-folder")}>Add Folder</MenuItem>
+      <MenuItem onClick={() => navigate(addFeedUrl())}>Add Feed</MenuItem>
+      <MenuItem onClick={() => navigate(addFolderUrl())}>Add Folder</MenuItem>
       <Separator />
-      <MenuItem onClick={() => navigate("/import-feeds")}>
+      <MenuItem onClick={() => navigate(importFeedsUrl())}>
         Import Feeds
       </MenuItem>
       <MenuItem

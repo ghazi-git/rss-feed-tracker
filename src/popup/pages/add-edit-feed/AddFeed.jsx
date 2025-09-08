@@ -6,13 +6,14 @@ import FeedForm from "@/popup/pages/add-edit-feed/FeedForm.jsx";
 
 export default function AddFeed() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [formdata, setFormdata] = createStore({
     url: "",
     name: "",
     frequency: 2 * 60 * 60 * 1000,
-    folder: "",
+    folder: parseInt(searchParams.parentFolderId) || null,
   });
-  const [searchParams] = useSearchParams();
+
   return (
     <>
       <PageHeader
