@@ -13,6 +13,7 @@
 .node-actions svg {
   margin-block-start: var(--size-1);
   inline-size: var(--size-3);
+  opacity: 0.75;
 }
 
 .delete {
