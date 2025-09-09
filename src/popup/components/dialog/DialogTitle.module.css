@@ -1,0 +1,9 @@
+.dialog-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--size-3);
+  margin-block-end: 8px;
+  color: var(--text-2);
+  opacity: 0.75;
+}

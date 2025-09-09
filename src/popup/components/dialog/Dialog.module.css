@@ -1,0 +1,36 @@
+.dialog {
+  border-radius: var(--radius-2);
+  padding: var(--size-3);
+  inline-size: min(var(--size-14), 100%);
+  min-block-size: var(--size-10);
+  max-block-size: var(--size-15);
+  transition: all 500ms allow-discrete;
+  opacity: 0;
+}
+
+.dialog:open {
+  opacity: 1;
+}
+
+@starting-style {
+  .dialog:open {
+    opacity: 0;
+  }
+}
+
+.dialog::backdrop {
+  background-color: transparent;
+  transition: all 500ms allow-discrete;
+}
+
+.dialog:open::backdrop {
+  background-color: rgb(0 0 0 / 20%);
+  backdrop-filter: blur(4px);
+}
+
+@starting-style {
+  .dialog:open::backdrop {
+    background-color: transparent;
+    backdrop-filter: blur(0);
+  }
+}
