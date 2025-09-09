@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "@solidjs/router";
 import { showToast } from "solid-notifications";
 
+import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context.jsx";
 import MenuItem from "@/popup/components/dropdown/MenuItem.jsx";
 import Separator from "@/popup/components/dropdown/Separator.jsx";
 import { getSearchString } from "@/popup/utils/urls.js";
@@ -8,6 +9,7 @@ import { getSearchString } from "@/popup/utils/urls.js";
 import styles from "./FeedActions.module.css";
 
 export default function FeedActions(props) {
+  const { openModal } = useDeleteNodeContext();
   const navigate = useNavigate();
   const location = useLocation();
   const editUrl = () => {
@@ -23,7 +25,10 @@ export default function FeedActions(props) {
       <Separator />
       <MenuItem
         class={styles.delete}
-        onClick={() => showToast("show 'are you sure dialog'")}
+        onClick={() => {
+          const text = `Are you sure you want to delete the feed '${props.feedName}'?`;
+          openModal(props.feedId, "Delete Feed", text);
+        }}
       >
         Delete
       </MenuItem>

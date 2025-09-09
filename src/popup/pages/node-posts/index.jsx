@@ -1,6 +1,8 @@
 import { useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
+import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context.jsx";
+import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog.jsx";
 import NoPosts from "@/popup/components/NoPosts.jsx";
 import BackLink from "@/popup/components/page-header/BackLink.jsx";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.jsx";
@@ -73,29 +75,33 @@ export default function NodePosts() {
 
   return (
     <Show when={node()} fallback={<h2>Feed/Folder not Found</h2>}>
-      <PageHeaderWrapper>
-        <BackLink url={previousUrl()} class={styles["previous-url"]} />
-        <PageTitleButton
-          title={node().name}
-          nodeType={node().type}
-          nodeId={node().id}
-          isRoot={node().parentId === null}
-        />
-        <Show when={allPosts().length > 0}>
-          <PostsFilter
-            unreadCount={node().unreadCount}
-            pageUrl={`/home/nodes/${node().id}/posts`}
-            initialFilter={searchParams.unread === "true" ? "unread" : "all"}
-            class={styles["posts-filter"]}
+      <DeleteNodeProvider>
+        <PageHeaderWrapper>
+          <BackLink url={previousUrl()} class={styles["previous-url"]} />
+          <PageTitleButton
+            title={node().name}
+            nodeType={node().type}
+            nodeId={node().id}
+            nodeName={node().name}
+            isRoot={node().parentId === null}
           />
+          <Show when={allPosts().length > 0}>
+            <PostsFilter
+              unreadCount={node().unreadCount}
+              pageUrl={`/home/nodes/${node().id}/posts`}
+              initialFilter={searchParams.unread === "true" ? "unread" : "all"}
+              class={styles["posts-filter"]}
+            />
+          </Show>
+        </PageHeaderWrapper>
+        <Show
+          when={filteredPosts().length > 0}
+          fallback={<NoPosts msg={noPostsMsg()} />}
+        >
+          <Posts posts={filteredPosts()} />
         </Show>
-      </PageHeaderWrapper>
-      <Show
-        when={filteredPosts().length > 0}
-        fallback={<NoPosts msg={noPostsMsg()} />}
-      >
-        <Posts posts={filteredPosts()} />
-      </Show>
+        <DeleteNodeDialog />
+      </DeleteNodeProvider>
     </Show>
   );
 }

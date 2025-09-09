@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 import { showToast } from "solid-notifications";
 
+import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context.jsx";
 import MenuItem from "@/popup/components/dropdown/MenuItem.jsx";
 import Separator from "@/popup/components/dropdown/Separator.jsx";
 import { getSearchString } from "@/popup/utils/urls.js";
@@ -9,6 +10,7 @@ import { getSearchString } from "@/popup/utils/urls.js";
 import styles from "./FolderActions.module.css";
 
 export default function FolderActions(props) {
+  const { openModal } = useDeleteNodeContext();
   const navigate = useNavigate();
   const location = useLocation();
   const prevUrlSearchString = createMemo(() => {
@@ -50,7 +52,10 @@ export default function FolderActions(props) {
         <Separator />
         <MenuItem
           class={styles.delete}
-          onClick={() => showToast("show 'are you sure dialog'")}
+          onClick={() => {
+            const text = `Are you sure you want to delete the folder '${props.folderName}' and all its contents?`;
+            openModal(props.folderId, "Delete Folder", text);
+          }}
         >
           Delete
         </MenuItem>

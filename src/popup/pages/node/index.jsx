@@ -1,6 +1,8 @@
 import { Navigate, useParams } from "@solidjs/router";
 import { Show } from "solid-js";
 
+import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context.jsx";
+import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog.jsx";
 import BackLink from "@/popup/components/page-header/BackLink.jsx";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.jsx";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton.jsx";
@@ -20,32 +22,36 @@ export default function Node() {
         when={node().type === "folder"}
         fallback={<Navigate href={`/home/nodes/${node().id}/posts`} />}
       >
-        <PageHeaderWrapper>
-          <Show
-            when={node().parentId}
-            fallback={<div class={styles["previous-url-placeholder"]} />}
-          >
-            <BackLink
-              url={`/home/nodes/${node().parentId}`}
-              class={styles["previous-url"]}
+        <DeleteNodeProvider>
+          <PageHeaderWrapper>
+            <Show
+              when={node().parentId}
+              fallback={<div class={styles["previous-url-placeholder"]} />}
+            >
+              <BackLink
+                url={`/home/nodes/${node().parentId}`}
+                class={styles["previous-url"]}
+              />
+            </Show>
+            <PageTitleButton
+              title={node().name}
+              nodeType={node().type}
+              nodeId={node().id}
+              nodeName={node().name}
+              isRoot={node().parentId === null}
             />
-          </Show>
-          <PageTitleButton
-            title={node().name}
-            nodeType={node().type}
-            nodeId={node().id}
-            isRoot={node().parentId === null}
-          />
-          <Show when={hasChildren()}>
-            <PostsFilter
-              unreadCount={node().unreadCount}
-              pageUrl={`/home/nodes/${node().id}/posts`}
-              initialFilter={null}
-              class={styles["posts-filter"]}
-            />
-          </Show>
-        </PageHeaderWrapper>
-        <FolderChildren folderId={node().id} />
+            <Show when={hasChildren()}>
+              <PostsFilter
+                unreadCount={node().unreadCount}
+                pageUrl={`/home/nodes/${node().id}/posts`}
+                initialFilter={null}
+                class={styles["posts-filter"]}
+              />
+            </Show>
+          </PageHeaderWrapper>
+          <FolderChildren folderId={node().id} />
+          <DeleteNodeDialog />
+        </DeleteNodeProvider>
       </Show>
     </Show>
   );

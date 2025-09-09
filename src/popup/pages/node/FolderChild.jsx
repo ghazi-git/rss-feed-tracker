@@ -44,9 +44,14 @@ export default function FolderChild(props) {
         <Menu>
           <Show
             when={props.node.type === "folder"}
-            fallback={<FeedActions feedId={props.node.id} />}
+            fallback={
+              <FeedActions feedId={props.node.id} feedName={props.node.name} />
+            }
           >
-            <FolderActions folderId={props.node.id} />
+            <FolderActions
+              folderId={props.node.id}
+              folderName={props.node.name}
+            />
           </Show>
         </Menu>
       </Dropdown>

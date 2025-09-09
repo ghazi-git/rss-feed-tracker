@@ -1,0 +1,13 @@
+.text {
+  margin-block-end: var(--size-2);
+}
+
+.delete {
+  background-color: var(--error-color);
+  border-color: var(--error-color);
+}
+
+.cancel {
+  color: var(--text-2);
+  padding: var(--size-2) var(--size-3);
+}

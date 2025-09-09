@@ -13,5 +13,5 @@
 
 .unstyled:focus-visible,
 .unstyled:not([disabled]):hover {
-  background-color: var(--surface-2);
+  background-color: var(--surface-3);
 }
