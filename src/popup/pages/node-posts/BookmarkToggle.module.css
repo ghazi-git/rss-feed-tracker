@@ -4,8 +4,10 @@
   z-index: var(--layer-1);
 }
 
-.bookmark-toggle > * {
-  transition: transform 200ms var(--ease-1);
+@media (prefers-reduced-motion: no-preference) {
+  .bookmark-toggle > * {
+    transition: transform 200ms var(--ease-1);
+  }
 }
 
 .bookmark-toggle > *:focus-visible,

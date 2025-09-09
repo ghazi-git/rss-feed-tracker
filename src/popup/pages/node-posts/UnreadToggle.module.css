@@ -3,7 +3,12 @@
   block-size: 12px;
   border-radius: 50%;
   filter: blur(1px);
-  transition: transform 200ms var(--ease-1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .unread-toggle > * {
+    transition: transform 200ms var(--ease-1);
+  }
 }
 
 .unread-toggle > *:focus-visible,

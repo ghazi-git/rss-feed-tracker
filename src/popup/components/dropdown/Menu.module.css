@@ -7,10 +7,20 @@
   padding: var(--size-1) var(--size-2);
   border-radius: var(--radius-2);
   box-shadow: var(--shadow-4);
-  opacity: 0;
-  transition: opacity 200ms var(--ease-1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu {
+    transition: opacity 400ms var(--ease-1);
+  }
 }
 
 .menu-visible {
   opacity: 1;
+}
+
+@starting-style {
+  .menu-visible {
+    opacity: 0;
+  }
 }

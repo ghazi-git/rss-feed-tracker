@@ -4,8 +4,13 @@
   inline-size: min(var(--size-14), 100%);
   min-block-size: var(--size-10);
   max-block-size: var(--size-15);
-  transition: all 500ms allow-discrete;
   opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dialog {
+    transition: all 500ms allow-discrete;
+  }
 }
 
 .dialog:open {
@@ -20,7 +25,12 @@
 
 .dialog::backdrop {
   background-color: transparent;
-  transition: all 500ms allow-discrete;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dialog::backdrop {
+    transition: all 500ms allow-discrete;
+  }
 }
 
 .dialog:open::backdrop {

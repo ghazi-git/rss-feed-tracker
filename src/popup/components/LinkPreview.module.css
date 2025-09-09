@@ -13,7 +13,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 500ms var(--ease-1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .link-preview {
+    transition: opacity 500ms var(--ease-1);
+  }
 }
 
 .visible {

@@ -1,5 +1,7 @@
-.triangle {
-  transition: transform 200ms var(--ease-1);
+@media (prefers-reduced-motion: no-preference) {
+  .triangle {
+    transition: transform 400ms var(--ease-1);
+  }
 }
 
 .up {
