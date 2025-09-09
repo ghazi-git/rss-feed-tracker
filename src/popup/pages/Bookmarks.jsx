@@ -2,7 +2,7 @@ import { useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
 import NoPosts from "@/popup/components/NoPosts.jsx";
-import PageHeaderWrapper from "@/popup/components/PageHeaderWrapper.jsx";
+import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.jsx";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import styles from "@/popup/pages/node-posts/index.module.css";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";

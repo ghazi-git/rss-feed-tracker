@@ -2,7 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import PageHeader from "@/popup/components/PageHeader.jsx";
+import PageHeader from "@/popup/components/page-header/PageHeader.jsx";
 import FeedForm from "@/popup/pages/add-edit-feed/FeedForm.jsx";
 import { NODES } from "@/popup/utils/dummy-data.js";
 

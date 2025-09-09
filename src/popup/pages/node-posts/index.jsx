@@ -1,10 +1,10 @@
 import { useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
-import BackLink from "@/popup/components/BackLink.jsx";
-import PageTitleButton from "@/popup/components/buttons/PageTitleButton.jsx";
 import NoPosts from "@/popup/components/NoPosts.jsx";
-import PageHeaderWrapper from "@/popup/components/PageHeaderWrapper.jsx";
+import BackLink from "@/popup/components/page-header/BackLink.jsx";
+import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.jsx";
+import PageTitleButton from "@/popup/components/page-header/PageTitleButton.jsx";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";
 import { NODES, POSTS } from "@/popup/utils/dummy-data.js";

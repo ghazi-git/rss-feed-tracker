@@ -6,7 +6,7 @@ import MenuStateIndicator from "@/popup/components/dropdown/MenuStateIndicator.j
 import MenuTrigger from "@/popup/components/dropdown/MenuTrigger.jsx";
 import FeedActions from "@/popup/components/FeedActions.jsx";
 import FolderActions from "@/popup/components/FolderActions.jsx";
-import PageTitle from "@/popup/components/PageTitle.jsx";
+import PageTitle from "@/popup/components/page-header/PageTitle.jsx";
 
 import styles from "./PageTitleButton.module.css";
 

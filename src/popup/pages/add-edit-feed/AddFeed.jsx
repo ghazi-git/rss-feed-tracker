@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
-import PageHeader from "@/popup/components/PageHeader.jsx";
+import PageHeader from "@/popup/components/page-header/PageHeader.jsx";
 import FeedForm from "@/popup/pages/add-edit-feed/FeedForm.jsx";
 
 export default function AddFeed() {

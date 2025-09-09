@@ -5,7 +5,7 @@ import ActionButton from "@/popup/components/buttons/ActionButton.jsx";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
-import PageHeader from "@/popup/components/PageHeader.jsx";
+import PageHeader from "@/popup/components/page-header/PageHeader.jsx";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.jsx";
 
 export default function ImportFeeds() {
