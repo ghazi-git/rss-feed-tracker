@@ -1,14 +1,7 @@
 import { createSignal } from "solid-js";
-import { showToast } from "solid-notifications";
 
 import Checkbox from "@/popup/components/forms/Checkbox.jsx";
 import RadioGroup from "@/popup/components/forms/RadioGroup.jsx";
-import DownloadIcon from "@/popup/components/svg-icons/DownloadIcon.jsx";
-import UploadIcon from "@/popup/components/svg-icons/UploadIcon.jsx";
-import ActionCard from "@/popup/pages/no-feeds-yet/ActionCard.jsx";
-import { getSearchString } from "@/popup/utils/urls.js";
-
-import styles from "./Preferences.module.css";
 
 export default function Preferences() {
   const [unread, setUnread] = createSignal(true);
@@ -20,21 +13,8 @@ export default function Preferences() {
     { label: "6 hours", value: "6h" },
     { label: "1 day", value: "1d" },
   ];
-  const previousUrl = getSearchString({ previousUrl: "/preferences" });
   return (
     <>
-      <div class={styles["import-export"]}>
-        <ActionCard text="Import Feeds" href={`/import-feeds?${previousUrl}`}>
-          <UploadIcon />
-        </ActionCard>
-        <ActionCard
-          text="Export Feeds"
-          href="#"
-          onClick={() => showToast("Exporting feeds")}
-        >
-          <DownloadIcon />
-        </ActionCard>
-      </div>
       <RadioGroup
         name="frequency"
         label="Update Frequency"

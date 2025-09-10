@@ -1,7 +1,0 @@
-.import-export {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--size-5);
-  margin-block-end: var(--size-5);
-}
