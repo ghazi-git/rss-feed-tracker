@@ -16,7 +16,7 @@ export default function NoFeedsYet() {
           <FolderIcon />
         </ActionCard>
       </div>
-      <ActionCard text="Import Feeds" href="/import-feeds">
+      <ActionCard text="Import Feeds" href="/library/feeds/import">
         <UploadIcon />
       </ActionCard>
     </div>

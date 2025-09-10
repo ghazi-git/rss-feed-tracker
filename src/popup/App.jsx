@@ -80,10 +80,10 @@ function App() {
         <Route path="/library/nodes/:id/posts" component={NodePosts} />
         <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
         <Route path="/library/feeds/add" component={AddFeed} />
+        <Route path="/library/feeds/import" component={ImportFeeds} />
         <Route path="/library/feeds/:id/edit" component={EditFeed} />
         <Route path="/library/folders/add" component={AddFolder} />
         <Route path="/library/folders/:id/edit" component={EditFolder} />
-        <Route path="/import-feeds" component={ImportFeeds} />
         <Route path="/bookmarks" component={Bookmarks} />
         <Route path="/preferences" component={Preferences} />
         <Route
