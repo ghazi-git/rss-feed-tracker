@@ -18,7 +18,7 @@ export default function FolderActions(props) {
     return getSearchString({ previousUrl: currentUrl });
   });
   const editUrl = createMemo(
-    () => `/folders/${props.folderId}?${prevUrlSearchString()}`,
+    () => `/library/folders/${props.folderId}/edit?${prevUrlSearchString()}`,
   );
   const addFeedUrl = createMemo(() => {
     return `/add-feed?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;

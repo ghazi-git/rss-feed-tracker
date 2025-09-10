@@ -15,7 +15,7 @@ export default function FeedActions(props) {
   const editUrl = () => {
     const currentUrl = `${location.pathname}${location.search}`;
     const searchString = getSearchString({ previousUrl: currentUrl });
-    return `/feeds/${props.feedId}?${searchString}`;
+    return `/library/feeds/${props.feedId}/edit?${searchString}`;
   };
 
   return (
