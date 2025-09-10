@@ -14,7 +14,10 @@ export default function FolderNoChildren(props) {
       <ActionCard text="Add Feed" href={`/library/feeds/add?${previousUrl()}`}>
         <RssIcon />
       </ActionCard>
-      <ActionCard text="Add Folder" href={`/add-folder?${previousUrl()}`}>
+      <ActionCard
+        text="Add Folder"
+        href={`/library/folders/add?${previousUrl()}`}
+      >
         <FolderIcon />
       </ActionCard>
     </div>

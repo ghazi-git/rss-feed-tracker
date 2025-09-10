@@ -24,7 +24,7 @@ export default function FolderActions(props) {
     return `/library/feeds/add?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
   });
   const addFolderUrl = createMemo(() => {
-    return `/add-folder?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
+    return `/library/folders/add?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
   });
   const importFeedsUrl = createMemo(() => {
     return `/import-feeds?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;

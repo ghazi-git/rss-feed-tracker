@@ -12,7 +12,7 @@ export default function NoFeedsYet() {
         <ActionCard text="Add Feed" href="/library/feeds/add">
           <RssIcon />
         </ActionCard>
-        <ActionCard text="Add Folder" href="/add-folder">
+        <ActionCard text="Add Folder" href="/library/folders/add">
           <FolderIcon />
         </ActionCard>
       </div>

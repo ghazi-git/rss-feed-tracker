@@ -81,7 +81,7 @@ function App() {
         <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
         <Route path="/library/feeds/add" component={AddFeed} />
         <Route path="/library/feeds/:id/edit" component={EditFeed} />
-        <Route path="/add-folder" component={AddFolder} />
+        <Route path="/library/folders/add" component={AddFolder} />
         <Route path="/library/folders/:id/edit" component={EditFolder} />
         <Route path="/import-feeds" component={ImportFeeds} />
         <Route path="/bookmarks" component={Bookmarks} />
