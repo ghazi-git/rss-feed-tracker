@@ -9,7 +9,7 @@ export default function NoFeedsYet() {
   return (
     <div class={styles.container}>
       <div class={styles["add-feed-folder"]}>
-        <ActionCard text="Add Feed" href="/add-feed">
+        <ActionCard text="Add Feed" href="/library/feeds/add">
           <RssIcon />
         </ActionCard>
         <ActionCard text="Add Folder" href="/add-folder">

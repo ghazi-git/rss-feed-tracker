@@ -11,7 +11,7 @@ export default function FolderNoChildren(props) {
 
   return (
     <div class={styles["no-children"]}>
-      <ActionCard text="Add Feed" href={`/add-feed?${previousUrl()}`}>
+      <ActionCard text="Add Feed" href={`/library/feeds/add?${previousUrl()}`}>
         <RssIcon />
       </ActionCard>
       <ActionCard text="Add Folder" href={`/add-folder?${previousUrl()}`}>
