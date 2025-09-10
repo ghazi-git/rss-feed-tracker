@@ -63,13 +63,13 @@ function App() {
             const rootNode = NODES.find((node) => node.parentId === null);
             if (!rootNode) {
               // todo create a new one then redirect to the no feeds yet page
-              navigate("/no-feeds-yet", { replace: true });
+              navigate("/library/no-feeds-yet", { replace: true });
             } else {
               const rootNodeChildren = NODES.filter(
                 (node) => node.parentId === rootNode.id,
               );
               if (rootNodeChildren.length === 0) {
-                navigate("/no-feeds-yet", { replace: true });
+                navigate("/library/no-feeds-yet", { replace: true });
               } else {
                 navigate(`/library/nodes/${rootNode.id}`, { replace: true });
               }
@@ -78,7 +78,7 @@ function App() {
         />
         <Route path="/library/nodes/:id" component={Node} />
         <Route path="/library/nodes/:id/posts" component={NodePosts} />
-        <Route path="/no-feeds-yet" component={NoFeedsYet} />
+        <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
         <Route path="/add-feed" component={AddFeed} />
         <Route path="/feeds/:id" component={EditFeed} />
         <Route path="/add-folder" component={AddFolder} />
@@ -94,7 +94,7 @@ function App() {
             if (hasFeeds) {
               navigate("/library", { replace: true });
             } else {
-              navigate("/no-feeds-yet", { replace: true });
+              navigate("/library/no-feeds-yet", { replace: true });
             }
           }}
         />
