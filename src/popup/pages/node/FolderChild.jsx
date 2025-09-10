@@ -17,7 +17,7 @@ import styles from "./FolderChild.module.css";
 
 export default function FolderChild(props) {
   return (
-    <Anchor class={styles.child} href={`/home/nodes/${props.node.id}`}>
+    <Anchor class={styles.child} href={`/library/nodes/${props.node.id}`}>
       <div class={styles.icon}>
         <Show when={props.node.type === "feed"} fallback={<FolderIcon />}>
           <FeedFavicon

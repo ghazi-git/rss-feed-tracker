@@ -16,7 +16,7 @@ export default function AddFolder() {
     <>
       <PageHeader
         text="Add Folder"
-        previousUrl={searchParams.previousUrl ?? "/home"}
+        previousUrl={searchParams.previousUrl ?? "/library"}
       />
       <FolderForm
         formdata={formdata}

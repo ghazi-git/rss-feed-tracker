@@ -36,7 +36,7 @@ export default function EditFolder() {
     <>
       <PageHeader
         text="Edit Folder"
-        previousUrl={searchParams.previousUrl ?? "/home"}
+        previousUrl={searchParams.previousUrl ?? "/library"}
       />
       <FolderForm
         formdata={formdata}

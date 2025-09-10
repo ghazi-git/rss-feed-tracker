@@ -18,13 +18,13 @@ export default function AddFeed() {
     <>
       <PageHeader
         text="Add Feed"
-        previousUrl={searchParams.previousUrl ?? "/home"}
+        previousUrl={searchParams.previousUrl ?? "/library"}
       />
       <FeedForm
         onSubmit={(event) => {
           event.preventDefault();
           console.log("formdata", formdata);
-          navigate("/home");
+          navigate("/library");
         }}
         formdata={formdata}
         setFormdata={setFormdata}

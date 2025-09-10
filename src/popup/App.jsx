@@ -57,7 +57,7 @@ function App() {
       <Toaster />
       <Router root={Layout}>
         <Route
-          path="/home"
+          path="/library"
           component={() => {
             const navigate = useNavigate();
             const rootNode = NODES.find((node) => node.parentId === null);
@@ -71,13 +71,13 @@ function App() {
               if (rootNodeChildren.length === 0) {
                 navigate("/no-feeds-yet", { replace: true });
               } else {
-                navigate(`/home/nodes/${rootNode.id}`, { replace: true });
+                navigate(`/library/nodes/${rootNode.id}`, { replace: true });
               }
             }
           }}
         />
-        <Route path="/home/nodes/:id" component={Node} />
-        <Route path="/home/nodes/:id/posts" component={NodePosts} />
+        <Route path="/library/nodes/:id" component={Node} />
+        <Route path="/library/nodes/:id/posts" component={NodePosts} />
         <Route path="/no-feeds-yet" component={NoFeedsYet} />
         <Route path="/add-feed" component={AddFeed} />
         <Route path="/feeds/:id" component={EditFeed} />
@@ -92,7 +92,7 @@ function App() {
             const navigate = useNavigate();
             const hasFeeds = window.localStorage.getItem("hasFeeds");
             if (hasFeeds) {
-              navigate("/home", { replace: true });
+              navigate("/library", { replace: true });
             } else {
               navigate("/no-feeds-yet", { replace: true });
             }

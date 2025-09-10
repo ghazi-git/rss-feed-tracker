@@ -20,7 +20,7 @@ export default function Node() {
     <Show when={node()} fallback={<h2>Folder or Feed not Found</h2>}>
       <Show
         when={node().type === "folder"}
-        fallback={<Navigate href={`/home/nodes/${node().id}/posts`} />}
+        fallback={<Navigate href={`/library/nodes/${node().id}/posts`} />}
       >
         <DeleteNodeProvider>
           <PageHeaderWrapper>
@@ -29,7 +29,7 @@ export default function Node() {
               fallback={<div class={styles["previous-url-placeholder"]} />}
             >
               <BackLink
-                url={`/home/nodes/${node().parentId}`}
+                url={`/library/nodes/${node().parentId}`}
                 class={styles["previous-url"]}
               />
             </Show>
@@ -43,7 +43,7 @@ export default function Node() {
             <Show when={hasChildren()}>
               <PostsFilter
                 unreadCount={node().unreadCount}
-                pageUrl={`/home/nodes/${node().id}/posts`}
+                pageUrl={`/library/nodes/${node().id}/posts`}
                 initialFilter={null}
                 class={styles["posts-filter"]}
               />

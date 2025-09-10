@@ -67,9 +67,9 @@ export default function NodePosts() {
   };
   const previousUrl = () => {
     if (node().type === "folder") {
-      return `/home/nodes/${node().id}`;
+      return `/library/nodes/${node().id}`;
     } else {
-      return `/home/nodes/${node().parentId}`;
+      return `/library/nodes/${node().parentId}`;
     }
   };
 
@@ -88,7 +88,7 @@ export default function NodePosts() {
           <Show when={allPosts().length > 0}>
             <PostsFilter
               unreadCount={node().unreadCount}
-              pageUrl={`/home/nodes/${node().id}/posts`}
+              pageUrl={`/library/nodes/${node().id}/posts`}
               initialFilter={searchParams.unread === "true" ? "unread" : "all"}
               class={styles["posts-filter"]}
             />

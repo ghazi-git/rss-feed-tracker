@@ -18,7 +18,7 @@ export default function ImportFeeds() {
     <>
       <PageHeader
         text="Import Feeds"
-        previousUrl={searchParams.previousUrl ?? "/home"}
+        previousUrl={searchParams.previousUrl ?? "/library"}
       />
       <form
         onSubmit={(event) => {
