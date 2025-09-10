@@ -27,10 +27,26 @@ html {
   --error-color: var(--error-color-light);
 }
 
+html[data-theme="light"] input[type="file"]::file-selector-button {
+  /* stylelint-disable custom-property-pattern */
+  --_bg: var(--_bg-light);
+  --_highlight: var(--_highlight-light);
+  --_ink-shadow: var(--_ink-shadow-light);
+  /* stylelint-enable custom-property-pattern */
+}
+
 html[data-theme="dark"] {
   --brand: var(--brand-dark);
   --brand-complementary: var(--brand-complementary-dark);
   --error-color: var(--error-color-dark);
+
+  input[type="file"]::file-selector-button {
+    /* stylelint-disable custom-property-pattern */
+    --_highlight: var(--_highlight-dark);
+    --_bg: var(--_bg-dark);
+    --_ink-shadow: var(--_ink-shadow-dark);
+    /* stylelint-enable custom-property-pattern */
+  }
 }
 
 [data-theme="dark"]:root {
