@@ -1,6 +1,8 @@
 @import url("open-props/style");
 @import url("open-props/normalize");
 @import url("open-props/buttons");
+@import url("open-props/theme.light.switch.min.css");
+@import url("open-props/theme.dark.switch.min.css");
 @import url("solid-notifications/index.css");
 
 html {
@@ -25,22 +27,20 @@ html {
   --error-color: var(--error-color-light);
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    --brand: var(--brand-dark);
-    --brand-complementary: var(--brand-complementary-dark);
-    --error-color: var(--error-color-dark);
-  }
+html[data-theme="dark"] {
+  --brand: var(--brand-dark);
+  --brand-complementary: var(--brand-complementary-dark);
+  --error-color: var(--error-color-dark);
+}
 
-  :root {
-    /* todo maybe follow the styling guide of the notifications package after
-        adding explicit light/dark theme switch
-        https://solid-notifications.vercel.app/guides#customization-via-css-variables */
-    --sn-toast-text-color: var(--text-1);
-    --sn-toast-bg-color: var(--surface-2);
-    --sn-dismiss-btn-color: #bfc5cf;
-    --sn-dismiss-btn-hover-color: #f9fafb;
-  }
+[data-theme="dark"]:root {
+  /* todo maybe follow the styling guide of the notifications package after
+      adding explicit light/dark theme switch
+      https://solid-notifications.vercel.app/guides#customization-via-css-variables */
+  --sn-toast-text-color: var(--text-1);
+  --sn-toast-bg-color: var(--surface-2);
+  --sn-dismiss-btn-color: #bfc5cf;
+  --sn-dismiss-btn-hover-color: #f9fafb;
 }
 
 body {

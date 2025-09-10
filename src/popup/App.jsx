@@ -1,4 +1,5 @@
 import { Route, Router, useNavigate } from "@solidjs/router";
+import { onMount } from "solid-js";
 import { Toaster, ToastProvider } from "solid-notifications";
 
 import Body from "@/popup/components/Body.jsx";
@@ -15,6 +16,11 @@ import Node from "@/popup/pages/node/index.jsx";
 import NodePosts from "@/popup/pages/node-posts/index.jsx";
 import Preferences from "@/popup/pages/Preferences.jsx";
 import { NODES } from "@/popup/utils/dummy-data.js";
+import {
+  detectSystemTheme,
+  enableTheme,
+  uiTheme,
+} from "@/popup/utils/ui-theme.jsx";
 
 function Layout(props) {
   return (
@@ -27,6 +33,19 @@ function Layout(props) {
 }
 
 function App() {
+  const theme = uiTheme() ?? detectSystemTheme();
+  enableTheme(theme);
+  onMount(() => {
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", ({ matches: isDark }) => {
+        if (!uiTheme()) {
+          const systemTheme = isDark ? "dark" : "light";
+          enableTheme(systemTheme);
+        }
+      });
+  });
+
   return (
     <ToastProvider
       limit={1}
