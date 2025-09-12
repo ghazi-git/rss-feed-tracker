@@ -8,17 +8,12 @@ import styles from "./RadioGroup.module.css";
 export default function RadioGroup(props) {
   const propsWithId = setId(props);
   const options = () => {
-    return props.options.map(({ label, value }, index) => {
-      const updatedOption = {
+    return propsWithId.options.map(({ label, value }, index) => {
+      return {
         label,
         value,
         id: `id_${propsWithId.name}_${index}`,
       };
-      if (value === propsWithId.value) {
-        return { label, value, checked: "checked" };
-      } else {
-        return updatedOption;
-      }
     });
   };
 
@@ -34,7 +29,7 @@ export default function RadioGroup(props) {
         aria-labelledby={propsWithId.id}
       >
         <For each={options()}>
-          {({ label, id, ...rest }) => {
+          {({ label, value, id }) => {
             return (
               <label for={id}>
                 <input
@@ -42,7 +37,8 @@ export default function RadioGroup(props) {
                   name={propsWithId.name}
                   id={id}
                   onChange={propsWithId.onChange}
-                  {...rest}
+                  value={value}
+                  checked={value === propsWithId.value ? "checked" : undefined}
                 />
                 {label}
               </label>
