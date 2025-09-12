@@ -12,7 +12,7 @@ import {
 
 export default function Preferences() {
   const [unread, setUnread] = createSignal(true);
-  const [frequency, setFrequency] = createSignal("2h");
+  const [frequency, setFrequency] = createSignal(2 * 60 * 60 * 1000);
   const frequencies = [
     { label: "1 hour", value: 60 * 60 * 1000 },
     { label: "2 hours", value: 2 * 60 * 60 * 1000 },
@@ -45,7 +45,7 @@ export default function Preferences() {
         label="Update Frequency"
         options={frequencies}
         value={frequency()}
-        onChange={(e) => setFrequency(e.target.value)}
+        onChange={(e) => setFrequency(parseInt(e.target.value))}
       />
       <Checkbox
         name="unread"
