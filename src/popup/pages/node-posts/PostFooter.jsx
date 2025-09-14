@@ -1,6 +1,6 @@
-import { singleLineEllipsis } from "@/popup/directives/ellipsis.js";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle.jsx";
+import FeedName from "@/popup/pages/node-posts/FeedName.jsx";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle.jsx";
 import { hideLinkPreview } from "@/popup/store/link-preview";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
@@ -16,13 +16,7 @@ export default function PostFooter(props) {
           name={props.post.feed.name}
         />
       </div>
-      <div
-        class={styles["feed-name"]}
-        dir="auto"
-        use:singleLineEllipsis={props.post.feed.name}
-      >
-        {props.post.feed.name}
-      </div>
+      <FeedName name={props.post.feed.name} />
       <span class={styles.separator}>◆</span>
       <div
         class={styles["published-at"]}

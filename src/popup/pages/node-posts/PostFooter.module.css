@@ -12,13 +12,6 @@
   font-size: var(--font-size-00);
 }
 
-.feed-name {
-  color: var(--text-2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .separator {
   color: var(--text-2);
   font-size: var(--font-size-00);
