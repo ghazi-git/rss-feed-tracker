@@ -1,4 +1,4 @@
-import { singleLineEllipsis } from "@/popup/directives/ellipsis.js";
+import { singleLineEllipsis } from "@/popup/directives/ellipsis";
 
 import styles from "./FeedName.module.css";
 

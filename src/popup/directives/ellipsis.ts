@@ -1,4 +1,4 @@
-import { onMount } from "solid-js";
+import { Accessor, onMount } from "solid-js";
 
 /**
  * Adds an ellipsis when the text is too long to be shown on a single line
@@ -7,7 +7,10 @@ import { onMount } from "solid-js";
  * width/max-width or use flexbox to help.
  * https://leonardofaria.net/2020/07/18/using-flexbox-and-text-ellipsis-together
  */
-export function singleLineEllipsis(htmlElement, fullText) {
+export function singleLineEllipsis(
+  htmlElement: HTMLElement,
+  fullText: Accessor<string>,
+) {
   htmlElement.style.overflow = "hidden";
   htmlElement.style.textOverflow = "ellipsis";
   htmlElement.style.whiteSpace = "nowrap";
