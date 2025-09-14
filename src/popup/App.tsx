@@ -1,5 +1,5 @@
-import { Route, Router, useNavigate } from "@solidjs/router";
-import { onMount } from "solid-js";
+import { Navigate, Route, Router } from "@solidjs/router";
+import { onMount, ParentComponent } from "solid-js";
 import { Toaster, ToastProvider } from "solid-notifications";
 
 import Body from "@/popup/components/Body.jsx";
@@ -22,7 +22,7 @@ import {
   uiTheme,
 } from "@/popup/utils/ui-theme.jsx";
 
-function Layout(props) {
+const Layout: ParentComponent = (props) => {
   return (
     <>
       <Header />
@@ -30,7 +30,7 @@ function Layout(props) {
       <LinkPreview />
     </>
   );
-}
+};
 
 function App() {
   const theme = uiTheme() ?? detectSystemTheme();
@@ -59,19 +59,18 @@ function App() {
         <Route
           path="/library"
           component={() => {
-            const navigate = useNavigate();
             const rootNode = NODES.find((node) => node.parentId === null);
             if (!rootNode) {
               // todo create a new one then redirect to the no feeds yet page
-              navigate("/library/no-feeds-yet", { replace: true });
+              return <Navigate href="/library/no-feeds-yet" />;
             } else {
               const rootNodeChildren = NODES.filter(
                 (node) => node.parentId === rootNode.id,
               );
               if (rootNodeChildren.length === 0) {
-                navigate("/library/no-feeds-yet", { replace: true });
+                return <Navigate href="/library/no-feeds-yet" />;
               } else {
-                navigate(`/library/nodes/${rootNode.id}`, { replace: true });
+                return <Navigate href={`/library/nodes/${rootNode.id}`} />;
               }
             }
           }}
@@ -89,12 +88,11 @@ function App() {
         <Route
           path="*"
           component={() => {
-            const navigate = useNavigate();
             const hasFeeds = window.localStorage.getItem("hasFeeds");
             if (hasFeeds) {
-              navigate("/library", { replace: true });
+              return <Navigate href="/library" />;
             } else {
-              navigate("/library/no-feeds-yet", { replace: true });
+              return <Navigate href="/library/no-feeds-yet" />;
             }
           }}
         />
