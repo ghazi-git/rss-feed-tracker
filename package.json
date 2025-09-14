@@ -28,6 +28,7 @@
     "stylelint": "16.23.1",
     "stylelint-config-standard": "39.0.0",
     "stylelint-plugin-logical-css": "1.2.3",
+    "typescript": "5.9.2",
     "vite": "7.1.1",
     "vite-plugin-solid": "2.11.8",
     "vite-plugin-zip-pack": "1.2.4"

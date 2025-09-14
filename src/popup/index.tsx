@@ -7,4 +7,8 @@ import App from "./App.jsx";
 
 const root = document.getElementById("root");
 
-render(() => <App />, root);
+if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
+  throw new Error("Root element not found.");
+}
+
+render(() => <App />, root!);
