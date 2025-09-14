@@ -1,4 +1,4 @@
-import { preview } from "@/popup/store/link-preview.js";
+import { preview } from "@/popup/store/link-preview";
 
 import styles from "./LinkPreview.module.css";
 

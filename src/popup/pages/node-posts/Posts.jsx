@@ -2,10 +2,7 @@ import { A } from "@solidjs/router";
 import { createSignal, For, onMount } from "solid-js";
 
 import PostFooter from "@/popup/pages/node-posts/PostFooter.jsx";
-import {
-  hideLinkPreview,
-  showLinkPreview,
-} from "@/popup/store/link-preview.js";
+import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";
 
 import styles from "./Posts.module.css";
 

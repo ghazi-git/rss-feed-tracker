@@ -5,9 +5,9 @@ const [preview, setPreview] = createStore({
   show: false,
 });
 
-let hideTimerId;
+let hideTimerId: number;
 
-function showLinkPreview(url) {
+function showLinkPreview(url: string) {
   if (hideTimerId) clearTimeout(hideTimerId);
 
   setPreview({ url, show: true });
