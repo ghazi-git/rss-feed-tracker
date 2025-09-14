@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 
-import ActionButton from "@/popup/components/buttons/ActionButton.jsx";
-import ButtonContainer from "@/popup/components/buttons/ButtonContainer.jsx";
+import ActionButton from "@/popup/components/buttons/ActionButton";
+import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import InputField from "@/popup/components/forms/Input.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
 import { NODES } from "@/popup/utils/dummy-data";

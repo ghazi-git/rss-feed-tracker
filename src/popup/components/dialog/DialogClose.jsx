@@ -1,4 +1,4 @@
-import UnstyledButton from "@/popup/components/buttons/UnstyledButton.jsx";
+import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDialogContext } from "@/popup/components/dialog/context.js";
 import CloseIcon from "@/popup/components/svg-icons/CloseIcon.jsx";
 

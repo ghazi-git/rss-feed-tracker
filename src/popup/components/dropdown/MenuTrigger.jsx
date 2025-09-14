@@ -1,6 +1,6 @@
 import { mergeProps, splitProps } from "solid-js";
 
-import UnstyledButton from "@/popup/components/buttons/UnstyledButton.jsx";
+import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
 
 import styles from "./MenuTrigger.module.css";

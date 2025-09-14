@@ -1,8 +1,8 @@
 import { showToast } from "solid-notifications";
 
-import ActionButton from "@/popup/components/buttons/ActionButton.jsx";
-import ButtonContainer from "@/popup/components/buttons/ButtonContainer.jsx";
-import UnstyledButton from "@/popup/components/buttons/UnstyledButton.jsx";
+import ActionButton from "@/popup/components/buttons/ActionButton";
+import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
+import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context.jsx";
 import Dialog from "@/popup/components/dialog/Dialog.jsx";
 import DialogClose from "@/popup/components/dialog/DialogClose.jsx";
