@@ -20,7 +20,7 @@ import {
   detectSystemTheme,
   enableTheme,
   uiTheme,
-} from "@/popup/utils/ui-theme.jsx";
+} from "@/popup/utils/ui-theme";
 
 const Layout: ParentComponent = (props) => {
   return (

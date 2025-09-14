@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 
 import PageHeader from "@/popup/components/page-header/PageHeader.jsx";
 import FeedForm from "@/popup/pages/add-edit-feed/FeedForm.jsx";
-import { NODES } from "@/popup/utils/dummy-data.js";
+import { NODES } from "@/popup/utils/dummy-data";
 
 export default function EditFeed() {
   const navigate = useNavigate();

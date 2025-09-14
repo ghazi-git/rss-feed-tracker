@@ -4,7 +4,7 @@ import ActionButton from "@/popup/components/buttons/ActionButton.jsx";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer.jsx";
 import InputField from "@/popup/components/forms/Input.jsx";
 import SelectField from "@/popup/components/forms/Select.jsx";
-import { NODES } from "@/popup/utils/dummy-data.js";
+import { NODES } from "@/popup/utils/dummy-data";
 
 export default function FolderForm(props) {
   return (

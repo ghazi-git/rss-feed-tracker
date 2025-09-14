@@ -3,7 +3,7 @@ import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle.jsx";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle.jsx";
 import { hideLinkPreview } from "@/popup/store/link-preview.js";
-import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes.js";
+import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
 
 import styles from "./PostFooter.module.css";
 

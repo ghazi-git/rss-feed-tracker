@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 
 import FolderChild from "@/popup/pages/node/FolderChild.jsx";
 import FolderNoChildren from "@/popup/pages/node/FolderNoChildren.jsx";
-import { NODES } from "@/popup/utils/dummy-data.js";
+import { NODES } from "@/popup/utils/dummy-data";
 
 import styles from "./FolderChildren.module.css";
 

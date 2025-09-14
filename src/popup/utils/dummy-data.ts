@@ -1,5 +1,5 @@
 // with a root node that has no parentId
-export const NODES = [
+export const NODES: Node[] = [
   {
     type: "folder",
     id: 1,
@@ -7,7 +7,7 @@ export const NODES = [
     parentId: null,
     createdAt: 1756325534722,
     unreadCount: 16,
-    sortOrder: null,
+    sortOrder: 10_000,
     feed: null,
   },
   {
@@ -169,7 +169,7 @@ export const NODES = [
   },
 ];
 
-export const POSTS = [
+export const POSTS: Post[] = [
   {
     id: 1,
     title: "Update to Jira Cloud migration tools availability",
@@ -549,3 +549,45 @@ export const POSTS = [
     feedId: 13,
   },
 ];
+
+interface Folder {
+  type: "folder";
+  id: number;
+  name: string;
+  parentId: number | null;
+  createdAt: number;
+  unreadCount: number;
+  sortOrder: number;
+  feed: null;
+}
+
+interface Feed {
+  type: "feed";
+  id: number;
+  name: string;
+  parentId: number;
+  createdAt: number;
+  unreadCount: number;
+  sortOrder: number;
+  feed: {
+    favicon: string | null;
+    url: string;
+    updateFrequency: number;
+    lastUpdatedAt: number;
+    lastUpdateFailed: boolean;
+  };
+}
+
+type Node = Folder | Feed;
+
+interface Post {
+  id: number;
+  title: string;
+  guid: string;
+  url: string;
+  publishedAt: number;
+  receivedAt: number;
+  unread: boolean;
+  bookmarked: boolean;
+  feedId: number;
+}

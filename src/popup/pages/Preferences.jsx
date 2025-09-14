@@ -8,7 +8,7 @@ import {
   setUITheme,
   storeTheme,
   uiTheme,
-} from "@/popup/utils/ui-theme.jsx";
+} from "@/popup/utils/ui-theme";
 
 export default function Preferences() {
   const [unread, setUnread] = createSignal(true);

@@ -5,7 +5,7 @@ import { showToast } from "solid-notifications";
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context.jsx";
 import MenuItem from "@/popup/components/dropdown/MenuItem.jsx";
 import Separator from "@/popup/components/dropdown/Separator.jsx";
-import { getSearchString } from "@/popup/utils/urls.js";
+import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./FolderActions.module.css";
 

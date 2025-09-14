@@ -6,7 +6,7 @@ import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import styles from "@/popup/pages/node-posts/index.module.css";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";
-import { NODES, POSTS } from "@/popup/utils/dummy-data.js";
+import { NODES, POSTS } from "@/popup/utils/dummy-data";
 
 export default function Bookmarks() {
   const [searchParams] = useSearchParams();

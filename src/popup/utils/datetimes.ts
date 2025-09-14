@@ -1,4 +1,4 @@
-export function formatTimestamp(timestampMs) {
+export function formatTimestamp(timestampMs: number) {
   const dt = new Date(timestampMs);
   const year = dt.getFullYear();
   const month = `${dt.getMonth() + 1}`.padStart(2, "0");
@@ -11,7 +11,7 @@ export function formatTimestamp(timestampMs) {
   return `${year}-${month}-${day} ${hour}:${minute} ${amOrPm}`;
 }
 
-export function humanizeTimestamp(timestampMs) {
+export function humanizeTimestamp(timestampMs: number) {
   const delta = Date.now() - timestampMs;
   const absDelta = Math.abs(delta);
 

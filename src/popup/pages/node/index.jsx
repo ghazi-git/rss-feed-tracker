@@ -9,7 +9,7 @@ import PageTitleButton from "@/popup/components/page-header/PageTitleButton.jsx"
 import FolderChildren from "@/popup/pages/node/FolderChildren.jsx";
 import styles from "@/popup/pages/node/index.module.css";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
-import { NODES } from "@/popup/utils/dummy-data.js";
+import { NODES } from "@/popup/utils/dummy-data";
 
 export default function Node() {
   const params = useParams();

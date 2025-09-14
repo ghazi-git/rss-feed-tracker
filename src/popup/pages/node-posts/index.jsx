@@ -9,7 +9,7 @@ import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton.jsx";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import Posts from "@/popup/pages/node-posts/Posts.jsx";
-import { NODES, POSTS } from "@/popup/utils/dummy-data.js";
+import { NODES, POSTS } from "@/popup/utils/dummy-data";
 
 import styles from "./index.module.css";
 
