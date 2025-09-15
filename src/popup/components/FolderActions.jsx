@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 import { showToast } from "solid-notifications";
 
-import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context.jsx";
+import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
 import MenuItem from "@/popup/components/dropdown/MenuItem.jsx";
 import Separator from "@/popup/components/dropdown/Separator.jsx";
 import { getSearchString } from "@/popup/utils/urls";

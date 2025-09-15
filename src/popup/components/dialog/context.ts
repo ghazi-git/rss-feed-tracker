@@ -1,6 +1,6 @@
 import { createContext, useContext } from "solid-js";
 
-export const DialogContext = createContext();
+export const DialogContext = createContext<{ close: CloseDialogType }>();
 
 export function useDialogContext() {
   const context = useContext(DialogContext);
@@ -10,3 +10,5 @@ export function useDialogContext() {
 
   return context;
 }
+
+export type CloseDialogType = (returnValue?: string) => void;

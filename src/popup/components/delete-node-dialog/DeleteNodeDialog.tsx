@@ -3,10 +3,10 @@ import { showToast } from "solid-notifications";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
-import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context.jsx";
-import Dialog from "@/popup/components/dialog/Dialog.jsx";
-import DialogClose from "@/popup/components/dialog/DialogClose.jsx";
-import DialogTitle from "@/popup/components/dialog/DialogTitle.jsx";
+import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
+import Dialog from "@/popup/components/dialog/Dialog";
+import DialogClose from "@/popup/components/dialog/DialogClose";
+import DialogTitle from "@/popup/components/dialog/DialogTitle";
 
 import styles from "./DeleteNodeDialog.module.css";
 

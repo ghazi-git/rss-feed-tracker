@@ -1,16 +1,21 @@
 import { createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
+import { FlowProps } from "solid-js/types/render/component";
 
-const DeleteNodeContext = createContext();
+const DeleteNodeContext = createContext<{
+  store: DeleteNodeStore;
+  openModal: OpenModalType;
+  closeModal: CloseModalType;
+}>();
 
-export function DeleteNodeProvider(props) {
-  const [store, setStore] = createStore({
+export function DeleteNodeProvider(props: FlowProps) {
+  const [store, setStore] = createStore<DeleteNodeStore>({
     open: false,
     nodeId: null,
     modalTitle: "",
     modalText: "",
   });
-  const openModal = (id, title, text) => {
+  const openModal: OpenModalType = (id, title, text) => {
     setStore({
       open: true,
       nodeId: id,
@@ -18,7 +23,7 @@ export function DeleteNodeProvider(props) {
       modalText: text,
     });
   };
-  const closeModal = () => {
+  const closeModal: CloseModalType = () => {
     setStore("open", false);
   };
 
@@ -36,3 +41,18 @@ export function useDeleteNodeContext() {
   }
   return context;
 }
+
+interface DeleteNodeStore {
+  open: boolean;
+  nodeId: number | null;
+  modalTitle: string;
+  modalText: string;
+}
+
+type OpenModalType = (
+  id: number,
+  modalTitle: string,
+  modalText: string,
+) => void;
+
+type CloseModalType = () => void;

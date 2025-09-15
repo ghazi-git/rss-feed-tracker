@@ -1,14 +1,15 @@
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
-import { useDialogContext } from "@/popup/components/dialog/context.js";
+import { useDialogContext } from "@/popup/components/dialog/context";
 import CloseIcon from "@/popup/components/svg-icons/CloseIcon.jsx";
 
 import styles from "./DialogClose.module.css";
+import { ParentProps } from "solid-js";
 
-export default function DialogClose(props) {
+export default function DialogClose(props: ParentProps) {
   const { close } = useDialogContext();
 
   return (
-    <span onClick={close}>
+    <span onClick={() => close()}>
       {props.children ?? (
         <UnstyledButton class={styles.close}>
           <CloseIcon />

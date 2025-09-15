@@ -1,8 +1,8 @@
 import { useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
-import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context.jsx";
-import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog.jsx";
+import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
+import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
 import NoPosts from "@/popup/components/NoPosts.jsx";
 import BackLink from "@/popup/components/page-header/BackLink.jsx";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.jsx";
