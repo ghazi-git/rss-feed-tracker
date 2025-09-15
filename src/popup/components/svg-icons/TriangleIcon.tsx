@@ -1,8 +1,9 @@
 import { splitProps } from "solid-js";
 
 import styles from "./TriangleIcon.module.css";
+import { SVGProps } from "@/popup/components/svg-icons/types";
 
-export default function TriangleIcon(props) {
+export default function TriangleIcon(props: TriangleIconProps) {
   const [extra, rest] = splitProps(props, ["class"]);
   const orientation = () => props.orientation ?? "down";
 
@@ -23,3 +24,4 @@ export default function TriangleIcon(props) {
     </svg>
   );
 }
+type TriangleIconProps = SVGProps & { orientation?: "up" | "down" };

@@ -1,8 +1,8 @@
 import { Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
-import BookmarkedIcon from "@/popup/components/svg-icons/BookmarkedIcon.jsx";
-import BookmarkIcon from "@/popup/components/svg-icons/BookmarkIcon.jsx";
+import BookmarkedIcon from "@/popup/components/svg-icons/BookmarkedIcon";
+import BookmarkIcon from "@/popup/components/svg-icons/BookmarkIcon";
 
 import styles from "./BookmarkToggle.module.css";
 

@@ -1,4 +1,6 @@
-export default function CloseIcon(props) {
+import { SVGProps } from "@/popup/components/svg-icons/types";
+
+export default function CloseIcon(props: SVGProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

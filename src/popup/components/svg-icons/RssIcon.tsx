@@ -1,4 +1,6 @@
-export default function ThreeDotIcon(props) {
+import { SVGProps } from "@/popup/components/svg-icons/types";
+
+export default function RssIcon(props: SVGProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,8 +13,9 @@ export default function ThreeDotIcon(props) {
       <path
         stroke-linecap="round"
         stroke-linejoin="round"
-        d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+        d="M12.75 19.5v-.75a7.5 7.5 0 0 0-7.5-7.5H4.5m0-6.75h.75c7.87 0 14.25 6.38 14.25 14.25v.75"
       />
+      <circle cx="5.25" cy="18.75" r="0.75" />
     </svg>
   );
 }

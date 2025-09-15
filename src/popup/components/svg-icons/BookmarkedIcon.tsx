@@ -1,4 +1,6 @@
-export default function BookmarkedIcon(props) {
+import { SVGProps } from "@/popup/components/svg-icons/types";
+
+export default function BookmarkedIcon(props: SVGProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

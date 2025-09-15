@@ -1,6 +1,6 @@
-import FolderIcon from "@/popup/components/svg-icons/FolderIcon.jsx";
-import RssIcon from "@/popup/components/svg-icons/RssIcon.jsx";
-import UploadIcon from "@/popup/components/svg-icons/UploadIcon.jsx";
+import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
+import RssIcon from "@/popup/components/svg-icons/RssIcon";
+import UploadIcon from "@/popup/components/svg-icons/UploadIcon";
 import ActionCard from "@/popup/pages/no-feeds-yet/ActionCard.jsx";
 
 import styles from "./index.module.css";

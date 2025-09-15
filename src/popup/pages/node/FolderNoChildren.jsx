@@ -1,5 +1,5 @@
-import FolderIcon from "@/popup/components/svg-icons/FolderIcon.jsx";
-import RssIcon from "@/popup/components/svg-icons/RssIcon.jsx";
+import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
+import RssIcon from "@/popup/components/svg-icons/RssIcon";
 import ActionCard from "@/popup/pages/no-feeds-yet/ActionCard.jsx";
 import { getSearchString } from "@/popup/utils/urls";
 

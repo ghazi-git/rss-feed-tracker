@@ -1,4 +1,6 @@
-export default function PreviousIcon(props) {
+import { SVGProps } from "@/popup/components/svg-icons/types";
+
+export default function PreviousIcon(props: SVGProps) {
   return (
     <svg
       viewBox="0 0 90 74"
