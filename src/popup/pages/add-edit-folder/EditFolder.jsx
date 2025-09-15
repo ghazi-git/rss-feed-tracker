@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from "@solidjs/router";
 import { createEffect, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import PageHeader from "@/popup/components/page-header/PageHeader.jsx";
+import PageHeader from "@/popup/components/page-header/PageHeader";
 import FolderForm, {
   getParentOptions,
 } from "@/popup/pages/add-edit-folder/FolderForm.jsx";

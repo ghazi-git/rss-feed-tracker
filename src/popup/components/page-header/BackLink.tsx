@@ -3,7 +3,7 @@ import PreviousIcon from "@/popup/components/svg-icons/PreviousIcon";
 
 import styles from "./BackLink.module.css";
 
-export default function BackLink(props) {
+export default function BackLink(props: BackLinkProps) {
   return (
     <Anchor
       href={props.url}
@@ -12,4 +12,9 @@ export default function BackLink(props) {
       <PreviousIcon />
     </Anchor>
   );
+}
+
+interface BackLinkProps {
+  url: string;
+  class?: string;
 }

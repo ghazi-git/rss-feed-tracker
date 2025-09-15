@@ -3,9 +3,9 @@ import { Show } from "solid-js";
 
 import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
 import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
-import BackLink from "@/popup/components/page-header/BackLink.jsx";
-import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.jsx";
-import PageTitleButton from "@/popup/components/page-header/PageTitleButton.jsx";
+import BackLink from "@/popup/components/page-header/BackLink";
+import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
+import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
 import FolderChildren from "@/popup/pages/node/FolderChildren.jsx";
 import styles from "@/popup/pages/node/index.module.css";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";

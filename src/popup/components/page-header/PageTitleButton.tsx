@@ -6,11 +6,11 @@ import MenuStateIndicator from "@/popup/components/dropdown/MenuStateIndicator";
 import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
 import FeedActions from "@/popup/components/FeedActions.jsx";
 import FolderActions from "@/popup/components/FolderActions.jsx";
-import PageTitle from "@/popup/components/page-header/PageTitle.jsx";
+import PageTitle from "@/popup/components/page-header/PageTitle";
 
 import styles from "./PageTitleButton.module.css";
 
-export default function PageTitleButton(props) {
+export default function PageTitleButton(props: PageTitleButtonProps) {
   return (
     <Dropdown placement="bottom-start">
       <MenuTrigger class={styles["page-title-button"]}>
@@ -35,4 +35,12 @@ export default function PageTitleButton(props) {
       </Menu>
     </Dropdown>
   );
+}
+
+interface PageTitleButtonProps {
+  title: string;
+  isRoot: boolean;
+  nodeType: "folder" | "feed";
+  nodeId: number;
+  nodeName: string;
 }
