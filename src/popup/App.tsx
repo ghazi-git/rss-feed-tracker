@@ -10,7 +10,7 @@ import EditFeed from "@/popup/pages/add-edit-feed/EditFeed.jsx";
 import AddFolder from "@/popup/pages/add-edit-folder/AddFolder.jsx";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder.jsx";
 import Bookmarks from "@/popup/pages/Bookmarks";
-import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
+import ImportFeeds from "@/popup/pages/import-feeds";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
 import Node from "@/popup/pages/node/index.jsx";
 import NodePosts from "@/popup/pages/node-posts/index.jsx";

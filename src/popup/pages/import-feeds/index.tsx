@@ -9,10 +9,13 @@ import PageHeader from "@/popup/components/page-header/PageHeader";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.jsx";
 
 export default function ImportFeeds() {
-  const [searchParams] = useSearchParams();
-  const [formdata, setFormdata] = createStore({
-    file: "",
-    parent: searchParams.parentFolderId || null,
+  const [searchParams] = useSearchParams<{
+    previousUrl?: string;
+    parentFolderId?: string;
+  }>();
+  const [formdata, setFormdata] = createStore<ImportFormData>({
+    file: null,
+    parent: parseInt(searchParams.parentFolderId ?? "") || null,
   });
   return (
     <>
@@ -30,16 +33,16 @@ export default function ImportFeeds() {
           type="file"
           name="file"
           label="OPML File"
-          required="required"
+          required={true}
           accept=".xml"
-          onChange={(e) => setFormdata("file", e.target.files[0])}
+          onChange={(e) => setFormdata("file", e.target.files?.item(0) ?? null)}
         />
         <SelectField
           name="parent"
           label="Parent Folder"
           options={getParentOptions()}
-          value={parseInt(formdata.parent)}
-          onChange={(e) => setFormdata("parent", e.target.value)}
+          value={formdata.parent ?? undefined}
+          onChange={(e) => setFormdata("parent", parseInt(e.target.value))}
         />
         <ButtonContainer>
           <ActionButton type="submit">Save</ActionButton>
@@ -47,4 +50,9 @@ export default function ImportFeeds() {
       </form>
     </>
   );
+}
+
+interface ImportFormData {
+  file: File | null;
+  parent: number | null;
 }
