@@ -16,7 +16,7 @@ export default function Bookmarks() {
       const n = NODES.find((nd) => nd.id === post.feedId);
       return {
         ...post,
-        feed: { name: n.name, favicon: n.feed.favicon },
+        feed: { name: n?.name, favicon: n?.feed?.favicon },
       };
     });
     posts.sort((p1, p2) => p2.publishedAt - p1.publishedAt);

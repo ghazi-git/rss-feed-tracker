@@ -5,7 +5,6 @@ import RadioGroup from "@/popup/components/forms/RadioGroup";
 import {
   detectSystemTheme,
   enableTheme,
-  setUITheme,
   storeTheme,
   uiTheme,
 } from "@/popup/utils/ui-theme";
@@ -21,7 +20,7 @@ export default function Preferences() {
     { label: "1 day", value: 24 * 60 * 60 * 1000 },
   ];
   const themes = [
-    { label: "System", value: null },
+    { label: "System", value: "" },
     { label: "Light", value: "light" },
     { label: "Dark", value: "dark" },
   ];
@@ -31,12 +30,11 @@ export default function Preferences() {
         name="theme"
         label="Theme Switcher"
         options={themes}
-        value={uiTheme()}
+        value={uiTheme() ?? ""}
         onChange={(e) => {
-          const newTheme = e.target.value || null;
-          setUITheme(newTheme);
+          const newTheme = e.target.value;
           storeTheme(newTheme);
-          const theme = newTheme ?? detectSystemTheme();
+          const theme = newTheme || detectSystemTheme();
           enableTheme(theme);
         }}
       />
@@ -50,8 +48,8 @@ export default function Preferences() {
       <Checkbox
         name="unread"
         label="Track Unread Items"
-        value={unread()}
-        onChange={(e) => setUnread(e.target.value)}
+        checked={unread()}
+        onChange={() => setUnread((prev) => !prev)}
       />
     </>
   );

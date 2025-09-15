@@ -9,12 +9,12 @@ import AddFeed from "@/popup/pages/add-edit-feed/AddFeed.jsx";
 import EditFeed from "@/popup/pages/add-edit-feed/EditFeed.jsx";
 import AddFolder from "@/popup/pages/add-edit-folder/AddFolder.jsx";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder.jsx";
-import Bookmarks from "@/popup/pages/Bookmarks.jsx";
+import Bookmarks from "@/popup/pages/Bookmarks";
 import ImportFeeds from "@/popup/pages/import-feeds/index.jsx";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
 import Node from "@/popup/pages/node/index.jsx";
 import NodePosts from "@/popup/pages/node-posts/index.jsx";
-import Preferences from "@/popup/pages/Preferences.jsx";
+import Preferences from "@/popup/pages/Preferences";
 import { NODES } from "@/popup/utils/dummy-data.js";
 import {
   detectSystemTheme,
