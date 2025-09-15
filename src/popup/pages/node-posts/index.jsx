@@ -3,7 +3,7 @@ import { createMemo, Show } from "solid-js";
 
 import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
 import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
-import NoPosts from "@/popup/components/NoPosts.jsx";
+import NoPosts from "@/popup/components/NoPosts";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";

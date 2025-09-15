@@ -1,4 +1,4 @@
-import Anchor from "@/popup/components/Anchor.jsx";
+import Anchor from "@/popup/components/Anchor";
 
 import styles from "./ActionCard.module.css";
 

@@ -9,7 +9,7 @@ import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./FolderActions.module.css";
 
-export default function FolderActions(props) {
+export default function FolderActions(props: FolderActionsProps) {
   const { openModal } = useDeleteNodeContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,4 +62,10 @@ export default function FolderActions(props) {
       </Show>
     </>
   );
+}
+
+interface FolderActionsProps {
+  isRoot: boolean;
+  folderId: number;
+  folderName: string;
 }

@@ -1,14 +1,15 @@
 import { A } from "@solidjs/router";
-import { splitProps } from "solid-js";
+import { JSX, splitProps } from "solid-js";
 
 import styles from "./Anchor.module.css";
+import { AnchorProps } from "@solidjs/router/dist/components";
 
 /**
  * The main idea for this Anchor tag is to enable only left click. Other ways
  * of opening links (right-click, middle click, shift/ctrl+click) do not make
  * sense in a browser extension popup. So, they are disabled.
  */
-export default function Anchor(props) {
+export default function Anchor(props: AnchorTagProps) {
   const [extra, rest] = splitProps(props, ["class", "onClick"]);
   return (
     <A
@@ -22,7 +23,7 @@ export default function Anchor(props) {
           !event.metaKey
         ) {
           if (extra.onClick) {
-            extra.onClick();
+            extra.onClick(event);
           }
           return;
         }
@@ -36,3 +37,7 @@ export default function Anchor(props) {
     />
   );
 }
+
+type AnchorTagProps = AnchorProps & {
+  onClick?: JSX.EventHandler<HTMLAnchorElement, MouseEvent>;
+};

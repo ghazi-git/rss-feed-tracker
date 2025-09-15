@@ -8,7 +8,7 @@ import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./FeedActions.module.css";
 
-export default function FeedActions(props) {
+export default function FeedActions(props: FeedActionsProps) {
   const { openModal } = useDeleteNodeContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,4 +34,9 @@ export default function FeedActions(props) {
       </MenuItem>
     </>
   );
+}
+
+interface FeedActionsProps {
+  feedId: number;
+  feedName: string;
 }

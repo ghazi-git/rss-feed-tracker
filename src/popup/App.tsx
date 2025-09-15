@@ -2,9 +2,9 @@ import { Navigate, Route, Router } from "@solidjs/router";
 import { onMount, ParentComponent } from "solid-js";
 import { Toaster, ToastProvider } from "solid-notifications";
 
-import Body from "@/popup/components/Body.jsx";
-import Header from "@/popup/components/Header.jsx";
-import LinkPreview from "@/popup/components/LinkPreview.jsx";
+import Body from "@/popup/components/Body";
+import Header from "@/popup/components/Header";
+import LinkPreview from "@/popup/components/LinkPreview";
 import AddFeed from "@/popup/pages/add-edit-feed/AddFeed.jsx";
 import EditFeed from "@/popup/pages/add-edit-feed/EditFeed.jsx";
 import AddFolder from "@/popup/pages/add-edit-folder/AddFolder.jsx";

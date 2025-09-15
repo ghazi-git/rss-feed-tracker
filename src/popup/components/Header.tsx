@@ -1,7 +1,7 @@
 import { useLocation } from "@solidjs/router";
 import { createSignal } from "solid-js";
 
-import Anchor from "@/popup/components/Anchor.jsx";
+import Anchor from "@/popup/components/Anchor";
 
 import styles from "./Header.module.css";
 

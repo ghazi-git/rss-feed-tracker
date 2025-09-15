@@ -1,7 +1,7 @@
 import { createSignal, Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
-import Anchor from "@/popup/components/Anchor.jsx";
+import Anchor from "@/popup/components/Anchor";
 import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
 
 import styles from "./PostsFilter.module.css";

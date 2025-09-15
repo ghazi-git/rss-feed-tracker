@@ -4,8 +4,8 @@ import Dropdown from "@/popup/components/dropdown/Dropdown";
 import Menu from "@/popup/components/dropdown/Menu";
 import MenuStateIndicator from "@/popup/components/dropdown/MenuStateIndicator";
 import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
-import FeedActions from "@/popup/components/FeedActions.jsx";
-import FolderActions from "@/popup/components/FolderActions.jsx";
+import FeedActions from "@/popup/components/FeedActions";
+import FolderActions from "@/popup/components/FolderActions";
 import PageTitle from "@/popup/components/page-header/PageTitle";
 
 import styles from "./PageTitleButton.module.css";
