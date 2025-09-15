@@ -1,12 +1,12 @@
-import { For } from "solid-js";
+import { For, JSX } from "solid-js";
 
-import { FieldWrapper } from "@/popup/components/forms/FieldWrapper.jsx";
-import { setId } from "@/popup/components/forms/utils.js";
+import { FieldWrapper } from "@/popup/components/forms/FieldWrapper";
+import { addDefaultId } from "@/popup/components/forms/utils";
 
 import styles from "./RadioGroup.module.css";
 
-export default function RadioGroup(props) {
-  const propsWithId = setId(props);
+export default function RadioGroup(props: RadioGroupProps) {
+  const propsWithId = addDefaultId(props);
   const options = () => {
     return propsWithId.options.map(({ label, value }, index) => {
       return {
@@ -38,7 +38,7 @@ export default function RadioGroup(props) {
                   id={id}
                   onChange={propsWithId.onChange}
                   value={value}
-                  checked={value === propsWithId.value ? "checked" : undefined}
+                  checked={value === propsWithId.value}
                 />
                 {label}
               </label>
@@ -48,4 +48,19 @@ export default function RadioGroup(props) {
       </div>
     </FieldWrapper>
   );
+}
+type InputProps = JSX.InputHTMLAttributes<HTMLInputElement>;
+interface RadioGroupProps {
+  name: string;
+  options: Option[];
+  id?: InputProps["id"];
+  label?: string;
+  required?: InputProps["required"];
+  onChange?: InputProps["onChange"];
+  value?: InputProps["value"];
+}
+
+interface Option {
+  label: string;
+  value: InputProps["value"];
 }

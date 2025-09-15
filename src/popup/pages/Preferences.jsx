@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 
-import Checkbox from "@/popup/components/forms/Checkbox.jsx";
-import RadioGroup from "@/popup/components/forms/RadioGroup.jsx";
+import Checkbox from "@/popup/components/forms/Checkbox";
+import RadioGroup from "@/popup/components/forms/RadioGroup";
 import {
   detectSystemTheme,
   enableTheme,

@@ -1,8 +1,9 @@
 import { Show } from "solid-js";
 
 import styles from "./FieldWrapper.module.css";
+import { FlowProps } from "solid-js/types/render/component";
 
-export function FieldWrapper(props) {
+export function FieldWrapper(props: FieldWrapperProps) {
   return (
     <div class={styles["field-wrapper"]}>
       <Show when={props.label}>
@@ -17,3 +18,10 @@ export function FieldWrapper(props) {
     </div>
   );
 }
+
+type FieldWrapperProps = FlowProps<{
+  label?: string;
+  labelFor?: string;
+  labelId?: string;
+  required?: boolean;
+}>;

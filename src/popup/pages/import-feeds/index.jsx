@@ -3,8 +3,8 @@ import { createStore } from "solid-js/store";
 
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
-import InputField from "@/popup/components/forms/Input.jsx";
-import SelectField from "@/popup/components/forms/Select.jsx";
+import InputField from "@/popup/components/forms/Input";
+import SelectField from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader.jsx";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.jsx";
 

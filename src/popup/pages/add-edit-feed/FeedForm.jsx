@@ -1,8 +1,8 @@
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
-import InputField from "@/popup/components/forms/Input.jsx";
-import RadioGroup from "@/popup/components/forms/RadioGroup.jsx";
-import SelectField from "@/popup/components/forms/Select.jsx";
+import InputField from "@/popup/components/forms/Input";
+import RadioGroup from "@/popup/components/forms/RadioGroup";
+import SelectField from "@/popup/components/forms/Select";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.jsx";
 
 export default function FeedForm(props) {
