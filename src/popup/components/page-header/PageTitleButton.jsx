@@ -1,9 +1,9 @@
 import { Show } from "solid-js";
 
-import Dropdown from "@/popup/components/dropdown/Dropdown.jsx";
-import Menu from "@/popup/components/dropdown/Menu.jsx";
-import MenuStateIndicator from "@/popup/components/dropdown/MenuStateIndicator.jsx";
-import MenuTrigger from "@/popup/components/dropdown/MenuTrigger.jsx";
+import Dropdown from "@/popup/components/dropdown/Dropdown";
+import Menu from "@/popup/components/dropdown/Menu";
+import MenuStateIndicator from "@/popup/components/dropdown/MenuStateIndicator";
+import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
 import FeedActions from "@/popup/components/FeedActions.jsx";
 import FolderActions from "@/popup/components/FolderActions.jsx";
 import PageTitle from "@/popup/components/page-header/PageTitle.jsx";

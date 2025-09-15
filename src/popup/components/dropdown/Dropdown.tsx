@@ -1,22 +1,38 @@
-import { autoUpdate, computePosition, flip, offset } from "@floating-ui/dom";
+import {
+  autoUpdate,
+  computePosition,
+  flip,
+  MiddlewareState,
+  offset,
+} from "@floating-ui/dom";
 import { onCleanup } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 
-import { DropdownContext } from "./context.jsx";
+import {
+  DropdownContext,
+  DropdownStore,
+  MenuItemPosition,
+  MenuItemRef,
+  MenuItemType,
+  MenuRef,
+  TriggerRef,
+} from "./context";
+import { Placement } from "@floating-ui/utils";
+import { FlowProps } from "solid-js/types/render/component";
 
-export default function Dropdown(props) {
-  const [store, setStore] = createStore({
+export default function Dropdown(props: FlowProps<DropdownProps>) {
+  const [store, setStore] = createStore<DropdownStore>({
     triggerRef: null,
-    triggerId: _generateMenuId(),
+    triggerId: _generateId("menu-trigger"),
     menuRef: null,
-    menuId: _generateMenuId(),
+    menuId: _generateId("menu"),
     open: null,
     items: [],
   });
-  const registerTriggerRef = (ref) => setStore("triggerRef", ref);
-  const registerMenuRef = (ref) => setStore("menuRef", ref);
+  const registerTriggerRef = (ref: TriggerRef) => setStore("triggerRef", ref);
+  const registerMenuRef = (ref: MenuRef) => setStore("menuRef", ref);
   const unregisterMenuRef = () => setStore("menuRef", null);
-  const registerItem = (ref) => {
+  const registerItem = (ref: MenuItemRef) => {
     setStore("items", (prev) => {
       const prevCopy = [...prev];
       const index = _getInsertionIndex(ref, prev);
@@ -24,13 +40,13 @@ export default function Dropdown(props) {
       return prevCopy;
     });
   };
-  const unregisterItem = (ref) => {
+  const unregisterItem = (ref: MenuItemRef) => {
     setStore("items", (prev) => prev.filter((r) => r.ref !== ref));
   };
 
-  let menuPositionCleanup;
+  let menuPositionCleanup: () => void;
   const _updatePosition = () => {
-    computePosition(store.triggerRef, store.menuRef, {
+    computePosition(store.triggerRef!, store.menuRef!, {
       placement: props.placement || "bottom-start",
       middleware: [
         offset(4),
@@ -38,22 +54,22 @@ export default function Dropdown(props) {
         accountForHeader(props.fallbackPlacement),
       ],
     }).then(({ x, y }) => {
-      Object.assign(store.menuRef.style, {
+      Object.assign(store.menuRef!.style, {
         left: `${x}px`,
         top: `${y}px`,
       });
     });
   };
-  const _clickOutsideHandler = (event) => {
-    if (!store.menuRef.contains(event.target)) {
+  const _clickOutsideHandler = (event: MouseEvent) => {
+    if (!store.menuRef?.contains(event.target as Node)) {
       closeMenu();
     }
   };
   const openMenu = () => {
     setStore("open", true);
     menuPositionCleanup = autoUpdate(
-      store.triggerRef,
-      store.menuRef,
+      store.triggerRef!,
+      store.menuRef!,
       _updatePosition,
     );
     document.addEventListener("click", _clickOutsideHandler);
@@ -70,15 +86,15 @@ export default function Dropdown(props) {
     }
     document.removeEventListener("click", _clickOutsideHandler);
   };
-  const _focusItem = (index) => {
+  const _focusItem = (index: number) => {
     const currentIndex = _getCurrentlyFocusedIndex(store.items);
     if (currentIndex >= 0) {
       setStore("items", currentIndex, "focused", false);
     }
     setStore("items", index, "focused", true);
-    store.items.at(index).ref.focus();
+    store.items.at(index)?.ref.focus();
   };
-  const focusItem = (item) => {
+  const focusItem = (item: MenuItemPosition) => {
     if (item === "first") {
       _focusItem(0);
     } else if (item === "last") {
@@ -98,13 +114,13 @@ export default function Dropdown(props) {
       }
     }
   };
-  const focusItemByRef = (ref) => {
+  const focusItemByRef = (ref: MenuItemRef) => {
     const idx = store.items.findIndex((r) => r.ref === ref);
     if (idx >= 0) {
       _focusItem(idx);
     }
   };
-  const focusTrigger = () => store.triggerRef.focus();
+  const focusTrigger = () => store.triggerRef?.focus();
   onCleanup(() => {
     closeMenu();
   });
@@ -130,7 +146,7 @@ export default function Dropdown(props) {
   );
 }
 
-function _getInsertionIndex(elt, refs) {
+function _getInsertionIndex(elt: MenuItemRef, refs: MenuItemType[]) {
   if (refs.length === 0) return 0;
 
   // The dropdown keep references to all DOM elements of menu items. So, when
@@ -144,13 +160,13 @@ function _getInsertionIndex(elt, refs) {
   return refs.length;
 }
 
-function _getCurrentlyFocusedIndex(items) {
+function _getCurrentlyFocusedIndex(items: MenuItemType[]) {
   return items.findIndex((r) => r.focused);
 }
 
-function _generateMenuId() {
+function _generateId(prefix: string) {
   const uuid = crypto.randomUUID();
-  return `menu-${uuid.slice(0, 8)}`;
+  return `${prefix}-${uuid.slice(0, 8)}`;
 }
 
 /**
@@ -163,10 +179,10 @@ function _generateMenuId() {
  * being hidden by the header. This happens when the flip middleware displays
  * the menu to the top since there is no space left at the bottom.
  */
-function accountForHeader(fallbackPlacement) {
+function accountForHeader(fallbackPlacement: Placement | undefined) {
   return {
     name: "accountForHeader",
-    fn(state) {
+    fn(state: MiddlewareState) {
       if (fallbackPlacement) {
         const headerSize = getComputedStyle(
           document.documentElement,
@@ -181,4 +197,9 @@ function accountForHeader(fallbackPlacement) {
       return {};
     },
   };
+}
+
+interface DropdownProps {
+  placement?: Placement;
+  fallbackPlacement?: Placement;
 }

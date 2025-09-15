@@ -1,11 +1,12 @@
-import { mergeProps, onCleanup, splitProps } from "solid-js";
+import { JSX, mergeProps, onCleanup, splitProps } from "solid-js";
 
-import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
+import { useDropdownContext } from "@/popup/components/dropdown/context";
 
 import styles from "./MenuItem.module.css";
+import { FlowProps } from "solid-js/types/render/component";
 
-export default function MenuItem(props) {
-  let ref;
+export default function MenuItem(props: FlowProps<MenuItemProps>) {
+  let ref: HTMLDivElement;
   const propsWithDefaults = mergeProps({ closeMenuOnClick: true }, props);
   const [extra, rest] = splitProps(propsWithDefaults, [
     "class",
@@ -14,7 +15,7 @@ export default function MenuItem(props) {
   ]);
   const { registerItem, closeMenu, unregisterItem, focusItemByRef } =
     useDropdownContext();
-  const onItemClicked = (event) => {
+  const onItemClicked: ItemHandler = (event) => {
     if (extra.onClick) {
       extra.onClick(event);
     }
@@ -48,3 +49,7 @@ export default function MenuItem(props) {
     />
   );
 }
+type ItemHandler = JSX.EventHandler<HTMLDivElement, UIEvent>;
+type MenuItemProps = JSX.HTMLAttributes<HTMLDivElement> & {
+  onClick?: ItemHandler;
+};

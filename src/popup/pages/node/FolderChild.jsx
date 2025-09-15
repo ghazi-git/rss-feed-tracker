@@ -2,9 +2,9 @@ import { Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor.jsx";
-import Dropdown from "@/popup/components/dropdown/Dropdown.jsx";
-import Menu from "@/popup/components/dropdown/Menu.jsx";
-import MenuTrigger from "@/popup/components/dropdown/MenuTrigger.jsx";
+import Dropdown from "@/popup/components/dropdown/Dropdown";
+import Menu from "@/popup/components/dropdown/Menu";
+import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
 import FeedActions from "@/popup/components/FeedActions.jsx";
 import FolderActions from "@/popup/components/FolderActions.jsx";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon";

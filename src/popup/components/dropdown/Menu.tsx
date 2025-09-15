@@ -1,16 +1,17 @@
-import { Show, splitProps } from "solid-js";
+import { JSX, Show, splitProps } from "solid-js";
 import { Portal } from "solid-js/web";
 
-import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
+import { useDropdownContext } from "@/popup/components/dropdown/context";
 
 import styles from "./Menu.module.css";
+import { FlowProps } from "solid-js/types/render/component";
 
 /**
  * Accessibility implementation details are based on this link
  * https://www.w3.org/WAI/ARIA/apg/patterns/menubar/
  * aria-disabled and submenu work not done since they are not needed (not yet at least)
  */
-export default function Menu(props) {
+export default function Menu(props: FlowProps<MenuProps>) {
   const [extra, rest] = splitProps(props, ["class"]);
   const { store, registerMenuRef, closeMenu, focusItem, focusTrigger } =
     useDropdownContext();
@@ -54,3 +55,5 @@ export default function Menu(props) {
     </Show>
   );
 }
+
+type MenuProps = JSX.HTMLAttributes<HTMLDivElement>;

@@ -1,7 +1,7 @@
-import { mergeProps, splitProps } from "solid-js";
+import { JSX, mergeProps, splitProps } from "solid-js";
 
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
-import { useDropdownContext } from "@/popup/components/dropdown/context.jsx";
+import { useDropdownContext } from "@/popup/components/dropdown/context";
 
 import styles from "./MenuTrigger.module.css";
 
@@ -9,7 +9,7 @@ import styles from "./MenuTrigger.module.css";
  * Accessibility implementation details are based on this link
  * https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/
  */
-export default function MenuTrigger(props) {
+export default function MenuTrigger(props: TriggerProps) {
   const propsWithDefaults = mergeProps({ openMenuOnClick: true }, props);
   const [extra, rest] = splitProps(propsWithDefaults, [
     "class",
@@ -27,7 +27,7 @@ export default function MenuTrigger(props) {
         registerTriggerRef(elt);
       }}
       aria-haspopup="true"
-      aria-expanded={store.open}
+      aria-expanded={store.open ?? undefined}
       aria-controls={store.open ? store.menuId : undefined}
       onClick={(event) => {
         if (extra.onClick) {
@@ -54,3 +54,8 @@ export default function MenuTrigger(props) {
     />
   );
 }
+
+type TriggerProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
+  openMenuOnClick?: boolean;
+  onClick?: JSX.EventHandler<HTMLButtonElement, MouseEvent>;
+};
