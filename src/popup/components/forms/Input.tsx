@@ -27,7 +27,7 @@ function Input(props: InputProps) {
   );
 }
 
-type InputProps = JSX.InputHTMLAttributes<HTMLInputElement> & {
+interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   label: string;
-};
+}

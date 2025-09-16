@@ -55,7 +55,7 @@ export default function MenuTrigger(props: TriggerProps) {
   );
 }
 
-type TriggerProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
+interface TriggerProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   openMenuOnClick?: boolean;
   onClick?: JSX.EventHandler<HTMLButtonElement, MouseEvent>;
-};
+}

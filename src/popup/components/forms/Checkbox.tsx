@@ -16,7 +16,7 @@ export default function Checkbox(props: CheckboxProps) {
   );
 }
 
-type CheckboxProps = JSX.InputHTMLAttributes<HTMLInputElement> & {
+interface CheckboxProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   label: string;
-};
+}

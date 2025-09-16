@@ -25,11 +25,16 @@ interface DropdownContextType {
   focusItemByRef: (ref: MenuItemRef) => void;
   focusTrigger: () => void;
 }
+
 export type MenuItemPosition = "first" | "last" | "next" | "previous";
 export type TriggerRef = HTMLButtonElement;
 export type MenuRef = HTMLDivElement;
 export type MenuItemRef = HTMLDivElement;
-export type MenuItemType = { ref: MenuItemRef; focused: boolean };
+
+export interface MenuItemType {
+  ref: MenuItemRef;
+  focused: boolean;
+}
 
 export interface DropdownStore {
   triggerRef: TriggerRef | null;

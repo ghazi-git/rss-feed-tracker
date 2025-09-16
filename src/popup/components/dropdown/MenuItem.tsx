@@ -50,6 +50,7 @@ export default function MenuItem(props: FlowProps<MenuItemProps>) {
   );
 }
 type ItemHandler = JSX.EventHandler<HTMLDivElement, UIEvent>;
-type MenuItemProps = JSX.HTMLAttributes<HTMLDivElement> & {
+
+interface MenuItemProps extends JSX.HTMLAttributes<HTMLDivElement> {
   onClick?: ItemHandler;
-};
+}

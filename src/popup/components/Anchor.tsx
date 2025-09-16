@@ -38,6 +38,6 @@ export default function Anchor(props: AnchorTagProps) {
   );
 }
 
-type AnchorTagProps = AnchorProps & {
+interface AnchorTagProps extends AnchorProps {
   onClick?: JSX.EventHandler<HTMLAnchorElement, MouseEvent>;
-};
+}

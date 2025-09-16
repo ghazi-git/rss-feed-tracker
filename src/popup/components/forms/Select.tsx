@@ -37,12 +37,12 @@ export default function SelectField(props: SelectProps) {
   );
 }
 
-type SelectProps = JSX.SelectHTMLAttributes<HTMLSelectElement> & {
+interface SelectProps extends JSX.SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
   options: SelectOption[];
   value?: OptionProps["value"];
   label?: string;
-};
+}
 
 interface SelectOption {
   label: OptionProps["label"];

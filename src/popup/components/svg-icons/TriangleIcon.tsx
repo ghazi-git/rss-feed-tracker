@@ -24,4 +24,7 @@ export default function TriangleIcon(props: TriangleIconProps) {
     </svg>
   );
 }
-type TriangleIconProps = SVGProps & { orientation?: "up" | "down" };
+
+interface TriangleIconProps extends SVGProps {
+  orientation?: "up" | "down";
+}
