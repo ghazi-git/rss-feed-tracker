@@ -5,18 +5,18 @@ import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
 import styles from "@/popup/pages/node-posts/index.module.css";
-import Posts from "@/popup/pages/node-posts/Posts.jsx";
+import Posts from "@/popup/pages/node-posts/Posts";
 import { NODES, POSTS } from "@/popup/utils/dummy-data";
 
 export default function Bookmarks() {
   const [searchParams] = useSearchParams();
   const bookmarks = () => {
-    let posts = POSTS.filter((p) => p.bookmarked);
-    posts = posts.map((post) => {
+    const bookmarkedPosts = POSTS.filter((p) => p.bookmarked);
+    const posts = bookmarkedPosts.map((post) => {
       const n = NODES.find((nd) => nd.id === post.feedId);
       return {
         ...post,
-        feed: { name: n?.name, favicon: n?.feed?.favicon },
+        feed: { name: n!.name, favicon: n!.feed!.favicon },
       };
     });
     posts.sort((p1, p2) => p2.publishedAt - p1.publishedAt);

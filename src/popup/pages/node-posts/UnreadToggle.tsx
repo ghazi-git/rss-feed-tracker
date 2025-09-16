@@ -1,16 +1,16 @@
-import { Show } from "solid-js";
+import { JSX, Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import styles from "./UnreadToggle.module.css";
 
-export default function UnreadToggle(props) {
-  const markAsRead = (event) => {
+export default function UnreadToggle(props: { unread: boolean }) {
+  const markAsRead: ClickHandler = (event) => {
     event.preventDefault();
     event.stopPropagation();
     dismissToast();
     showToast("Marked as read");
   };
-  const markAsUnread = (event) => {
+  const markAsUnread: ClickHandler = (event) => {
     event.preventDefault();
     event.stopPropagation();
     dismissToast();
@@ -49,3 +49,5 @@ export default function UnreadToggle(props) {
     </div>
   );
 }
+
+type ClickHandler = JSX.EventHandler<HTMLDivElement, UIEvent>;

@@ -580,7 +580,7 @@ interface Feed {
 
 type Node = Folder | Feed;
 
-interface Post {
+export interface Post {
   id: number;
   title: string;
   guid: string;

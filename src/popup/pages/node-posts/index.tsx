@@ -8,7 +8,7 @@ import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
 import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
-import Posts from "@/popup/pages/node-posts/Posts.jsx";
+import Posts from "@/popup/pages/node-posts/Posts";
 import { NODES, POSTS } from "@/popup/utils/dummy-data";
 
 import styles from "./index.module.css";
@@ -18,12 +18,13 @@ export default function NodePosts() {
   const params = useParams();
   const node = () => NODES.find((n) => n.id === parseInt(params.id));
   const allPosts = createMemo(() => {
-    if (!node()) return [];
+    const currentNode = node();
+    if (!currentNode) return [];
 
     let posts;
-    if (node().type === "folder") {
-      const feedIds = [];
-      const folderIds = [node().id];
+    if (currentNode.type === "folder") {
+      const feedIds: number[] = [];
+      const folderIds = [currentNode.id];
       while (folderIds.length > 0) {
         const folderId = folderIds.shift();
         const children = NODES.filter((n) => n.parentId === folderId);
@@ -37,14 +38,14 @@ export default function NodePosts() {
         const n = NODES.find((nd) => nd.id === post.feedId);
         return {
           ...post,
-          feed: { name: n.name, favicon: n.feed.favicon },
+          feed: { name: n!.name, favicon: n!.feed!.favicon },
         };
       });
     } else {
-      posts = POSTS.filter((post) => post.feedId === node().id);
+      posts = POSTS.filter((post) => post.feedId === currentNode.id);
       posts = posts.map((post) => ({
         ...post,
-        feed: { name: node().name, favicon: node().feed.favicon },
+        feed: { name: currentNode.name, favicon: currentNode.feed.favicon },
       }));
     }
 
@@ -66,42 +67,49 @@ export default function NodePosts() {
     }
   };
   const previousUrl = () => {
-    if (node().type === "folder") {
-      return `/library/nodes/${node().id}`;
+    const currentNode = node();
+    if (!currentNode) return "/library";
+
+    if (currentNode.type === "folder") {
+      return `/library/nodes/${currentNode.id}`;
     } else {
-      return `/library/nodes/${node().parentId}`;
+      return `/library/nodes/${currentNode.parentId}`;
     }
   };
 
   return (
     <Show when={node()} fallback={<h2>Feed/Folder not Found</h2>}>
-      <DeleteNodeProvider>
-        <PageHeaderWrapper>
-          <BackLink url={previousUrl()} class={styles["previous-url"]} />
-          <PageTitleButton
-            title={node().name}
-            nodeType={node().type}
-            nodeId={node().id}
-            nodeName={node().name}
-            isRoot={node().parentId === null}
-          />
-          <Show when={allPosts().length > 0}>
-            <PostsFilter
-              unreadCount={node().unreadCount}
-              pageUrl={`/library/nodes/${node().id}/posts`}
-              initialFilter={searchParams.unread === "true" ? "unread" : "all"}
-              class={styles["posts-filter"]}
+      {(currentNode) => (
+        <DeleteNodeProvider>
+          <PageHeaderWrapper>
+            <BackLink url={previousUrl()} class={styles["previous-url"]} />
+            <PageTitleButton
+              title={currentNode().name}
+              nodeType={currentNode().type}
+              nodeId={currentNode().id}
+              nodeName={currentNode().name}
+              isRoot={currentNode().parentId === null}
             />
+            <Show when={allPosts().length > 0}>
+              <PostsFilter
+                unreadCount={currentNode().unreadCount}
+                pageUrl={`/library/nodes/${currentNode().id}/posts`}
+                initialFilter={
+                  searchParams.unread === "true" ? "unread" : "all"
+                }
+                class={styles["posts-filter"]}
+              />
+            </Show>
+          </PageHeaderWrapper>
+          <Show
+            when={filteredPosts().length > 0}
+            fallback={<NoPosts msg={noPostsMsg()} />}
+          >
+            <Posts posts={filteredPosts()} />
           </Show>
-        </PageHeaderWrapper>
-        <Show
-          when={filteredPosts().length > 0}
-          fallback={<NoPosts msg={noPostsMsg()} />}
-        >
-          <Posts posts={filteredPosts()} />
-        </Show>
-        <DeleteNodeDialog />
-      </DeleteNodeProvider>
+          <DeleteNodeDialog />
+        </DeleteNodeProvider>
+      )}
     </Show>
   );
 }

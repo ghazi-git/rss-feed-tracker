@@ -1,12 +1,13 @@
 import { A } from "@solidjs/router";
 import { createSignal, For, onMount } from "solid-js";
 
-import PostFooter from "@/popup/pages/node-posts/PostFooter.jsx";
+import PostFooter from "@/popup/pages/node-posts/PostFooter.js";
 import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";
 
 import styles from "./Posts.module.css";
+import { PostType } from "@/popup/pages/node-posts/types";
 
-export default function Posts(props) {
+export default function Posts(props: { posts: PostType[] }) {
   return (
     <div class={styles.posts}>
       <For each={props.posts}>{(post) => <Post post={post} />}</For>
@@ -14,9 +15,9 @@ export default function Posts(props) {
   );
 }
 
-function Post(props) {
+function Post(props: { post: PostType }) {
   const [showTooltip, setShowTooltip] = createSignal(false);
-  let titleRef;
+  let titleRef!: HTMLDivElement;
   onMount(() => {
     if (titleRef.scrollHeight > titleRef.clientHeight) {
       setShowTooltip(true);
@@ -60,6 +61,6 @@ function Post(props) {
   );
 }
 
-function openTab(url, active = false) {
-  chrome.tabs.create({ url, active }); /* eslint-disable-line no-undef */
+function openTab(url: string, active = false) {
+  chrome.tabs.create({ url, active });
 }

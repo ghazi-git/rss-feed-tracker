@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import { JSX, Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import BookmarkedIcon from "@/popup/components/svg-icons/BookmarkedIcon";
@@ -6,14 +6,14 @@ import BookmarkIcon from "@/popup/components/svg-icons/BookmarkIcon";
 
 import styles from "./BookmarkToggle.module.css";
 
-export default function BookmarkToggle(props) {
-  const deleteBookmark = (event) => {
+export default function BookmarkToggle(props: { bookmarked: boolean }) {
+  const deleteBookmark: ClickHandler = (event) => {
     event.preventDefault();
     event.stopPropagation();
     dismissToast();
     showToast("Bookmark deleted");
   };
-  const createBookmark = (event) => {
+  const createBookmark: ClickHandler = (event) => {
     event.preventDefault();
     event.stopPropagation();
     dismissToast();
@@ -55,3 +55,5 @@ export default function BookmarkToggle(props) {
     </div>
   );
 }
+
+type ClickHandler = JSX.EventHandler<HTMLDivElement, UIEvent>;
