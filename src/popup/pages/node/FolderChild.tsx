@@ -9,19 +9,20 @@ import FeedActions from "@/popup/components/FeedActions";
 import FolderActions from "@/popup/components/FolderActions";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
-import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
-import NodeName from "@/popup/pages/node/NodeName.jsx";
-import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
+import FeedFavicon from "@/popup/pages/node/FeedFavicon";
+import NodeName from "@/popup/pages/node/NodeName";
+import UnreadCount from "@/popup/pages/node/UnreadCount";
 
 import styles from "./FolderChild.module.css";
+import { Node } from "@/popup/utils/dummy-data";
 
-export default function FolderChild(props) {
+export default function FolderChild(props: FolderChildProps) {
   return (
     <Anchor class={styles.child} href={`/library/nodes/${props.node.id}`}>
       <div class={styles.icon}>
         <Show when={props.node.type === "feed"} fallback={<FolderIcon />}>
           <FeedFavicon
-            favicon={props.node.feed.favicon}
+            favicon={props.node.feed!.favicon}
             name={props.node.name}
           />
         </Show>
@@ -57,4 +58,8 @@ export default function FolderChild(props) {
       </Dropdown>
     </Anchor>
   );
+}
+
+interface FolderChildProps {
+  node: Node;
 }

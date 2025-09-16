@@ -578,7 +578,7 @@ interface Feed {
   };
 }
 
-type Node = Folder | Feed;
+export type Node = Folder | Feed;
 
 export interface Post {
   id: number;

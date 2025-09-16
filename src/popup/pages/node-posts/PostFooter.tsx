@@ -1,4 +1,4 @@
-import FeedFavicon from "@/popup/pages/node/FeedFavicon.jsx";
+import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle";
 import FeedName from "@/popup/pages/node-posts/FeedName";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle";

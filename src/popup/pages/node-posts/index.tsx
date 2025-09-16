@@ -7,7 +7,7 @@ import NoPosts from "@/popup/components/NoPosts";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
-import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
+import PostsFilter from "@/popup/pages/node/PostsFilter";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { NODES, POSTS } from "@/popup/utils/dummy-data";
 

@@ -12,7 +12,7 @@ import EditFolder from "@/popup/pages/add-edit-folder/EditFolder";
 import Bookmarks from "@/popup/pages/Bookmarks";
 import ImportFeeds from "@/popup/pages/import-feeds";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet";
-import Node from "@/popup/pages/node/index.jsx";
+import Node from "@/popup/pages/node";
 import NodePosts from "@/popup/pages/node-posts";
 import Preferences from "@/popup/pages/Preferences";
 import { NODES } from "@/popup/utils/dummy-data.js";

@@ -65,7 +65,7 @@ export default function FolderActions(props: FolderActionsProps) {
 }
 
 interface FolderActionsProps {
-  isRoot: boolean;
+  isRoot?: boolean;
   folderId: number;
   folderName: string;
 }

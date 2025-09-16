@@ -3,7 +3,7 @@ import { createMemo, Show } from "solid-js";
 
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
-import PostsFilter from "@/popup/pages/node/PostsFilter.jsx";
+import PostsFilter from "@/popup/pages/node/PostsFilter";
 import styles from "@/popup/pages/node-posts/index.module.css";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { NODES, POSTS } from "@/popup/utils/dummy-data";

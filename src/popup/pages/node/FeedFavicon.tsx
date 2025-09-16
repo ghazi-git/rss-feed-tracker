@@ -2,7 +2,7 @@ import { createSignal, Show } from "solid-js";
 
 import styles from "./FeedFavicon.module.css";
 
-export default function FeedFavicon(props) {
+export default function FeedFavicon(props: FeedFaviconProps) {
   // show fallback until the favicon loads successfully. This avoids any layout
   // shift since we always have sth to show.
   const [showFallback, setShowFallback] = createSignal(true);
@@ -17,7 +17,7 @@ export default function FeedFavicon(props) {
       </Show>
       <Show when={props.favicon && !hideImg()}>
         <img
-          src={props.favicon}
+          src={props.favicon ?? undefined}
           onLoad={() => setShowFallback(false)}
           onError={() => setHideImg(true)}
           alt="icon"
@@ -27,6 +27,11 @@ export default function FeedFavicon(props) {
   );
 }
 
-function DefaultFavicon(props) {
+function DefaultFavicon(props: { name: string }) {
   return <div class={styles["default-favicon"]}>{props.name[0]}</div>;
+}
+
+interface FeedFaviconProps {
+  name: string;
+  favicon: string | null;
 }

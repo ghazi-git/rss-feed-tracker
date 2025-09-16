@@ -1,8 +1,8 @@
-import { createMemo } from "solid-js";
+import { createMemo, JSX } from "solid-js";
 
 import styles from "./UnreadCount.module.css";
 
-export default function UnreadCount(props) {
+export default function UnreadCount(props: UnreadCountProps) {
   const count = createMemo(() => {
     if (props.count > 1000) {
       return "+1k";
@@ -28,4 +28,9 @@ export default function UnreadCount(props) {
       {count()}
     </span>
   );
+}
+
+interface UnreadCountProps {
+  count: number;
+  onClick: JSX.EventHandler<HTMLSpanElement, UIEvent>;
 }

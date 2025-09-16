@@ -1,12 +1,12 @@
 import { For, Show } from "solid-js";
 
-import FolderChild from "@/popup/pages/node/FolderChild.jsx";
-import FolderNoChildren from "@/popup/pages/node/FolderNoChildren.jsx";
+import FolderChild from "@/popup/pages/node/FolderChild";
+import FolderNoChildren from "@/popup/pages/node/FolderNoChildren";
 import { NODES } from "@/popup/utils/dummy-data";
 
 import styles from "./FolderChildren.module.css";
 
-export default function FolderChildren(props) {
+export default function FolderChildren(props: { folderId: number }) {
   const children = () => {
     const nodes = NODES.filter((node) => node.parentId === props.folderId);
     nodes.sort((n1, n2) => n1.sortOrder - n2.sortOrder);

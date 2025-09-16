@@ -5,7 +5,7 @@ import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./FolderNoChildren.module.css";
 
-export default function FolderNoChildren(props) {
+export default function FolderNoChildren(props: { folderId: number }) {
   const previousUrl = () =>
     getSearchString({ previousUrl: `/library/nodes/${props.folderId}` });
 

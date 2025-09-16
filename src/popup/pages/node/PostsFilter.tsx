@@ -2,11 +2,11 @@ import { createSignal, Show } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor";
-import UnreadCount from "@/popup/pages/node/UnreadCount.jsx";
+import UnreadCount from "@/popup/pages/node/UnreadCount";
 
 import styles from "./PostsFilter.module.css";
 
-export default function PostsFilter(props) {
+export default function PostsFilter(props: PostsFilterProps) {
   const [activeFilter, setActiveFilter] = createSignal(props.initialFilter);
 
   return (
@@ -40,4 +40,11 @@ export default function PostsFilter(props) {
       </Anchor>
     </div>
   );
+}
+
+interface PostsFilterProps {
+  unreadCount: number;
+  pageUrl: string;
+  class: string;
+  initialFilter: "all" | "unread" | null;
 }
