@@ -11,7 +11,7 @@ import AddFolder from "@/popup/pages/add-edit-folder/AddFolder";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder";
 import Bookmarks from "@/popup/pages/Bookmarks";
 import ImportFeeds from "@/popup/pages/import-feeds";
-import NoFeedsYet from "@/popup/pages/no-feeds-yet/index.jsx";
+import NoFeedsYet from "@/popup/pages/no-feeds-yet";
 import Node from "@/popup/pages/node/index.jsx";
 import NodePosts from "@/popup/pages/node-posts/index.jsx";
 import Preferences from "@/popup/pages/Preferences";
