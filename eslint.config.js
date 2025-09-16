@@ -4,6 +4,7 @@ import importPlugin from "eslint-plugin-import";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import solid from "eslint-plugin-solid/configs/recommended";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default defineConfig([
   {
@@ -19,6 +20,7 @@ export default defineConfig([
       },
     },
   },
+  tseslint.configs.recommended,
   solid,
   {
     plugins: {

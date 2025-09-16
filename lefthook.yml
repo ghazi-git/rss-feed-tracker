@@ -3,7 +3,7 @@
 pre-commit:
   jobs:
     - run: npx eslint --fix "{staged_files}"
-      glob: "*.{js,jsx}"
+      glob: "*.{js,jsx,ts,tsx}"
       stage_fixed: true
 
     - run: npx stylelint --fix "{staged_files}"
