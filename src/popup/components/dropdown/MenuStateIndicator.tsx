@@ -1,5 +1,5 @@
 import { useDropdownContext } from "@/popup/components/dropdown/context";
-import TriangleIcon from "@/popup/components/svg-icons/TriangleIcon.js";
+import TriangleIcon from "@/popup/components/svg-icons/TriangleIcon";
 import { SVGProps } from "@/popup/components/svg-icons/types";
 
 export default function MenuStateIndicator(props: SVGProps) {

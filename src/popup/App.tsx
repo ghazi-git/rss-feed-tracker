@@ -15,7 +15,7 @@ import NoFeedsYet from "@/popup/pages/no-feeds-yet";
 import Node from "@/popup/pages/node";
 import NodePosts from "@/popup/pages/node-posts";
 import Preferences from "@/popup/pages/Preferences";
-import { NODES } from "@/popup/utils/dummy-data.js";
+import { NODES } from "@/popup/utils/dummy-data";
 import {
   detectSystemTheme,
   enableTheme,

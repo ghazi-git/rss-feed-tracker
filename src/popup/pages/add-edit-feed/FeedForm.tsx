@@ -3,7 +3,7 @@ import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import InputField from "@/popup/components/forms/Input";
 import RadioGroup from "@/popup/components/forms/RadioGroup";
 import SelectField from "@/popup/components/forms/Select";
-import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.js";
+import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
 import { JSX } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 

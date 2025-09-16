@@ -4,8 +4,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    // remove once everything is typescript
-    "allowJs": true,
     "strict": true,
     "target": "es2024",
     "module": "esnext",

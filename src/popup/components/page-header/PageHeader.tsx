@@ -1,6 +1,6 @@
 import BackLink from "@/popup/components/page-header/BackLink";
-import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper.js";
-import PageTitle from "@/popup/components/page-header/PageTitle.js";
+import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
+import PageTitle from "@/popup/components/page-header/PageTitle";
 
 export default function PageHeader(props: PageHeaderProps) {
   return (
