@@ -3,9 +3,11 @@ import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import InputField from "@/popup/components/forms/Input";
 import RadioGroup from "@/popup/components/forms/RadioGroup";
 import SelectField from "@/popup/components/forms/Select";
-import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.jsx";
+import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.js";
+import { JSX } from "solid-js";
+import { SetStoreFunction } from "solid-js/store";
 
-export default function FeedForm(props) {
+export default function FeedForm(props: FeedFormProps) {
   const frequencies = [
     { label: "1 hour", value: 60 * 60 * 1000 },
     { label: "2 hours", value: 2 * 60 * 60 * 1000 },
@@ -20,7 +22,7 @@ export default function FeedForm(props) {
         type="url"
         name="url"
         label="URL"
-        required="required"
+        required={true}
         value={props.formdata.url}
         onInput={(e) => props.setFormdata("url", e.target.value)}
       />
@@ -28,14 +30,14 @@ export default function FeedForm(props) {
         type="text"
         name="name"
         label="Name"
-        required="required"
+        required={true}
         value={props.formdata.name}
         onInput={(e) => props.setFormdata("name", e.target.value)}
       />
       <RadioGroup
         name="frequency"
         label="Update Frequency"
-        required="required"
+        required={true}
         options={frequencies}
         value={props.formdata.frequency}
         onChange={(e) =>
@@ -46,7 +48,7 @@ export default function FeedForm(props) {
         name="folder"
         label="Folder"
         options={getParentOptions()}
-        value={props.formdata.folder}
+        value={props.formdata.folder ?? ""}
         onChange={(e) => props.setFormdata("folder", parseInt(e.target.value))}
       />
       <ButtonContainer>
@@ -55,3 +57,18 @@ export default function FeedForm(props) {
     </form>
   );
 }
+
+export interface FeedFormProps {
+  onSubmit: FormProps["onSubmit"];
+  formdata: FeedFormdata;
+  setFormdata: SetStoreFunction<FeedFormdata>;
+}
+
+export interface FeedFormdata {
+  url: string;
+  name: string;
+  frequency: number;
+  folder: number | null;
+}
+
+type FormProps = JSX.FormHTMLAttributes<HTMLFormElement>;

@@ -2,16 +2,19 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 
 import PageHeader from "@/popup/components/page-header/PageHeader";
-import FeedForm from "@/popup/pages/add-edit-feed/FeedForm.jsx";
+import FeedForm from "@/popup/pages/add-edit-feed/FeedForm";
 
 export default function AddFeed() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams<{
+    parentFolderId?: string;
+    previousUrl?: string;
+  }>();
   const [formdata, setFormdata] = createStore({
     url: "",
     name: "",
     frequency: 2 * 60 * 60 * 1000,
-    folder: parseInt(searchParams.parentFolderId) || null,
+    folder: parseInt(searchParams.parentFolderId ?? "") || null,
   });
 
   return (

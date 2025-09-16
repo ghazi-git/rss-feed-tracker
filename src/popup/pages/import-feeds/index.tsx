@@ -6,7 +6,7 @@ import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import InputField from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
-import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm.jsx";
+import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
 
 export default function ImportFeeds() {
   const [searchParams] = useSearchParams<{

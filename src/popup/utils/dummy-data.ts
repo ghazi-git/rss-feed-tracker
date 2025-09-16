@@ -550,7 +550,7 @@ export const POSTS: Post[] = [
   },
 ];
 
-interface Folder {
+export interface Folder {
   type: "folder";
   id: number;
   name: string;

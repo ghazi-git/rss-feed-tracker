@@ -1,19 +1,20 @@
-import { Show } from "solid-js";
+import { JSX, Show } from "solid-js";
 
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import InputField from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
-import { NODES } from "@/popup/utils/dummy-data";
+import { Folder, NODES } from "@/popup/utils/dummy-data";
+import { SetStoreFunction } from "solid-js/store";
 
-export default function FolderForm(props) {
+export default function FolderForm(props: FolderFormProps) {
   return (
-    <form onSubmit={props.onSubmit} method="POST">
+    <form onSubmit={props.onSubmit} method="post">
       <InputField
         type="text"
         name="name"
         label="Name"
-        required="required"
+        required={true}
         value={props.formdata.name}
         onInput={(e) => props.setFormdata("name", e.target.value)}
       />
@@ -22,8 +23,10 @@ export default function FolderForm(props) {
           name="parent"
           label="Parent Folder"
           options={props.parentOptions}
-          value={parseInt(props.formdata.parent)}
-          onChange={(e) => props.setFormdata("parent", e.target.value)}
+          value={props.formdata.parent ?? undefined}
+          onChange={(e) =>
+            props.setFormdata("parent", parseInt(e.target.value))
+          }
         />
       </Show>
       <ButtonContainer>
@@ -36,6 +39,8 @@ export default function FolderForm(props) {
 export function getParentOptions() {
   const folders = NODES.filter((n) => n.type === "folder");
   const root = folders.find((f) => f.parentId === null);
+  if (!root) return [];
+
   const orderedFolders = getFoldersTree(root, folders);
   return orderedFolders.map(([n, level]) => {
     return {
@@ -50,17 +55,34 @@ export function getParentOptions() {
  * return an array of folders ordered according to a DFS traversal and their
  * sortOrder within their parent
  */
-function getFoldersTree(rootFolder, folders) {
-  const result = [];
-  const stack = [[rootFolder, 0]];
+function getFoldersTree(rootFolder: Folder, folders: Folder[]) {
+  const result: StackItem[] = [];
+  const stack: StackItem[] = [[rootFolder, 0]];
 
   while (stack.length > 0) {
-    const [folder, level] = stack.shift();
+    const [folder, level] = stack.shift()!;
     result.push([folder, level]);
 
     const children = folders.filter((f) => f.parentId === folder.id);
     children.sort((f1, f2) => f1.sortOrder - f2.sortOrder);
-    stack.unshift(...children.map((f) => [f, level + 1]));
+    stack.unshift(...children.map((f) => [f, level + 1] as StackItem));
   }
   return result;
 }
+
+type StackItem = [Folder, number];
+
+interface FolderFormProps {
+  onSubmit: FormProps["onSubmit"];
+  formdata: FolderFormdata;
+  setFormdata: SetStoreFunction<FolderFormdata>;
+  isRoot?: boolean;
+  parentOptions: { label: string; value: number }[];
+}
+
+export interface FolderFormdata {
+  name: string;
+  parent: number | null;
+}
+
+type FormProps = JSX.FormHTMLAttributes<HTMLFormElement>;

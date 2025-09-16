@@ -4,13 +4,16 @@ import { createStore } from "solid-js/store";
 import PageHeader from "@/popup/components/page-header/PageHeader";
 import FolderForm, {
   getParentOptions,
-} from "@/popup/pages/add-edit-folder/FolderForm.jsx";
+} from "@/popup/pages/add-edit-folder/FolderForm";
 
 export default function AddFolder() {
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams<{
+    parentFolderId?: string;
+    previousUrl?: string;
+  }>();
   const [formdata, setFormdata] = createStore({
     name: "",
-    parent: parseInt(searchParams.parentFolderId) || null,
+    parent: parseInt(searchParams.parentFolderId ?? "") || null,
   });
   return (
     <>

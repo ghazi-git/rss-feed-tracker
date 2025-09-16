@@ -3,21 +3,23 @@ import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import PageHeader from "@/popup/components/page-header/PageHeader";
-import FeedForm from "@/popup/pages/add-edit-feed/FeedForm.jsx";
+import FeedForm, { FeedFormdata } from "@/popup/pages/add-edit-feed/FeedForm";
 import { NODES } from "@/popup/utils/dummy-data";
 
 export default function EditFeed() {
   const navigate = useNavigate();
-  const [formdata, setFormdata] = createStore({
+  const [formdata, setFormdata] = createStore<FeedFormdata>({
     url: "",
     name: "",
     frequency: 2 * 60 * 60 * 1000,
-    folder: "",
+    folder: null,
   });
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams<{ previousUrl?: string }>();
   const params = useParams();
   createEffect(() => {
-    const node = NODES.find((n) => n.id === parseInt(params.id));
+    const node = NODES.filter((n) => n.type === "feed").find(
+      (n) => n.id === parseInt(params.id),
+    );
     if (node) {
       setFormdata({
         url: node.feed.url,
