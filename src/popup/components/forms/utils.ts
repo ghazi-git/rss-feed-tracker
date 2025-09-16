@@ -10,5 +10,6 @@ export function addDefaultId<T extends { name: string }>(
       return `id_${props.name}`;
     },
   };
-  return mergeProps(idObj, props);
+  const allProps = mergeProps(idObj, props);
+  return allProps;
 }

@@ -53,6 +53,7 @@ export default function Dropdown(props: FlowProps<DropdownProps>) {
         flip(),
         accountForHeader(props.fallbackPlacement),
       ],
+      // eslint-disable-next-line solid/reactivity -- function is passed later to an event handler
     }).then(({ x, y }) => {
       Object.assign(store.menuRef!.style, {
         left: `${x}px`,

@@ -25,7 +25,11 @@ export default function Dialog(props: DialogProps) {
       <Portal>
         <dialog
           ref={ref}
-          onClose={mergedProps.onClose}
+          onClose={(e) => {
+            if (mergedProps.onClose) {
+              mergedProps.onClose(e);
+            }
+          }}
           closedby={mergedProps.closedby}
           class={`${styles.dialog} ${mergedProps.class ?? ""}`}
         >
@@ -41,7 +45,7 @@ type FullDialogProps = JSX.DialogHtmlAttributes<HTMLDialogElement>;
 interface DialogProps {
   class?: FullDialogProps["class"];
   closedby?: FullDialogProps["closedby"];
-  onClose?: FullDialogProps["onClose"];
+  onClose?: JSX.EventHandler<HTMLDialogElement, Event>;
   open: boolean;
   children: JSX.Element;
 }

@@ -15,7 +15,9 @@ export default function UnreadCount(props: UnreadCountProps) {
   return (
     <span
       class={styles.count}
-      onClick={props.onClick}
+      onClick={(e) => {
+        props.onClick(e);
+      }}
       title="Mark all as read"
       role="button"
       tabindex="0"

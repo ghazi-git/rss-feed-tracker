@@ -18,7 +18,11 @@ export default function FeedForm(props: FeedFormProps) {
   ];
 
   return (
-    <form onSubmit={props.onSubmit}>
+    <form
+      onSubmit={(e) => {
+        props.onSubmit(e);
+      }}
+    >
       <InputField
         type="url"
         name="url"
@@ -60,7 +64,7 @@ export default function FeedForm(props: FeedFormProps) {
 }
 
 export interface FeedFormProps {
-  onSubmit: FormProps["onSubmit"];
+  onSubmit: JSX.EventHandler<HTMLFormElement, SubmitEvent>;
   formdata: FeedFormdata;
   setFormdata: SetStoreFunction<FeedFormdata>;
 }
@@ -71,5 +75,3 @@ export interface FeedFormdata {
   frequency: number;
   folder: number | null;
 }
-
-type FormProps = JSX.FormHTMLAttributes<HTMLFormElement>;

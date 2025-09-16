@@ -9,7 +9,12 @@ import { Folder, NODES } from "@/popup/utils/dummy-data";
 
 export default function FolderForm(props: FolderFormProps) {
   return (
-    <form onSubmit={props.onSubmit} method="post">
+    <form
+      onSubmit={(e) => {
+        props.onSubmit(e);
+      }}
+      method="post"
+    >
       <InputField
         type="text"
         name="name"
@@ -73,7 +78,7 @@ function getFoldersTree(rootFolder: Folder, folders: Folder[]) {
 type StackItem = [Folder, number];
 
 interface FolderFormProps {
-  onSubmit: FormProps["onSubmit"];
+  onSubmit: JSX.EventHandler<HTMLFormElement, SubmitEvent>;
   formdata: FolderFormdata;
   setFormdata: SetStoreFunction<FolderFormdata>;
   isRoot?: boolean;
@@ -84,5 +89,3 @@ export interface FolderFormdata {
   name: string;
   parent: number | null;
 }
-
-type FormProps = JSX.FormHTMLAttributes<HTMLFormElement>;

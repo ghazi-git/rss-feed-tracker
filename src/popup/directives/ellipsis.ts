@@ -22,6 +22,7 @@ export function singleLineEllipsis(
 }
 
 declare module "solid-js" {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface Directives {
       singleLineEllipsis: string;
