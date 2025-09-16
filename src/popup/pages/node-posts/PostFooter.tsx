@@ -1,12 +1,12 @@
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle";
 import FeedName from "@/popup/pages/node-posts/FeedName";
+import { PostType } from "@/popup/pages/node-posts/types";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle";
 import { hideLinkPreview } from "@/popup/store/link-preview";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
 
 import styles from "./PostFooter.module.css";
-import { PostType } from "@/popup/pages/node-posts/types";
 
 export default function PostFooter(props: { post: PostType }) {
   return (

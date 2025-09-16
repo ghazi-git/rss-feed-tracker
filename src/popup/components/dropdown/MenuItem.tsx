@@ -1,9 +1,9 @@
 import { JSX, mergeProps, onCleanup, splitProps } from "solid-js";
+import { FlowProps } from "solid-js/types/render/component";
 
 import { useDropdownContext } from "@/popup/components/dropdown/context";
 
 import styles from "./MenuItem.module.css";
-import { FlowProps } from "solid-js/types/render/component";
 
 export default function MenuItem(props: FlowProps<MenuItemProps>) {
   let ref: HTMLDivElement;

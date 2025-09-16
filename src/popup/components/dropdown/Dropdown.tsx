@@ -5,8 +5,10 @@ import {
   MiddlewareState,
   offset,
 } from "@floating-ui/dom";
+import { Placement } from "@floating-ui/utils";
 import { onCleanup } from "solid-js";
 import { createStore, produce } from "solid-js/store";
+import { FlowProps } from "solid-js/types/render/component";
 
 import {
   DropdownContext,
@@ -17,8 +19,6 @@ import {
   MenuRef,
   TriggerRef,
 } from "./context";
-import { Placement } from "@floating-ui/utils";
-import { FlowProps } from "solid-js/types/render/component";
 
 export default function Dropdown(props: FlowProps<DropdownProps>) {
   const [store, setStore] = createStore<DropdownStore>({

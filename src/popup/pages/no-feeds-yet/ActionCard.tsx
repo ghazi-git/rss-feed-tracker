@@ -1,8 +1,9 @@
+import { JSX } from "solid-js";
+import { FlowProps } from "solid-js/types/render/component";
+
 import Anchor from "@/popup/components/Anchor";
 
 import styles from "./ActionCard.module.css";
-import { FlowProps } from "solid-js/types/render/component";
-import { JSX } from "solid-js";
 
 export default function ActionCard(props: FlowProps<ActionCardProps>) {
   return (

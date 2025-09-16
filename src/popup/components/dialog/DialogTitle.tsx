@@ -1,7 +1,8 @@
+import { FlowProps } from "solid-js/types/render/component";
+
 import DialogClose from "@/popup/components/dialog/DialogClose";
 
 import styles from "./DialogTitle.module.css";
-import { FlowProps } from "solid-js/types/render/component";
 
 export default function DialogTitle(props: FlowProps) {
   return (

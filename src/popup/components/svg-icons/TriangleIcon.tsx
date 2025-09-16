@@ -1,7 +1,8 @@
 import { splitProps } from "solid-js";
 
-import styles from "./TriangleIcon.module.css";
 import { SVGProps } from "@/popup/components/svg-icons/types";
+
+import styles from "./TriangleIcon.module.css";
 
 export default function TriangleIcon(props: TriangleIconProps) {
   const [extra, rest] = splitProps(props, ["class"]);

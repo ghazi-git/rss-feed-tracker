@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
+import { FlowProps } from "solid-js/types/render/component";
 
 import styles from "./FieldWrapper.module.css";
-import { FlowProps } from "solid-js/types/render/component";
 
 export function FieldWrapper(props: FieldWrapperProps) {
   return (

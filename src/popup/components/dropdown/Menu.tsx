@@ -1,10 +1,10 @@
 import { JSX, Show, splitProps } from "solid-js";
+import { FlowProps } from "solid-js/types/render/component";
 import { Portal } from "solid-js/web";
 
 import { useDropdownContext } from "@/popup/components/dropdown/context";
 
 import styles from "./Menu.module.css";
-import { FlowProps } from "solid-js/types/render/component";
 
 /**
  * Accessibility implementation details are based on this link

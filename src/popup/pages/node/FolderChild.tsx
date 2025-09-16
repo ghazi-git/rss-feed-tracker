@@ -12,9 +12,9 @@ import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import NodeName from "@/popup/pages/node/NodeName";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
+import { Node } from "@/popup/utils/dummy-data";
 
 import styles from "./FolderChild.module.css";
-import { Node } from "@/popup/utils/dummy-data";
 
 export default function FolderChild(props: FolderChildProps) {
   return (

@@ -1,11 +1,12 @@
+import { JSX } from "solid-js";
+import { SetStoreFunction } from "solid-js/store";
+
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import InputField from "@/popup/components/forms/Input";
 import RadioGroup from "@/popup/components/forms/RadioGroup";
 import SelectField from "@/popup/components/forms/Select";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
-import { JSX } from "solid-js";
-import { SetStoreFunction } from "solid-js/store";
 
 export default function FeedForm(props: FeedFormProps) {
   const frequencies = [

@@ -2,10 +2,10 @@ import { A } from "@solidjs/router";
 import { createSignal, For, onMount } from "solid-js";
 
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
+import { PostType } from "@/popup/pages/node-posts/types";
 import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";
 
 import styles from "./Posts.module.css";
-import { PostType } from "@/popup/pages/node-posts/types";
 
 export default function Posts(props: { posts: PostType[] }) {
   return (

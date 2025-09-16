@@ -1,8 +1,8 @@
 import { A } from "@solidjs/router";
+import { AnchorProps } from "@solidjs/router/dist/components";
 import { JSX, splitProps } from "solid-js";
 
 import styles from "./Anchor.module.css";
-import { AnchorProps } from "@solidjs/router/dist/components";
 
 /**
  * The main idea for this Anchor tag is to enable only left click. Other ways

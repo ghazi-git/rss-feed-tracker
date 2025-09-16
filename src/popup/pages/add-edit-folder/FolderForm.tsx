@@ -1,11 +1,11 @@
 import { JSX, Show } from "solid-js";
+import { SetStoreFunction } from "solid-js/store";
 
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import InputField from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
 import { Folder, NODES } from "@/popup/utils/dummy-data";
-import { SetStoreFunction } from "solid-js/store";
 
 export default function FolderForm(props: FolderFormProps) {
   return (

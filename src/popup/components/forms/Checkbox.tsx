@@ -1,7 +1,8 @@
+import { JSX } from "solid-js";
+
 import { addDefaultId } from "@/popup/components/forms/utils";
 
 import styles from "./Checkbox.module.css";
-import { JSX } from "solid-js";
 
 export default function Checkbox(props: CheckboxProps) {
   const propsWithId = addDefaultId(props);

@@ -26,7 +26,7 @@ export function humanizeTimestamp(timestampMs: number) {
   for (const { label, ms } of units) {
     if (absDelta >= ms) {
       const remainder = absDelta % ms;
-      let value =
+      const value =
         remainder / ms >= 0.8
           ? Math.ceil(absDelta / ms)
           : Math.floor(absDelta / ms);
