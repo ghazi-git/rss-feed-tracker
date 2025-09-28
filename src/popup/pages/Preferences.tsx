@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 
 import Checkbox from "@/popup/components/forms/Checkbox";
 import RadioGroup from "@/popup/components/forms/RadioGroup";
+import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
 import {
   detectSystemTheme,
   enableTheme,
@@ -12,13 +13,6 @@ import {
 export default function Preferences() {
   const [unread, setUnread] = createSignal(true);
   const [frequency, setFrequency] = createSignal(2 * 60 * 60 * 1000);
-  const frequencies = [
-    { label: "1 hour", value: 60 * 60 * 1000 },
-    { label: "2 hours", value: 2 * 60 * 60 * 1000 },
-    { label: "4 hours", value: 4 * 60 * 60 * 1000 },
-    { label: "6 hours", value: 6 * 60 * 60 * 1000 },
-    { label: "1 day", value: 24 * 60 * 60 * 1000 },
-  ];
   const themes = [
     { label: "System", value: "" },
     { label: "Light", value: "light" },
@@ -38,10 +32,7 @@ export default function Preferences() {
           enableTheme(theme);
         }}
       />
-      <RadioGroup
-        name="frequency"
-        label="Update Frequency"
-        options={frequencies}
+      <FrequencyField
         value={frequency()}
         onChange={(e) => setFrequency(parseInt(e.target.value))}
       />

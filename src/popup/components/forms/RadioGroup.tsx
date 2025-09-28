@@ -50,7 +50,7 @@ export default function RadioGroup(props: RadioGroupProps) {
   );
 }
 type InputProps = JSX.InputHTMLAttributes<HTMLInputElement>;
-interface RadioGroupProps {
+export interface RadioGroupProps {
   name: string;
   options: Option[];
   id?: InputProps["id"];
