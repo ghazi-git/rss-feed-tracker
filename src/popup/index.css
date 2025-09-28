@@ -25,6 +25,9 @@ html {
   --error-color-light: var(--red-12);
   --error-color-dark: var(--red-3);
   --error-color: var(--error-color-light);
+  --error-bg-color-light: var(--pink-0);
+  --error-bg-color-dark: var(--pink-12);
+  --error-bg-color: var(--error-bg-color-light);
 }
 
 html[data-theme="light"] input[type="file"]::file-selector-button {
@@ -39,6 +42,7 @@ html[data-theme="dark"] {
   --brand: var(--brand-dark);
   --brand-complementary: var(--brand-complementary-dark);
   --error-color: var(--error-color-dark);
+  --error-bg-color: var(--error-bg-color-dark);
 
   input[type="file"]::file-selector-button {
     /* stylelint-disable custom-property-pattern */

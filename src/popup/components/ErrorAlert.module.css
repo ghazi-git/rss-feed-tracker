@@ -1,0 +1,8 @@
+.alert {
+  background-color: var(--error-bg-color);
+  padding: var(--size-2) var(--size-3);
+  color: var(--error-color);
+  border: var(--border-size-1) solid var(--error-color);
+  border-radius: var(--radius-2);
+  margin-block-end: var(--size-2);
+}
