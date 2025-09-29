@@ -7,10 +7,10 @@ import Menu from "@/popup/components/dropdown/Menu";
 import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
 import FeedActions from "@/popup/components/FeedActions";
 import FolderActions from "@/popup/components/FolderActions";
+import SingleLineText from "@/popup/components/SingleLineText";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
-import NodeName from "@/popup/pages/node/NodeName";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
 import { Node } from "@/popup/utils/dummy-data";
 
@@ -37,7 +37,7 @@ export default function FolderChild(props: FolderChildProps) {
           />
         </Show>
       </div>
-      <NodeName name={props.node.name} />
+      <SingleLineText text={props.node.name} />
       <Dropdown placement="bottom-end" fallbackPlacement="left">
         <MenuTrigger onClick={(event) => event.preventDefault()}>
           <ThreeDotIcon class={styles["post-actions-icon"]} />
