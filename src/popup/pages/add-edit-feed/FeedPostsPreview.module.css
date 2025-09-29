@@ -1,0 +1,19 @@
+.latest-posts {
+  color: var(--text-2);
+  font-size: var(--font-size-1);
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: var(--size-1);
+  margin-block-end: var(--size-3);
+}
+
+.no-posts {
+  color: var(--text-2);
+  font-size: var(--font-size-1);
+  margin-block-end: var(--size-2);
+}

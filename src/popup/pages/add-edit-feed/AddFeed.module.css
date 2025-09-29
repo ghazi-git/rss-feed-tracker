@@ -1,0 +1,3 @@
+.feed-form > :has(input[name="url"]) {
+  margin-block-end: var(--size-1);
+}

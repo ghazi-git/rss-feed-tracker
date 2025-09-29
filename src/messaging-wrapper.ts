@@ -24,9 +24,23 @@ export function onMessage<K extends MessageType>(
 
 interface MessageMap {
   // define only ONE argument for each method
-  example1(data: string): number;
-  example2(data: { test: string }): string;
+  "feeds/preview"(data: { url: string }): Result<FeedPreview>;
 }
+
+export interface FeedPreview {
+  feedName: string;
+  posts: PostPreview[];
+}
+export interface PostPreview {
+  title: string;
+  url: string;
+  publishedAt: number;
+}
+
+type Result<T> =
+  | { success: true; data: T; errorMsg: null }
+  | { success: false; data: null; errorMsg: string }
+  | undefined;
 
 type MessageType = keyof MessageMap;
 // assume only one argument is going to contain the payload
