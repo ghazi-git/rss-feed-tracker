@@ -13,10 +13,6 @@
   color: var(--text-1);
 }
 
-.post:hover {
-  text-decoration: none;
-}
-
 .title {
   display: -webkit-box;
   -webkit-box-orient: block-axis; /* stylelint-disable-line property-no-deprecated */

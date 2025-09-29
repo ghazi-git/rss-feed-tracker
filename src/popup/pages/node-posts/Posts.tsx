@@ -1,9 +1,8 @@
-import { A } from "@solidjs/router";
 import { createSignal, For, onMount } from "solid-js";
 
+import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { PostType } from "@/popup/pages/node-posts/types";
-import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";
 
 import styles from "./Posts.module.css";
 
@@ -25,29 +24,7 @@ function Post(props: { post: PostType }) {
   });
 
   return (
-    <A
-      href={props.post.url}
-      class={styles.post}
-      onClick={(event) => {
-        event.preventDefault();
-        const active = !event.ctrlKey;
-        openTab(props.post.url, active);
-      }}
-      onContextMenu={(event) => event.preventDefault()}
-      onAuxClick={(event) => {
-        if (event.button === 1) {
-          event.preventDefault();
-          openTab(props.post.url);
-        }
-      }}
-      onMouseOver={() => showLinkPreview(props.post.url)}
-      onMouseOut={() => hideLinkPreview()}
-      onFocus={() => showLinkPreview(props.post.url)}
-      onBlur={() => hideLinkPreview()}
-      draggable="false"
-      activeClass=""
-      inactiveClass=""
-    >
+    <PostLink href={props.post.url} class={styles.post}>
       <div
         ref={titleRef}
         title={showTooltip() ? props.post.title : ""}
@@ -57,10 +34,6 @@ function Post(props: { post: PostType }) {
         {props.post.title}
       </div>
       <PostFooter post={props.post} />
-    </A>
+    </PostLink>
   );
-}
-
-function openTab(url: string, active = false) {
-  chrome.tabs.create({ url, active });
 }

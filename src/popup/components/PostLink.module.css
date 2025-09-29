@@ -1,0 +1,7 @@
+.link:focus-visible {
+  z-index: var(--layer-1);
+}
+
+.link:hover {
+  text-decoration: none;
+}
