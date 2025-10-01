@@ -4,6 +4,9 @@ import { useContextMenuContext } from "@/popup/components/context-menu/context";
 
 import styles from "./ContextMenuItem.module.css";
 
+/**
+ * Accessibility work is based on https://www.w3.org/WAI/ARIA/apg/patterns/menubar/
+ */
 export default function ContextMenuItem(props: ContextMenuItemProps) {
   let ref: HTMLDivElement;
   const [extra, rest] = splitProps(props, ["class", "onSelected"]);
@@ -24,7 +27,10 @@ export default function ContextMenuItem(props: ContextMenuItemProps) {
         extra.onSelected(event);
       }}
       onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
+        if (event.key === "Enter") {
+          extra.onSelected(event);
+        } else if (event.key === " ") {
+          event.preventDefault();
           extra.onSelected(event);
         }
       }}
