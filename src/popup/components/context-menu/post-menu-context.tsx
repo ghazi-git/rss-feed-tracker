@@ -17,6 +17,7 @@ export function PostMenuProvider(props: FlowProps) {
   const [store, setStore] = createStore<PostMenuStore>({
     shown: false,
     menuRef: null,
+    triggerRef: null,
     url: null,
     focusFirstItem: false,
     guid: null,
@@ -24,6 +25,7 @@ export function PostMenuProvider(props: FlowProps) {
   });
   const registerMenuRef = (ref: HTMLDivElement) => setStore("menuRef", ref);
   const showMenu = (
+    triggerRef: HTMLElement,
     url: string,
     top: number,
     left: number,
@@ -33,6 +35,7 @@ export function PostMenuProvider(props: FlowProps) {
     setStore(({ menuRef }) => ({
       shown: true,
       menuRef,
+      triggerRef,
       url,
       focusFirstItem,
       guid,
@@ -43,6 +46,7 @@ export function PostMenuProvider(props: FlowProps) {
     setStore(({ menuRef }) => ({
       shown: false,
       menuRef,
+      triggerRef: null,
       url: null,
       focusFirstItem: false,
       guid: null,
@@ -63,6 +67,7 @@ interface PostMenuContextType {
   store: PostMenuStore;
   registerMenuRef: (ref: HTMLDivElement) => void;
   showMenu: (
+    triggerRef: HTMLElement,
     url: string,
     top: number,
     left: number,
@@ -76,6 +81,7 @@ type PostMenuStore =
   | {
       shown: false;
       menuRef: HTMLDivElement | null;
+      triggerRef: null;
       url: null;
       focusFirstItem: false;
       guid: null;
@@ -84,6 +90,7 @@ type PostMenuStore =
   | {
       shown: true;
       menuRef: HTMLDivElement | null;
+      triggerRef: HTMLElement | null;
       url: string;
       focusFirstItem: boolean;
       guid: string | null;

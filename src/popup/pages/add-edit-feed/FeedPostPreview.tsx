@@ -8,9 +8,11 @@ import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
 import styles from "./FeedPostPreview.module.css";
 
 export function FeedPostPreview(props: PostPreviewProps) {
+  let ref!: HTMLAnchorElement;
   const { store, showMenu } = usePostMenuContext();
   return (
     <PostLink
+      ref={ref}
       href={props.url}
       class={styles.post}
       onContextMenu={(event) => {
@@ -26,7 +28,7 @@ export function FeedPostPreview(props: PostPreviewProps) {
           // and in that case we should focus the first item according to WAI
           // ARIA rules for menus
           const focusFirstItem = event.button !== 2;
-          showMenu(props.url, y, x, focusFirstItem);
+          showMenu(ref, props.url, y, x, focusFirstItem);
         })();
       }}
     >

@@ -131,18 +131,11 @@ export default function ContextMenu(props: ContextMenuProps) {
           style={{ top: `${extra.top}px`, left: `${extra.left}px` }}
           role="menu"
           onKeyDown={(event) => {
-            // todo test tab and escape
             if (event.key === "Tab") {
               extra.closeContextMenu();
-              // focusTrigger();
-              if (event.shiftKey) {
-                // so that focus stays on the trigger
-                event.preventDefault();
-              }
             } else if (event.key === "Escape") {
               event.preventDefault();
               extra.closeContextMenu();
-              // focusTrigger();
             } else if (event.key === "ArrowDown") {
               focusItem("next");
             } else if (event.key === "ArrowUp") {

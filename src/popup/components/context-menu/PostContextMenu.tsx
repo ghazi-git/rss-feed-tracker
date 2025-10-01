@@ -19,6 +19,7 @@ export function PostContextMenu(props: PostContextMenuProps) {
       left={store.position.left!}
       focusFirstItem={store.focusFirstItem}
       closeContextMenu={() => {
+        store.triggerRef?.focus();
         hideMenu();
       }}
       aria-label="Post Options"
@@ -29,6 +30,7 @@ export function PostContextMenu(props: PostContextMenuProps) {
             props.onLinkOpened(store.guid);
           }
           openTab(store.url!);
+          store.triggerRef?.focus();
           hideMenu();
         }}
       >
@@ -40,6 +42,7 @@ export function PostContextMenu(props: PostContextMenuProps) {
             props.onLinkOpened(store.guid);
           }
           openWindow(store.url!);
+          store.triggerRef?.focus();
           hideMenu();
         }}
       >
@@ -51,6 +54,7 @@ export function PostContextMenu(props: PostContextMenuProps) {
             props.onLinkOpened(store.guid);
           }
           openWindow(store.url!, true);
+          store.triggerRef?.focus();
           hideMenu();
         }}
       >
@@ -66,6 +70,7 @@ export function PostContextMenu(props: PostContextMenuProps) {
               showToast("Failed to copy the link.");
             }
           })();
+          store.triggerRef?.focus();
           hideMenu();
         }}
       >
