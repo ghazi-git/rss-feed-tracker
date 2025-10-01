@@ -26,3 +26,7 @@ html[data-theme="dark"] .context-menu {
 
   background-color: #1f1f1f; /* same bg as native context menu in dark theme */
 }
+
+.hidden {
+  opacity: 0;
+}

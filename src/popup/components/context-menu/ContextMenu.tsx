@@ -1,4 +1,4 @@
-import { JSX, onCleanup, onMount, splitProps } from "solid-js";
+import { batch, createEffect, JSX, splitProps, untrack } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Portal } from "solid-js/web";
 
@@ -18,6 +18,8 @@ export default function ContextMenu(props: ContextMenuProps) {
     "closeContextMenu",
     "ref",
     "class",
+    "shown",
+    "focusFirstItem",
   ]);
   const [store, setStore] = createStore<{ items: ContextMenuItemType[] }>({
     items: [],
@@ -37,10 +39,12 @@ export default function ContextMenu(props: ContextMenuProps) {
 
   const _focusItem = (index: number) => {
     const currentIndex = _getCurrentlyFocusedIndex(store.items);
-    if (currentIndex >= 0) {
-      setStore("items", currentIndex, "focused", false);
-    }
-    setStore("items", index, "focused", true);
+    batch(() => {
+      if (currentIndex >= 0) {
+        setStore("items", currentIndex, "focused", false);
+      }
+      setStore("items", index, "focused", true);
+    });
     store.items.at(index)?.ref.focus();
   };
   const focusItem = (item: ContextMenuItemPosition) => {
@@ -70,19 +74,37 @@ export default function ContextMenu(props: ContextMenuProps) {
     }
   };
 
+  const _closeMenu = () => {
+    extra.closeContextMenu();
+    setStore(
+      "items",
+      { from: 0, to: store.items.length - 1 },
+      "focused",
+      false,
+    );
+  };
   const _clickOutsideHandler = (event: MouseEvent) => {
     if (!menuRef.contains(event.target as Node)) {
-      extra.closeContextMenu();
+      _closeMenu();
     }
   };
-  const _scrollHandler = () => extra.closeContextMenu();
-  onMount(() => {
-    document.addEventListener("mousedown", _clickOutsideHandler, true);
-    document.addEventListener("scroll", _scrollHandler, true);
+  const _scrollHandler = () => _closeMenu();
+  createEffect(() => {
+    if (extra.shown) {
+      document.addEventListener("mousedown", _clickOutsideHandler, true);
+      document.addEventListener("scroll", _scrollHandler, true);
+    } else {
+      document.removeEventListener("mousedown", _clickOutsideHandler, true);
+      document.removeEventListener("scroll", _scrollHandler, true);
+    }
   });
-  onCleanup(() => {
-    document.removeEventListener("mousedown", _clickOutsideHandler, true);
-    document.removeEventListener("scroll", _scrollHandler, true);
+  createEffect(() => {
+    if (extra.focusFirstItem) {
+      // don't track store.items that is accessed in focusItem
+      untrack(() => {
+        focusItem("first");
+      });
+    }
   });
 
   return (
@@ -104,6 +126,8 @@ export default function ContextMenu(props: ContextMenuProps) {
             }
           }}
           class={`${styles["context-menu"]} ${extra.class ?? ""}`}
+          classList={{ [styles.hidden]: !extra.shown }}
+          inert={!extra.shown}
           style={{ top: `${extra.top}px`, left: `${extra.left}px` }}
           role="menu"
           onKeyDown={(event) => {
@@ -158,9 +182,11 @@ function _getCurrentlyFocusedIndex(items: ContextMenuItemType[]) {
 }
 
 interface ContextMenuProps extends JSX.HTMLAttributes<HTMLDivElement> {
+  shown: boolean;
   left: number;
   top: number;
   closeContextMenu: () => void;
+  focusFirstItem: boolean;
 }
 
 interface ContextMenuItemType {

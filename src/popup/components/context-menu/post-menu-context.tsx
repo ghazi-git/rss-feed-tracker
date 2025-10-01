@@ -18,6 +18,7 @@ export function PostMenuProvider(props: FlowProps) {
     shown: false,
     menuRef: null,
     url: null,
+    focusFirstItem: false,
     guid: null,
     position: { top: 0, left: 0 },
   });
@@ -26,12 +27,14 @@ export function PostMenuProvider(props: FlowProps) {
     url: string,
     top: number,
     left: number,
+    focusFirstItem: boolean,
     guid: string | null = null,
   ) => {
     setStore(({ menuRef }) => ({
       shown: true,
       menuRef,
       url,
+      focusFirstItem,
       guid,
       position: { top, left },
     }));
@@ -41,6 +44,7 @@ export function PostMenuProvider(props: FlowProps) {
       shown: false,
       menuRef,
       url: null,
+      focusFirstItem: false,
       guid: null,
       position: { top: 0, left: 0 },
     }));
@@ -62,6 +66,7 @@ interface PostMenuContextType {
     url: string,
     top: number,
     left: number,
+    focusFirstItem: boolean,
     guid?: string | null,
   ) => void;
   hideMenu: () => void;
@@ -72,6 +77,7 @@ type PostMenuStore =
       shown: false;
       menuRef: HTMLDivElement | null;
       url: null;
+      focusFirstItem: false;
       guid: null;
       position: { top: 0; left: 0 };
     }
@@ -79,6 +85,7 @@ type PostMenuStore =
       shown: true;
       menuRef: HTMLDivElement | null;
       url: string;
+      focusFirstItem: boolean;
       guid: string | null;
       position: { top: number; left: number };
     };

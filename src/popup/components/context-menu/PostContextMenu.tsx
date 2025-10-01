@@ -6,8 +6,6 @@ import ContextMenuSeparator from "@/popup/components/context-menu/ContextMenuSep
 import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-context";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
-import styles from "./PostContextMenu.module.css";
-
 export function PostContextMenu(props: PostContextMenuProps) {
   const { store, registerMenuRef, hideMenu } = usePostMenuContext();
 
@@ -16,10 +14,10 @@ export function PostContextMenu(props: PostContextMenuProps) {
       ref={(elt) => {
         registerMenuRef(elt);
       }}
-      classList={{ [styles.hidden]: !store.shown }}
-      inert={!store.shown}
+      shown={store.shown}
       top={store.position.top!}
       left={store.position.left!}
+      focusFirstItem={store.focusFirstItem}
       closeContextMenu={() => {
         hideMenu();
       }}

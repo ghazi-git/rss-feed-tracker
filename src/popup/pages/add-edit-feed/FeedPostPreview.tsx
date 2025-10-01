@@ -22,7 +22,11 @@ export function FeedPostPreview(props: PostPreviewProps) {
             placement: "bottom-start",
             middleware: [flip()],
           });
-          showMenu(props.url, y, x);
+          // button=2 indicates a right-click, otherwise it's keyboard triggered
+          // and in that case we should focus the first item according to WAI
+          // ARIA rules for menus
+          const focusFirstItem = event.button !== 2;
+          showMenu(props.url, y, x, focusFirstItem);
         })();
       }}
     >
