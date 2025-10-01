@@ -1,5 +1,5 @@
-import { Navigate, Route, Router } from "@solidjs/router";
-import { onMount, ParentComponent } from "solid-js";
+import { Navigate, Route, Router, useLocation } from "@solidjs/router";
+import { createEffect, onMount, ParentComponent } from "solid-js";
 import { Toaster, ToastProvider } from "solid-notifications";
 
 import Body from "@/popup/components/Body";
@@ -17,12 +17,24 @@ import NodePosts from "@/popup/pages/node-posts";
 import Preferences from "@/popup/pages/Preferences";
 import { NODES } from "@/popup/utils/dummy-data";
 import {
+  getLastVisitedPage,
+  saveLastVisitedPage,
+} from "@/popup/utils/last-visited-page";
+import {
   detectSystemTheme,
   enableTheme,
   uiTheme,
 } from "@/popup/utils/ui-theme";
 
 const Layout: ParentComponent = (props) => {
+  const location = useLocation();
+  createEffect(() => {
+    const currentURL = location.pathname + location.search + location.hash;
+    if (!currentURL.endsWith(".html") && currentURL !== "/") {
+      saveLastVisitedPage(currentURL);
+    }
+  });
+
   return (
     <>
       <Header />
@@ -33,6 +45,7 @@ const Layout: ParentComponent = (props) => {
 };
 
 function App() {
+  let lastVisitedURL = getLastVisitedPage();
   const theme = uiTheme() ?? detectSystemTheme();
   enableTheme(theme);
   onMount(() => {
@@ -88,6 +101,11 @@ function App() {
         <Route
           path="*"
           component={() => {
+            if (lastVisitedURL) {
+              const redirectTo = lastVisitedURL;
+              lastVisitedURL = null;
+              return <Navigate href={redirectTo} />;
+            }
             const hasFeeds = window.localStorage.getItem("hasFeeds");
             if (hasFeeds) {
               return <Navigate href="/library" />;
