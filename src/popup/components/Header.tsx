@@ -1,12 +1,18 @@
 import { useLocation } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 
 import Anchor from "@/popup/components/Anchor";
 
 import styles from "./Header.module.css";
 
 export default function Header() {
-  const [activeTab, setActiveTab] = createSignal(getCurrentTab());
+  const location = useLocation();
+  const [activeTab, setActiveTab] = createSignal<Tab>("library");
+
+  createEffect(() => {
+    const tab = getCurrentTab(location.pathname);
+    setActiveTab(tab);
+  });
 
   return (
     <header class={styles.header}>
@@ -14,7 +20,6 @@ export default function Header() {
         href="/"
         class={styles.tab}
         classList={{ [styles.active]: activeTab() === "library" }}
-        onClick={() => setActiveTab("library")}
       >
         Library
       </Anchor>
@@ -22,7 +27,6 @@ export default function Header() {
         href="/bookmarks"
         class={`${styles.tab} ${styles.bookmarks}`}
         classList={{ [styles.active]: activeTab() === "bookmarks" }}
-        onClick={() => setActiveTab("bookmarks")}
       >
         Bookmarks
       </Anchor>
@@ -30,7 +34,6 @@ export default function Header() {
         href="/preferences"
         class={styles.tab}
         classList={{ [styles.active]: activeTab() === "preferences" }}
-        onClick={() => setActiveTab("preferences")}
       >
         Preferences
       </Anchor>
@@ -38,9 +41,7 @@ export default function Header() {
   );
 }
 
-function getCurrentTab() {
-  const location = useLocation();
-  const url = location.pathname;
+function getCurrentTab(url: string): Tab {
   if (url.startsWith("/bookmarks")) {
     return "bookmarks";
   } else if (url.startsWith("/preferences")) {
@@ -49,3 +50,5 @@ function getCurrentTab() {
     return "library";
   }
 }
+
+type Tab = "library" | "bookmarks" | "preferences";
