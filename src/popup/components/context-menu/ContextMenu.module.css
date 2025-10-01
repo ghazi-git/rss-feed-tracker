@@ -2,6 +2,8 @@
   position: absolute;
   inset-block-start: 0;
   inset-inline-start: 0;
+  min-inline-size: var(--size-12);
+  z-index: var(--layer-1);
   font-size: 14px;
   padding: 14px 0;
   border-radius: var(--radius-3);
@@ -16,4 +18,11 @@
     var(--shadow-offset) 0 var(--shadow-spread) var(--shadow-color),
     0 var(--shadow-offset) var(--shadow-spread) var(--shadow-color),
     calc(-1 * var(--shadow-offset)) 0 var(--shadow-spread) var(--shadow-color);
+}
+
+html[data-theme="dark"] .context-menu {
+  --shadow-color: rgb(255 255 255 / 1%);
+  --shadow-spread: 5px;
+
+  background-color: #1f1f1f; /* same bg as native context menu in dark theme */
 }
