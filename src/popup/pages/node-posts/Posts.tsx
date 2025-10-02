@@ -1,8 +1,10 @@
 import { createSignal, For, onMount } from "solid-js";
+import { dismissToast, showToast } from "solid-notifications";
 
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { PostType } from "@/popup/pages/node-posts/types";
+import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./Posts.module.css";
@@ -16,6 +18,7 @@ export default function Posts(props: { posts: PostType[] }) {
 }
 
 function Post(props: { post: PostType }) {
+  const { store } = usePreferencesContext();
   const [showTooltip, setShowTooltip] = createSignal(false);
   let titleRef!: HTMLDivElement;
   onMount(() => {
@@ -35,7 +38,12 @@ function Post(props: { post: PostType }) {
         } else if (event.shiftKey) {
           openWindow(props.post.url);
         } else {
-          openTab(props.post.url, true);
+          if (store.clickPostToToggleUnread) {
+            dismissToast();
+            showToast("Toggle unread");
+          } else {
+            openTab(props.post.url, true);
+          }
         }
       }}
       onContextMenu={(event) => event.preventDefault()}
