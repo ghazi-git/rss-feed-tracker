@@ -4,6 +4,7 @@ import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-co
 import PostLink from "@/popup/components/PostLink";
 import SingleLineText from "@/popup/components/SingleLineText";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
+import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./FeedPostPreview.module.css";
 
@@ -15,6 +16,22 @@ export function FeedPostPreview(props: PostPreviewProps) {
       ref={ref}
       href={props.url}
       class={styles.post}
+      onClick={(event) => {
+        event.preventDefault();
+        if (event.ctrlKey) {
+          openTab(props.url);
+        } else if (event.shiftKey) {
+          openWindow(props.url);
+        } else {
+          openTab(props.url, true);
+        }
+      }}
+      onAuxClick={(event) => {
+        if (event.button === 1) {
+          event.preventDefault();
+          openTab(props.url);
+        }
+      }}
       onContextMenu={(event) => {
         event.preventDefault();
         // show custom context menu instead

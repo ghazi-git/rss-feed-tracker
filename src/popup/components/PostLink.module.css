@@ -4,4 +4,5 @@
 
 .link:hover {
   text-decoration: none;
+  background-color: var(--surface-2);
 }

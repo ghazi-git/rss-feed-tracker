@@ -3,6 +3,7 @@ import { createSignal, For, onMount } from "solid-js";
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { PostType } from "@/popup/pages/node-posts/types";
+import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./Posts.module.css";
 
@@ -24,7 +25,27 @@ function Post(props: { post: PostType }) {
   });
 
   return (
-    <PostLink href={props.post.url} class={styles.post}>
+    <PostLink
+      href={props.post.url}
+      class={styles.post}
+      onClick={(event) => {
+        event.preventDefault();
+        if (event.ctrlKey) {
+          openTab(props.post.url);
+        } else if (event.shiftKey) {
+          openWindow(props.post.url);
+        } else {
+          openTab(props.post.url, true);
+        }
+      }}
+      onContextMenu={(event) => event.preventDefault()}
+      onAuxClick={(event) => {
+        if (event.button === 1) {
+          event.preventDefault();
+          openTab(props.post.url);
+        }
+      }}
+    >
       <div
         ref={titleRef}
         title={showTooltip() ? props.post.title : ""}
