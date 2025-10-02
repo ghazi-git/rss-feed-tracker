@@ -1,6 +1,12 @@
+import { computePosition, flip } from "@floating-ui/dom";
 import { createSignal, For, onMount } from "solid-js";
 import { dismissToast, showToast } from "solid-notifications";
 
+import {
+  PostMenuProvider,
+  usePostMenuContext,
+} from "@/popup/components/context-menu/post-menu-context";
+import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { PostType } from "@/popup/pages/node-posts/types";
@@ -11,13 +17,23 @@ import styles from "./Posts.module.css";
 
 export default function Posts(props: { posts: PostType[] }) {
   return (
-    <div class={styles.posts}>
-      <For each={props.posts}>{(post) => <Post post={post} />}</For>
-    </div>
+    <PostMenuProvider>
+      <PostContextMenu
+        onLinkOpened={(postGUID) => {
+          console.log("notify service worker to mark post as read", postGUID);
+        }}
+      />
+      <div class={styles.posts}>
+        <For each={props.posts}>{(post) => <Post post={post} />}</For>
+      </div>
+    </PostMenuProvider>
   );
 }
 
 function Post(props: { post: PostType }) {
+  const { store: ctxMenu, showMenu } = usePostMenuContext();
+  let ref!: HTMLAnchorElement;
+
   const { store } = usePreferencesContext();
   const [showTooltip, setShowTooltip] = createSignal(false);
   let titleRef!: HTMLDivElement;
@@ -29,6 +45,7 @@ function Post(props: { post: PostType }) {
 
   return (
     <PostLink
+      ref={ref}
       href={props.post.url}
       class={styles.post}
       onClick={(event) => {
@@ -46,12 +63,27 @@ function Post(props: { post: PostType }) {
           }
         }
       }}
-      onContextMenu={(event) => event.preventDefault()}
       onAuxClick={(event) => {
         if (event.button === 1) {
           event.preventDefault();
           openTab(props.post.url);
         }
+      }}
+      onContextMenu={(event) => {
+        event.preventDefault();
+        // show custom context menu instead
+        const virtualElt = getVirtualElement(event.clientX, event.clientY);
+        (async () => {
+          const { x, y } = await computePosition(virtualElt, ctxMenu.menuRef!, {
+            placement: "bottom-start",
+            middleware: [flip()],
+          });
+          // button=2 indicates a right-click, otherwise it's keyboard triggered
+          // and in that case we should focus the first item according to WAI
+          // ARIA rules for menus
+          const focusFirstItem = event.button !== 2;
+          showMenu(ref, props.post.url, y, x, focusFirstItem);
+        })();
       }}
     >
       <div
@@ -65,4 +97,21 @@ function Post(props: { post: PostType }) {
       <PostFooter post={props.post} />
     </PostLink>
   );
+}
+
+function getVirtualElement(clientX: number, clientY: number) {
+  return {
+    getBoundingClientRect() {
+      return {
+        width: 0,
+        height: 0,
+        x: clientX,
+        left: clientX,
+        right: clientX,
+        y: clientY,
+        top: clientY,
+        bottom: clientY,
+      };
+    },
+  };
 }
