@@ -20,6 +20,7 @@ import {
   getLastVisitedPage,
   saveLastVisitedPage,
 } from "@/popup/utils/last-visited-page";
+import { PreferencesProvider } from "@/popup/utils/preferences-storage";
 import {
   detectSystemTheme,
   enableTheme,
@@ -60,62 +61,64 @@ function App() {
   });
 
   return (
-    <ToastProvider
-      limit={1}
-      positionX="center"
-      positionY="bottom"
-      showProgressBar={false}
-      dismissButtonStyle={{ "box-shadow": "none" }}
-    >
-      <Toaster />
-      <Router root={Layout}>
-        <Route
-          path="/library"
-          component={() => {
-            const rootNode = NODES.find((node) => node.parentId === null);
-            if (!rootNode) {
-              // todo create a new one then redirect to the no feeds yet page
-              return <Navigate href="/library/no-feeds-yet" />;
-            } else {
-              const rootNodeChildren = NODES.filter(
-                (node) => node.parentId === rootNode.id,
-              );
-              if (rootNodeChildren.length === 0) {
+    <PreferencesProvider>
+      <ToastProvider
+        limit={1}
+        positionX="center"
+        positionY="bottom"
+        showProgressBar={false}
+        dismissButtonStyle={{ "box-shadow": "none" }}
+      >
+        <Toaster />
+        <Router root={Layout}>
+          <Route
+            path="/library"
+            component={() => {
+              const rootNode = NODES.find((node) => node.parentId === null);
+              if (!rootNode) {
+                // todo create a new one then redirect to the no feeds yet page
                 return <Navigate href="/library/no-feeds-yet" />;
               } else {
-                return <Navigate href={`/library/nodes/${rootNode.id}`} />;
+                const rootNodeChildren = NODES.filter(
+                  (node) => node.parentId === rootNode.id,
+                );
+                if (rootNodeChildren.length === 0) {
+                  return <Navigate href="/library/no-feeds-yet" />;
+                } else {
+                  return <Navigate href={`/library/nodes/${rootNode.id}`} />;
+                }
               }
-            }
-          }}
-        />
-        <Route path="/library/nodes/:id" component={Node} />
-        <Route path="/library/nodes/:id/posts" component={NodePosts} />
-        <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
-        <Route path="/library/feeds/add" component={AddFeed} />
-        <Route path="/library/feeds/import" component={ImportFeeds} />
-        <Route path="/library/feeds/:id/edit" component={EditFeed} />
-        <Route path="/library/folders/add" component={AddFolder} />
-        <Route path="/library/folders/:id/edit" component={EditFolder} />
-        <Route path="/bookmarks" component={Bookmarks} />
-        <Route path="/preferences" component={Preferences} />
-        <Route
-          path="*"
-          component={() => {
-            if (lastVisitedURL) {
-              const redirectTo = lastVisitedURL;
-              lastVisitedURL = null;
-              return <Navigate href={redirectTo} />;
-            }
-            const hasFeeds = window.localStorage.getItem("hasFeeds");
-            if (hasFeeds) {
-              return <Navigate href="/library" />;
-            } else {
-              return <Navigate href="/library/no-feeds-yet" />;
-            }
-          }}
-        />
-      </Router>
-    </ToastProvider>
+            }}
+          />
+          <Route path="/library/nodes/:id" component={Node} />
+          <Route path="/library/nodes/:id/posts" component={NodePosts} />
+          <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
+          <Route path="/library/feeds/add" component={AddFeed} />
+          <Route path="/library/feeds/import" component={ImportFeeds} />
+          <Route path="/library/feeds/:id/edit" component={EditFeed} />
+          <Route path="/library/folders/add" component={AddFolder} />
+          <Route path="/library/folders/:id/edit" component={EditFolder} />
+          <Route path="/bookmarks" component={Bookmarks} />
+          <Route path="/preferences" component={Preferences} />
+          <Route
+            path="*"
+            component={() => {
+              if (lastVisitedURL) {
+                const redirectTo = lastVisitedURL;
+                lastVisitedURL = null;
+                return <Navigate href={redirectTo} />;
+              }
+              const hasFeeds = window.localStorage.getItem("hasFeeds");
+              if (hasFeeds) {
+                return <Navigate href="/library" />;
+              } else {
+                return <Navigate href="/library/no-feeds-yet" />;
+              }
+            }}
+          />
+        </Router>
+      </ToastProvider>
+    </PreferencesProvider>
   );
 }
 
