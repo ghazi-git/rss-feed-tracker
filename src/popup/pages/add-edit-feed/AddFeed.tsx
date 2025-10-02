@@ -12,10 +12,12 @@ import FeedPostsPreview from "@/popup/pages/add-edit-feed/FeedPostsPreview";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
 import PreviewFeedForm from "@/popup/pages/add-edit-feed/PreviewFeedForm";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
+import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 
 import styles from "./AddFeed.module.css";
 
 export default function AddFeed() {
+  const { store } = usePreferencesContext();
   const [step, setStep] = createSignal<"preview" | "save">("preview");
   const [feedURL, setFeedURL] = createSignal("");
   const [feedPosts, setFeedPosts] = createSignal<PostPreview[]>([]);
@@ -27,7 +29,7 @@ export default function AddFeed() {
   const [formdata, setFormdata] = createStore({
     url: "",
     name: "",
-    frequency: 2 * 60 * 60 * 1000,
+    frequency: store.defaultFeedUpdateFrequency,
     folder: parseInt(searchParams.parentFolderId ?? "") || null,
   });
 
