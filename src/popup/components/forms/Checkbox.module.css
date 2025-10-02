@@ -8,3 +8,8 @@
   align-items: center;
   gap: var(--size-2);
 }
+
+.help-text {
+  color: var(--text-2);
+  font-size: var(--font-size-0);
+}
