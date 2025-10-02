@@ -1,6 +1,6 @@
 .bookmark-toggle {
-  inline-size: var(--size-3);
-  block-size: var(--size-3);
+  inline-size: var(--size-4);
+  block-size: var(--size-4);
   z-index: var(--layer-1);
 }
 
