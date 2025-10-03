@@ -1,3 +1,5 @@
+import "./feeds/messaging";
+
 import { setupDB } from "@/background/db-setup";
 
 chrome.runtime.onInstalled.addListener(async () => {

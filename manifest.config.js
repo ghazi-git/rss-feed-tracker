@@ -20,4 +20,5 @@ export default defineManifest({
     type: "module",
   },
   permissions: ["storage"],
+  host_permissions: ["http://*/*", "https://*/*"],
 });
