@@ -122,6 +122,7 @@ export interface FeedMetadata {
   lastRunResult: "success" | "failure" | null;
   // lastRunNotes contains the failure reason or any notes/warnings during a successful run
   lastRunNotes: string | null;
+  lastSuccessfulRunAt: number | null; // last time we got a successful response from the rss feed
   lastUpdatedAt: number | null; // last time new posts were fetched
 }
 
@@ -133,6 +134,8 @@ export interface Post {
   title: string;
   url: string;
   publishedAt: number;
+  // for the RSS  format only (example hackerNews comments links)
+  commentsURL: string | null;
   // can't use booleans since they can't be indexed
   unread: BooleanFlag;
   bookmarked: BooleanFlag;
