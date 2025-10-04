@@ -24,7 +24,7 @@ export function onMessage<K extends MessageType>(
 
 interface MessageMap {
   // define only ONE argument for each method
-  "feeds/preview"(data: { url: string }): Result<FeedPreview>;
+  "feeds/preview"(data: { url: string }): FeedPreview;
 }
 
 export interface FeedPreview {
@@ -37,11 +37,6 @@ export interface PostPreview {
   publishedAt: number;
 }
 
-type Result<T> =
-  | { success: true; data: T; errorMsg: null }
-  | { success: false; data: null; errorMsg: string }
-  | undefined;
-
 type MessageType = keyof MessageMap;
 // assume only one argument is going to contain the payload
 type MessagePayload<K extends MessageType> = Parameters<MessageMap[K]>[0];
@@ -49,7 +44,11 @@ type MessageRequest<K extends MessageType> = {
   type: K;
   payload: MessagePayload<K>;
 };
-type MessageResponse<K extends MessageType> = ReturnType<MessageMap[K]>;
+// every message response will have success, data and errorMsg
+type MessageData<K extends MessageType> = ReturnType<MessageMap[K]>;
+type MessageResponse<K extends MessageType> =
+  | { success: true; data: MessageData<K>; errorMsg: null }
+  | { success: false; data: null; errorMsg: string };
 type MessageCallback<K extends MessageType> = (
   payload: MessagePayload<K>,
   sender: chrome.runtime.MessageSender,
