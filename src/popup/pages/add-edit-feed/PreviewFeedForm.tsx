@@ -1,34 +1,25 @@
-import { createSignal, Setter } from "solid-js";
+import { Setter } from "solid-js";
 
-import { FeedPreview, sendMessage } from "@/messaging-wrapper";
+import { createMutation, FeedPreviewResponse } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
 
 export default function PreviewFeedForm(props: PreviewFeedFormProps) {
-  const [loading, setLoading] = createSignal(false);
-  const [error, setError] = createSignal("");
+  const { store, isLoading, isSuccess, sendMsg } =
+    createMutation("feeds/preview");
   return (
     <form
       onSubmit={async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError("");
-        const response = await sendMessage("feeds/preview", {
-          url: props.url,
-        });
-        if (response?.success) {
-          props.onFeedDataReceived(response.data);
-        } else {
-          const msg =
-            "An unexpected error occurred during feed preview. Please try again.";
-          setError(response?.errorMsg ?? msg);
+        await sendMsg({ url: props.url });
+        if (isSuccess(store)) {
+          props.onFeedDataReceived(store.data);
         }
-        setLoading(false);
       }}
     >
-      <ErrorAlert errorMsg={error()} />
+      <ErrorAlert errorMsg={store.errorMsg} />
       <InputField
         type="url"
         name="url"
@@ -38,7 +29,7 @@ export default function PreviewFeedForm(props: PreviewFeedFormProps) {
         onInput={(e) => props.setURL(e.target.value)}
       />
       <ButtonContainer>
-        <ActionButton type="submit" loading={loading()}>
+        <ActionButton type="submit" loading={isLoading(store)}>
           Preview
         </ActionButton>
       </ButtonContainer>
@@ -49,5 +40,5 @@ export default function PreviewFeedForm(props: PreviewFeedFormProps) {
 interface PreviewFeedFormProps {
   url: string;
   setURL: Setter<string>;
-  onFeedDataReceived(data: FeedPreview): void;
+  onFeedDataReceived(data: FeedPreviewResponse): void;
 }

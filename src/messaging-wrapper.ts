@@ -1,3 +1,6 @@
+import { batch } from "solid-js";
+import { createStore } from "solid-js/store";
+
 export async function sendMessage<K extends MessageType>(
   messageType: K,
   args: MessagePayload<K>,
@@ -22,12 +25,84 @@ export function onMessage<K extends MessageType>(
   );
 }
 
-interface MessageMap {
-  // define only ONE argument for each method
-  "feeds/preview"(data: { url: string }): FeedPreview;
+export function createMutation<K extends MessageType>(messageType: K) {
+  const [store, setStore] = createStore<Mutation<K>>({
+    status: "idle",
+    data: null,
+    errorMsg: null,
+  });
+
+  // separate is* function so that they can act as type guards
+  function isLoading(store: Mutation<K>) {
+    return store.status === "loading";
+  }
+  function isSuccess(store: Mutation<K>) {
+    return store.status === "success";
+  }
+  function isError(store: Mutation<K>) {
+    return store.status === "error";
+  }
+  async function sendMsg(payload: MessagePayload<K>) {
+    batch(() => {
+      setStore("status", "loading");
+      setStore("data", null);
+      setStore("errorMsg", null);
+    });
+    const response = await sendMessage(messageType, payload);
+    if (response.success) {
+      batch(() => {
+        setStore("status", "success");
+        setStore("data", response.data);
+        setStore("errorMsg", null);
+      });
+    } else {
+      batch(() => {
+        setStore("status", "error");
+        setStore("data", null);
+        setStore("errorMsg", response.errorMsg);
+      });
+    }
+  }
+
+  return { store, isLoading, isSuccess, isError, sendMsg };
 }
 
-export interface FeedPreview {
+interface MutationIdle {
+  status: "idle";
+  data: null;
+  errorMsg: null;
+}
+
+interface MutationLoading {
+  status: "loading";
+  data: null;
+  errorMsg: null;
+}
+
+interface MutationSuccess<K extends MessageType> {
+  status: "success";
+  data: MessageData<K>;
+  errorMsg: null;
+}
+
+interface MutationError {
+  status: "error";
+  data: null;
+  errorMsg: string;
+}
+
+type Mutation<K extends MessageType> =
+  | MutationIdle
+  | MutationLoading
+  | MutationSuccess<K>
+  | MutationError;
+
+interface MessageMap {
+  // define only ONE argument for each method
+  "feeds/preview"(data: { url: string }): FeedPreviewResponse;
+}
+
+export interface FeedPreviewResponse {
   feedName: string;
   posts: PostPreview[];
 }
