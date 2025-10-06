@@ -2,9 +2,14 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { batch, createSignal, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { PostPreview } from "@/messaging-wrapper";
+import {
+  createMutation,
+  FeedAddPayload,
+  PostPreview,
+} from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
+import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
@@ -17,7 +22,8 @@ import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import styles from "./AddFeed.module.css";
 
 export default function AddFeed() {
-  const { store } = usePreferencesContext();
+  const { store, isLoading, isSuccess, sendMsg } = createMutation("feeds/add");
+  const { store: preferences } = usePreferencesContext();
   const [step, setStep] = createSignal<"preview" | "save">("preview");
   const [feedURL, setFeedURL] = createSignal("");
   const [feedPosts, setFeedPosts] = createSignal<PostPreview[]>([]);
@@ -26,11 +32,13 @@ export default function AddFeed() {
     parentFolderId?: string;
     previousUrl?: string;
   }>();
+  const folderOptions = getParentOptions();
+  const defaultFolder = folderOptions[0].value;
   const [formdata, setFormdata] = createStore({
     url: "",
     name: "",
-    frequency: store.defaultFeedUpdateFrequency,
-    folder: parseInt(searchParams.parentFolderId ?? "") || null,
+    frequency: preferences.defaultFeedUpdateFrequency,
+    folder: parseInt(searchParams.parentFolderId ?? "") || defaultFolder,
   });
 
   return (
@@ -57,12 +65,16 @@ export default function AddFeed() {
       <Show when={step() === "save"}>
         <form
           class={styles["feed-form"]}
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
             console.log("formdata", formdata);
-            navigate("/library");
+            await sendMsg(formdata as FeedAddPayload);
+            if (isSuccess(store)) {
+              navigate(`/library/nodes/${store.data.feedId}/posts`);
+            }
           }}
         >
+          <ErrorAlert errorMsg={store.errorMsg} />
           <InputField
             type="url"
             name="url"
@@ -88,12 +100,15 @@ export default function AddFeed() {
           <SelectField
             name="folder"
             label="Folder"
-            options={getParentOptions()}
+            options={folderOptions}
+            required={true}
             value={formdata.folder ?? ""}
             onChange={(e) => setFormdata("folder", parseInt(e.target.value))}
           />
           <ButtonContainer>
-            <ActionButton type="submit">Save</ActionButton>
+            <ActionButton type="submit" loading={isLoading(store)}>
+              Save
+            </ActionButton>
           </ButtonContainer>
         </form>
       </Show>
