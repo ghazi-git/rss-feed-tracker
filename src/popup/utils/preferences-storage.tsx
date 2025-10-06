@@ -52,7 +52,7 @@ async function savePreferences(value: StoredPreferences) {
   await chrome.storage.local.set({ preferences: value });
 }
 
-async function loadPreferences(): Promise<StoredPreferences> {
+export async function loadPreferences(): Promise<StoredPreferences> {
   const value: { preferences: StoredPreferences } =
     await chrome.storage.local.get("preferences");
 

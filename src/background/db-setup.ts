@@ -1,4 +1,4 @@
-import { DBSchema, openDB } from "idb";
+import { DBSchema, IDBPDatabase, openDB } from "idb";
 
 export async function setupDB() {
   return await openDB<FeedTrackerDB>("FeedTracker", 1, {
@@ -82,6 +82,8 @@ interface FeedTrackerDB extends DBSchema {
     };
   };
 }
+
+export type ExtensionDB = IDBPDatabase<FeedTrackerDB>;
 
 export function getRootFolderData() {
   // type casting because idb does not handle the case where the id is set

@@ -6,6 +6,8 @@ export default defineManifest({
   manifest_version: 3,
   name: pkg.name,
   version: pkg.version,
+  // require v141 to be able to use getAll with descending order
+  minimum_chrome_version: "141",
   icons: {
     48: "public/rss-feed-tracker-logo-48x48.png",
     96: "public/rss-feed-tracker-logo-96x96.png",
