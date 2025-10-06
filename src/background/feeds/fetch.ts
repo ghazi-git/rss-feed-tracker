@@ -2,34 +2,19 @@ import type { AtomFeed, JsonFeed, RssFeed } from "feedsmith";
 import { parseFeed } from "feedsmith";
 
 import { FeedParseError, HttpError } from "@/background/utils/errors";
+import { retry } from "@/background/utils/retry-on-error";
 
-export async function fetchFeedContent(
-  url: string,
-  retries = 3,
-  backoffFactor = 500,
-) {
-  for (let i = 0; i < retries + 1; i++) {
-    try {
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        const msg = `Unable to get the feed data. Please make sure the URL is \
+export async function fetchFeedContent(url: string) {
+  return await retry(async () => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      const msg = `Unable to get the feed data. Please make sure the URL is \
         the correct and the server is reachable.`;
-        throw new HttpError(msg);
-      }
-
-      return await response.text();
-    } catch (err) {
-      if (i < retries) {
-        await sleep(backoffFactor * Math.pow(2, i));
-      } else {
-        throw err;
-      }
+      throw new HttpError(msg);
     }
-  }
 
-  // so typescript doesn't infer undefined as a possible return value
-  throw new Error("Unable to get the feed data.");
+    return await response.text();
+  });
 }
 
 export function parseFeedContent(
@@ -188,10 +173,6 @@ function getAtomFeedWebsite(links: AtomFeed<string>["links"]) {
     const url = URL.parse(urls[0].href);
     return url?.href;
   }
-}
-
-async function sleep(timeMs: number) {
-  return await new Promise((resolve) => setTimeout(resolve, timeMs));
 }
 
 interface ParsedFeed {
