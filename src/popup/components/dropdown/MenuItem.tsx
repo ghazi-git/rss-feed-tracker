@@ -1,5 +1,4 @@
-import { JSX, mergeProps, onCleanup, splitProps } from "solid-js";
-import { FlowProps } from "solid-js/types/render/component";
+import { FlowProps, JSX, mergeProps, onCleanup, splitProps } from "solid-js";
 
 import { useDropdownContext } from "@/popup/components/dropdown/context";
 

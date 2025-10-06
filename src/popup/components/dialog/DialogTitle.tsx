@@ -1,4 +1,4 @@
-import { FlowProps } from "solid-js/types/render/component";
+import { FlowProps } from "solid-js";
 
 import DialogClose from "@/popup/components/dialog/DialogClose";
 

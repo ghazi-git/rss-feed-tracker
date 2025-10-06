@@ -1,5 +1,4 @@
-import { A } from "@solidjs/router";
-import { AnchorProps } from "@solidjs/router/dist/components";
+import { A, AnchorProps } from "@solidjs/router";
 import { splitProps } from "solid-js";
 
 import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";

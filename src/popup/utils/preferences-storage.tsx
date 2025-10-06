@@ -1,6 +1,5 @@
-import { createContext, onMount, useContext } from "solid-js";
+import { createContext, FlowProps, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
-import { FlowProps } from "solid-js/types/render/component";
 
 const PreferencesContext = createContext<PreferencesContextType>();
 

@@ -1,5 +1,4 @@
-import { A } from "@solidjs/router";
-import { AnchorProps } from "@solidjs/router/dist/components";
+import { A, AnchorProps } from "@solidjs/router";
 import { JSX, splitProps } from "solid-js";
 
 import styles from "./Anchor.module.css";

@@ -1,5 +1,4 @@
-import { JSX } from "solid-js";
-import { FlowProps } from "solid-js/types/render/component";
+import { FlowProps, JSX } from "solid-js";
 
 import Anchor from "@/popup/components/Anchor";
 

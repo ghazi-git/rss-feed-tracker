@@ -1,5 +1,4 @@
-import { JSX, Show, splitProps } from "solid-js";
-import { FlowProps } from "solid-js/types/render/component";
+import { FlowProps, JSX, Show, splitProps } from "solid-js";
 import { Portal } from "solid-js/web";
 
 import { useDropdownContext } from "@/popup/components/dropdown/context";

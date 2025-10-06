@@ -1,5 +1,4 @@
-import { Show } from "solid-js";
-import { FlowProps } from "solid-js/types/render/component";
+import { FlowProps, Show } from "solid-js";
 
 import styles from "./FieldWrapper.module.css";
 
