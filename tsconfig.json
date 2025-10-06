@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "types"],
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"]
@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vite/client", "chrome"],
+    "types": ["vite/client", "chrome", "./types"],
     "noEmit": true,
     "isolatedModules": true
   }
