@@ -8,10 +8,12 @@ import { loadPreferences } from "@/popup/utils/preferences-storage";
 export async function loadAndCreateFeed(data: FeedAddPayload) {
   const feedContent = await fetchFeedContent(data.url);
   const parsedFeed = parseFeedContent(data.url, feedContent);
+  const fetchTime = Date.now();
   const feedId = await createFeed(
     data,
     parsedFeed.posts.length,
     parsedFeed.favicon,
+    fetchTime,
   );
   if (parsedFeed.posts.length) {
     // todo save posts
@@ -24,6 +26,7 @@ async function createFeed(
   data: FeedAddPayload,
   postsCount: number,
   favicon: string | null,
+  fetchTime: number,
 ) {
   const db = await setupDB();
   let sortOrder;
@@ -35,7 +38,6 @@ async function createFeed(
     throw new FeedCreationError(msg);
   }
 
-  const timeNow = Date.now();
   const preferences = await loadPreferences();
   const unreadCount = preferences.markNewPostsUnread ? postsCount : 0;
   const feed = {
@@ -44,7 +46,7 @@ async function createFeed(
     parentId: data.folder,
     unreadCount,
     sortOrder,
-    createdAt: timeNow,
+    createdAt: fetchTime,
     feed: {
       favicon,
       url: data.url,
@@ -62,12 +64,12 @@ async function createFeed(
   const createFeedMetadata = async () => {
     await db.add("feedmetadata", {
       feedId,
-      nextRunAt: timeNow + data.frequency,
-      lastRunAt: timeNow,
+      nextRunAt: fetchTime + data.frequency,
+      lastRunAt: fetchTime,
       lastRunResult: "success",
       lastRunNotes: null,
-      lastSuccessfulRunAt: timeNow,
-      lastUpdatedAt: postsCount ? timeNow : null,
+      lastSuccessfulRunAt: fetchTime,
+      lastUpdatedAt: postsCount ? fetchTime : null,
     });
   };
   try {
