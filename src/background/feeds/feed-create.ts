@@ -1,5 +1,6 @@
 import { ExtensionDB, Node, setupDB } from "@/background/db-setup";
 import { fetchFeedContent, parseFeedContent } from "@/background/feeds/fetch";
+import { savePosts } from "@/background/feeds/posts-create";
 import { FeedCreationError } from "@/background/utils/errors";
 import { retry } from "@/background/utils/retry-on-error";
 import { FeedAddPayload } from "@/messaging-wrapper";
@@ -9,6 +10,7 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
   const feedContent = await fetchFeedContent(data.url);
   const parsedFeed = parseFeedContent(data.url, feedContent);
   const fetchTime = Date.now();
+  // todo db connection management with "using"
   const feedId = await createFeed(
     data,
     parsedFeed.posts.length,
@@ -16,7 +18,9 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
     fetchTime,
   );
   if (parsedFeed.posts.length) {
-    // todo save posts
+    await savePosts(feedId, parsedFeed.posts, fetchTime);
+    // todo deal with save results to update feemetadata and try/catch savePost
+    //  to record failures in feed metadata
   }
 
   return feedId;

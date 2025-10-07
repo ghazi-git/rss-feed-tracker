@@ -182,7 +182,7 @@ interface ParsedFeed {
   posts: ParsedPost[];
 }
 
-interface ParsedPost {
+export interface ParsedPost {
   guid: string;
   title: string;
   url: string;
