@@ -63,7 +63,7 @@ export async function getDBConnection() {
 export interface FeedTrackerDB extends DBSchema {
   nodes: {
     key: number;
-    value: Node;
+    value: TreeNode;
     indexes: {
       // we need to get all folders to be displayed as select options
       by_type: "folder" | "feed";
@@ -123,7 +123,7 @@ export function getRootFolderData() {
     unreadCount: 0,
     sortOrder: 10_000,
     feed: null,
-  } as Node;
+  } as TreeNode;
 }
 
 // a node is a feed or a folder, having them stored together makes it easier
@@ -152,7 +152,7 @@ export interface Feed extends BaseNode {
   };
 }
 
-export type Node = Feed | Folder;
+export type TreeNode = Feed | Folder;
 
 export interface FeedMetadata {
   feedId: number; // primary key to guarantee one entry per feed

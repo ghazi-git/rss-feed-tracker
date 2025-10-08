@@ -1,4 +1,4 @@
-import { ExtensionDB, getDBConnection, Node } from "@/background/db-setup";
+import { ExtensionDB, getDBConnection, TreeNode } from "@/background/db-setup";
 import {
   describeSaveResults,
   saveFailureMetadata,
@@ -87,7 +87,7 @@ async function createFeed(
   };
   let feedId;
   try {
-    feedId = await db.add("nodes", feed as Node);
+    feedId = await db.add("nodes", feed as TreeNode);
   } catch (e) {
     console.error(e);
     const msg = "Unable to create the feed. Please try again.";
