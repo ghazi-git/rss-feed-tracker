@@ -1,4 +1,7 @@
-import { fetchFeedContent, parseFeedContent } from "@/background/feeds/fetch";
+import {
+  fetchFeedContent,
+  parseFeedContent,
+} from "@/background/feeds/fetch-from-source";
 import { FeedPreviewResponse } from "@/messaging-wrapper";
 
 /**

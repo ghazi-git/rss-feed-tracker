@@ -1,5 +1,5 @@
 import { ExtensionDB, Post } from "@/background/db-setup";
-import { ParsedPost } from "@/background/feeds/fetch";
+import { ParsedPost } from "@/background/feeds/fetch-from-source";
 import { bulkAdd } from "@/background/utils/idb-helpers";
 
 export async function savePosts(
