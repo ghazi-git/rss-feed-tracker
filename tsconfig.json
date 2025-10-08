@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vite/client", "chrome", "./types"],
+    "types": ["vite/client", "chrome"],
     "noEmit": true,
     "isolatedModules": true
   }
