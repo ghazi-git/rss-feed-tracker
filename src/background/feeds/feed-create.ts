@@ -1,4 +1,9 @@
 import { ExtensionDB, Node, setupDB } from "@/background/db-setup";
+import {
+  describeSaveResults,
+  saveFailureMetadata,
+  saveSuccessMetadata,
+} from "@/background/feeds/feedmetadata";
 import { fetchFeedContent, parseFeedContent } from "@/background/feeds/fetch";
 import { savePosts } from "@/background/feeds/posts-create";
 import { FeedCreationError } from "@/background/utils/errors";
@@ -9,6 +14,7 @@ import { loadPreferences } from "@/popup/utils/preferences-storage";
 export async function loadAndCreateFeed(data: FeedAddPayload) {
   const feedContent = await fetchFeedContent(data.url);
   const parsedFeed = parseFeedContent(data.url, feedContent);
+
   const fetchTime = Date.now();
   using connection = await setupDB();
   const feedId = await createFeed(
@@ -18,10 +24,40 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
     parsedFeed.favicon,
     fetchTime,
   );
+
   if (parsedFeed.posts.length) {
-    await savePosts(connection.db, feedId, parsedFeed.posts, fetchTime);
-    // todo deal with save results to update feemetadata and try/catch savePost
-    //  to record failures in feed metadata
+    let results;
+    try {
+      results = await savePosts(
+        connection.db,
+        feedId,
+        parsedFeed.posts,
+        fetchTime,
+      );
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : "Unknown Error";
+      const reason = `SavePostsError: ${errorMsg}`;
+      await saveFailureMetadata(
+        connection.db,
+        feedId,
+        data.frequency,
+        reason,
+        fetchTime,
+      );
+      throw e;
+    }
+    const hasNewPosts = results.some((res) => res.success);
+    const notes = describeSaveResults(results);
+    await saveSuccessMetadata(
+      connection.db,
+      feedId,
+      data.frequency,
+      fetchTime,
+      hasNewPosts,
+      notes,
+    );
+  } else {
+    await saveSuccessMetadata(connection.db, feedId, data.frequency, fetchTime);
   }
 
   return feedId;
@@ -69,12 +105,12 @@ async function createFeed(
   const createFeedMetadata = async () => {
     await db.add("feedmetadata", {
       feedId,
-      nextRunAt: fetchTime + data.frequency,
-      lastRunAt: fetchTime,
-      lastRunResult: "success",
+      nextRunAt: null,
+      lastRunAt: null,
+      lastRunResult: null,
       lastRunNotes: null,
-      lastSuccessfulRunAt: fetchTime,
-      lastUpdatedAt: postsCount ? fetchTime : null,
+      lastSuccessfulRunAt: null,
+      lastUpdatedAt: null,
     });
   };
   try {
