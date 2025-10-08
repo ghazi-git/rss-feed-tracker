@@ -8,7 +8,7 @@ import {
 } from "idb";
 
 export async function setupDB() {
-  return await openDB<FeedTrackerDB>("FeedTracker", 1, {
+  const db = await openDB<FeedTrackerDB>("FeedTracker", 1, {
     async upgrade(db) {
       if (!db.objectStoreNames.contains("nodes")) {
         const store = db.createObjectStore("nodes", {
@@ -49,6 +49,13 @@ export async function setupDB() {
       }
     },
   });
+
+  return {
+    db,
+    [Symbol.dispose]() {
+      db.close();
+    },
+  };
 }
 
 export interface FeedTrackerDB extends DBSchema {

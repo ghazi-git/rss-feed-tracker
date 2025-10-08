@@ -1,8 +1,9 @@
-import { Post, setupDB } from "@/background/db-setup";
+import { ExtensionDB, Post } from "@/background/db-setup";
 import { ParsedPost } from "@/background/feeds/fetch";
 import { bulkAdd } from "@/background/utils/idb-helpers";
 
 export async function savePosts(
+  db: ExtensionDB,
   feedId: number,
   parsedPosts: ParsedPost[],
   fetchTime: number,
@@ -14,6 +15,5 @@ export async function savePosts(
     feedId,
     receivedAt: fetchTime,
   }));
-  const db = await setupDB();
   return await bulkAdd(db, "posts", posts);
 }

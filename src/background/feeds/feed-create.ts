@@ -10,15 +10,16 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
   const feedContent = await fetchFeedContent(data.url);
   const parsedFeed = parseFeedContent(data.url, feedContent);
   const fetchTime = Date.now();
-  // todo db connection management with "using"
+  using connection = await setupDB();
   const feedId = await createFeed(
+    connection.db,
     data,
     parsedFeed.posts.length,
     parsedFeed.favicon,
     fetchTime,
   );
   if (parsedFeed.posts.length) {
-    await savePosts(feedId, parsedFeed.posts, fetchTime);
+    await savePosts(connection.db, feedId, parsedFeed.posts, fetchTime);
     // todo deal with save results to update feemetadata and try/catch savePost
     //  to record failures in feed metadata
   }
@@ -27,12 +28,12 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
 }
 
 async function createFeed(
+  db: ExtensionDB,
   data: FeedAddPayload,
   postsCount: number,
   favicon: string | null,
   fetchTime: number,
 ) {
-  const db = await setupDB();
   let sortOrder;
   try {
     sortOrder = await getHighestSortOrder(db, data.folder);
