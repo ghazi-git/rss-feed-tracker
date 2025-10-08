@@ -60,7 +60,8 @@ async function createFeed(
   let sortOrder;
   try {
     sortOrder = await getHighestSortOrder(db, data.folder);
-  } catch {
+  } catch (e) {
+    console.error(e);
     const msg =
       "Unable to determine the sort order of the feed. Please try again.";
     throw new FeedCreationError(msg);
@@ -84,9 +85,10 @@ async function createFeed(
   let feedId;
   try {
     feedId = await db.add("nodes", feed as Node);
-  } catch {
+  } catch (e) {
+    console.error(e);
     const msg = "Unable to create the feed. Please try again.";
-    throw new FeedCreationError(msg);
+    throw new FeedCreationError(msg, { cause: e });
   }
 
   const createFeedMetadata = async () => {
@@ -102,10 +104,11 @@ async function createFeed(
   };
   try {
     await retry(createFeedMetadata);
-  } catch {
+  } catch (e) {
+    console.error(e);
     const msg = `An unexpected error occurred during feed creation. Please \
       delete the feed and try again.`;
-    throw new FeedCreationError(msg);
+    throw new FeedCreationError(msg, { cause: e });
   }
 
   return feedId;

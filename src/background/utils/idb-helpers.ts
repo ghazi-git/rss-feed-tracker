@@ -127,12 +127,13 @@ export function txDone(tx: ExtTransaction) {
 async function bulkRequestDone(tx: ExtTransaction) {
   try {
     await txDone(tx);
-  } catch {
+  } catch (e) {
     // all failures at the add request level do not bubble. So, this is likely
     // an IO error or disk space issue
     // https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction#transaction_failures
+    console.error(e);
     const msg = "An unexpected error occurred. It might be a disk space issue.";
-    throw new TransactionError(msg);
+    throw new TransactionError(msg, { cause: e });
   }
 }
 

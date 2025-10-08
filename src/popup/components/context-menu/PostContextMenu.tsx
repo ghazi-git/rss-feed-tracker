@@ -66,7 +66,8 @@ export function PostContextMenu(props: PostContextMenuProps) {
           (async () => {
             try {
               await navigator.clipboard.writeText(store.url!);
-            } catch {
+            } catch (e) {
+              console.error(e);
               showToast("Failed to copy the link.");
             }
           })();

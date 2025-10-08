@@ -33,6 +33,7 @@ export function parseFeedContent(
       throw new FeedParseError("Unsupported feed format.");
     }
   } catch (e) {
+    console.error(e);
     if (e instanceof FeedParseError) throw e;
 
     throw new FeedParseError("Unable to parse the feed.", { cause: e });
