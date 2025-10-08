@@ -128,21 +128,31 @@ export function getRootFolderData() {
 
 // a node is a feed or a folder, having them stored together makes it easier
 // to update their ordering and later display them sorted within a folder.
-export interface Node {
+interface BaseNode {
   id: number;
-  type: "folder" | "feed";
   name: string;
-  parentId: number | null;
   unreadCount: number;
   sortOrder: number; // node ordering within a folder
   createdAt: number; // unix timestamp
-  // feed is null for folders
-  feed: null | {
+}
+
+export interface Folder extends BaseNode {
+  type: "folder";
+  parentId: number | null;
+  feed: null;
+}
+
+export interface Feed extends BaseNode {
+  type: "feed";
+  parentId: number;
+  feed: {
     favicon: string | null; // favicon url
     url: string;
     updateFrequency: number; // in ms since js unix timestamps are in ms
   };
 }
+
+export type Node = Feed | Folder;
 
 export interface FeedMetadata {
   feedId: number; // primary key to guarantee one entry per feed
