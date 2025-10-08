@@ -101,6 +101,7 @@ interface MessageMap {
   // define only ONE argument for each method
   "feeds/preview"(data: { url: string }): FeedPreviewResponse;
   "feeds/add"(data: FeedFormData): { feedId: number };
+  "feeds/get"(data: { id: number }): FeedFormData;
 }
 
 export interface FeedPreviewResponse {

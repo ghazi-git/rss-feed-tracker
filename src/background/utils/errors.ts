@@ -25,3 +25,10 @@ export class TransactionError extends Error {
     this.name = "TransactionError";
   }
 }
+
+export class NotFoundError extends Error {
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "NotFoundError";
+  }
+}
