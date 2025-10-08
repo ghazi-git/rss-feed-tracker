@@ -14,6 +14,7 @@ import ImportFeeds from "@/popup/pages/import-feeds";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet";
 import Node from "@/popup/pages/node";
 import NodePosts from "@/popup/pages/node-posts";
+import NotFound from "@/popup/pages/NotFound";
 import Preferences from "@/popup/pages/Preferences";
 import { NODES } from "@/popup/utils/dummy-data";
 import {
@@ -98,6 +99,7 @@ function App() {
           <Route path="/library/feeds/:id/edit" component={EditFeed} />
           <Route path="/library/folders/add" component={AddFolder} />
           <Route path="/library/folders/:id/edit" component={EditFolder} />
+          <Route path="/library/not-found" component={NotFound} />
           <Route path="/bookmarks" component={Bookmarks} />
           <Route path="/preferences" component={Preferences} />
           <Route
