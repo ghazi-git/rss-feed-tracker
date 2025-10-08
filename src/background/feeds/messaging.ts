@@ -21,4 +21,5 @@ onMessage("feeds/add", (payload, sender, sendResponse) => {
     .catch((reason: Error) => {
       sendResponse({ success: false, data: null, errorMsg: reason.message });
     });
+  return true;
 });
