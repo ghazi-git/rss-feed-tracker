@@ -124,6 +124,6 @@ async function getHighestSortOrder(db: ExtensionDB, folder: number) {
       direction: "prev",
     },
   );
-  const sortOrder = children?.[0].sortOrder ?? 0;
+  const sortOrder = children[0]?.sortOrder ?? 0;
   return sortOrder + 10_000;
 }
