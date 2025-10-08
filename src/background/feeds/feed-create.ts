@@ -8,10 +8,10 @@ import { fetchFeedContent, parseFeedContent } from "@/background/feeds/fetch";
 import { savePosts } from "@/background/feeds/posts-create";
 import { FeedCreationError } from "@/background/utils/errors";
 import { retry } from "@/background/utils/retry-on-error";
-import { FeedAddPayload } from "@/messaging-wrapper";
+import { FeedFormData } from "@/messaging-wrapper";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
-export async function loadAndCreateFeed(data: FeedAddPayload) {
+export async function loadAndCreateFeed(data: FeedFormData) {
   const feedContent = await fetchFeedContent(data.url);
   const parsedFeed = parseFeedContent(data.url, feedContent);
 
@@ -52,7 +52,7 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
 
 async function createFeed(
   db: ExtensionDB,
-  data: FeedAddPayload,
+  data: FeedFormData,
   postsCount: number,
   favicon: string | null,
   fetchTime: number,

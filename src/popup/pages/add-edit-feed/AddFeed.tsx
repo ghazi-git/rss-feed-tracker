@@ -2,11 +2,7 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { batch, createEffect, createSignal, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import {
-  createMutation,
-  FeedAddPayload,
-  PostPreview,
-} from "@/messaging-wrapper";
+import { createMutation, FeedFormData, PostPreview } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
@@ -71,7 +67,7 @@ export default function AddFeed() {
           onSubmit={async (event) => {
             event.preventDefault();
             console.log("formdata", formdata);
-            await sendMsg(formdata as FeedAddPayload);
+            await sendMsg(formdata as FeedFormData);
             if (isSuccess(store)) {
               navigate(`/library/nodes/${store.data.feedId}/posts`);
             }

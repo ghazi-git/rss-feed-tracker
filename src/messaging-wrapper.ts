@@ -100,7 +100,7 @@ type Mutation<K extends MessageType> =
 interface MessageMap {
   // define only ONE argument for each method
   "feeds/preview"(data: { url: string }): FeedPreviewResponse;
-  "feeds/add"(data: FeedAddPayload): { feedId: number };
+  "feeds/add"(data: FeedFormData): { feedId: number };
 }
 
 export interface FeedPreviewResponse {
@@ -112,7 +112,7 @@ export interface PostPreview {
   url: string;
   publishedAt: number;
 }
-export interface FeedAddPayload {
+export interface FeedFormData {
   url: string;
   name: string;
   frequency: number;
