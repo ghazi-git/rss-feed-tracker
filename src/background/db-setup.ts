@@ -28,7 +28,9 @@ export async function getDBConnection() {
         store.createIndex("by_next_run_at", "nextRunAt");
       }
       if (!db.objectStoreNames.contains("posts")) {
-        const store = db.createObjectStore("posts", { keyPath: "guid" });
+        const store = db.createObjectStore("posts", {
+          keyPath: ["feedId", "guid"],
+        });
         store.createIndex("by_published_at", "publishedAt");
         store.createIndex("by_unread_published_at", ["unread", "publishedAt"]);
         store.createIndex("by_feed_id_published_at", ["feedId", "publishedAt"]);
@@ -78,7 +80,7 @@ export interface FeedTrackerDB extends DBSchema {
     };
   };
   posts: {
-    key: string;
+    key: [number, string];
     value: Post;
     indexes: {
       // for displaying all posts sorted in the root folder
