@@ -1,4 +1,4 @@
-import { ExtensionDB, Node, setupDB } from "@/background/db-setup";
+import { ExtensionDB, getDBConnection, Node } from "@/background/db-setup";
 import {
   describeSaveResults,
   saveFailureMetadata,
@@ -16,40 +16,27 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
   const parsedFeed = parseFeedContent(data.url, feedContent);
 
   const fetchTime = Date.now();
-  using connection = await setupDB();
-  const feedId = await createFeed(
-    connection.db,
-    data,
-    parsedFeed.posts.length,
-    parsedFeed.favicon,
-    fetchTime,
-  );
+  using conn = await getDBConnection();
+  const postsCount = parsedFeed.posts.length;
+  const favicon = parsedFeed.favicon;
+  // prettier-ignore
+  const feedId = await createFeed(conn.db, data, postsCount, favicon, fetchTime);
 
   if (parsedFeed.posts.length) {
     let results;
     try {
-      results = await savePosts(
-        connection.db,
-        feedId,
-        parsedFeed.posts,
-        fetchTime,
-      );
+      results = await savePosts(conn.db, feedId, parsedFeed.posts, fetchTime);
     } catch (e) {
       const errorMsg = e instanceof Error ? e.message : "Unknown Error";
       const reason = `SavePostsError: ${errorMsg}`;
-      await saveFailureMetadata(
-        connection.db,
-        feedId,
-        data.frequency,
-        reason,
-        fetchTime,
-      );
+      const frequency = data.frequency;
+      await saveFailureMetadata(conn.db, feedId, frequency, reason, fetchTime);
       throw e;
     }
     const hasNewPosts = results.some((res) => res.success);
     const notes = describeSaveResults(results);
     await saveSuccessMetadata(
-      connection.db,
+      conn.db,
       feedId,
       data.frequency,
       fetchTime,
@@ -57,7 +44,7 @@ export async function loadAndCreateFeed(data: FeedAddPayload) {
       notes,
     );
   } else {
-    await saveSuccessMetadata(connection.db, feedId, data.frequency, fetchTime);
+    await saveSuccessMetadata(conn.db, feedId, data.frequency, fetchTime);
   }
 
   return feedId;

@@ -7,7 +7,7 @@ import {
   StoreValue,
 } from "idb";
 
-export async function setupDB() {
+export async function getDBConnection() {
   const db = await openDB<FeedTrackerDB>("FeedTracker", 1, {
     async upgrade(db) {
       if (!db.objectStoreNames.contains("nodes")) {
