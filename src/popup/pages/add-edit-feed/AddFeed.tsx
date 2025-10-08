@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import { batch, createSignal, Show } from "solid-js";
+import { batch, createEffect, createSignal, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import {
@@ -39,6 +39,9 @@ export default function AddFeed() {
     name: "",
     frequency: preferences.defaultFeedUpdateFrequency,
     folder: parseInt(searchParams.parentFolderId ?? "") || defaultFolder,
+  });
+  createEffect(() => {
+    setFormdata("frequency", preferences.defaultFeedUpdateFrequency);
   });
 
   return (
