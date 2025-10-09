@@ -75,12 +75,13 @@ export async function update<Name extends ExtStoreName>(
 ) {
   const tx = db.transaction(storeName, "readwrite");
   const store = unwrap(tx.store);
+  let oldObject: ExtStoreValue<Name>;
   const updatedObj = await new Promise<ExtStoreValue<Name>>(
     (resolve, reject) => {
       const getRequest = store.get(pk);
       getRequest.onsuccess = () => {
-        const obj = getRequest.result as ExtStoreValue<Name>;
-        const updated = { ...obj, ...updates };
+        oldObject = getRequest.result as ExtStoreValue<Name>;
+        const updated = { ...oldObject, ...updates };
         const putRequest = store.put(updated);
         putRequest.onsuccess = () => {
           resolve(updated);
@@ -97,7 +98,8 @@ export async function update<Name extends ExtStoreName>(
 
   await txDone(tx);
 
-  return updatedObj;
+  // @ts-expect-error oldObject is set when the get request succeeds
+  return [updatedObj, oldObject] as [ExtStoreValue<Name>, ExtStoreValue<Name>];
 }
 
 /**
