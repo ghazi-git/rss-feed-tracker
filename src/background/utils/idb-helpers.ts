@@ -64,15 +64,27 @@ async function addChunk<Name extends ExtStoreName>(
 
 /**
  * Basically, a get and then a put executed in the same transaction.
- * @returns the object after applying the updates.
+ * @returns the updated object after applying the updates and the old object.
  * @raises DOMException that happens during the get or the put
  */
 export async function update<Name extends ExtStoreName>(
   db: ExtensionDB,
   storeName: Name,
   pk: PrimaryKey<Name>,
+  updateFn: StoreUpdateFn<Name>,
+): Promise<StoreUpdateReturn<Name>>;
+export async function update<Name extends ExtStoreName>(
+  db: ExtensionDB,
+  storeName: Name,
+  pk: PrimaryKey<Name>,
   updates: Partial<ExtStoreValue<Name>>,
-) {
+): Promise<StoreUpdateReturn<Name>>;
+export async function update<Name extends ExtStoreName>(
+  db: ExtensionDB,
+  storeName: Name,
+  pk: PrimaryKey<Name>,
+  updatesOrUpdateFn: Partial<ExtStoreValue<Name>> | StoreUpdateFn<Name>,
+): Promise<StoreUpdateReturn<Name>> {
   const tx = db.transaction(storeName, "readwrite");
   const store = unwrap(tx.store);
   let oldObject: ExtStoreValue<Name>;
@@ -81,7 +93,12 @@ export async function update<Name extends ExtStoreName>(
       const getRequest = store.get(pk);
       getRequest.onsuccess = () => {
         oldObject = getRequest.result as ExtStoreValue<Name>;
-        const updated = { ...oldObject, ...updates };
+        let updated: ExtStoreValue<Name>;
+        if (typeof updatesOrUpdateFn === "function") {
+          updated = updatesOrUpdateFn(structuredClone(oldObject));
+        } else {
+          updated = { ...oldObject, ...updatesOrUpdateFn };
+        }
         const putRequest = store.put(updated);
         putRequest.onsuccess = () => {
           resolve(updated);
@@ -145,3 +162,11 @@ async function bulkRequestDone(tx: ExtTransaction) {
 export type RequestResult<T> =
   | { success: true; item: T; errorName: null }
   | { success: false; item: T; errorName: string };
+
+type StoreUpdateFn<Name extends ExtStoreName> = (
+  old: ExtStoreValue<Name>,
+) => ExtStoreValue<Name>;
+type StoreUpdateReturn<Name extends ExtStoreName> = [
+  ExtStoreValue<Name>,
+  ExtStoreValue<Name>,
+];
