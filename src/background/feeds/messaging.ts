@@ -14,7 +14,7 @@ onMessage("feeds/preview", (payload, sender, sendResponse) => {
   return true;
 });
 
-onMessage("feeds/add", (payload, sender, sendResponse) => {
+onMessage("feeds/create", (payload, sender, sendResponse) => {
   loadAndCreateFeed(payload)
     .then((feedId) => {
       sendResponse({ success: true, data: { feedId }, errorMsg: null });

@@ -18,7 +18,8 @@ import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import styles from "./AddFeed.module.css";
 
 export default function AddFeed() {
-  const { store, isLoading, isSuccess, sendMsg } = createMutation("feeds/add");
+  const { store, isLoading, isSuccess, sendMsg } =
+    createMutation("feeds/create");
   const { store: preferences } = usePreferencesContext();
   const [step, setStep] = createSignal<"preview" | "save">("preview");
   const [feedURL, setFeedURL] = createSignal("");
@@ -66,7 +67,6 @@ export default function AddFeed() {
           class={styles["feed-form"]}
           onSubmit={async (event) => {
             event.preventDefault();
-            console.log("formdata", formdata);
             await sendMsg(formdata as FeedFormData);
             if (isSuccess(store)) {
               navigate(`/library/nodes/${store.data.feedId}/posts`);
