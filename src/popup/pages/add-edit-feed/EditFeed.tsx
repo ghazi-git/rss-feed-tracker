@@ -2,7 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { FeedFormData, sendMessage } from "@/messaging-wrapper";
+import { createMutation, FeedFormData, sendMessage } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
@@ -14,6 +14,8 @@ import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFeed() {
+  const { store, isLoading, isSuccess, sendMsg } =
+    createMutation("feeds/update");
   const navigate = useNavigate();
   const [formdata, setFormdata] = createStore<FeedFormData>({
     url: "",
@@ -41,13 +43,16 @@ export default function EditFeed() {
         previousUrl={searchParams.previousUrl ?? "/library"}
       />
       <form
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
-          console.log("formdata", formdata);
-          navigate("/library");
+          const id = parseInt(params.id);
+          await sendMsg({ ...formdata, id });
+          if (isSuccess(store)) {
+            navigate(searchParams.previousUrl ?? `/library/nodes/${id}/posts`);
+          }
         }}
       >
-        <ErrorAlert errorMsg={"store.errorMsg"} />
+        <ErrorAlert errorMsg={store.errorMsg} />
         <InputField
           type="url"
           name="url"
@@ -78,7 +83,9 @@ export default function EditFeed() {
           onChange={(e) => setFormdata("folder", parseInt(e.target.value))}
         />
         <ButtonContainer>
-          <ActionButton type="submit">Save</ActionButton>
+          <ActionButton type="submit" loading={isLoading(store)}>
+            Save
+          </ActionButton>
         </ButtonContainer>
       </form>
     </>

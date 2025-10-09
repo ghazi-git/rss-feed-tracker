@@ -102,6 +102,7 @@ interface MessageMap {
   "feeds/preview"(data: { url: string }): FeedPreviewResponse;
   "feeds/create"(data: FeedFormData): { feedId: number };
   "feeds/get"(data: { id: number }): FeedFormData;
+  "feeds/update"(data: { id: number } & FeedFormData): void;
 }
 
 export interface FeedPreviewResponse {

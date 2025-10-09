@@ -19,6 +19,13 @@ export class FeedCreationError extends Error {
   }
 }
 
+export class FeedUpdateError extends Error {
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "FeedUpdateError";
+  }
+}
+
 export class TransactionError extends Error {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
