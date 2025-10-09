@@ -1,5 +1,6 @@
 import { ExtensionDB, getDBConnection, TreeNode } from "@/background/db-setup";
 import {
+  createFeedMetadata,
   describeSaveResults,
   saveFailureMetadata,
   saveSuccessMetadata,
@@ -10,6 +11,7 @@ import {
 } from "@/background/feeds/feeds-fetch-from-source";
 import { savePosts } from "@/background/feeds/posts-create";
 import { FeedCreationError } from "@/background/utils/errors";
+import { getHighestSortOrder } from "@/background/utils/nodes";
 import { retry } from "@/background/utils/retry-on-error";
 import { FeedFormData } from "@/messaging-wrapper";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
@@ -60,14 +62,13 @@ async function createFeed(
   favicon: string | null,
   fetchTime: number,
 ) {
-  let sortOrder;
+  let sortOrder = 10_000;
   try {
     sortOrder = await getHighestSortOrder(db, data.folder);
   } catch (e) {
-    console.error(e);
-    const msg =
-      "Unable to determine the sort order of the feed. Please try again.";
-    throw new FeedCreationError(msg);
+    // no need for the user to know about an issue they can't fix
+    // we'll go with the initial value
+    console.error("feed-creation: Cannot determine the sort order", e);
   }
 
   const preferences = await loadPreferences();
@@ -93,20 +94,9 @@ async function createFeed(
     const msg = "Unable to create the feed. Please try again.";
     throw new FeedCreationError(msg, { cause: e });
   }
-
-  const createFeedMetadata = async () => {
-    await db.add("feedmetadata", {
-      feedId,
-      nextRunAt: null,
-      lastRunAt: null,
-      lastRunResult: null,
-      lastRunNotes: null,
-      lastSuccessfulRunAt: null,
-      lastUpdatedAt: null,
-    });
-  };
+  const createMetadata = () => createFeedMetadata(db, feedId);
   try {
-    await retry(createFeedMetadata);
+    await retry(createMetadata);
   } catch (e) {
     console.error(e);
     const msg = `An unexpected error occurred during feed creation. Please \
@@ -115,18 +105,4 @@ async function createFeed(
   }
 
   return feedId;
-}
-
-async function getHighestSortOrder(db: ExtensionDB, folder: number) {
-  const children = await db.getAllFromIndex(
-    "nodes",
-    "by_parent_id_sort_order",
-    {
-      query: IDBKeyRange.bound([folder, 0], [folder, Infinity]),
-      count: 1,
-      direction: "prev",
-    },
-  );
-  const sortOrder = children[0]?.sortOrder ?? 0;
-  return sortOrder + 10_000;
 }

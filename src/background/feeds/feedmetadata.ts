@@ -1,6 +1,23 @@
 import { ExtensionDB, FeedMetadata, Post } from "@/background/db-setup";
 import { RequestResult, update } from "@/background/utils/idb-helpers";
 
+export async function createFeedMetadata(
+  db: ExtensionDB,
+  feedId: number,
+): Promise<FeedMetadata> {
+  const metadata = {
+    feedId,
+    nextRunAt: null,
+    lastRunAt: null,
+    lastRunResult: null,
+    lastRunNotes: null,
+    lastSuccessfulRunAt: null,
+    lastUpdatedAt: null,
+  };
+  await db.add("feedmetadata", metadata);
+  return metadata;
+}
+
 export async function saveSuccessMetadata(
   db: ExtensionDB,
   feedId: number,
