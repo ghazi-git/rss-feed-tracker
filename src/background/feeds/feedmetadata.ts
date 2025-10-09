@@ -40,7 +40,7 @@ export async function saveSuccessMetadata(
     await update(db, "feedmetadata", feedId, updates);
   } catch (e) {
     // if the metadata update fails, no need to notify the user about it
-    console.error(e);
+    console.error("feedmetadata-success: failure to save to db", e);
   }
 }
 
@@ -61,7 +61,7 @@ export async function saveFailureMetadata(
     await update(db, "feedmetadata", feedId, updates);
   } catch (e) {
     // if the metadata update fails, no need to notify the user about it
-    console.error(e);
+    console.error("feedmetadata-failure: failure to save to db", e);
   }
 }
 

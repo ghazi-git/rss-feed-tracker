@@ -68,7 +68,7 @@ async function createFeed(
   } catch (e) {
     // no need for the user to know about an issue they can't fix
     // we'll go with the initial value
-    console.error("feed-creation: Cannot determine the sort order", e);
+    console.error("feed-creation: failure to determine the sort order", e);
   }
 
   const preferences = await loadPreferences();
@@ -90,7 +90,7 @@ async function createFeed(
   try {
     feedId = await db.add("nodes", feed as TreeNode);
   } catch (e) {
-    console.error(e);
+    console.error("feed-creation: failure to save to db", e);
     const msg = "Unable to create the feed. Please try again.";
     throw new FeedCreationError(msg, { cause: e });
   }
@@ -98,7 +98,7 @@ async function createFeed(
   try {
     await retry(createMetadata);
   } catch (e) {
-    console.error(e);
+    console.error("feed-creation: failure to create feed metadata", e);
     const msg = `An unexpected error occurred during feed creation. Please \
       delete the feed and try again.`;
     throw new FeedCreationError(msg, { cause: e });
