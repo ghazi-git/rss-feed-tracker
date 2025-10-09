@@ -4,6 +4,10 @@ import { parseFeed } from "feedsmith";
 import { FeedParseError, HttpError } from "@/background/utils/errors";
 import { retry } from "@/background/utils/retry-on-error";
 
+/**
+ * fetch the feed xml from its remote source
+ * @raises HttpError
+ */
 export async function fetchFeedContent(url: string) {
   return await retry(async () => {
     const response = await fetch(url);
@@ -17,6 +21,11 @@ export async function fetchFeedContent(url: string) {
   });
 }
 
+/**
+ * parse the feed xml into unified json format. Handles the RSS, Atom and json
+ * feed formats.
+ * @raises FeedParseError
+ */
 export function parseFeedContent(
   feedURL: string,
   feedContent: string,

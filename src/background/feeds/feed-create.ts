@@ -7,7 +7,7 @@ import {
 import {
   fetchFeedContent,
   parseFeedContent,
-} from "@/background/feeds/fetch-from-source";
+} from "@/background/feeds/feeds-fetch-from-source";
 import { savePosts } from "@/background/feeds/posts-create";
 import { FeedCreationError } from "@/background/utils/errors";
 import { retry } from "@/background/utils/retry-on-error";

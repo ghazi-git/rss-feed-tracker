@@ -1,11 +1,12 @@
 import {
   fetchFeedContent,
   parseFeedContent,
-} from "@/background/feeds/fetch-from-source";
+} from "@/background/feeds/feeds-fetch-from-source";
 import { FeedPreviewResponse } from "@/messaging-wrapper";
 
 /**
  * get the latest 3 posts from the provided feed URL
+ * @raises FeedParseError, HttpError
  */
 export async function previewFeed(url: string): Promise<FeedPreviewResponse> {
   const feedContent = await fetchFeedContent(url);

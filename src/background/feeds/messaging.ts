@@ -1,6 +1,6 @@
 import { loadAndCreateFeed } from "@/background/feeds/feed-create";
 import { getFeed } from "@/background/feeds/feeds-get";
-import { previewFeed } from "@/background/feeds/preview";
+import { previewFeed } from "@/background/feeds/feeds-preview";
 import { onMessage } from "@/messaging-wrapper";
 
 onMessage("feeds/preview", (payload, sender, sendResponse) => {
