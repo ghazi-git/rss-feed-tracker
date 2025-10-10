@@ -8,7 +8,7 @@ export default function ActionButton(props: ButtonProps) {
   const [extra, btnProps] = splitProps(props, ["class", "loading", "children"]);
   return (
     <button
-      class={`${styles.button} ${extra.class ?? ""}`}
+      class={`btn ${extra.class ?? ""}`}
       disabled={extra.loading}
       {...btnProps}
     >

@@ -1,6 +1,6 @@
 @import url("open-props/style");
 @import url("open-props/normalize");
-@import url("open-props/buttons");
+@import url("buttons.css");
 @import url("open-props/theme.light.switch.min.css");
 @import url("open-props/theme.dark.switch.min.css");
 @import url("solid-notifications/index.css");
@@ -30,27 +30,11 @@ html {
   --error-bg-color: var(--error-bg-color-light);
 }
 
-html[data-theme="light"] input[type="file"]::file-selector-button {
-  /* stylelint-disable custom-property-pattern */
-  --_bg: var(--_bg-light);
-  --_highlight: var(--_highlight-light);
-  --_ink-shadow: var(--_ink-shadow-light);
-  /* stylelint-enable custom-property-pattern */
-}
-
 html[data-theme="dark"] {
   --brand: var(--brand-dark);
   --brand-complementary: var(--brand-complementary-dark);
   --error-color: var(--error-color-dark);
   --error-bg-color: var(--error-bg-color-dark);
-
-  input[type="file"]::file-selector-button {
-    /* stylelint-disable custom-property-pattern */
-    --_highlight: var(--_highlight-dark);
-    --_bg: var(--_bg-dark);
-    --_ink-shadow: var(--_ink-shadow-dark);
-    /* stylelint-enable custom-property-pattern */
-  }
 }
 
 [data-theme="dark"]:root {

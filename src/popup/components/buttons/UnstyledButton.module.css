@@ -1,14 +1,9 @@
 .unstyled {
-  /* stylelint-disable custom-property-pattern */
-  --_highlight-size: 0;
-  --_bg: transparent;
-  /* stylelint-enable custom-property-pattern */
+  --highlight-size: 0;
 
-  box-shadow: none;
-  border: none;
+  background: transparent;
   border-radius: var(--radius-2);
   padding: var(--size-1);
-  font-weight: var(--font-weight-4);
 }
 
 .unstyled:focus-visible,
