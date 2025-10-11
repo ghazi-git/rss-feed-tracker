@@ -23,11 +23,23 @@ html {
   --brand-complementary: var(--brand-complementary-light);
   --header-size: 50px;
   --error-color-light: var(--red-12);
-  --error-color-dark: var(--red-3);
+  --error-color-dark: var(--red-1);
   --error-color: var(--error-color-light);
   --error-bg-color-light: var(--pink-0);
   --error-bg-color-dark: var(--pink-12);
   --error-bg-color: var(--error-bg-color-light);
+  --success-color-light: var(--green-9);
+  --success-color-dark: var(--green-0);
+  --success-color: var(--success-color-light);
+  --success-bg-color-light: var(--teal-0);
+  --success-bg-color-dark: var(--teal-10);
+  --success-bg-color: var(--success-bg-color-light);
+  --info-color-light: var(--indigo-9);
+  --info-color-dark: var(--indigo-1);
+  --info-color: var(--info-color-light);
+  --info-bg-color-light: var(--blue-0);
+  --info-bg-color-dark: var(--blue-11);
+  --info-bg-color: var(--info-bg-color-light);
 }
 
 html[data-theme="dark"] {
@@ -35,16 +47,10 @@ html[data-theme="dark"] {
   --brand-complementary: var(--brand-complementary-dark);
   --error-color: var(--error-color-dark);
   --error-bg-color: var(--error-bg-color-dark);
-}
-
-[data-theme="dark"]:root {
-  /* todo maybe follow the styling guide of the notifications package after
-      adding explicit light/dark theme switch
-      https://solid-notifications.vercel.app/guides#customization-via-css-variables */
-  --sn-toast-text-color: var(--text-1);
-  --sn-toast-bg-color: var(--surface-2);
-  --sn-dismiss-btn-color: #bfc5cf;
-  --sn-dismiss-btn-hover-color: #f9fafb;
+  --success-color: var(--success-color-dark);
+  --success-bg-color: var(--success-bg-color-dark);
+  --info-color: var(--info-color-dark);
+  --info-bg-color: var(--info-bg-color-dark);
 }
 
 body {

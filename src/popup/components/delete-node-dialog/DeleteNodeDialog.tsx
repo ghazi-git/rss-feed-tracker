@@ -1,5 +1,3 @@
-import { showToast } from "solid-notifications";
-
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
@@ -7,6 +5,7 @@ import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/cont
 import Dialog from "@/popup/components/dialog/Dialog";
 import DialogClose from "@/popup/components/dialog/DialogClose";
 import DialogTitle from "@/popup/components/dialog/DialogTitle";
+import { notifyInfo } from "@/popup/utils/notifications";
 
 import styles from "./DeleteNodeDialog.module.css";
 
@@ -31,7 +30,7 @@ export default function DeleteNodeDialog() {
           <ActionButton
             class={styles.delete}
             onClick={() => {
-              showToast(`Deleting Node (do sth with nodeId ${store.nodeId})`);
+              notifyInfo(`Deleting Node (do sth with nodeId ${store.nodeId})`);
             }}
           >
             Yes

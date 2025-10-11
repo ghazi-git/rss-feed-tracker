@@ -11,6 +11,7 @@ import SelectField from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
+import { notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFeed() {
@@ -48,6 +49,7 @@ export default function EditFeed() {
           const id = parseInt(params.id);
           await sendMsg({ ...formdata, id });
           if (isSuccess(store)) {
+            notifySuccess("Feed updated successfully.");
             navigate(searchParams.previousUrl ?? `/library/nodes/${id}/posts`);
           }
         }}

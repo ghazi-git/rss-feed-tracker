@@ -13,6 +13,7 @@ import FeedPostsPreview from "@/popup/pages/add-edit-feed/FeedPostsPreview";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
 import PreviewFeedForm from "@/popup/pages/add-edit-feed/PreviewFeedForm";
 import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
+import { notifySuccess } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 
 import styles from "./AddFeed.module.css";
@@ -69,6 +70,7 @@ export default function AddFeed() {
             event.preventDefault();
             await sendMsg(formdata as FeedFormData);
             if (isSuccess(store)) {
+              notifySuccess("Feed created successfully.");
               navigate(`/library/nodes/${store.data.feedId}/posts`);
             }
           }}

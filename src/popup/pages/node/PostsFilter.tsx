@@ -1,8 +1,9 @@
 import { createSignal, Show } from "solid-js";
-import { dismissToast, showToast } from "solid-notifications";
+import { dismissToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
+import { notifyInfo } from "@/popup/utils/notifications";
 
 import styles from "./PostsFilter.module.css";
 
@@ -25,7 +26,7 @@ export default function PostsFilter(props: PostsFilterProps) {
               event.preventDefault();
               event.stopPropagation();
               dismissToast();
-              showToast("Marked as read (not really though)");
+              notifyInfo("Marked as read (not really though)");
             }}
           />
         </Show>

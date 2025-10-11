@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
-import { showToast } from "solid-notifications";
 
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
 import MenuItem from "@/popup/components/dropdown/MenuItem";
 import Separator from "@/popup/components/dropdown/Separator";
+import { notifyInfo } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./FolderActions.module.css";
@@ -33,7 +33,7 @@ export default function FolderActions(props: FolderActionsProps) {
   return (
     <>
       <MenuItem onClick={() => navigate(editUrl())}>Edit</MenuItem>
-      <MenuItem onClick={() => showToast("Reloading Feeds...")}>
+      <MenuItem onClick={() => notifyInfo("Reloading Feeds...")}>
         Reload
       </MenuItem>
       <Separator />
@@ -44,7 +44,7 @@ export default function FolderActions(props: FolderActionsProps) {
         Import Feeds
       </MenuItem>
       <MenuItem
-        onClick={() => showToast("Exporting Feeds under this folder...")}
+        onClick={() => notifyInfo("Exporting Feeds under this folder...")}
       >
         Export Feeds
       </MenuItem>

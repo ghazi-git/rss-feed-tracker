@@ -1,6 +1,6 @@
 import { computePosition, flip } from "@floating-ui/dom";
 import { createSignal, For, onMount } from "solid-js";
-import { dismissToast, showToast } from "solid-notifications";
+import { dismissToast } from "solid-notifications";
 
 import {
   PostMenuProvider,
@@ -10,6 +10,7 @@ import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { PostType } from "@/popup/pages/node-posts/types";
+import { notifyInfo } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
@@ -57,7 +58,7 @@ function Post(props: { post: PostType }) {
         } else {
           if (store.clickPostToToggleUnread) {
             dismissToast();
-            showToast("Toggle unread");
+            notifyInfo("Toggle unread");
           } else {
             openTab(props.post.url, true);
           }

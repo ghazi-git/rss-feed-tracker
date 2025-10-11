@@ -1,5 +1,7 @@
 import { JSX, Show } from "solid-js";
-import { dismissToast, showToast } from "solid-notifications";
+import { dismissToast } from "solid-notifications";
+
+import { notifyInfo } from "@/popup/utils/notifications";
 
 import styles from "./UnreadToggle.module.css";
 
@@ -8,13 +10,13 @@ export default function UnreadToggle(props: { unread: boolean }) {
     event.preventDefault();
     event.stopPropagation();
     dismissToast();
-    showToast("Marked as read");
+    notifyInfo("Marked as read");
   };
   const markAsUnread: ClickHandler = (event) => {
     event.preventDefault();
     event.stopPropagation();
     dismissToast();
-    showToast("Marked as unread");
+    notifyInfo("Marked as unread");
   };
   return (
     <div class={styles["unread-toggle"]}>

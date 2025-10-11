@@ -1,0 +1,41 @@
+.success {
+  --sn-dismiss-btn-color: var(--success-color);
+  --sn-dismiss-btn-hover-color: color-mix(
+    in srgb,
+    var(--success-color),
+    var(--success-bg-color) 50%
+  );
+
+  border: var(--border-size-1) solid var(--success-color);
+  background-color: var(--success-bg-color);
+  color: var(--success-color);
+  cursor: default;
+}
+
+.error {
+  --sn-dismiss-btn-color: var(--error-color);
+  --sn-dismiss-btn-hover-color: color-mix(
+    in srgb,
+    var(--error-color),
+    var(--error-bg-color) 50%
+  );
+
+  border: var(--border-size-1) solid var(--error-color);
+  background-color: var(--error-bg-color);
+  color: var(--error-color);
+  cursor: default;
+}
+
+.info {
+  --sn-dismiss-btn-color: var(--info-color);
+  --sn-dismiss-btn-hover-color: color-mix(
+    in srgb,
+    var(--info-color),
+    var(--info-bg-color) 50%
+  );
+
+  border: var(--border-size-1) solid var(--info-color);
+  background-color: var(--info-bg-color);
+  color: var(--info-color);
+  cursor: default;
+}

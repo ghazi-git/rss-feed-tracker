@@ -1,9 +1,8 @@
-import { showToast } from "solid-notifications";
-
 import ContextMenu from "@/popup/components/context-menu/ContextMenu";
 import ContextMenuItem from "@/popup/components/context-menu/ContextMenuItem";
 import ContextMenuSeparator from "@/popup/components/context-menu/ContextMenuSeparator";
 import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-context";
+import { notifyError } from "@/popup/utils/notifications";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
 export function PostContextMenu(props: PostContextMenuProps) {
@@ -68,7 +67,7 @@ export function PostContextMenu(props: PostContextMenuProps) {
               await navigator.clipboard.writeText(store.url!);
             } catch (e) {
               console.error("copy-link: failure", e);
-              showToast("Failed to copy the link.");
+              notifyError("Failed to copy the link.");
             }
           })();
           store.triggerRef?.focus();
