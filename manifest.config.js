@@ -16,6 +16,7 @@ export default defineManifest({
   action: {
     default_icon: "public/rss-feed-tracker-logo-48x48.png",
     default_popup: "src/popup/index.html",
+    default_title: "RSS Feed Tracker",
   },
   background: {
     service_worker: "src/background/index.ts",
