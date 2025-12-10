@@ -1,4 +1,4 @@
-import { Feed, getDBConnection, TreeNode } from "@/background/db-setup";
+import { Feed, getDBConnection } from "@/background/db-setup";
 import { assertTypeIs } from "@/background/utils/assert-type";
 import { FeedUpdateError } from "@/background/utils/errors";
 import { update } from "@/background/utils/idb-helpers";
@@ -8,16 +8,30 @@ import { FeedFormData } from "@/messaging-wrapper";
 export async function updateFeed(id: number, feedData: FeedFormData) {
   using conn = await getDBConnection();
 
-  let objs: [TreeNode, TreeNode];
+  let old: Feed;
   try {
-    objs = await update(conn.db, "nodes", id, feedData);
+    const obj = await conn.db.get("nodes", id);
+    if (!obj) throw new Error(`Feed id=${id} not found`);
+
+    assertTypeIs<Feed>(obj);
+    old = obj;
   } catch (e) {
-    console.error("feed-update: failure to save the feed", e);
+    console.error("feed-update: failure to get the feed", e);
     throw new FeedUpdateError("Unable to update the feed. Please try again.");
   }
-  const [updated, old] = objs;
-  assertTypeIs<Feed>(updated);
-  assertTypeIs<Feed>(old);
+
+  const updated = structuredClone(old);
+  updated.name = feedData.name;
+  updated.parentId = feedData.folder;
+  updated.feed.url = feedData.url;
+  updated.feed.updateFrequency = feedData.frequency;
+
+  try {
+    await conn.db.put("nodes", updated);
+  } catch (e) {
+    console.error("feed-update: failure to update the feed", e);
+    throw new FeedUpdateError("Unable to update the feed. Please try again.");
+  }
 
   if (updated.parentId !== old.parentId) {
     try {
