@@ -61,7 +61,11 @@ export default function Dropdown(props: FlowProps<DropdownProps>) {
     });
   };
   const _clickOutsideHandler = (event: MouseEvent) => {
-    if (!store.menuRef?.contains(event.target as Node)) {
+    const deleteDialog = document.getElementById("delete-dialog");
+    if (
+      !store.menuRef?.contains(event.target as Node) &&
+      !deleteDialog?.contains(event.target as Node)
+    ) {
       closeMenu();
     }
   };
