@@ -34,7 +34,8 @@ export default function FeedActions(props: FeedActionsProps) {
       <Separator />
       <MenuItem
         class={styles.delete}
-        onClick={() => {
+        onClick={(event) => {
+          event.preventDefault();
           const text = `Are you sure you want to delete the feed '${props.feedName}'?`;
           openModal(props.feedId, "Delete Feed", text);
         }}

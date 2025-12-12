@@ -62,7 +62,8 @@ export default function FolderActions(props: FolderActionsProps) {
         <Separator />
         <MenuItem
           class={styles.delete}
-          onClick={() => {
+          onClick={(event) => {
+            event.preventDefault();
             const text = `Are you sure you want to delete the folder '${props.folderName}' and all its contents?`;
             openModal(props.folderId, "Delete Folder", text);
           }}
