@@ -1,42 +1,48 @@
 import ActionButton from "@/popup/components/buttons/ActionButton";
-import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
-import Dialog from "@/popup/components/dialog/Dialog";
-import DialogClose from "@/popup/components/dialog/DialogClose";
-import DialogTitle from "@/popup/components/dialog/DialogTitle";
+import CloseIcon from "@/popup/components/svg-icons/CloseIcon";
 import { notifyInfo } from "@/popup/utils/notifications";
 
 import styles from "./DeleteNodeDialog.module.css";
 
 export default function DeleteNodeDialog() {
-  const { store, closeModal } = useDeleteNodeContext();
+  const { store } = useDeleteNodeContext();
 
   return (
-    <Dialog
-      open={store.open}
-      onClose={(event) => {
-        console.log("event", event);
-        closeModal();
-      }}
-    >
-      <DialogTitle>{store.modalTitle}</DialogTitle>
+    <dialog id="delete-dialog" class={styles.dialog} closedby="any">
+      <header>
+        <h2>{store.modalTitle}</h2>
+        <UnstyledButton
+          command="close"
+          commandfor="delete-dialog"
+          aria-label="Close modal"
+        >
+          <CloseIcon />
+        </UnstyledButton>
+      </header>
+
       <p class={styles.text}>{store.modalText}</p>
-      <ButtonContainer>
-        <DialogClose>
-          <UnstyledButton class={styles.cancel}>Cancel</UnstyledButton>
-        </DialogClose>
-        <DialogClose>
-          <ActionButton
-            class={styles.delete}
-            onClick={() => {
-              notifyInfo(`Deleting Node (do sth with nodeId ${store.nodeId})`);
-            }}
-          >
-            Yes
-          </ActionButton>
-        </DialogClose>
-      </ButtonContainer>
-    </Dialog>
+
+      <footer>
+        <UnstyledButton
+          class={styles.cancel}
+          command="close"
+          commandfor="delete-dialog"
+        >
+          Cancel
+        </UnstyledButton>
+        <ActionButton
+          class={styles.delete}
+          command="close"
+          commandfor="delete-dialog"
+          onClick={() => {
+            notifyInfo(`Deleting Node (do sth with nodeId ${store.nodeId})`);
+          }}
+        >
+          Yes
+        </ActionButton>
+      </footer>
+    </dialog>
   );
 }
