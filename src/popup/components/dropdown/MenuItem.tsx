@@ -1,4 +1,4 @@
-import { FlowProps, JSX, mergeProps, onCleanup, splitProps } from "solid-js";
+import { FlowProps, JSX, onCleanup, splitProps } from "solid-js";
 
 import { useDropdownContext } from "@/popup/components/dropdown/context";
 
@@ -6,20 +6,11 @@ import styles from "./MenuItem.module.css";
 
 export default function MenuItem(props: FlowProps<MenuItemProps>) {
   let ref: HTMLDivElement;
-  const propsWithDefaults = mergeProps({ closeMenuOnClick: true }, props);
-  const [extra, rest] = splitProps(propsWithDefaults, [
-    "class",
-    "closeMenuOnClick",
-    "onClick",
-  ]);
-  const { registerItem, closeMenu, unregisterItem, focusItemByRef } =
-    useDropdownContext();
+  const [extra, rest] = splitProps(props, ["class", "onClick"]);
+  const { registerItem, unregisterItem, focusItemByRef } = useDropdownContext();
   const onItemClicked: ItemHandler = (event) => {
     if (extra.onClick) {
       extra.onClick(event);
-    }
-    if (extra.closeMenuOnClick) {
-      closeMenu();
     }
   };
   onCleanup(() => {
