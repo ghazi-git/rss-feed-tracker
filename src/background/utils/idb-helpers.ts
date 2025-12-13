@@ -57,7 +57,7 @@ async function addChunk<Name extends ExtStoreName>(
   });
   const results = await Promise.all(addPromises);
 
-  await bulkRequestDone(tx);
+  await bulkAddRequestDone(tx);
 
   return results;
 }
@@ -88,30 +88,22 @@ export async function update<Name extends ExtStoreName>(
   const tx = db.transaction(storeName, "readwrite");
   const store = unwrap(tx.store);
   let oldObject: ExtStoreValue<Name>;
-  const updatedObj = await new Promise<ExtStoreValue<Name>>(
-    (resolve, reject) => {
-      const getRequest = store.get(pk);
-      getRequest.onsuccess = () => {
-        oldObject = getRequest.result as ExtStoreValue<Name>;
-        let updated: ExtStoreValue<Name>;
-        if (typeof updatesOrUpdateFn === "function") {
-          updated = updatesOrUpdateFn(structuredClone(oldObject));
-        } else {
-          updated = { ...oldObject, ...updatesOrUpdateFn };
-        }
-        const putRequest = store.put(updated);
-        putRequest.onsuccess = () => {
-          resolve(updated);
-        };
-        putRequest.onerror = () => {
-          reject(putRequest.error);
-        };
+  const updatedObj = await new Promise<ExtStoreValue<Name>>((resolve) => {
+    const getRequest = store.get(pk);
+    getRequest.onsuccess = () => {
+      oldObject = getRequest.result as ExtStoreValue<Name>;
+      let updated: ExtStoreValue<Name>;
+      if (typeof updatesOrUpdateFn === "function") {
+        updated = updatesOrUpdateFn(structuredClone(oldObject));
+      } else {
+        updated = { ...oldObject, ...updatesOrUpdateFn };
+      }
+      const putRequest = store.put(updated);
+      putRequest.onsuccess = () => {
+        resolve(updated);
       };
-      getRequest.onerror = () => {
-        reject(getRequest.error);
-      };
-    },
-  );
+    };
+  });
 
   await txDone(tx);
 
@@ -120,17 +112,17 @@ export async function update<Name extends ExtStoreName>(
 }
 
 /**
- * Replace `tx.done` with the fix from https://github.com/jakearchibald/idb/pull/338
- * @raises the DOMException triggered by the transaction erroring or aborting
+ * Replaces `tx.done` given the issue in https://github.com/jakearchibald/idb/issues/326
+ * @raises the DOMException triggered by the transaction aborting. Listening to
+ * "abort" only since the transaction is automatically aborted on error.
  */
 export function txDone(tx: ExtTransaction) {
   return new Promise<void>((resolve, reject) => {
     tx.oncomplete = () => resolve();
-    tx.onerror = (event) => {
-      reject(tx.error ?? (event.target as unknown as IDBRequest).error);
-    };
     tx.onabort = () => {
-      reject(new DOMException("Request aborted.", "AbortError"));
+      const error =
+        tx.error ?? new DOMException("Request aborted.", "AbortError");
+      reject(error);
     };
   });
 }
@@ -139,11 +131,9 @@ export function txDone(tx: ExtTransaction) {
  * Encapsulate a user-facing error message when the transaction is likely
  * aborted due to a disk or I/O problem, rather than to an issue specific
  * to the extension.
- * To be used for awaiting transactions with multiple requests, where request
- * failures do not bubble to the transaction level as done in `bulkAdd`.
  * @raises TransactionError
  */
-async function bulkRequestDone(tx: ExtTransaction) {
+async function bulkAddRequestDone(tx: ExtTransaction) {
   try {
     await txDone(tx);
   } catch (e) {
