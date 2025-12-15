@@ -4,7 +4,6 @@ import {
   ExtensionDB,
   ExtStoreName,
   ExtStoreValue,
-  ExtTransaction,
   PrimaryKey,
 } from "@/background/db-setup";
 import { getChunks } from "@/background/utils/chunks";
@@ -39,8 +38,8 @@ async function addChunk<Name extends ExtStoreName>(
   storeName: Name,
   objs: ExtStoreValue<Name>[],
 ) {
-  const tx = db.transaction(storeName, "readwrite");
-  const store = unwrap(tx.store);
+  const tx = unwrap(db.transaction(storeName, "readwrite"));
+  const store = tx.objectStore(storeName);
 
   const addPromises = objs.map((obj) => {
     return new Promise<RequestResult<ExtStoreValue<Name>>>((resolve) => {
@@ -85,8 +84,8 @@ export async function update<Name extends ExtStoreName>(
   pk: PrimaryKey<Name>,
   updatesOrUpdateFn: Partial<ExtStoreValue<Name>> | StoreUpdateFn<Name>,
 ): Promise<StoreUpdateReturn<Name>> {
-  const tx = db.transaction(storeName, "readwrite");
-  const store = unwrap(tx.store);
+  const tx = unwrap(db.transaction(storeName, "readwrite"));
+  const store = tx.objectStore(storeName);
   let oldObject: ExtStoreValue<Name>;
   const updatedObj = await new Promise<ExtStoreValue<Name>>((resolve) => {
     const getRequest = store.get(pk);
@@ -116,7 +115,7 @@ export async function update<Name extends ExtStoreName>(
  * @raises the DOMException triggered by the transaction aborting. Listening to
  * "abort" only since the transaction is automatically aborted on error.
  */
-export function txDone(tx: ExtTransaction) {
+export function txDone(tx: IDBTransaction) {
   return new Promise<void>((resolve, reject) => {
     tx.oncomplete = () => resolve();
     tx.onabort = () => {
@@ -133,7 +132,7 @@ export function txDone(tx: ExtTransaction) {
  * to the extension.
  * @raises TransactionError
  */
-async function bulkAddRequestDone(tx: ExtTransaction) {
+async function bulkAddRequestDone(tx: IDBTransaction) {
   try {
     await txDone(tx);
   } catch (e) {

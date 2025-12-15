@@ -1,11 +1,4 @@
-import {
-  DBSchema,
-  IDBPDatabase,
-  IDBPTransaction,
-  openDB,
-  StoreNames,
-  StoreValue,
-} from "idb";
+import { DBSchema, IDBPDatabase, openDB, StoreNames, StoreValue } from "idb";
 
 export async function getDBConnection() {
   const db = await openDB<FeedTrackerDB>("FeedTracker", 1, {
@@ -100,11 +93,6 @@ export interface FeedTrackerDB extends DBSchema {
 }
 
 export type ExtensionDB = IDBPDatabase<FeedTrackerDB>;
-export type ExtTransaction = IDBPTransaction<
-  FeedTrackerDB,
-  ArrayLike<ExtStoreName>,
-  IDBTransactionMode
->;
 export type ExtStoreName = StoreNames<FeedTrackerDB>;
 export type ExtStoreValue<Name extends ExtStoreName> = StoreValue<
   FeedTrackerDB,
