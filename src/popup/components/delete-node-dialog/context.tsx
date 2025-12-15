@@ -9,13 +9,13 @@ const DeleteNodeContext = createContext<{
 export function DeleteNodeProvider(props: FlowProps) {
   const [store, setStore] = createStore<DeleteNodeStore>({
     nodeId: null,
-    modalTitle: "",
-    modalText: "",
+    nodeType: null,
+    modalText: null,
   });
-  const openModal: OpenModalType = (id, title, text) => {
+  const openModal: OpenModalType = (id, type, text) => {
     setStore({
       nodeId: id,
-      modalTitle: title,
+      nodeType: type,
       modalText: text,
     });
     const dialog = document.getElementById(
@@ -39,14 +39,20 @@ export function useDeleteNodeContext() {
   return context;
 }
 
-interface DeleteNodeStore {
-  nodeId: number | null;
-  modalTitle: string;
-  modalText: string;
-}
+type DeleteNodeStore =
+  | {
+      nodeId: number;
+      nodeType: "feed" | "folder";
+      modalText: string;
+    }
+  | {
+      nodeId: null;
+      nodeType: null;
+      modalText: null;
+    };
 
 type OpenModalType = (
   id: number,
-  modalTitle: string,
+  nodeType: "feed" | "folder",
   modalText: string,
 ) => void;

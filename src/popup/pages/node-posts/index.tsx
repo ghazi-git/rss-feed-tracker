@@ -107,7 +107,7 @@ export default function NodePosts() {
           >
             <Posts posts={filteredPosts()} />
           </Show>
-          <DeleteNodeDialog />
+          <DeleteNodeDialog deletionTriggeredFrom="nodePostsPage" />
         </DeleteNodeProvider>
       )}
     </Show>

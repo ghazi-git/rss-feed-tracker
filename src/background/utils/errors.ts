@@ -39,3 +39,10 @@ export class NotFoundError extends Error {
     this.name = "NotFoundError";
   }
 }
+
+export class FeedDeletionError extends Error {
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "FeedDeletionError";
+  }
+}

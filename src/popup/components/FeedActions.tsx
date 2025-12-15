@@ -37,7 +37,7 @@ export default function FeedActions(props: FeedActionsProps) {
         onClick={(event) => {
           event.preventDefault();
           const text = `Are you sure you want to delete the feed '${props.feedName}'?`;
-          openModal(props.feedId, "Delete Feed", text);
+          openModal(props.feedId, "feed", text);
         }}
       >
         Delete

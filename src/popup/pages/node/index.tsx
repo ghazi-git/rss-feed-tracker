@@ -53,7 +53,7 @@ export default function Node() {
               </Show>
             </PageHeaderWrapper>
             <FolderChildren folderId={currentNode().id} />
-            <DeleteNodeDialog />
+            <DeleteNodeDialog deletionTriggeredFrom="parentFolderPage" />
           </DeleteNodeProvider>
         </Show>
       )}

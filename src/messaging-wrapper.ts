@@ -63,8 +63,15 @@ export function createMutation<K extends MessageType>(messageType: K) {
       });
     }
   }
+  function reset() {
+    setStore({
+      status: "idle",
+      data: null,
+      errorMsg: null,
+    });
+  }
 
-  return { store, isLoading, isSuccess, isError, sendMsg };
+  return { store, isLoading, isSuccess, isError, sendMsg, reset };
 }
 
 interface MutationIdle {
@@ -103,6 +110,7 @@ interface MessageMap {
   "feeds/create"(data: FeedFormData): { feedId: number };
   "feeds/get"(data: { id: number }): FeedFormData;
   "feeds/update"(data: { id: number } & FeedFormData): void;
+  "feeds/delete"(data: { id: number }): void;
 }
 
 export interface FeedPreviewResponse {
