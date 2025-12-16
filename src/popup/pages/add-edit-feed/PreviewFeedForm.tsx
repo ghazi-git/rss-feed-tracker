@@ -7,19 +7,18 @@ import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
 
 export default function PreviewFeedForm(props: PreviewFeedFormProps) {
-  const { store, isLoading, isSuccess, sendMsg } =
-    createMutation("feeds/preview");
+  const { mutation, sendMsg } = createMutation("feeds/preview");
   return (
     <form
       onSubmit={async (e) => {
         e.preventDefault();
         await sendMsg({ url: props.url });
-        if (isSuccess(store)) {
-          props.onFeedDataReceived(store.data);
+        if (mutation.isSuccess) {
+          props.onFeedDataReceived(mutation.data);
         }
       }}
     >
-      <ErrorAlert errorMsg={store.errorMsg} />
+      <ErrorAlert errorMsg={mutation.errorMsg} />
       <InputField
         type="url"
         name="url"
@@ -29,7 +28,7 @@ export default function PreviewFeedForm(props: PreviewFeedFormProps) {
         onInput={(e) => props.setURL(e.target.value)}
       />
       <ButtonContainer>
-        <ActionButton type="submit" loading={isLoading(store)}>
+        <ActionButton type="submit" loading={mutation.isLoading}>
           Preview
         </ActionButton>
       </ButtonContainer>

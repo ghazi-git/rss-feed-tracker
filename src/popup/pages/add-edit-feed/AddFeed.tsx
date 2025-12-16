@@ -19,8 +19,7 @@ import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import styles from "./AddFeed.module.css";
 
 export default function AddFeed() {
-  const { store, isLoading, isSuccess, sendMsg } =
-    createMutation("feeds/create");
+  const { mutation, sendMsg } = createMutation("feeds/create");
   const { store: preferences } = usePreferencesContext();
   const [step, setStep] = createSignal<"preview" | "save">("preview");
   const [feedURL, setFeedURL] = createSignal("");
@@ -69,13 +68,13 @@ export default function AddFeed() {
           onSubmit={async (event) => {
             event.preventDefault();
             await sendMsg(formdata as FeedFormData);
-            if (isSuccess(store)) {
+            if (mutation.isSuccess) {
               notifySuccess("Feed created successfully.");
-              navigate(`/library/nodes/${store.data.feedId}/posts`);
+              navigate(`/library/nodes/${mutation.data.feedId}/posts`);
             }
           }}
         >
-          <ErrorAlert errorMsg={store.errorMsg} />
+          <ErrorAlert errorMsg={mutation.errorMsg} />
           <InputField
             type="url"
             name="url"
@@ -107,7 +106,7 @@ export default function AddFeed() {
             onChange={(e) => setFormdata("folder", parseInt(e.target.value))}
           />
           <ButtonContainer>
-            <ActionButton type="submit" loading={isLoading(store)}>
+            <ActionButton type="submit" loading={mutation.isLoading}>
               Save
             </ActionButton>
           </ButtonContainer>

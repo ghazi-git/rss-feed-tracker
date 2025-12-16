@@ -1,4 +1,3 @@
-import { batch } from "solid-js";
 import { createStore } from "solid-js/store";
 
 export async function sendMessage<K extends MessageType>(
@@ -26,40 +25,46 @@ export function onMessage<K extends MessageType>(
 }
 
 export function createMutation<K extends MessageType>(messageType: K) {
-  const [store, setStore] = createStore<Mutation<K>>({
+  const [mutation, setStore] = createStore<Mutation<K>>({
     status: "idle",
     data: null,
     errorMsg: null,
+    isIdle: true,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
   });
 
-  // separate is* function so that they can act as type guards
-  function isLoading(store: Mutation<K>) {
-    return store.status === "loading";
-  }
-  function isSuccess(store: Mutation<K>) {
-    return store.status === "success";
-  }
-  function isError(store: Mutation<K>) {
-    return store.status === "error";
-  }
   async function sendMsg(payload: MessagePayload<K>) {
-    batch(() => {
-      setStore("status", "loading");
-      setStore("data", null);
-      setStore("errorMsg", null);
+    setStore({
+      status: "loading",
+      data: null,
+      errorMsg: null,
+      isIdle: false,
+      isLoading: true,
+      isSuccess: false,
+      isError: false,
     });
     const response = await sendMessage(messageType, payload);
     if (response.success) {
-      batch(() => {
-        setStore("status", "success");
-        setStore("data", response.data);
-        setStore("errorMsg", null);
+      setStore({
+        status: "success",
+        data: response.data,
+        errorMsg: null,
+        isIdle: false,
+        isLoading: false,
+        isSuccess: true,
+        isError: false,
       });
     } else {
-      batch(() => {
-        setStore("status", "error");
-        setStore("data", null);
-        setStore("errorMsg", response.errorMsg);
+      setStore({
+        status: "error",
+        data: null,
+        errorMsg: response.errorMsg,
+        isIdle: false,
+        isLoading: false,
+        isSuccess: false,
+        isError: true,
       });
     }
   }
@@ -68,34 +73,54 @@ export function createMutation<K extends MessageType>(messageType: K) {
       status: "idle",
       data: null,
       errorMsg: null,
+      isIdle: true,
+      isLoading: false,
+      isSuccess: false,
+      isError: false,
     });
   }
 
-  return { store, isLoading, isSuccess, isError, sendMsg, reset };
+  return { mutation, sendMsg, reset };
 }
 
 interface MutationIdle {
   status: "idle";
   data: null;
   errorMsg: null;
+  isIdle: true;
+  isLoading: false;
+  isSuccess: false;
+  isError: false;
 }
 
 interface MutationLoading {
   status: "loading";
   data: null;
   errorMsg: null;
+  isIdle: false;
+  isLoading: true;
+  isSuccess: false;
+  isError: false;
 }
 
 interface MutationSuccess<K extends MessageType> {
   status: "success";
   data: MessageData<K>;
   errorMsg: null;
+  isIdle: false;
+  isLoading: false;
+  isSuccess: true;
+  isError: false;
 }
 
 interface MutationError {
   status: "error";
   data: null;
   errorMsg: string;
+  isIdle: false;
+  isLoading: false;
+  isSuccess: false;
+  isError: true;
 }
 
 type Mutation<K extends MessageType> =

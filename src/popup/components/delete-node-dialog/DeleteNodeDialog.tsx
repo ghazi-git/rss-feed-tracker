@@ -17,17 +17,13 @@ export default function DeleteNodeDialog(props: {
   const { store } = useDeleteNodeContext();
   const navigate = useNavigate();
   const {
-    store: feedMutation,
-    isLoading: isLoadingFeed,
-    isSuccess: isSuccessFeed,
+    mutation: feedMutation,
     sendMsg: sendMsgFeed,
     reset: resetFeed,
   } = createMutation("feeds/delete");
   // todo replace with folders/delete
   const {
-    store: folderMutation,
-    isLoading: isLoadingFolder,
-    isSuccess: isSuccessFolder,
+    mutation: folderMutation,
     sendMsg: sendMsgFolder,
     reset: resetFolder,
   } = createMutation("feeds/get");
@@ -40,14 +36,14 @@ export default function DeleteNodeDialog(props: {
       : feedMutation.errorMsg;
   const isLoading = () =>
     store.nodeType === "folder"
-      ? isLoadingFolder(folderMutation)
-      : isLoadingFeed(feedMutation);
+      ? folderMutation.isLoading
+      : feedMutation.isLoading;
 
   const confirmDeletion = async () => {
     if (store.nodeId) {
       if (store.nodeType === "folder") {
         await sendMsgFolder({ id: store.nodeId });
-        if (isSuccessFolder(folderMutation)) {
+        if (folderMutation.isSuccess) {
           notifySuccess("Folder Deleted.");
           if (props.deletionTriggeredFrom === "nodePostsPage") {
             navigate("/library");
@@ -58,7 +54,7 @@ export default function DeleteNodeDialog(props: {
         }
       } else {
         await sendMsgFeed({ id: store.nodeId });
-        if (isSuccessFeed(feedMutation)) {
+        if (feedMutation.isSuccess) {
           notifySuccess("Feed Deleted.");
           if (props.deletionTriggeredFrom === "nodePostsPage") {
             navigate("/library");

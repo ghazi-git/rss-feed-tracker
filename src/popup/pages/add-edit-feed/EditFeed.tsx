@@ -15,8 +15,7 @@ import { notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFeed() {
-  const { store, isLoading, isSuccess, sendMsg } =
-    createMutation("feeds/update");
+  const { mutation, sendMsg } = createMutation("feeds/update");
   const navigate = useNavigate();
   const [formdata, setFormdata] = createStore<FeedFormData>({
     url: "",
@@ -48,13 +47,13 @@ export default function EditFeed() {
           event.preventDefault();
           const id = parseInt(params.id);
           await sendMsg({ ...formdata, id });
-          if (isSuccess(store)) {
+          if (mutation.isSuccess) {
             notifySuccess("Feed updated successfully.");
             navigate(searchParams.previousUrl ?? `/library/nodes/${id}/posts`);
           }
         }}
       >
-        <ErrorAlert errorMsg={store.errorMsg} />
+        <ErrorAlert errorMsg={mutation.errorMsg} />
         <InputField
           type="url"
           name="url"
@@ -85,7 +84,7 @@ export default function EditFeed() {
           onChange={(e) => setFormdata("folder", parseInt(e.target.value))}
         />
         <ButtonContainer>
-          <ActionButton type="submit" loading={isLoading(store)}>
+          <ActionButton type="submit" loading={mutation.isLoading}>
             Save
           </ActionButton>
         </ButtonContainer>
