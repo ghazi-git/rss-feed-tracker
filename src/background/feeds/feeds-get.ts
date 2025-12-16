@@ -7,18 +7,18 @@ import { NotFoundError } from "@/background/utils/errors";
  */
 export async function getFeed(id: number) {
   using conn = await getDBConnection();
-  try {
-    const node = await conn.db.get("nodes", id);
-    assertTypeIs<Feed>(node);
-    return {
-      url: node.feed.url,
-      name: node.name,
-      frequency: node.feed.updateFrequency,
-      folder: node.parentId,
-    };
-  } catch (e) {
-    console.error("feed-get: failure to find the feed", e);
+  const node = await conn.db.get("nodes", id);
+  if (!node) {
+    console.error(`feed-get: failure to get the feed id=${id}`);
     const msg = "Unable to find the feed, it may have been deleted.";
-    throw new NotFoundError(msg, { cause: e });
+    throw new NotFoundError(msg);
   }
+
+  assertTypeIs<Feed>(node);
+  return {
+    url: node.feed.url,
+    name: node.name,
+    frequency: node.feed.updateFrequency,
+    folder: node.parentId,
+  };
 }

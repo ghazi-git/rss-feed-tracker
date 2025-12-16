@@ -8,17 +8,13 @@ import { FeedFormData } from "@/messaging-wrapper";
 export async function updateFeed(id: number, feedData: FeedFormData) {
   using conn = await getDBConnection();
 
-  let old: Feed;
-  try {
-    const obj = await conn.db.get("nodes", id);
-    if (!obj) throw new Error(`Feed id=${id} not found`);
-
-    assertTypeIs<Feed>(obj);
-    old = obj;
-  } catch (e) {
-    console.error("feed-update: failure to get the feed", e);
+  const old = await conn.db.get("nodes", id);
+  if (!old) {
+    console.error(`feed-update: failure to get the feed id=${id}`);
     throw new FeedUpdateError("Unable to update the feed. Please try again.");
   }
+
+  assertTypeIs<Feed>(old);
 
   const updated = structuredClone(old);
   updated.name = feedData.name;
