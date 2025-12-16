@@ -1,5 +1,7 @@
 import { createStore } from "solid-js/store";
 
+import { TreeNode } from "@/background/db-setup";
+
 export async function sendMessage<K extends MessageType>(
   messageType: K,
   args: MessagePayload<K>,
@@ -136,6 +138,7 @@ interface MessageMap {
   "feeds/get"(data: { id: number }): FeedFormData;
   "feeds/update"(data: { id: number } & FeedFormData): void;
   "feeds/delete"(data: { id: number }): void;
+  "nodes/get"(data: { id: number }): NodeResponse;
 }
 
 export interface FeedPreviewResponse {
@@ -153,6 +156,7 @@ export interface FeedFormData {
   frequency: number;
   folder: number;
 }
+export type NodeResponse = TreeNode & { children: TreeNode[] };
 
 type MessageType = keyof MessageMap;
 // assume only one argument is going to contain the payload
