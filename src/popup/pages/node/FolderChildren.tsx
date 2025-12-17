@@ -1,26 +1,27 @@
 import { For, Show } from "solid-js";
 
+import { TreeNode } from "@/background/db-setup";
 import FolderChild from "@/popup/pages/node/FolderChild";
 import FolderNoChildren from "@/popup/pages/node/FolderNoChildren";
-import { NODES } from "@/popup/utils/dummy-data";
 
 import styles from "./FolderChildren.module.css";
 
-export default function FolderChildren(props: { folderId: number }) {
-  const children = () => {
-    const nodes = NODES.filter((node) => node.parentId === props.folderId);
-    nodes.sort((n1, n2) => n1.sortOrder - n2.sortOrder);
-    return nodes;
-  };
-
+export default function FolderChildren(props: FolderChildrenProps) {
   return (
     <Show
-      when={children().length > 0}
+      when={props.childNodes.length > 0}
       fallback={<FolderNoChildren folderId={props.folderId} />}
     >
       <div class={styles.children}>
-        <For each={children()}>{(node) => <FolderChild node={node} />}</For>
+        <For each={props.childNodes}>
+          {(node) => <FolderChild node={node} />}
+        </For>
       </div>
     </Show>
   );
+}
+
+interface FolderChildrenProps {
+  childNodes: TreeNode[];
+  folderId: number;
 }

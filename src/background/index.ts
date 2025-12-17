@@ -1,4 +1,5 @@
 import "./feeds/messaging";
+import "./nodes/messaging";
 
 import { getDBConnection } from "@/background/db-setup";
 

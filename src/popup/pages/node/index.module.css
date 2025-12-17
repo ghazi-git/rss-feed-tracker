@@ -1,0 +1,12 @@
+.centered {
+  display: grid;
+  place-items: center;
+  place-content: center;
+  gap: var(--size-3);
+  block-size: 100%;
+}
+
+.error {
+  color: var(--error-color);
+  text-wrap: balance;
+}

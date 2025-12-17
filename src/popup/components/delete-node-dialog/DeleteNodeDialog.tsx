@@ -11,7 +11,7 @@ import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import styles from "./DeleteNodeDialog.module.css";
 
 export default function DeleteNodeDialog(props: {
-  deletionTriggeredFrom: "nodePostsPage" | "parentFolderPage";
+  reloadChildNodes?: () => void;
 }) {
   let dialogRef!: HTMLDialogElement;
   const { store } = useDeleteNodeContext();
@@ -45,10 +45,10 @@ export default function DeleteNodeDialog(props: {
         await sendMsgFolder({ id: store.nodeId });
         if (folderMutation.isSuccess) {
           notifySuccess("Folder Deleted.");
-          if (props.deletionTriggeredFrom === "nodePostsPage") {
+          if (store.deletionTrigger === "nodeHeader") {
             navigate("/library");
           } else {
-            // todo reload the parent folder list of children
+            props.reloadChildNodes?.();
             dialogRef.close();
           }
         }
@@ -56,10 +56,10 @@ export default function DeleteNodeDialog(props: {
         await sendMsgFeed({ id: store.nodeId });
         if (feedMutation.isSuccess) {
           notifySuccess("Feed Deleted.");
-          if (props.deletionTriggeredFrom === "nodePostsPage") {
+          if (store.deletionTrigger === "nodeHeader") {
             navigate("/library");
           } else {
-            // todo reload the parent folder list of children
+            props.reloadChildNodes?.();
             dialogRef.close();
           }
         }

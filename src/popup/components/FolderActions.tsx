@@ -65,7 +65,7 @@ export default function FolderActions(props: FolderActionsProps) {
           onClick={(event) => {
             event.preventDefault();
             const text = `Are you sure you want to delete the folder '${props.folderName}' and all its contents?`;
-            openModal(props.folderId, "folder", text);
+            openModal(props.folderId, "folder", text, props.deletionTrigger);
           }}
         >
           Delete
@@ -79,4 +79,5 @@ interface FolderActionsProps {
   isRoot?: boolean;
   folderId: number;
   folderName: string;
+  deletionTrigger: "folderChild" | "nodeHeader";
 }

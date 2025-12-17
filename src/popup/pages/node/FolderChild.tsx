@@ -1,6 +1,7 @@
 import { Show } from "solid-js";
 import { dismissToast } from "solid-notifications";
 
+import { TreeNode } from "@/background/db-setup";
 import Anchor from "@/popup/components/Anchor";
 import Dropdown from "@/popup/components/dropdown/Dropdown";
 import Menu from "@/popup/components/dropdown/Menu";
@@ -12,7 +13,6 @@ import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
-import { Node } from "@/popup/utils/dummy-data";
 import { notifyInfo } from "@/popup/utils/notifications";
 
 import styles from "./FolderChild.module.css";
@@ -47,12 +47,17 @@ export default function FolderChild(props: FolderChildProps) {
           <Show
             when={props.node.type === "folder"}
             fallback={
-              <FeedActions feedId={props.node.id} feedName={props.node.name} />
+              <FeedActions
+                feedId={props.node.id}
+                feedName={props.node.name}
+                deletionTrigger="folderChild"
+              />
             }
           >
             <FolderActions
               folderId={props.node.id}
               folderName={props.node.name}
+              deletionTrigger="folderChild"
             />
           </Show>
         </Menu>
@@ -62,5 +67,5 @@ export default function FolderChild(props: FolderChildProps) {
 }
 
 interface FolderChildProps {
-  node: Node;
+  node: TreeNode;
 }

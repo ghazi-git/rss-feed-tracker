@@ -37,7 +37,7 @@ export default function FeedActions(props: FeedActionsProps) {
         onClick={(event) => {
           event.preventDefault();
           const text = `Are you sure you want to delete the feed '${props.feedName}'?`;
-          openModal(props.feedId, "feed", text);
+          openModal(props.feedId, "feed", text, props.deletionTrigger);
         }}
       >
         Delete
@@ -49,4 +49,5 @@ export default function FeedActions(props: FeedActionsProps) {
 interface FeedActionsProps {
   feedId: number;
   feedName: string;
+  deletionTrigger: "folderChild" | "nodeHeader";
 }
