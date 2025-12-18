@@ -140,6 +140,7 @@ interface MessageMap {
   "feeds/delete"(data: { id: number }): void;
   "nodes/get"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
+  "folders/options"(): FolderOption[];
 }
 
 export interface FeedPreviewResponse {
@@ -161,6 +162,11 @@ export type NodeResponse = TreeNode & { children: TreeNode[] };
 export interface FolderFormData {
   name: string;
   parentFolder: number;
+}
+
+export interface FolderOption {
+  value: number;
+  label: string;
 }
 
 type MessageType = keyof MessageMap;

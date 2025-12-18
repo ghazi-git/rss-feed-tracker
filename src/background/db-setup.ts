@@ -11,8 +11,7 @@ export async function getDBConnection() {
         store.createIndex("by_type", "type");
         store.createIndex("by_parent_id_sort_order", ["parentId", "sortOrder"]);
         // insert the root folder
-        const rootFolder = getRootFolderData();
-        await store.add(rootFolder);
+        await createRootFolder(db);
       }
       if (!db.objectStoreNames.contains("feedmetadata")) {
         const store = db.createObjectStore("feedmetadata", {
@@ -100,10 +99,10 @@ export type ExtStoreValue<Name extends ExtStoreName> = StoreValue<
 >;
 export type PrimaryKey<Name extends ExtStoreName> = FeedTrackerDB[Name]["key"];
 
-export function getRootFolderData() {
+export async function createRootFolder(db: ExtensionDB): Promise<Folder> {
   // type casting because idb does not handle the case where the id is set
   // by indexeddb https://github.com/jakearchibald/idb/issues/150
-  return {
+  const root = {
     type: "folder",
     name: "My Feeds",
     parentId: null,
@@ -111,7 +110,9 @@ export function getRootFolderData() {
     unreadCount: 0,
     sortOrder: 10_000,
     feed: null,
-  } as TreeNode;
+  } as Folder;
+  const folderId = await db.add("nodes", root);
+  return { ...root, id: folderId };
 }
 
 // a node is a feed or a folder, having them stored together makes it easier
