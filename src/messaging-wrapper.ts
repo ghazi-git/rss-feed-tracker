@@ -139,6 +139,7 @@ interface MessageMap {
   "feeds/update"(data: { id: number } & FeedFormData): void;
   "feeds/delete"(data: { id: number }): void;
   "nodes/get"(data: { id: number }): NodeResponse;
+  "folders/create"(data: FolderFormData): { folderId: number };
 }
 
 export interface FeedPreviewResponse {
@@ -157,6 +158,10 @@ export interface FeedFormData {
   folder: number;
 }
 export type NodeResponse = TreeNode & { children: TreeNode[] };
+export interface FolderFormData {
+  name: string;
+  parentFolder: number;
+}
 
 type MessageType = keyof MessageMap;
 // assume only one argument is going to contain the payload

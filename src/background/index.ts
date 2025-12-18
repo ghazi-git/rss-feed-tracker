@@ -1,5 +1,6 @@
 import "./feeds/messaging";
 import "./nodes/messaging";
+import "./folders/messaging";
 
 import { getDBConnection } from "@/background/db-setup";
 
