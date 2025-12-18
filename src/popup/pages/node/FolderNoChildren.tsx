@@ -7,7 +7,10 @@ import styles from "./FolderNoChildren.module.css";
 
 export default function FolderNoChildren(props: { folderId: number }) {
   const previousUrl = () =>
-    getSearchString({ previousUrl: `/library/nodes/${props.folderId}` });
+    getSearchString({
+      previousUrl: `/library/nodes/${props.folderId}`,
+      parentFolderId: `${props.folderId}`,
+    });
 
   return (
     <div class={styles["no-children"]}>
