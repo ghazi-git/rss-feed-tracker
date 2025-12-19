@@ -9,4 +9,8 @@
 .error {
   color: var(--error-color);
   text-wrap: balance;
+
+  span {
+    text-align: center;
+  }
 }

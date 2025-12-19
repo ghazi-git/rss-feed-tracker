@@ -25,7 +25,7 @@ export default function Node() {
     <Switch>
       <Match when={node.error}>
         <div class={`${styles.centered} ${styles.error}`}>
-          {node.error.message || "An unexpected error occurred"}
+          <span>{node.error.message || "An unexpected error occurred"}</span>
           <Anchor href="/library" replace={true} class="btn">
             Go back to Library
           </Anchor>
