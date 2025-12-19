@@ -44,7 +44,7 @@ interface SelectProps extends JSX.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
 }
 
-interface SelectOption {
+export interface SelectOption {
   label: OptionProps["label"];
   value: OptionProps["value"];
   disabled?: OptionProps["disabled"];

@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
-import { onMount } from "solid-js";
+import { createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { createMutation, FeedFormData, sendMessage } from "@/messaging-wrapper";
@@ -7,11 +7,10 @@ import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
-import SelectField from "@/popup/components/forms/Select";
+import SelectField, { SelectOption } from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
-import { getParentOptions } from "@/popup/pages/add-edit-folder/FolderForm";
-import { notifySuccess } from "@/popup/utils/notifications";
+import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFeed() {
@@ -25,6 +24,15 @@ export default function EditFeed() {
   });
   const [searchParams] = useSearchParams<{ previousUrl?: string }>();
   const params = useParams();
+  const [folderOptions, setFolderOptions] = createSignal<SelectOption[]>([]);
+  onMount(async () => {
+    const resp = await sendMessage("folders/options", undefined);
+    if (resp.success) {
+      setFolderOptions(resp.data);
+    } else {
+      notifyError("Unable to fetch folder options.");
+    }
+  });
   onMount(async () => {
     const id = parseInt(params.id);
     const response = await sendMessage("feeds/get", { id });
@@ -78,7 +86,7 @@ export default function EditFeed() {
         <SelectField
           name="folder"
           label="Folder"
-          options={getParentOptions()}
+          options={folderOptions()}
           required={true}
           value={formdata.folder ?? ""}
           onChange={(e) => setFormdata("folder", parseInt(e.target.value))}
