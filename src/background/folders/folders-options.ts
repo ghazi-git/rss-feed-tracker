@@ -1,5 +1,6 @@
 import {
   createRootFolder,
+  ExtensionDB,
   Folder,
   getDBConnection,
 } from "@/background/db-setup";
@@ -7,12 +8,17 @@ import { FolderOption } from "@/messaging-wrapper";
 
 export async function getFolderOptions(): Promise<FolderOption[]> {
   using conn = await getDBConnection();
+  return getFolderOptionsAsTree(conn.db);
+}
 
-  const nodes = await conn.db.getAllFromIndex("nodes", "by_type", "folder");
+export async function getFolderOptionsAsTree(
+  db: ExtensionDB,
+): Promise<FolderOption[]> {
+  const nodes = await db.getAllFromIndex("nodes", "by_type", "folder");
   const folders = nodes.filter((n) => n.type === "folder");
   const rootFolder = folders.find((f) => f.parentId === null);
   if (!rootFolder) {
-    const root = await createRootFolder(conn.db);
+    const root = await createRootFolder(db);
     return [{ value: root.id, label: root.name }];
   }
 

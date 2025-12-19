@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
-import { createSignal, onMount } from "solid-js";
+import { batch, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { createMutation, FeedFormData, sendMessage } from "@/messaging-wrapper";
@@ -10,7 +10,7 @@ import InputField from "@/popup/components/forms/Input";
 import SelectField, { SelectOption } from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
-import { notifyError, notifySuccess } from "@/popup/utils/notifications";
+import { notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFeed() {
@@ -26,18 +26,14 @@ export default function EditFeed() {
   const params = useParams();
   const [folderOptions, setFolderOptions] = createSignal<SelectOption[]>([]);
   onMount(async () => {
-    const resp = await sendMessage("folders/options", undefined);
-    if (resp.success) {
-      setFolderOptions(resp.data);
-    } else {
-      notifyError("Unable to fetch folder options.");
-    }
-  });
-  onMount(async () => {
     const id = parseInt(params.id);
     const response = await sendMessage("feeds/get", { id });
     if (response.success) {
-      setFormdata(response.data);
+      batch(() => {
+        const { folderOptions: options, ...feedData } = response.data;
+        setFolderOptions(options);
+        setFormdata(feedData);
+      });
     } else {
       const searchString = getSearchString({ msg: response.errorMsg });
       navigate(`/library/not-found?${searchString}`);

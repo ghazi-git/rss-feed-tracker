@@ -135,7 +135,7 @@ interface MessageMap {
   // define only ONE argument for each method
   "feeds/preview"(data: { url: string }): FeedPreviewResponse;
   "feeds/create"(data: FeedFormData): { feedId: number };
-  "feeds/get"(data: { id: number }): FeedFormData;
+  "feeds/get"(data: { id: number }): FeedFormWithOptions;
   "feeds/update"(data: { id: number } & FeedFormData): void;
   "feeds/delete"(data: { id: number }): void;
   "nodes/get"(data: { id: number }): NodeResponse;
@@ -157,6 +157,9 @@ export interface FeedFormData {
   name: string;
   frequency: number;
   folder: number;
+}
+interface FeedFormWithOptions extends FeedFormData {
+  folderOptions: FolderOption[];
 }
 export type NodeResponse = TreeNode & { children: TreeNode[] };
 export interface FolderFormData {
