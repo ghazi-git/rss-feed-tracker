@@ -141,6 +141,7 @@ interface MessageMap {
   "nodes/get"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
+  "folders/get"(data: { id: number }): FolderDataWithOptions;
 }
 
 export interface FeedPreviewResponse {
@@ -170,6 +171,11 @@ export interface FolderFormData {
 export interface FolderOption {
   value: number;
   label: string;
+}
+interface FolderDataWithOptions {
+  name: string;
+  parentFolder: number | null;
+  folderOptions: FolderOption[];
 }
 
 type MessageType = keyof MessageMap;
