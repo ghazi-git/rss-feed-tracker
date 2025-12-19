@@ -142,6 +142,7 @@ interface MessageMap {
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
   "folders/get"(data: { id: number }): FolderDataWithOptions;
+  "folders/update"(data: FolderDataUpdate): void;
 }
 
 export interface FeedPreviewResponse {
@@ -176,6 +177,11 @@ interface FolderDataWithOptions {
   name: string;
   parentFolder: number | null;
   folderOptions: FolderOption[];
+}
+interface FolderDataUpdate {
+  id: number;
+  name: string;
+  parentFolder: number | null;
 }
 
 type MessageType = keyof MessageMap;
