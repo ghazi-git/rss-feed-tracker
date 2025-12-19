@@ -26,7 +26,6 @@ export async function deleteFeed(id: number) {
   try {
     await txDone(tx);
   } catch (e) {
-    console.error("feed-delete: failure to delete the feed and its posts", e);
     const msg = "Unable to delete the feed and its posts, please try again.";
     throw new FeedDeletionError(msg, { cause: e });
   }

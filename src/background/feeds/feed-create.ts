@@ -1,6 +1,7 @@
-import { ExtensionDB, getDBConnection, TreeNode } from "@/background/db-setup";
+import { unwrap } from "idb";
+
+import { ExtensionDB, getDBConnection } from "@/background/db-setup";
 import {
-  createFeedMetadata,
   describeSaveResults,
   saveFailureMetadata,
   saveSuccessMetadata,
@@ -10,9 +11,8 @@ import {
   parseFeedContent,
 } from "@/background/feeds/feeds-fetch-from-source";
 import { savePosts } from "@/background/feeds/posts-create";
-import { FeedCreationError } from "@/background/utils/errors";
+import { txDone } from "@/background/utils/idb-helpers";
 import { getHighestSortOrder } from "@/background/utils/nodes";
-import { retry } from "@/background/utils/retry-on-error";
 import { FeedFormData } from "@/messaging-wrapper";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
@@ -62,15 +62,7 @@ async function createFeed(
   favicon: string | null,
   fetchTime: number,
 ) {
-  let sortOrder = 10_000;
-  try {
-    sortOrder = await getHighestSortOrder(db, data.folder);
-  } catch (e) {
-    // no need for the user to know about an issue they can't fix
-    // we'll go with the initial value
-    console.error("feed-creation: failure to determine the sort order", e);
-  }
-
+  const sortOrder = await getHighestSortOrder(db, data.folder);
   const preferences = await loadPreferences();
   const unreadCount = preferences.markNewPostsUnread ? postsCount : 0;
   const feed = {
@@ -86,23 +78,28 @@ async function createFeed(
       updateFrequency: data.frequency,
     },
   };
-  let feedId;
-  try {
-    feedId = await db.add("nodes", feed as TreeNode);
-  } catch (e) {
-    console.error("feed-creation: failure to save to db", e);
-    const msg = "Unable to create the feed. Please try again.";
-    throw new FeedCreationError(msg, { cause: e });
-  }
-  const createMetadata = () => createFeedMetadata(db, feedId);
-  try {
-    await retry(createMetadata);
-  } catch (e) {
-    console.error("feed-creation: failure to create feed metadata", e);
-    const msg = `An unexpected error occurred during feed creation. Please \
-      delete the feed and try again.`;
-    throw new FeedCreationError(msg, { cause: e });
-  }
+  const tx = unwrap(db.transaction(["nodes", "feedmetadata"], "readwrite"));
+  const nodes = tx.objectStore("nodes");
+  const feedmatadata = tx.objectStore("feedmetadata");
 
+  let feedId: number;
+  const addRequest = nodes.add(feed);
+  addRequest.onsuccess = () => {
+    feedId = addRequest.result as number;
+    const metadata = {
+      feedId,
+      nextRunAt: null,
+      lastRunAt: null,
+      lastRunResult: null,
+      lastRunNotes: null,
+      lastSuccessfulRunAt: null,
+      lastUpdatedAt: null,
+    };
+    feedmatadata.add(metadata);
+  };
+
+  await txDone(tx);
+  // @ts-expect-error feedId value is set inside onsuccess, and we're awaiting
+  // transaction commit before returning the feedId
   return feedId;
 }

@@ -139,10 +139,6 @@ async function bulkAddRequestDone(tx: IDBTransaction) {
     // all failures at the add request level do not bubble. So, this is likely
     // an IO error or disk space issue
     // https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction#transaction_failures
-    console.error(
-      "transaction-commit: failure to commit transaction with bulk requests",
-      e,
-    );
     const msg = "An unexpected error occurred. It might be a disk space issue.";
     throw new TransactionError(msg, { cause: e });
   }

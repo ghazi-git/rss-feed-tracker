@@ -1,48 +1,27 @@
-export class HttpError extends Error {
+export class ServiceWorkerError extends Error {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
-    this.name = "HttpError";
+    this.name = new.target.name;
   }
 }
 
-export class FeedParseError extends Error {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = "FeedParseError";
-  }
-}
+export class HttpError extends ServiceWorkerError {}
 
-export class FeedCreationError extends Error {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = "FeedCreationError";
-  }
-}
+export class FeedParseError extends ServiceWorkerError {}
 
-export class FeedUpdateError extends Error {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = "FeedUpdateError";
-  }
-}
+export class FeedUpdateError extends ServiceWorkerError {}
 
-export class TransactionError extends Error {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = "TransactionError";
-  }
-}
+export class TransactionError extends ServiceWorkerError {}
 
-export class NotFoundError extends Error {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = "NotFoundError";
-  }
-}
+export class NotFoundError extends ServiceWorkerError {}
 
-export class FeedDeletionError extends Error {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = "FeedDeletionError";
-  }
+export class FeedDeletionError extends ServiceWorkerError {}
+
+export function getErrorMsg(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  err: any,
+  defaultMsg = "An unexpected error occurred, please try again.",
+) {
+  console.error("service-worker-error:", err);
+  return err instanceof ServiceWorkerError ? err.message : defaultMsg;
 }

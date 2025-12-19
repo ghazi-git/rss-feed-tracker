@@ -3,6 +3,7 @@ import { deleteFeed } from "@/background/feeds/feeds-delete";
 import { getFeed } from "@/background/feeds/feeds-get";
 import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
+import { getErrorMsg } from "@/background/utils/errors";
 import { onMessage } from "@/messaging-wrapper";
 
 onMessage("feeds/preview", (payload, sender, sendResponse) => {
@@ -10,8 +11,11 @@ onMessage("feeds/preview", (payload, sender, sendResponse) => {
     .then((data) => {
       sendResponse({ success: true, data, errorMsg: null });
     })
-    .catch((reason: Error) => {
-      sendResponse({ success: false, data: null, errorMsg: reason.message });
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while previewing the feed posts.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
     });
   return true;
 });
@@ -21,8 +25,11 @@ onMessage("feeds/create", (payload, sender, sendResponse) => {
     .then((feedId) => {
       sendResponse({ success: true, data: { feedId }, errorMsg: null });
     })
-    .catch((reason: Error) => {
-      sendResponse({ success: false, data: null, errorMsg: reason.message });
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while creating the feed.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
     });
   return true;
 });
@@ -32,8 +39,11 @@ onMessage("feeds/get", (payload, sender, sendResponse) => {
     .then((feedData) => {
       sendResponse({ success: true, data: feedData, errorMsg: null });
     })
-    .catch((reason: Error) => {
-      sendResponse({ success: false, data: null, errorMsg: reason.message });
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while getting the feed data.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
     });
   return true;
 });
@@ -44,8 +54,11 @@ onMessage("feeds/update", (payload, sender, sendResponse) => {
     .then(() => {
       sendResponse({ success: true, data: undefined, errorMsg: null });
     })
-    .catch((reason: Error) => {
-      sendResponse({ success: false, data: null, errorMsg: reason.message });
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while updating the feed.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
     });
   return true;
 });
@@ -55,8 +68,11 @@ onMessage("feeds/delete", (payload, sender, sendResponse) => {
     .then(() => {
       sendResponse({ success: true, data: undefined, errorMsg: null });
     })
-    .catch((reason: Error) => {
-      sendResponse({ success: false, data: null, errorMsg: reason.message });
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while deleting the feed.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
     });
   return true;
 });
