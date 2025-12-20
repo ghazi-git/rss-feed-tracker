@@ -1,17 +1,20 @@
-import { useParams, useSearchParams } from "@solidjs/router";
-import { createEffect, createSignal, onMount, Show } from "solid-js";
+import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
+import { batch, createSignal, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { sendMessage } from "@/messaging-wrapper";
+import { createMutation, sendMessage } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
+import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
 import SelectField, { SelectOption } from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
-import { NODES } from "@/popup/utils/dummy-data";
-import { notifyError } from "@/popup/utils/notifications";
+import { notifySuccess } from "@/popup/utils/notifications";
+import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFolder() {
+  const { mutation, sendMsg } = createMutation("folders/update");
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams<{
     parentFolderId?: string;
     previousUrl?: string;
@@ -24,26 +27,25 @@ export default function EditFolder() {
   const [isRoot, setIsRoot] = createSignal(false);
   const [parentOptions, setParentOptions] = createSignal<SelectOption[]>([]);
   onMount(async () => {
-    const resp = await sendMessage("folders/options", undefined);
-    if (resp.success) {
-      const options = resp.data.map((p) => {
-        if (p.value === parseInt(params.id)) {
-          return { ...p, disabled: true };
-        } else {
-          return p;
-        }
+    const folderId = parseInt(params.id);
+    const response = await sendMessage("folders/get", { id: folderId });
+    if (response.success) {
+      batch(() => {
+        const { folderOptions, name, parentFolder } = response.data;
+        const options = folderOptions.map((p) => {
+          if (p.value === folderId) {
+            return { ...p, disabled: true };
+          } else {
+            return p;
+          }
+        });
+        setParentOptions(options);
+        if (!parentFolder) setIsRoot(true);
+        setFormdata({ name, parent: parentFolder });
       });
-      setParentOptions(options);
     } else {
-      notifyError("Unable to fetch parent folder options.");
-    }
-  });
-
-  createEffect(() => {
-    const node = NODES.find((n) => n.id === parseInt(params.id));
-    if (node) {
-      if (!node.parentId) setIsRoot(true);
-      setFormdata({ name: node.name, parent: node.parentId });
+      const searchString = getSearchString({ msg: response.errorMsg });
+      navigate(`/library/not-found?${searchString}`);
     }
   });
 
@@ -55,11 +57,21 @@ export default function EditFolder() {
       />
       <form
         method="post"
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
-          console.log("formdata", formdata);
+          const id = parseInt(params.id);
+          await sendMsg({
+            id,
+            name: formdata.name,
+            parentFolder: formdata.parent,
+          });
+          if (mutation.isSuccess) {
+            notifySuccess("Folder updated successfully.");
+            navigate(searchParams.previousUrl ?? `/library/nodes/${id}/posts`);
+          }
         }}
       >
+        <ErrorAlert errorMsg={mutation.errorMsg} />
         <InputField
           type="text"
           name="name"
@@ -78,7 +90,9 @@ export default function EditFolder() {
           />
         </Show>
         <ButtonContainer>
-          <ActionButton type="submit">Save</ActionButton>
+          <ActionButton type="submit" loading={mutation.isLoading}>
+            Save
+          </ActionButton>
         </ButtonContainer>
       </form>
     </>
