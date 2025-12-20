@@ -1,13 +1,13 @@
 import { unwrap } from "idb";
 
 import { getDBConnection } from "@/background/db-setup";
-import { FeedDeletionError } from "@/background/utils/errors";
+import { DeletionError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
 
 /**
  * Delete the feed, its metadata and posts in the same transaction (everything
  * either succeeds or fails together)
- * @raises FeedDeletionError
+ * @raises DeletionError
  */
 export async function deleteFeed(id: number) {
   using conn = await getDBConnection();
@@ -27,6 +27,6 @@ export async function deleteFeed(id: number) {
     await txDone(tx);
   } catch (e) {
     const msg = "Unable to delete the feed and its posts, please try again.";
-    throw new FeedDeletionError(msg, { cause: e });
+    throw new DeletionError(msg, { cause: e });
   }
 }

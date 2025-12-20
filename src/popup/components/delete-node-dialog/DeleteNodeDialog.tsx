@@ -21,12 +21,11 @@ export default function DeleteNodeDialog(props: {
     sendMsg: sendMsgFeed,
     reset: resetFeed,
   } = createMutation("feeds/delete");
-  // todo replace with folders/delete
   const {
     mutation: folderMutation,
     sendMsg: sendMsgFolder,
     reset: resetFolder,
-  } = createMutation("feeds/get");
+  } = createMutation("folders/delete");
 
   const modalTitle = () =>
     store.nodeType === "folder" ? "Delete Folder" : "Delete Feed";
@@ -88,9 +87,7 @@ export default function DeleteNodeDialog(props: {
       }}
     >
       <header>
-        <h2>
-          {modalTitle()} {store.nodeId}
-        </h2>
+        <h2>{modalTitle()}</h2>
         <UnstyledButton
           command="close"
           commandfor="delete-dialog"

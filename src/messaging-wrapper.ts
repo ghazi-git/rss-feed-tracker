@@ -143,6 +143,7 @@ interface MessageMap {
   "folders/options"(): FolderOption[];
   "folders/get"(data: { id: number }): FolderDataWithOptions;
   "folders/update"(data: FolderDataUpdate): void;
+  "folders/delete"(data: { id: number }): void;
 }
 
 export interface FeedPreviewResponse {

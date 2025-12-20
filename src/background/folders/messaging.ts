@@ -1,4 +1,5 @@
 import { createFolder } from "@/background/folders/folders-create";
+import { deleteFolder } from "@/background/folders/folders-delete";
 import { getFolder } from "@/background/folders/folders-get";
 import { getFolderOptions } from "@/background/folders/folders-options";
 import { updateFolder } from "@/background/folders/folders-update";
@@ -56,6 +57,20 @@ onMessage("folders/update", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while updating the folder.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("folders/delete", (payload, sender, sendResponse) => {
+  deleteFolder(payload.id)
+    .then(() => {
+      sendResponse({ success: true, data: undefined, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while deleting the folder.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });

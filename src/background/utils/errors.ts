@@ -13,7 +13,7 @@ export class TransactionError extends ServiceWorkerError {}
 
 export class NotFoundError extends ServiceWorkerError {}
 
-export class FeedDeletionError extends ServiceWorkerError {}
+export class DeletionError extends ServiceWorkerError {}
 
 export function getErrorMsg(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
