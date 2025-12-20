@@ -1,5 +1,5 @@
 import { getDBConnection } from "@/background/db-setup";
-import { FeedUpdateError } from "@/background/utils/errors";
+import { NotFoundError } from "@/background/utils/errors";
 import { update } from "@/background/utils/idb-helpers";
 import { getHighestSortOrder } from "@/background/utils/nodes";
 import { FeedFormData } from "@/messaging-wrapper";
@@ -9,7 +9,7 @@ export async function updateFeed(id: number, feedData: FeedFormData) {
 
   const old = await conn.db.get("nodes", id);
   if (!old || old.type !== "feed") {
-    throw new FeedUpdateError(
+    throw new NotFoundError(
       "Unable to find the feed to be updated, it may have been deleted.",
       { cause: `feed-update: failure to get the feed id=${id}` },
     );

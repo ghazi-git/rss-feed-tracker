@@ -1,5 +1,5 @@
 import { getDBConnection } from "@/background/db-setup";
-import { FeedUpdateError } from "@/background/utils/errors";
+import { NotFoundError } from "@/background/utils/errors";
 import { getHighestSortOrder } from "@/background/utils/nodes";
 
 export async function updateFolder(
@@ -11,7 +11,7 @@ export async function updateFolder(
 
   const old = await conn.db.get("nodes", id);
   if (!old || old.type !== "folder") {
-    throw new FeedUpdateError(
+    throw new NotFoundError(
       "Unable to find the folder to be updated, it may have been deleted.",
       { cause: `folder-update: failure to get the folder id=${id}` },
     );

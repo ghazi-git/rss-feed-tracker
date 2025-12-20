@@ -9,8 +9,6 @@ export class HttpError extends ServiceWorkerError {}
 
 export class FeedParseError extends ServiceWorkerError {}
 
-export class FeedUpdateError extends ServiceWorkerError {}
-
 export class TransactionError extends ServiceWorkerError {}
 
 export class NotFoundError extends ServiceWorkerError {}
