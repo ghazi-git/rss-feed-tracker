@@ -31,7 +31,7 @@ html {
   --success-color-light: var(--green-9);
   --success-color-dark: var(--green-0);
   --success-color: var(--success-color-light);
-  --success-bg-color-light: #e6fcf552;
+  --success-bg-color-light: #f3faf9;
   --success-bg-color-dark: var(--teal-10);
   --success-bg-color: var(--success-bg-color-light);
   --info-color-light: var(--indigo-9);
