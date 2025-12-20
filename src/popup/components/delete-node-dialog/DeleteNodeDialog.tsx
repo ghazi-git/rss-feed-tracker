@@ -96,6 +96,16 @@ export default function DeleteNodeDialog(props: {
           }
         }
       }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          // the default behavior is that escape click results in closing
+          // the extension popup even when event.stopPropagation()
+          // So, we avoid closing the modal and the extension popup with
+          // event.preventDefault(), then manually close the modal
+          event.preventDefault();
+          dialogRef.close();
+        }
+      }}
     >
       <header>
         <h2>{modalTitle()}</h2>
