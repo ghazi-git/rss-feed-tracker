@@ -12,7 +12,7 @@ import styles from "./index.module.css";
 
 export default function Node() {
   const params = useParams();
-  const [node, { refetch }] = createResource(
+  const [node, { mutate }] = createResource(
     () => parseInt(params.id),
     getNodeInfo,
   );
@@ -52,7 +52,7 @@ export default function Node() {
                   folderId={folder().id}
                   childNodes={folder().children}
                 />
-                <DeleteNodeDialog reloadChildNodes={refetch} />
+                <DeleteNodeDialog updateChildNodes={mutate} />
               </DeleteNodeProvider>
             )}
           </Show>

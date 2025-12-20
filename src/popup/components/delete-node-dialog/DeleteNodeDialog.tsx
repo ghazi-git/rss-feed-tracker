@@ -1,6 +1,7 @@
 import { useNavigate } from "@solidjs/router";
+import { Setter } from "solid-js";
 
-import { createMutation } from "@/messaging-wrapper";
+import { createMutation, NodeResponse } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
@@ -11,7 +12,7 @@ import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import styles from "./DeleteNodeDialog.module.css";
 
 export default function DeleteNodeDialog(props: {
-  reloadChildNodes?: () => void;
+  updateChildNodes?: Setter<NodeResponse | undefined>;
 }) {
   let dialogRef!: HTMLDialogElement;
   const { store } = useDeleteNodeContext();
@@ -37,6 +38,16 @@ export default function DeleteNodeDialog(props: {
     store.nodeType === "folder"
       ? folderMutation.isLoading
       : feedMutation.isLoading;
+  const removeChildNode = (deletedNodeId: number) => {
+    if (props.updateChildNodes) {
+      props.updateChildNodes((resp) => {
+        if (!resp) return resp;
+
+        const childNodes = resp.children.filter((n) => n.id !== deletedNodeId);
+        return { ...resp, children: childNodes };
+      });
+    }
+  };
 
   const confirmDeletion = async () => {
     if (store.nodeId) {
@@ -47,7 +58,7 @@ export default function DeleteNodeDialog(props: {
           if (store.deletionTrigger === "nodeHeader") {
             navigate("/library");
           } else {
-            props.reloadChildNodes?.();
+            removeChildNode(store.nodeId);
             dialogRef.close();
           }
         }
@@ -58,7 +69,7 @@ export default function DeleteNodeDialog(props: {
           if (store.deletionTrigger === "nodeHeader") {
             navigate("/library");
           } else {
-            props.reloadChildNodes?.();
+            removeChildNode(store.nodeId);
             dialogRef.close();
           }
         }
