@@ -11,12 +11,12 @@ import AddFolder from "@/popup/pages/add-edit-folder/AddFolder";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder";
 import Bookmarks from "@/popup/pages/Bookmarks";
 import ImportFeeds from "@/popup/pages/import-feeds";
+import Library from "@/popup/pages/Library";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet";
 import Node from "@/popup/pages/node";
 import NodePosts from "@/popup/pages/node-posts";
 import NotFound from "@/popup/pages/NotFound";
 import Preferences from "@/popup/pages/Preferences";
-import { NODES } from "@/popup/utils/dummy-data";
 import {
   getLastVisitedPage,
   saveLastVisitedPage,
@@ -72,25 +72,7 @@ function App() {
       >
         <Toaster />
         <Router root={Layout}>
-          <Route
-            path="/library"
-            component={() => {
-              const rootNode = NODES.find((node) => node.parentId === null);
-              if (!rootNode) {
-                // todo create a new one then redirect to the no feeds yet page
-                return <Navigate href="/library/no-feeds-yet" />;
-              } else {
-                const rootNodeChildren = NODES.filter(
-                  (node) => node.parentId === rootNode.id,
-                );
-                if (rootNodeChildren.length === 0) {
-                  return <Navigate href="/library/no-feeds-yet" />;
-                } else {
-                  return <Navigate href={`/library/nodes/${rootNode.id}`} />;
-                }
-              }
-            }}
-          />
+          <Route path="/library" component={Library} />
           <Route path="/library/nodes/:id" component={Node} />
           <Route path="/library/nodes/:id/posts" component={NodePosts} />
           <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
@@ -110,12 +92,7 @@ function App() {
                 lastVisitedURL = null;
                 return <Navigate href={redirectTo} />;
               }
-              const hasFeeds = window.localStorage.getItem("hasFeeds");
-              if (hasFeeds) {
-                return <Navigate href="/library" />;
-              } else {
-                return <Navigate href="/library/no-feeds-yet" />;
-              }
+              return <Navigate href="/library" />;
             }}
           />
         </Router>

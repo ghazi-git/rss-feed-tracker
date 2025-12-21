@@ -1,0 +1,12 @@
+.spinner {
+  block-size: 100%;
+  display: grid;
+  place-items: center;
+  place-content: center;
+  gap: var(--size-2);
+
+  svg {
+    inline-size: var(--size-7);
+    block-size: auto;
+  }
+}

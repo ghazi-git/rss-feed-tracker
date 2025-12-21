@@ -141,6 +141,7 @@ interface MessageMap {
   "nodes/get"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
+  "folders/get-root"(): RootFolder;
   "folders/get"(data: { id: number }): FolderDataWithOptions;
   "folders/update"(data: FolderDataUpdate): void;
   "folders/delete"(data: { id: number }): void;
@@ -165,6 +166,7 @@ interface FeedFormWithOptions extends FeedFormData {
   folderOptions: FolderOption[];
 }
 export type NodeResponse = TreeNode & { children: TreeNode[] };
+export type RootFolder = { id: number; hasChildNodes: boolean };
 export interface FolderFormData {
   name: string;
   parentFolder: number;

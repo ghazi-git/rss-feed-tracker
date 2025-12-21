@@ -17,7 +17,7 @@ export default function Header() {
   return (
     <header class={styles.header}>
       <Anchor
-        href="/"
+        href="/library"
         class={styles.tab}
         classList={{ [styles.active]: activeTab() === "library" }}
       >

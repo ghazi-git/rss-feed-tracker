@@ -1,6 +1,7 @@
 import { createFolder } from "@/background/folders/folders-create";
 import { deleteFolder } from "@/background/folders/folders-delete";
 import { getFolder } from "@/background/folders/folders-get";
+import { getRootFolder } from "@/background/folders/folders-get-root";
 import { getFolderOptions } from "@/background/folders/folders-options";
 import { updateFolder } from "@/background/folders/folders-update";
 import { getErrorMsg } from "@/background/utils/errors";
@@ -28,6 +29,20 @@ onMessage("folders/options", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while getting the folders tree.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("folders/get-root", (payload, sender, sendResponse) => {
+  getRootFolder()
+    .then((root) => {
+      sendResponse({ success: true, data: root, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while getting the root folder data.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
