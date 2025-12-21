@@ -1,19 +1,19 @@
 import { useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
+import { Post, TreeNode } from "@/background/db-setup";
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import styles from "@/popup/pages/node-posts/index.module.css";
 import Posts from "@/popup/pages/node-posts/Posts";
-import { NODES, POSTS } from "@/popup/utils/dummy-data";
 
 export default function Bookmarks() {
   const [searchParams] = useSearchParams();
   const bookmarks = () => {
-    const bookmarkedPosts = POSTS.filter((p) => p.bookmarked);
+    const bookmarkedPosts = ([] as Post[]).filter((p) => p.bookmarked);
     const posts = bookmarkedPosts.map((post) => {
-      const n = NODES.find((nd) => nd.id === post.feedId);
+      const n = ([] as TreeNode[]).find((nd) => nd.id === post.feedId);
       return {
         ...post,
         feed: { name: n!.name, favicon: n!.feed!.favicon },

@@ -1,6 +1,7 @@
 import { useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, Show } from "solid-js";
 
+import { Post, TreeNode } from "@/background/db-setup";
 import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
 import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
 import NoPosts from "@/popup/components/NoPosts";
@@ -9,14 +10,14 @@ import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper"
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import Posts from "@/popup/pages/node-posts/Posts";
-import { NODES, POSTS } from "@/popup/utils/dummy-data";
 
 import styles from "./index.module.css";
 
 export default function NodePosts() {
   const [searchParams] = useSearchParams();
   const params = useParams();
-  const node = () => NODES.find((n) => n.id === parseInt(params.id));
+  const node = () =>
+    ([] as TreeNode[]).find((n) => n.id === parseInt(params.id));
   const allPosts = createMemo(() => {
     const currentNode = node();
     if (!currentNode) return [];
@@ -27,22 +28,24 @@ export default function NodePosts() {
       const folderIds = [currentNode.id];
       while (folderIds.length > 0) {
         const folderId = folderIds.shift();
-        const children = NODES.filter((n) => n.parentId === folderId);
+        const children = ([] as TreeNode[]).filter(
+          (n) => n.parentId === folderId,
+        );
         for (const child of children) {
           if (child.type === "folder") folderIds.push(child.id);
           else feedIds.push(child.id);
         }
       }
-      posts = POSTS.filter((post) => feedIds.includes(post.feedId));
+      posts = ([] as Post[]).filter((post) => feedIds.includes(post.feedId));
       posts = posts.map((post) => {
-        const n = NODES.find((nd) => nd.id === post.feedId);
+        const n = ([] as TreeNode[]).find((nd) => nd.id === post.feedId);
         return {
           ...post,
           feed: { name: n!.name, favicon: n!.feed!.favicon },
         };
       });
     } else {
-      posts = POSTS.filter((post) => post.feedId === currentNode.id);
+      posts = ([] as Post[]).filter((post) => post.feedId === currentNode.id);
       posts = posts.map((post) => ({
         ...post,
         feed: { name: currentNode.name, favicon: currentNode.feed.favicon },
