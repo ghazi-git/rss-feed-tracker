@@ -7,10 +7,11 @@ export async function savePosts(
   feedId: number,
   parsedPosts: ParsedPost[],
   fetchTime: number,
+  markNewPostsUnread: boolean,
 ) {
   const posts: Post[] = parsedPosts.map((post) => ({
     ...post,
-    unread: 0,
+    unread: markNewPostsUnread ? 1 : 0,
     bookmarked: 0,
     feedId,
     receivedAt: fetchTime,

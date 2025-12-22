@@ -24,13 +24,27 @@ export async function loadAndCreateFeed(data: FeedFormData) {
   using conn = await getDBConnection();
   const postsCount = parsedFeed.posts.length;
   const favicon = parsedFeed.favicon;
-  // prettier-ignore
-  const feedId = await createFeed(conn.db, data, postsCount, favicon, fetchTime);
+  const preferences = await loadPreferences();
+  const markNewPostsUnread = preferences.markNewPostsUnread;
+  const feedId = await createFeed(
+    conn.db,
+    data,
+    postsCount,
+    favicon,
+    fetchTime,
+    markNewPostsUnread,
+  );
 
   if (parsedFeed.posts.length) {
     let results;
     try {
-      results = await savePosts(conn.db, feedId, parsedFeed.posts, fetchTime);
+      results = await savePosts(
+        conn.db,
+        feedId,
+        parsedFeed.posts,
+        fetchTime,
+        markNewPostsUnread,
+      );
     } catch (e) {
       const errorMsg = e instanceof Error ? e.message : "Unknown Error";
       const reason = `SavePostsError: ${errorMsg}`;
@@ -61,10 +75,10 @@ async function createFeed(
   postsCount: number,
   favicon: string | null,
   fetchTime: number,
+  markNewPostsUnread: boolean,
 ) {
   const sortOrder = await getHighestSortOrder(db, data.folder);
-  const preferences = await loadPreferences();
-  const unreadCount = preferences.markNewPostsUnread ? postsCount : 0;
+  const unreadCount = markNewPostsUnread ? postsCount : 0;
   const feed = {
     type: "feed",
     name: data.name,
