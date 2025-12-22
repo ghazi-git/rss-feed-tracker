@@ -23,22 +23,40 @@ export async function getDBConnection() {
         const store = db.createObjectStore("posts", {
           keyPath: ["feedId", "guid"],
         });
-        store.createIndex("by_published_at", "publishedAt");
-        store.createIndex("by_unread_published_at", ["unread", "publishedAt"]);
-        store.createIndex("by_feed_id_published_at", ["feedId", "publishedAt"]);
-        store.createIndex("by_feed_id_unread_published_at", [
+        store.createIndex("by_published_at_feed_id_guid", [
+          "publishedAt",
+          "feedId",
+          "guid",
+        ]);
+        store.createIndex("by_unread_published_at_feed_id_guid", [
+          "unread",
+          "publishedAt",
+          "feedId",
+          "guid",
+        ]);
+        store.createIndex("by_feed_id_published_at_guid", [
+          "feedId",
+          "publishedAt",
+          "guid",
+        ]);
+        store.createIndex("by_feed_id_unread_published_at_guid", [
           "feedId",
           "unread",
           "publishedAt",
+          "guid",
         ]);
-        store.createIndex("by_bookmarked_published_at", [
+        store.createIndex("by_bookmarked_published_at_feed_id_guid", [
           "bookmarked",
           "publishedAt",
+          "feedId",
+          "guid",
         ]);
-        store.createIndex("by_bookmarked_unread_published_at", [
+        store.createIndex("by_bookmarked_unread_published_at_feed_id_guid", [
           "bookmarked",
           "unread",
           "publishedAt",
+          "feedId",
+          "guid",
         ]);
       }
     },
@@ -75,18 +93,40 @@ export interface FeedTrackerDB extends DBSchema {
     key: [number, string];
     value: Post;
     indexes: {
-      // for displaying all posts sorted in the root folder
-      by_published_at: number;
-      // for displaying all unread posts sorted in the root folder
-      by_unread_published_at: [BooleanFlag, number];
+      // for displaying all posts sorted in folders. feedId+guid are needed for
+      // handling pagination correctly
+      by_published_at_feed_id_guid: [number, number, string];
+      // for displaying all unread posts sorted in folders
+      by_unread_published_at_feed_id_guid: [
+        BooleanFlag,
+        number,
+        number,
+        string,
+      ];
       // for displaying all posts sorted inside a feed
-      by_feed_id_published_at: [number, number];
+      by_feed_id_published_at_guid: [number, number, string];
       // for displaying all unread posts sorted inside a feed
-      by_feed_id_unread_published_at: [number, BooleanFlag, number];
+      by_feed_id_unread_published_at_guid: [
+        number,
+        BooleanFlag,
+        number,
+        string,
+      ];
       // for displaying all bookmarked posts sorted
-      by_bookmarked_published_at: [BooleanFlag, number];
+      by_bookmarked_published_at_feed_id_guid: [
+        BooleanFlag,
+        number,
+        number,
+        string,
+      ];
       // for displaying all bookmarked unread posts sorted
-      by_bookmarked_unread_published_at: [BooleanFlag, BooleanFlag, number];
+      by_bookmarked_unread_published_at_feed_id_guid: [
+        BooleanFlag,
+        BooleanFlag,
+        number,
+        number,
+        string,
+      ];
     };
   };
 }
@@ -155,9 +195,10 @@ export interface FeedMetadata {
 }
 
 export interface Post {
-  // guid is the primary key. The idea is to offload figuring out new posts
+  // feedId+guid are the primary key. The idea is to offload figuring out new posts
   // from existing ones to the db. When getting new posts, we'll use `store.add`
-  // and let the db refuse inserting posts with the same guid.
+  // and let the db refuse inserting posts with the same feedID+guid.
+  feedId: number;
   guid: string;
   title: string;
   url: string;
@@ -167,7 +208,6 @@ export interface Post {
   // can't use booleans since they can't be indexed
   unread: BooleanFlag;
   bookmarked: BooleanFlag;
-  feedId: number;
   // receivedAt might help with marking all read especially that new posts can
   // arrive while the user is viewing at the unread files
   receivedAt: number;
