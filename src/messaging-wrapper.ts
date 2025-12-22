@@ -138,6 +138,7 @@ interface MessageMap {
   "feeds/get"(data: { id: number }): FeedFormWithOptions;
   "feeds/update"(data: { id: number } & FeedFormData): void;
   "feeds/delete"(data: { id: number }): void;
+  "posts/get-unread-bookmarks-count"(): number;
   "nodes/get"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];

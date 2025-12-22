@@ -1,14 +1,29 @@
 import { useSearchParams } from "@solidjs/router";
-import { createMemo, Show } from "solid-js";
+import { createMemo, createSignal, onMount, Show } from "solid-js";
 
 import { Post, TreeNode } from "@/background/db-setup";
+import { sendMessage } from "@/messaging-wrapper";
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import styles from "@/popup/pages/node-posts/index.module.css";
 import Posts from "@/popup/pages/node-posts/Posts";
+import { notifyError } from "@/popup/utils/notifications";
 
 export default function Bookmarks() {
+  const [unreadCount, setUnreadCount] = createSignal(0);
+  onMount(async () => {
+    const resp = await sendMessage(
+      "posts/get-unread-bookmarks-count",
+      undefined,
+    );
+    if (resp.success) {
+      setUnreadCount(resp.data);
+    } else {
+      notifyError(resp.errorMsg);
+    }
+  });
+
   const [searchParams] = useSearchParams();
   const bookmarks = () => {
     const bookmarkedPosts = ([] as Post[]).filter((p) => p.bookmarked);
@@ -29,7 +44,6 @@ export default function Bookmarks() {
       return bookmarks();
     }
   });
-  const unreadBookmarks = () => bookmarks().filter((post) => post.unread);
 
   return (
     <Show
@@ -39,7 +53,7 @@ export default function Bookmarks() {
       <PageHeaderWrapper>
         <PostsFilter
           pageUrl="/bookmarks"
-          unreadCount={unreadBookmarks().length}
+          unreadCount={unreadCount()}
           initialFilter={searchParams.unread === "true" ? "unread" : "all"}
           class={styles["posts-filter"]}
         />

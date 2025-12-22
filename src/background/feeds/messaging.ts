@@ -3,6 +3,7 @@ import { deleteFeed } from "@/background/feeds/feeds-delete";
 import { getFeed } from "@/background/feeds/feeds-get";
 import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
+import { getUnreadBookmarksCount } from "@/background/feeds/posts-get-unread-bookmarks-count";
 import { getErrorMsg } from "@/background/utils/errors";
 import { onMessage } from "@/messaging-wrapper";
 
@@ -76,3 +77,20 @@ onMessage("feeds/delete", (payload, sender, sendResponse) => {
     });
   return true;
 });
+
+onMessage(
+  "posts/get-unread-bookmarks-count",
+  (payload, sender, sendResponse) => {
+    getUnreadBookmarksCount()
+      .then((count) => {
+        sendResponse({ success: true, data: count, errorMsg: null });
+      })
+      .catch((err) => {
+        const defaultMsg =
+          "An unexpected error occurred while getting the unread bookmarks count.";
+        const errorMsg = getErrorMsg(err, defaultMsg);
+        sendResponse({ success: false, data: null, errorMsg });
+      });
+    return true;
+  },
+);
