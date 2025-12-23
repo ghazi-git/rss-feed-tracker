@@ -1,6 +1,6 @@
 import { unwrap } from "idb";
 
-import { ExtensionDB, getDBConnection } from "@/background/db-setup";
+import { ExtensionDB, getDBConnection, Post } from "@/background/db-setup";
 import {
   describeSaveResults,
   saveFailureMetadata,
@@ -8,10 +8,10 @@ import {
 } from "@/background/feeds/feedmetadata";
 import {
   fetchFeedContent,
+  ParsedPost,
   parseFeedContent,
 } from "@/background/feeds/feeds-fetch-from-source";
-import { savePosts } from "@/background/feeds/posts-create";
-import { txDone } from "@/background/utils/idb-helpers";
+import { bulkAdd, txDone } from "@/background/utils/idb-helpers";
 import { getHighestSortOrder } from "@/background/utils/nodes";
 import { FeedFormData } from "@/messaging-wrapper";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
@@ -116,4 +116,21 @@ async function createFeed(
   // @ts-expect-error feedId value is set inside onsuccess, and we're awaiting
   // transaction commit before returning the feedId
   return feedId;
+}
+
+async function savePosts(
+  db: ExtensionDB,
+  feedId: number,
+  parsedPosts: ParsedPost[],
+  fetchTime: number,
+  markNewPostsUnread: boolean,
+) {
+  const posts: Post[] = parsedPosts.map((post) => ({
+    ...post,
+    unread: markNewPostsUnread ? 1 : 0,
+    bookmarked: 0,
+    feedId,
+    receivedAt: fetchTime,
+  }));
+  return await bulkAdd(db, "posts", posts);
 }
