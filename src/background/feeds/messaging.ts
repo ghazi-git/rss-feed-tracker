@@ -3,6 +3,7 @@ import { deleteFeed } from "@/background/feeds/feeds-delete";
 import { getFeed } from "@/background/feeds/feeds-get";
 import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
+import { getBookmarks } from "@/background/feeds/posts-get-bookmarks";
 import { getUnreadBookmarksCount } from "@/background/feeds/posts-get-unread-bookmarks-count";
 import { getErrorMsg } from "@/background/utils/errors";
 import { onMessage } from "@/messaging-wrapper";
@@ -94,3 +95,17 @@ onMessage(
     return true;
   },
 );
+
+onMessage("posts/get-bookmarks", (payload, sender, sendResponse) => {
+  getBookmarks(payload.unread, payload.cursor)
+    .then((resp) => {
+      sendResponse({ success: true, data: resp, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while getting the bookmarked posts.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});

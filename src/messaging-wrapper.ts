@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 
-import { TreeNode } from "@/background/db-setup";
+import { Post, TreeNode } from "@/background/db-setup";
 
 export async function sendMessage<K extends MessageType>(
   messageType: K,
@@ -139,6 +139,7 @@ interface MessageMap {
   "feeds/update"(data: { id: number } & FeedFormData): void;
   "feeds/delete"(data: { id: number }): void;
   "posts/get-unread-bookmarks-count"(): number;
+  "posts/get-bookmarks"(data: BookmarkedPostsParams): PostsResponse;
   "nodes/get"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
@@ -165,6 +166,25 @@ export interface FeedFormData {
 }
 interface FeedFormWithOptions extends FeedFormData {
   folderOptions: FolderOption[];
+}
+export interface BookmarkedPostsParams {
+  unread: boolean;
+  cursor: PostsCursor | null;
+}
+export interface FeedPost extends Post {
+  feedName: string;
+  feedFavicon: string | null;
+}
+export interface PostsResponse {
+  posts: FeedPost[];
+  unread: boolean;
+  cursor: PostsCursor | null;
+  nextPageCursor: PostsCursor | null;
+}
+export interface PostsCursor {
+  publishedAt: number;
+  feedId: number;
+  guid: string;
 }
 export type NodeResponse = TreeNode & { children: TreeNode[] };
 export type RootFolder = { id: number; hasChildNodes: boolean };
