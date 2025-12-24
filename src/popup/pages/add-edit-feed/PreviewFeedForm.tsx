@@ -1,10 +1,11 @@
 import { Setter } from "solid-js";
 
-import { createMutation, FeedPreviewResponse } from "@/messaging-wrapper";
+import { FeedPreviewResponse } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
+import { createMutation } from "@/popup/utils/mutation";
 
 export default function PreviewFeedForm(props: PreviewFeedFormProps) {
   const { mutation, sendMsg } = createMutation("feeds/preview");

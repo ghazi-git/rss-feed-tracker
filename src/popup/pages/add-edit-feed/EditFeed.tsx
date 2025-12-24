@@ -2,7 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { batch, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { createMutation, FeedFormData, sendMessage } from "@/messaging-wrapper";
+import { FeedFormData, sendMessage } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
@@ -10,6 +10,7 @@ import InputField from "@/popup/components/forms/Input";
 import SelectField, { SelectOption } from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
+import { createMutation } from "@/popup/utils/mutation";
 import { notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 

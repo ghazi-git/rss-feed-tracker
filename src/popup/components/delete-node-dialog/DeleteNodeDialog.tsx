@@ -1,12 +1,13 @@
 import { useNavigate } from "@solidjs/router";
 import { Setter } from "solid-js";
 
-import { createMutation, NodeResponse } from "@/messaging-wrapper";
+import { NodeResponse } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import CloseIcon from "@/popup/components/svg-icons/CloseIcon";
+import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 
 import styles from "./DeleteNodeDialog.module.css";

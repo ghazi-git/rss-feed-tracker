@@ -2,12 +2,7 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { batch, createEffect, createSignal, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import {
-  createMutation,
-  FeedFormData,
-  PostPreview,
-  sendMessage,
-} from "@/messaging-wrapper";
+import { FeedFormData, PostPreview, sendMessage } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
@@ -17,6 +12,7 @@ import PageHeader from "@/popup/components/page-header/PageHeader";
 import FeedPostsPreview from "@/popup/pages/add-edit-feed/FeedPostsPreview";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
 import PreviewFeedForm from "@/popup/pages/add-edit-feed/PreviewFeedForm";
+import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 
