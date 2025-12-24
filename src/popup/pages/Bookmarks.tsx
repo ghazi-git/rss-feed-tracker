@@ -1,14 +1,17 @@
 import { useSearchParams } from "@solidjs/router";
-import { createMemo, createSignal, onMount, Show } from "solid-js";
+import { createSignal, Match, onMount, Show, Switch } from "solid-js";
 
-import { Post, TreeNode } from "@/background/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
+import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
+import ErrorAlert from "@/popup/components/ErrorAlert";
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
-import styles from "@/popup/pages/node-posts/index.module.css";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { notifyError } from "@/popup/utils/notifications";
+import { createQuery } from "@/popup/utils/query";
+
+import styles from "./Bookmarks.module.css";
 
 export default function Bookmarks() {
   const [unreadCount, setUnreadCount] = createSignal(0);
@@ -25,40 +28,71 @@ export default function Bookmarks() {
   });
 
   const [searchParams] = useSearchParams();
-  const bookmarks = () => {
-    const bookmarkedPosts = ([] as Post[]).filter((p) => p.bookmarked);
-    const posts = bookmarkedPosts.map((post) => {
-      const n = ([] as TreeNode[]).find((nd) => nd.id === post.feedId);
-      return {
-        ...post,
-        feed: { name: n!.name, favicon: n!.feed!.favicon },
-      };
-    });
-    posts.sort((p1, p2) => p2.publishedAt - p1.publishedAt);
-    return posts;
-  };
-  const filteredBookmarks = createMemo(() => {
-    if (searchParams.unread === "true") {
-      return bookmarks().filter((post) => post.unread);
-    } else {
-      return bookmarks();
-    }
-  });
+  const unread = () => searchParams.unread === "true";
 
   return (
-    <Show
-      when={bookmarks().length > 0}
-      fallback={<NoPosts msg="No posts bookmarked yet" />}
-    >
+    <>
       <PageHeaderWrapper>
         <PostsFilter
           pageUrl="/bookmarks"
           unreadCount={unreadCount()}
-          initialFilter={searchParams.unread === "true" ? "unread" : "all"}
+          initialFilter={unread() ? "unread" : "all"}
           class={styles["posts-filter"]}
         />
       </PageHeaderWrapper>
-      <Posts posts={filteredBookmarks()} />
-    </Show>
+      {/* Intentionally creating separate components instances based on unread
+       so that unread change resets the cursor without complicating the bookmark
+       resource any further */}
+      {unread() ? (
+        <BookmarkedPosts unread={true} />
+      ) : (
+        <BookmarkedPosts unread={false} />
+      )}
+    </>
+  );
+}
+
+function BookmarkedPosts(props: { unread: boolean }) {
+  // prettier-ignore
+  // eslint-disable-next-line solid/reactivity
+  const initialValue = { posts: [], unread: props.unread, cursor: null, nextPageCursor: null };
+  const { query, sendMsg } = createQuery(
+    "posts/get-bookmarks",
+    initialValue,
+    (oldData, newData) => {
+      return { ...newData, posts: [...oldData.posts, ...newData.posts] };
+    },
+  );
+  onMount(() => {
+    sendMsg({ unread: props.unread, cursor: null });
+  });
+
+  return (
+    <Switch>
+      <Match when={query.data.posts.length === 0 && query.isError}>
+        <NoPosts msg={query.errorMsg!} />
+      </Match>
+      <Match when={query.data.posts.length === 0 && query.isLoading}>
+        <NoPosts msg="Loading bookmarked posts..." />
+      </Match>
+      <Match when={query.data.posts.length > 0}>
+        <ErrorAlert errorMsg={query.errorMsg} />
+        <Posts posts={query.data.posts} />
+        <Show when={query.data.nextPageCursor}>
+          <UnstyledButton
+            class={styles["load-more"]}
+            disabled={query.isLoading}
+            onClick={() => {
+              sendMsg({
+                unread: props.unread,
+                cursor: query.data.nextPageCursor,
+              });
+            }}
+          >
+            {query.isLoading ? "Loading..." : "Load more"}
+          </UnstyledButton>
+        </Show>
+      </Match>
+    </Switch>
   );
 }

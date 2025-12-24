@@ -208,15 +208,17 @@ interface FolderDataUpdate {
   parentFolder: number | null;
 }
 
-type MessageType = keyof MessageMap;
+export type MessageType = keyof MessageMap;
 // assume only one argument is going to contain the payload
-type MessagePayload<K extends MessageType> = Parameters<MessageMap[K]>[0];
+export type MessagePayload<K extends MessageType> = Parameters<
+  MessageMap[K]
+>[0];
 type MessageRequest<K extends MessageType> = {
   type: K;
   payload: MessagePayload<K>;
 };
 // every message response will have success, data and errorMsg
-type MessageData<K extends MessageType> = ReturnType<MessageMap[K]>;
+export type MessageData<K extends MessageType> = ReturnType<MessageMap[K]>;
 type MessageResponse<K extends MessageType> =
   | { success: true; data: MessageData<K>; errorMsg: null }
   | { success: false; data: null; errorMsg: string };

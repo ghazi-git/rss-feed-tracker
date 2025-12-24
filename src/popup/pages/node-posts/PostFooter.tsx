@@ -1,23 +1,23 @@
+import { FeedPost } from "@/messaging-wrapper";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle";
-import { PostType } from "@/popup/pages/node-posts/types";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle";
 import { hideLinkPreview } from "@/popup/store/link-preview";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
 
 import styles from "./PostFooter.module.css";
 
-export default function PostFooter(props: { post: PostType }) {
+export default function PostFooter(props: { post: FeedPost }) {
   return (
     <div class={styles.footer}>
       <div class={styles["feed-favicon"]}>
         <FeedFavicon
-          favicon={props.post.feed.favicon}
-          name={props.post.feed.name}
+          favicon={props.post.feedFavicon}
+          name={props.post.feedName}
         />
       </div>
-      <SingleLineText text={props.post.feed.name} class={styles["feed-name"]} />
+      <SingleLineText text={props.post.feedName} class={styles["feed-name"]} />
       <span class={styles.separator}>◆</span>
       <div
         class={styles["published-at"]}
@@ -32,8 +32,8 @@ export default function PostFooter(props: { post: PostType }) {
           hideLinkPreview();
         }}
       >
-        <BookmarkToggle bookmarked={props.post.bookmarked} />
-        <UnreadToggle unread={props.post.unread} />
+        <BookmarkToggle bookmarked={!!props.post.bookmarked} />
+        <UnreadToggle unread={!!props.post.unread} />
       </div>
     </div>
   );

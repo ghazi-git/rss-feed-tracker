@@ -2,6 +2,7 @@ import { computePosition, flip } from "@floating-ui/dom";
 import { createSignal, For, onMount } from "solid-js";
 import { dismissToast } from "solid-notifications";
 
+import { FeedPost } from "@/messaging-wrapper";
 import {
   PostMenuProvider,
   usePostMenuContext,
@@ -9,14 +10,13 @@ import {
 import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
-import { PostType } from "@/popup/pages/node-posts/types";
 import { notifyInfo } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./Posts.module.css";
 
-export default function Posts(props: { posts: PostType[] }) {
+export default function Posts(props: { posts: FeedPost[] }) {
   return (
     <PostMenuProvider>
       <PostContextMenu
@@ -31,7 +31,7 @@ export default function Posts(props: { posts: PostType[] }) {
   );
 }
 
-function Post(props: { post: PostType }) {
+function Post(props: { post: FeedPost }) {
   const { store: ctxMenu, showMenu } = usePostMenuContext();
   let ref!: HTMLAnchorElement;
 
