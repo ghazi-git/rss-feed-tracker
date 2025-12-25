@@ -7,7 +7,7 @@ import {
   PrimaryKey,
 } from "@/background/db-setup";
 import { getChunks } from "@/background/utils/chunks";
-import { TransactionError } from "@/background/utils/errors";
+import { NotFoundError, TransactionError } from "@/background/utils/errors";
 
 /**
  * Bulk add objects in chunks. Each chunk runs in a transaction.
@@ -86,27 +86,33 @@ export async function update<Name extends ExtStoreName>(
 ): Promise<StoreUpdateReturn<Name>> {
   const tx = unwrap(db.transaction(storeName, "readwrite"));
   const store = tx.objectStore(storeName);
-  let oldObject: ExtStoreValue<Name>;
-  const updatedObj = await new Promise<ExtStoreValue<Name>>((resolve) => {
-    const getRequest = store.get(pk);
-    getRequest.onsuccess = () => {
-      oldObject = getRequest.result as ExtStoreValue<Name>;
-      let updated: ExtStoreValue<Name>;
-      if (typeof updatesOrUpdateFn === "function") {
-        updated = updatesOrUpdateFn(structuredClone(oldObject));
-      } else {
-        updated = { ...oldObject, ...updatesOrUpdateFn };
-      }
-      const putRequest = store.put(updated);
-      putRequest.onsuccess = () => {
-        resolve(updated);
+  let oldObject: ExtStoreValue<Name> | undefined;
+  const updatedObj = await new Promise<ExtStoreValue<Name>>(
+    (resolve, reject) => {
+      const getRequest = store.get(pk);
+      getRequest.onsuccess = () => {
+        oldObject = getRequest.result as ExtStoreValue<Name> | undefined;
+        if (!oldObject) {
+          const msg = `Object to be updated not found storeName=${storeName} pk=${pk}`;
+          reject(new NotFoundError(msg));
+          return;
+        }
+        let updated: ExtStoreValue<Name>;
+        if (typeof updatesOrUpdateFn === "function") {
+          updated = updatesOrUpdateFn(structuredClone(oldObject));
+        } else {
+          updated = { ...oldObject, ...updatesOrUpdateFn };
+        }
+        const putRequest = store.put(updated);
+        putRequest.onsuccess = () => {
+          resolve(updated);
+        };
       };
-    };
-  });
+    },
+  );
 
   await txDone(tx);
 
-  // @ts-expect-error oldObject is set when the get request succeeds
   return [updatedObj, oldObject] as [ExtStoreValue<Name>, ExtStoreValue<Name>];
 }
 
