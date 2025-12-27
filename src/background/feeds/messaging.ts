@@ -5,6 +5,7 @@ import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
 import { getBookmarks } from "@/background/feeds/posts-get-bookmarks";
 import { getUnreadBookmarksCount } from "@/background/feeds/posts-get-unread-bookmarks-count";
+import { toggleUnreadPost } from "@/background/feeds/posts-toggle-unread";
 import { getErrorMsg } from "@/background/utils/errors";
 import { onMessage } from "@/messaging-wrapper";
 
@@ -104,6 +105,22 @@ onMessage("posts/get-bookmarks", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while getting the bookmarked posts.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("posts/toggle-unread", (payload, sender, sendResponse) => {
+  toggleUnreadPost(payload.feedId, payload.guid, payload.unread)
+    .then((resp) => {
+      sendResponse({ success: true, data: resp, errorMsg: null });
+    })
+    .catch((err) => {
+      const markingAs = payload.unread
+        ? "marking the post as unread."
+        : "marking the post as read.";
+      const defaultMsg = `An unexpected error occurred while ${markingAs}`;
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
