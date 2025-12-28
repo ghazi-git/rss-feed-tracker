@@ -70,6 +70,15 @@ function BookmarkedPosts(props: { postsView: PostsView }) {
         <Match when={query.data.posts.length === 0 && query.isLoading}>
           <NoPosts msg="Loading bookmarked posts..." />
         </Match>
+        <Match when={query.data.posts.length === 0}>
+          <NoPosts
+            msg={
+              props.postsView === "all"
+                ? "No posts bookmarked yet."
+                : "No unread bookmarks found."
+            }
+          />
+        </Match>
         <Match when={query.data.posts.length > 0}>
           <ErrorAlert errorMsg={query.errorMsg} />
           <Posts posts={query.data.posts} />
