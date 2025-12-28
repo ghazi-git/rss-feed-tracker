@@ -62,16 +62,17 @@ interface FeedFormWithOptions extends FeedFormData {
   folderOptions: FolderOption[];
 }
 export interface BookmarkedPostsParams {
-  unread: boolean;
+  postsView: PostsView;
   cursor: PostsCursor | null;
 }
+export type PostsView = "all" | "unread";
 export interface FeedPost extends Post {
   feedName: string;
   feedFavicon: string | null;
 }
 export interface PostsResponse {
   posts: FeedPost[];
-  unread: boolean;
+  postsView: PostsView;
   cursor: PostsCursor | null;
   nextPageCursor: PostsCursor | null;
 }

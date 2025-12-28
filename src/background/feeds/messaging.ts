@@ -98,7 +98,7 @@ onMessage(
 );
 
 onMessage("posts/get-bookmarks", (payload, sender, sendResponse) => {
-  getBookmarks(payload.unread, payload.cursor)
+  getBookmarks(payload.postsView, payload.cursor)
     .then((resp) => {
       sendResponse({ success: true, data: resp, errorMsg: null });
     })

@@ -1,7 +1,7 @@
 import { useSearchParams } from "@solidjs/router";
 import { createSignal, Match, onMount, Show, Switch } from "solid-js";
 
-import { sendMessage } from "@/messaging-wrapper";
+import { PostsView, sendMessage } from "@/messaging-wrapper";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import NoPosts from "@/popup/components/NoPosts";
@@ -44,18 +44,18 @@ export default function Bookmarks() {
        so that unread change resets the cursor without complicating the bookmark
        resource any further */}
       {unread() ? (
-        <BookmarkedPosts unread={true} />
+        <BookmarkedPosts postsView="unread" />
       ) : (
-        <BookmarkedPosts unread={false} />
+        <BookmarkedPosts postsView="all" />
       )}
     </>
   );
 }
 
-function BookmarkedPosts(props: { unread: boolean }) {
+function BookmarkedPosts(props: { postsView: PostsView }) {
   // prettier-ignore
   // eslint-disable-next-line solid/reactivity
-  const initialValue = { posts: [], unread: props.unread, cursor: null, nextPageCursor: null };
+  const initialValue = { posts: [], postsView: props.postsView, cursor: null, nextPageCursor: null };
   const { query, sendMsg } = createQuery(
     "posts/get-bookmarks",
     initialValue,
@@ -64,7 +64,7 @@ function BookmarkedPosts(props: { unread: boolean }) {
     },
   );
   onMount(() => {
-    sendMsg({ unread: props.unread, cursor: null });
+    sendMsg({ postsView: props.postsView, cursor: null });
   });
 
   return (
@@ -84,7 +84,7 @@ function BookmarkedPosts(props: { unread: boolean }) {
             disabled={query.isLoading}
             onClick={() => {
               sendMsg({
-                unread: props.unread,
+                postsView: props.postsView,
                 cursor: query.data.nextPageCursor,
               });
             }}
