@@ -1,11 +1,15 @@
 import { useSearchParams } from "@solidjs/router";
-import { createSignal, Match, onMount, Show, Switch } from "solid-js";
+import { batch, createSignal, Match, onMount, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
+import {
+  BookmarksContext,
+  useBookmarksContext,
+} from "@/popup/pages/bookmarks-context";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { PostsContext } from "@/popup/pages/node-posts/posts-context";
@@ -27,12 +31,14 @@ export default function Bookmarks() {
       notifyError(resp.errorMsg);
     }
   });
+  const incrementUnread = () => setUnreadCount((prev) => prev + 1);
+  const decrementUnread = () => setUnreadCount((prev) => Math.max(prev - 1, 0));
 
   const [searchParams] = useSearchParams();
   const unread = () => searchParams.unread === "true";
 
   return (
-    <>
+    <BookmarksContext.Provider value={{ incrementUnread, decrementUnread }}>
       <PageHeaderWrapper>
         <PostsFilter
           pageUrl="/bookmarks"
@@ -49,7 +55,7 @@ export default function Bookmarks() {
       ) : (
         <BookmarkedPosts postsView="all" />
       )}
-    </>
+    </BookmarksContext.Provider>
   );
 }
 
@@ -100,6 +106,7 @@ function BookmarkedPosts(props: { postsView: PostsView }) {
 }
 
 function createBookmarksQuery(postsView: PostsView) {
+  const { incrementUnread, decrementUnread } = useBookmarksContext();
   const { query, setQuery, sendMsg } = createQuery(
     "posts/get-bookmarks",
     { posts: [], postsView, cursor: null, nextPageCursor: null },
@@ -112,26 +119,45 @@ function createBookmarksQuery(postsView: PostsView) {
     await sendMsg({ postsView, cursor: query.data.nextPageCursor });
   };
   const toggleUnread = (feedId: number, guid: string, unread: boolean) => {
-    setQuery(
-      "data",
-      "posts",
-      (post) => post.feedId === feedId && post.guid === guid,
-      "unread",
-      unread ? 1 : 0,
-    );
+    batch(() => {
+      setQuery(
+        "data",
+        "posts",
+        (post) => post.feedId === feedId && post.guid === guid,
+        "unread",
+        unread ? 1 : 0,
+      );
+      if (unread) {
+        incrementUnread();
+      } else {
+        decrementUnread();
+      }
+    });
   };
   const toggleBookmarked = (
     feedId: number,
     guid: string,
     bookmarked: boolean,
   ) => {
-    setQuery(
-      "data",
-      "posts",
-      (post) => post.feedId === feedId && post.guid === guid,
-      "bookmarked",
-      bookmarked ? 1 : 0,
-    );
+    batch(() => {
+      setQuery(
+        "data",
+        "posts",
+        (post) => post.feedId === feedId && post.guid === guid,
+        "bookmarked",
+        bookmarked ? 1 : 0,
+      );
+      const post = query.data.posts.find(
+        (p) => p.feedId === feedId && p.guid === guid,
+      );
+      if (post?.unread) {
+        if (bookmarked) {
+          incrementUnread();
+        } else {
+          decrementUnread();
+        }
+      }
+    });
   };
 
   return { query, fetchPosts, toggleUnread, toggleBookmarked };
