@@ -65,7 +65,7 @@ export function createQuery<K extends MessageType>(
     }
   }
 
-  return { query, sendMsg };
+  return { query, setQuery, sendMsg };
 }
 
 type SuccessDataHandler<K extends MessageType> = (
