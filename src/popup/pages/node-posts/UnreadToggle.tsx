@@ -1,55 +1,27 @@
-import { JSX, Show } from "solid-js";
-import { dismissToast } from "solid-notifications";
-
-import { notifyInfo } from "@/popup/utils/notifications";
-
 import styles from "./UnreadToggle.module.css";
 
-export default function UnreadToggle(props: { unread: boolean }) {
-  const markAsRead: ClickHandler = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    dismissToast();
-    notifyInfo("Marked as read");
-  };
-  const markAsUnread: ClickHandler = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    dismissToast();
-    notifyInfo("Marked as unread");
-  };
+export default function UnreadToggle(props: UnreadToggleProps) {
   return (
     <div class={styles["unread-toggle"]}>
-      <Show when={props.unread}>
-        <div
-          class={styles.unread}
-          onClick={markAsRead}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              markAsRead(event);
-            }
-          }}
-          title="Mark as read"
-          role="button"
-          tabindex="0"
-        />
-      </Show>
-      <Show when={!props.unread}>
-        <div
-          class={styles.read}
-          onClick={markAsUnread}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              markAsUnread(event);
-            }
-          }}
-          title="Mark as unread"
-          role="button"
-          tabindex="0"
-        />
-      </Show>
+      <div
+        class={props.unread ? styles.unread : styles.read}
+        onClick={async (event) => {
+          await props.onToggleUnread(event);
+        }}
+        onKeyDown={async (event) => {
+          if (event.key === "Enter") {
+            await props.onToggleUnread(event);
+          }
+        }}
+        title={props.unread ? "Mark as read" : "Mark as unread"}
+        role="button"
+        tabindex="0"
+      />
     </div>
   );
 }
 
-type ClickHandler = JSX.EventHandler<HTMLDivElement, UIEvent>;
+interface UnreadToggleProps {
+  unread: boolean;
+  onToggleUnread: (event: Event) => Promise<void>;
+}
