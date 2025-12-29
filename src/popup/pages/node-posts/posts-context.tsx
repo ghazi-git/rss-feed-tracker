@@ -12,6 +12,10 @@ export function usePostsContext() {
 }
 
 interface PostsContextType {
-  toggleUnread: (feedId: number, guid: string, unread: boolean) => void;
-  toggleBookmarked: (feedId: number, guid: string, bookmarked: boolean) => void;
+  toggleUnread: (
+    feedId: number,
+    guid: string,
+    unread: boolean,
+  ) => Promise<void>;
+  mutateBookmarked: (feedId: number, guid: string, bookmarked: boolean) => void;
 }

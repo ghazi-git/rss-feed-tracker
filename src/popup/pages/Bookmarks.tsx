@@ -62,13 +62,13 @@ export default function Bookmarks() {
 function BookmarkedPosts(props: { postsView: PostsView }) {
   // prettier-ignore
   // eslint-disable-next-line solid/reactivity
-  const { query, fetchPosts, toggleUnread, toggleBookmarked } = createBookmarksQuery(props.postsView);
+  const { query, fetchPosts, toggleUnread, mutateBookmarked } = createBookmarksQuery(props.postsView);
   onMount(async () => {
     await fetchPosts();
   });
 
   return (
-    <PostsContext.Provider value={{ toggleUnread, toggleBookmarked }}>
+    <PostsContext.Provider value={{ toggleUnread, mutateBookmarked }}>
       <Switch>
         <Match when={query.data.posts.length === 0 && query.isError}>
           <NoPosts msg={query.errorMsg!} />
@@ -118,23 +118,36 @@ function createBookmarksQuery(postsView: PostsView) {
   const fetchPosts = async () => {
     await sendMsg({ postsView, cursor: query.data.nextPageCursor });
   };
-  const toggleUnread = (feedId: number, guid: string, unread: boolean) => {
-    batch(() => {
-      setQuery(
-        "data",
-        "posts",
-        (post) => post.feedId === feedId && post.guid === guid,
-        "unread",
-        unread ? 1 : 0,
-      );
-      if (unread) {
-        incrementUnread();
-      } else {
-        decrementUnread();
-      }
+  const toggleUnread = async (
+    feedId: number,
+    guid: string,
+    unread: boolean,
+  ) => {
+    const resp = await sendMessage("posts/toggle-unread", {
+      feedId,
+      guid,
+      unread,
     });
+    if (resp.success) {
+      batch(() => {
+        setQuery(
+          "data",
+          "posts",
+          (post) => post.feedId === feedId && post.guid === guid,
+          "unread",
+          unread ? 1 : 0,
+        );
+        if (unread) {
+          incrementUnread();
+        } else {
+          decrementUnread();
+        }
+      });
+    } else {
+      notifyError(resp.errorMsg);
+    }
   };
-  const toggleBookmarked = (
+  const mutateBookmarked = (
     feedId: number,
     guid: string,
     bookmarked: boolean,
@@ -160,5 +173,5 @@ function createBookmarksQuery(postsView: PostsView) {
     });
   };
 
-  return { query, fetchPosts, toggleUnread, toggleBookmarked };
+  return { query, fetchPosts, toggleUnread, mutateBookmarked };
 }

@@ -1,4 +1,4 @@
-import { FeedPost, sendMessage } from "@/messaging-wrapper";
+import { FeedPost } from "@/messaging-wrapper";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle";
@@ -6,7 +6,6 @@ import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle";
 import { hideLinkPreview } from "@/popup/store/link-preview";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
-import { notifyError } from "@/popup/utils/notifications";
 
 import styles from "./PostFooter.module.css";
 
@@ -43,16 +42,7 @@ export default function PostFooter(props: { post: FeedPost }) {
             event.preventDefault();
             event.stopPropagation();
             const newUnread = !props.post.unread;
-            const resp = await sendMessage("posts/toggle-unread", {
-              feedId: props.post.feedId,
-              guid: props.post.guid,
-              unread: newUnread,
-            });
-            if (resp.success) {
-              toggleUnread(props.post.feedId, props.post.guid, newUnread);
-            } else {
-              notifyError(resp.errorMsg);
-            }
+            await toggleUnread(props.post.feedId, props.post.guid, newUnread);
           }}
         />
       </div>
