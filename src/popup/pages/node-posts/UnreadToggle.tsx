@@ -13,6 +13,17 @@ export default function UnreadToggle(props: UnreadToggleProps) {
             await props.onToggleUnread(event);
           }
         }}
+        onContextMenu={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onAuxClick={(event) => {
+          if (event.button === 1) {
+            // middle mouse btn click
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }}
         title={props.unread ? "Mark as read" : "Mark as unread"}
         role="button"
         tabindex="0"

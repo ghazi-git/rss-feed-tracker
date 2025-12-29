@@ -16,6 +16,17 @@ export default function BookmarkToggle(props: BookmarkToggleProps) {
             await props.onToggleBookmarked(event);
           }
         }}
+        onContextMenu={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onAuxClick={(event) => {
+          if (event.button === 1) {
+            // middle mouse btn click
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }}
         title={props.bookmarked ? "Delete bookmark" : "Bookmark"}
         role="button"
         tabindex="0"
