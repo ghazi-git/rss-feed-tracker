@@ -1,6 +1,5 @@
 import { computePosition, flip } from "@floating-ui/dom";
 import { createSignal, For, onMount } from "solid-js";
-import { dismissToast } from "solid-notifications";
 
 import { FeedPost } from "@/messaging-wrapper";
 import {
@@ -10,7 +9,7 @@ import {
 import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
-import { notifyInfo } from "@/popup/utils/notifications";
+import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
@@ -19,11 +18,7 @@ import styles from "./Posts.module.css";
 export default function Posts(props: { posts: FeedPost[] }) {
   return (
     <PostMenuProvider>
-      <PostContextMenu
-        onLinkOpened={(postGUID) => {
-          console.log("notify service worker to mark post as read", postGUID);
-        }}
-      />
+      <PostContextMenu />
       <div class={styles.posts}>
         <For each={props.posts}>{(post) => <Post post={post} />}</For>
       </div>
@@ -35,6 +30,7 @@ function Post(props: { post: FeedPost }) {
   const { store: ctxMenu, showMenu } = usePostMenuContext();
   let ref!: HTMLAnchorElement;
 
+  const { toggleUnread } = usePostsContext();
   const { store } = usePreferencesContext();
   const [showTooltip, setShowTooltip] = createSignal(false);
   let titleRef!: HTMLDivElement;
@@ -49,25 +45,41 @@ function Post(props: { post: FeedPost }) {
       ref={ref}
       href={props.post.url}
       class={styles.post}
-      onClick={(event) => {
+      onClick={async (event) => {
         event.preventDefault();
         if (event.ctrlKey) {
+          if (props.post.unread) {
+            toggleUnread(props.post.feedId, props.post.guid, false);
+          }
           openTab(props.post.url);
         } else if (event.shiftKey) {
+          if (props.post.unread) {
+            toggleUnread(props.post.feedId, props.post.guid, false);
+          }
           openWindow(props.post.url);
         } else {
           if (store.clickPostToToggleUnread) {
-            dismissToast();
-            notifyInfo("Toggle unread");
+            await toggleUnread(
+              props.post.feedId,
+              props.post.guid,
+              !props.post.unread,
+            );
           } else {
+            if (props.post.unread) {
+              toggleUnread(props.post.feedId, props.post.guid, false);
+            }
             openTab(props.post.url, true);
           }
         }
       }}
       onAuxClick={(event) => {
         if (event.button === 1) {
+          // middle mouse btn click
           event.preventDefault();
           openTab(props.post.url);
+          if (props.post.unread) {
+            toggleUnread(props.post.feedId, props.post.guid, false);
+          }
         }
       }}
       onContextMenu={(event) => {
@@ -83,7 +95,13 @@ function Post(props: { post: FeedPost }) {
           // and in that case we should focus the first item according to WAI
           // ARIA rules for menus
           const focusFirstItem = event.button !== 2;
-          showMenu(ref, props.post.url, y, x, focusFirstItem);
+          if (props.post.unread) {
+            const feedId = props.post.feedId;
+            const guid = props.post.guid;
+            showMenu(ref, props.post.url, y, x, focusFirstItem, feedId, guid);
+          } else {
+            showMenu(ref, props.post.url, y, x, focusFirstItem);
+          }
         })();
       }}
     >

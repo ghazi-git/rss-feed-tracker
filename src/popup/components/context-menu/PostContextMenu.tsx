@@ -2,11 +2,13 @@ import ContextMenu from "@/popup/components/context-menu/ContextMenu";
 import ContextMenuItem from "@/popup/components/context-menu/ContextMenuItem";
 import ContextMenuSeparator from "@/popup/components/context-menu/ContextMenuSeparator";
 import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-context";
+import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import { notifyError } from "@/popup/utils/notifications";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
-export function PostContextMenu(props: PostContextMenuProps) {
+export function PostContextMenu() {
   const { store, registerMenuRef, hideMenu } = usePostMenuContext();
+  const { toggleUnread } = usePostsContext();
 
   return (
     <ContextMenu
@@ -25,8 +27,8 @@ export function PostContextMenu(props: PostContextMenuProps) {
     >
       <ContextMenuItem
         onSelected={() => {
-          if (props.onLinkOpened && store.guid) {
-            props.onLinkOpened(store.guid);
+          if (store.feedId && store.guid) {
+            toggleUnread(store.feedId, store.guid, false);
           }
           openTab(store.url!);
           store.triggerRef?.focus();
@@ -37,8 +39,8 @@ export function PostContextMenu(props: PostContextMenuProps) {
       </ContextMenuItem>
       <ContextMenuItem
         onSelected={() => {
-          if (props.onLinkOpened && store.guid) {
-            props.onLinkOpened(store.guid);
+          if (store.feedId && store.guid) {
+            toggleUnread(store.feedId, store.guid, false);
           }
           openWindow(store.url!);
           store.triggerRef?.focus();
@@ -49,8 +51,8 @@ export function PostContextMenu(props: PostContextMenuProps) {
       </ContextMenuItem>
       <ContextMenuItem
         onSelected={() => {
-          if (props.onLinkOpened && store.guid) {
-            props.onLinkOpened(store.guid);
+          if (store.feedId && store.guid) {
+            toggleUnread(store.feedId, store.guid, false);
           }
           openWindow(store.url!, true);
           store.triggerRef?.focus();
@@ -79,7 +81,3 @@ export function PostContextMenu(props: PostContextMenuProps) {
     </ContextMenu>
   );
 }
-
-type PostContextMenuProps = {
-  onLinkOpened?: (guid: string) => void;
-};
