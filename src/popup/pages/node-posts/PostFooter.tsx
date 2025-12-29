@@ -1,10 +1,12 @@
+import { Show } from "solid-js";
+
 import { FeedPost, sendMessage } from "@/messaging-wrapper";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle";
+import CommentsLink from "@/popup/pages/node-posts/CommentsLink";
 import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle";
-import { hideLinkPreview } from "@/popup/store/link-preview";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
 import { notifyError } from "@/popup/utils/notifications";
 
@@ -29,13 +31,10 @@ export default function PostFooter(props: { post: FeedPost }) {
       >
         {humanizeTimestamp(props.post.publishedAt)}
       </div>
-      <div
-        class={styles.actions}
-        onMouseOver={(event) => {
-          event.stopPropagation();
-          hideLinkPreview();
-        }}
-      >
+      <div class={styles.actions}>
+        <Show when={props.post.commentsURL}>
+          {(url) => <CommentsLink url={url()} />}
+        </Show>
         <BookmarkToggle
           bookmarked={!!props.post.bookmarked}
           onToggleBookmarked={async (event) => {
