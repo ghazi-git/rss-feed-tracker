@@ -1,4 +1,4 @@
-import { FeedPost } from "@/messaging-wrapper";
+import { FeedPost, sendMessage } from "@/messaging-wrapper";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import BookmarkToggle from "@/popup/pages/node-posts/BookmarkToggle";
@@ -6,11 +6,12 @@ import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle";
 import { hideLinkPreview } from "@/popup/store/link-preview";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
+import { notifyError } from "@/popup/utils/notifications";
 
 import styles from "./PostFooter.module.css";
 
 export default function PostFooter(props: { post: FeedPost }) {
-  const { toggleUnread } = usePostsContext();
+  const { toggleUnread, mutateBookmarked } = usePostsContext();
 
   return (
     <div class={styles.footer}>
@@ -35,7 +36,27 @@ export default function PostFooter(props: { post: FeedPost }) {
           hideLinkPreview();
         }}
       >
-        <BookmarkToggle bookmarked={!!props.post.bookmarked} />
+        <BookmarkToggle
+          bookmarked={!!props.post.bookmarked}
+          onToggleBookmarked={async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const resp = await sendMessage("posts/toggle-bookmarked", {
+              feedId: props.post.feedId,
+              guid: props.post.guid,
+              bookmarked: !props.post.bookmarked,
+            });
+            if (resp.success) {
+              mutateBookmarked(
+                props.post.feedId,
+                props.post.guid,
+                !props.post.bookmarked,
+              );
+            } else {
+              notifyError(resp.errorMsg);
+            }
+          }}
+        />
         <UnreadToggle
           unread={!!props.post.unread}
           onToggleUnread={async (event) => {

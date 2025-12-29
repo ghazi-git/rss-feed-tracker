@@ -34,6 +34,7 @@ interface MessageMap {
   "posts/get-unread-bookmarks-count"(): number;
   "posts/get-bookmarks"(data: BookmarkedPostsParams): PostsResponse;
   "posts/toggle-unread"(data: ToggleUnreadParams): void;
+  "posts/toggle-bookmarked"(data: ToggleBookmarkedParams): void;
   "nodes/get"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
@@ -85,6 +86,11 @@ interface ToggleUnreadParams {
   feedId: number;
   guid: string;
   unread: boolean;
+}
+interface ToggleBookmarkedParams {
+  feedId: number;
+  guid: string;
+  bookmarked: boolean;
 }
 export type NodeResponse = TreeNode & { children: TreeNode[] };
 export type RootFolder = { id: number; hasChildNodes: boolean };
