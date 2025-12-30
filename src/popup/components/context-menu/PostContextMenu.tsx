@@ -8,7 +8,7 @@ import { openTab, openWindow } from "@/popup/utils/urls";
 
 export function PostContextMenu() {
   const { store, registerMenuRef, hideMenu } = usePostMenuContext();
-  const { toggleUnread } = usePostsContext();
+  const { toggleUnread } = usePostsContextWithDefault();
 
   return (
     <ContextMenu
@@ -27,7 +27,7 @@ export function PostContextMenu() {
     >
       <ContextMenuItem
         onSelected={() => {
-          if (store.feedId && store.guid) {
+          if (toggleUnread && store.feedId && store.guid) {
             toggleUnread(store.feedId, store.guid, false);
           }
           openTab(store.url!);
@@ -39,7 +39,7 @@ export function PostContextMenu() {
       </ContextMenuItem>
       <ContextMenuItem
         onSelected={() => {
-          if (store.feedId && store.guid) {
+          if (toggleUnread && store.feedId && store.guid) {
             toggleUnread(store.feedId, store.guid, false);
           }
           openWindow(store.url!);
@@ -51,7 +51,7 @@ export function PostContextMenu() {
       </ContextMenuItem>
       <ContextMenuItem
         onSelected={() => {
-          if (store.feedId && store.guid) {
+          if (toggleUnread && store.feedId && store.guid) {
             toggleUnread(store.feedId, store.guid, false);
           }
           openWindow(store.url!, true);
@@ -80,4 +80,14 @@ export function PostContextMenu() {
       </ContextMenuItem>
     </ContextMenu>
   );
+}
+
+function usePostsContextWithDefault() {
+  // the context menu is used when previewing a feed, and in that case the posts
+  // context is not provided because we don't need to toggl unread.
+  try {
+    return usePostsContext();
+  } catch {
+    return { toggleUnread: undefined };
+  }
 }
