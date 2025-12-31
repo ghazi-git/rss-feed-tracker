@@ -44,8 +44,20 @@ export default function DeleteNodeDialog(props: {
       props.updateChildNodes((resp) => {
         if (!resp) return resp;
 
-        const childNodes = resp.children.filter((n) => n.id !== deletedNodeId);
-        return { ...resp, children: childNodes };
+        const deletionIdx = resp.children.findIndex(
+          (n) => n.id === deletedNodeId,
+        );
+        if (deletionIdx >= 0) {
+          const deletedNode = resp.children[deletionIdx];
+          const nodeUnreadCount = resp.unreadCount - deletedNode.unreadCount;
+          return {
+            ...resp,
+            unreadCount: Math.max(nodeUnreadCount, 0),
+            children: resp.children.toSpliced(deletionIdx, 1),
+          };
+        }
+
+        return resp;
       });
     }
   };
