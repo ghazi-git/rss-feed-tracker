@@ -1,6 +1,9 @@
+import { unwrap } from "idb";
+
 import { getDBConnection } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
-import { update } from "@/background/utils/idb-helpers";
+import { txDone } from "@/background/utils/idb-helpers";
+import { getAncestors, getNodeMap } from "@/background/utils/nodes";
 
 export async function toggleUnreadPost(
   feedId: number,
@@ -9,14 +12,28 @@ export async function toggleUnreadPost(
 ) {
   using conn = await getDBConnection();
 
-  try {
-    await update(conn.db, "posts", [feedId, guid], { unread: unread ? 1 : 0 });
-  } catch (e) {
-    if (e instanceof NotFoundError) {
-      const msg = "Unable to find the post, it may have been deleted.";
-      throw new NotFoundError(msg);
-    } else {
-      throw e;
-    }
+  const tx = conn.db.transaction(["posts", "nodes"], "readwrite");
+
+  const postStore = tx.objectStore("posts");
+  const post = await postStore.get([feedId, guid]);
+  if (!post) {
+    const msg = "Unable to find the post, it may have been deleted.";
+    throw new NotFoundError(msg);
   }
+  post.unread = unread ? 1 : 0;
+  await postStore.put(post);
+
+  // update the unread count of parent folders
+  const nodeStore = tx.objectStore("nodes");
+  const nodes = await nodeStore.getAll();
+  const nodeMap = getNodeMap(nodes);
+  const ancestors = getAncestors(feedId, nodeMap);
+  const countChange = unread ? 1 : -1;
+  const promises = ancestors.map((a) =>
+    nodeStore.put({
+      ...a,
+      unreadCount: Math.max(a.unreadCount + countChange, 0),
+    }),
+  );
+  await Promise.all([...promises, txDone(unwrap(tx))]);
 }

@@ -1,4 +1,4 @@
-import { ExtensionDB } from "@/background/db-setup";
+import { ExtensionDB, TreeNode } from "@/background/db-setup";
 
 export async function getHighestSortOrder(db: ExtensionDB, folder: number) {
   try {
@@ -19,4 +19,21 @@ export async function getHighestSortOrder(db: ExtensionDB, folder: number) {
     console.error("node-sort-order: failure to determine the sort order", e);
     return 10_000;
   }
+}
+export function getNodeMap(nodes: TreeNode[]) {
+  return new Map(nodes.map((node) => [node.id, node]));
+}
+
+export function getAncestors(feedId: number, nodeMap: Map<number, TreeNode>) {
+  const ancestors: TreeNode[] = [];
+  let nodeId: number | null = feedId;
+  while (nodeId) {
+    const node = nodeMap.get(nodeId);
+    if (!node) break;
+
+    ancestors.push(node);
+    nodeId = node.parentId;
+  }
+
+  return ancestors;
 }
