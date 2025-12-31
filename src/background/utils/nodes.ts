@@ -24,15 +24,15 @@ export function getNodeMap(nodes: TreeNode[]) {
   return new Map(nodes.map((node) => [node.id, node]));
 }
 
-export function getAncestors(feedId: number, nodeMap: Map<number, TreeNode>) {
+export function getAncestors(nodeId: number, nodeMap: Map<number, TreeNode>) {
   const ancestors: TreeNode[] = [];
-  let nodeId: number | null = feedId;
-  while (nodeId) {
-    const node = nodeMap.get(nodeId);
+  let id: number | null = nodeId;
+  while (id) {
+    const node = nodeMap.get(id);
     if (!node) break;
 
     ancestors.push(node);
-    nodeId = node.parentId;
+    id = node.parentId;
   }
 
   return ancestors;
