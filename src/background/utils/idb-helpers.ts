@@ -56,7 +56,15 @@ async function addChunk<Name extends ExtStoreName>(
   });
   const results = await Promise.all(addPromises);
 
-  await bulkAddRequestDone(tx);
+  try {
+    await txDone(tx);
+  } catch (e) {
+    // all failures at the add request level do not bubble. So, this is likely
+    // an IO error or disk space issue
+    // https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction#transaction_failures
+    const msg = "An unexpected error occurred. It might be a disk space issue.";
+    throw new TransactionError(msg, { cause: e });
+  }
 
   return results;
 }
@@ -130,24 +138,6 @@ export function txDone(tx: IDBTransaction) {
       reject(error);
     };
   });
-}
-
-/**
- * Encapsulate a user-facing error message when the transaction is likely
- * aborted due to a disk or I/O problem, rather than to an issue specific
- * to the extension.
- * @raises TransactionError
- */
-async function bulkAddRequestDone(tx: IDBTransaction) {
-  try {
-    await txDone(tx);
-  } catch (e) {
-    // all failures at the add request level do not bubble. So, this is likely
-    // an IO error or disk space issue
-    // https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction#transaction_failures
-    const msg = "An unexpected error occurred. It might be a disk space issue.";
-    throw new TransactionError(msg, { cause: e });
-  }
 }
 
 export type RequestResult<T> =

@@ -132,5 +132,5 @@ async function savePosts(
     feedId,
     receivedAt: fetchTime,
   }));
-  return await bulkAdd(db, "posts", posts);
+  return await bulkAdd(db, "posts", posts, 1000);
 }
