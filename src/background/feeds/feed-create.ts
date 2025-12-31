@@ -12,7 +12,11 @@ import {
   parseFeedContent,
 } from "@/background/feeds/feeds-fetch-from-source";
 import { bulkAdd, txDone } from "@/background/utils/idb-helpers";
-import { getHighestSortOrder } from "@/background/utils/nodes";
+import {
+  getAncestors,
+  getHighestSortOrder,
+  getNodeMap,
+} from "@/background/utils/nodes";
 import { FeedFormData } from "@/messaging-wrapper";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
@@ -22,20 +26,12 @@ export async function loadAndCreateFeed(data: FeedFormData) {
 
   const fetchTime = Date.now();
   using conn = await getDBConnection();
-  const postsCount = parsedFeed.posts.length;
   const favicon = parsedFeed.favicon;
-  const preferences = await loadPreferences();
-  const markNewPostsUnread = preferences.markNewPostsUnread;
-  const feedId = await createFeed(
-    conn.db,
-    data,
-    postsCount,
-    favicon,
-    fetchTime,
-    markNewPostsUnread,
-  );
+  const feedId = await createFeed(conn.db, data, favicon, fetchTime);
 
   if (parsedFeed.posts.length) {
+    const preferences = await loadPreferences();
+    const markNewPostsUnread = preferences.markNewPostsUnread;
     let results;
     try {
       results = await savePosts(
@@ -52,14 +48,17 @@ export async function loadAndCreateFeed(data: FeedFormData) {
       await saveFailureMetadata(conn.db, feedId, frequency, reason, fetchTime);
       throw e;
     }
-    const hasNewPosts = results.some((res) => res.success);
+    const insertedPosts = results.filter((res) => res.success).length;
+    if (insertedPosts && markNewPostsUnread) {
+      await updateUnreadCount(conn.db, feedId, insertedPosts);
+    }
     const notes = describeSaveResults(results);
     await saveSuccessMetadata(
       conn.db,
       feedId,
       data.frequency,
       fetchTime,
-      hasNewPosts,
+      !!insertedPosts,
       notes,
     );
   } else {
@@ -72,18 +71,15 @@ export async function loadAndCreateFeed(data: FeedFormData) {
 async function createFeed(
   db: ExtensionDB,
   data: FeedFormData,
-  postsCount: number,
   favicon: string | null,
   fetchTime: number,
-  markNewPostsUnread: boolean,
 ) {
   const sortOrder = await getHighestSortOrder(db, data.folder);
-  const unreadCount = markNewPostsUnread ? postsCount : 0;
   const feed = {
     type: "feed",
     name: data.name,
     parentId: data.folder,
-    unreadCount,
+    unreadCount: 0,
     sortOrder,
     createdAt: fetchTime,
     feed: {
@@ -133,4 +129,22 @@ async function savePosts(
     receivedAt: fetchTime,
   }));
   return await bulkAdd(db, "posts", posts, 1000);
+}
+
+async function updateUnreadCount(
+  db: ExtensionDB,
+  feedId: number,
+  newPostsCount: number,
+) {
+  const tx = db.transaction("nodes", "readwrite");
+  const nodes = await tx.store.getAll();
+  const nodeMap = getNodeMap(nodes);
+  const ancestors = getAncestors(feedId, nodeMap);
+  const promises = ancestors.map((a) =>
+    tx.store.put({
+      ...a,
+      unreadCount: a.unreadCount + newPostsCount,
+    }),
+  );
+  await Promise.all([...promises, txDone(unwrap(tx))]);
 }
