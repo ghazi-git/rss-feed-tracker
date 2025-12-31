@@ -4,6 +4,7 @@ import { getDBConnection } from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
+import { getAncestors, getNodeMap } from "@/background/utils/nodes";
 
 export async function deleteFolder(id: number) {
   using conn = await getDBConnection();
@@ -14,7 +15,7 @@ export async function deleteFolder(id: number) {
     .find((f) => f.id === id);
   if (!folder) {
     console.error(`folders-delete: failure to get the folder id=${id}`);
-    const msg = "Unable to find the folder, it may have been deleted.";
+    const msg = "Unable to find the folder, it may have been already deleted.";
     throw new NotFoundError(msg);
   }
   if (!folder.parentId) {
@@ -29,24 +30,42 @@ export async function deleteFolder(id: number) {
     .map(([node]) => node)
     .filter((n) => n.type === "folder");
 
-  const tx = unwrap(
-    conn.db.transaction(["posts", "feedmetadata", "nodes"], "readwrite"),
+  const tx = conn.db.transaction(
+    ["posts", "feedmetadata", "nodes"],
+    "readwrite",
   );
-  const posts = tx.objectStore("posts");
-  const feedmetadata = tx.objectStore("feedmetadata");
-  const nodes = tx.objectStore("nodes");
+  const postStore = tx.objectStore("posts");
+  const feedmetadataStore = tx.objectStore("feedmetadata");
+  const nodeStore = tx.objectStore("nodes");
 
+  const promises: Promise<void>[] = [];
   for (const feed of feedsToDelete) {
-    posts.delete(IDBKeyRange.bound([feed.id], [feed.id + 1], false, true));
-    feedmetadata.delete(feed.id);
-    nodes.delete(feed.id);
+    promises.push(
+      postStore.delete(
+        IDBKeyRange.bound([feed.id], [feed.id + 1], false, true),
+      ),
+      feedmetadataStore.delete(feed.id),
+      nodeStore.delete(feed.id),
+    );
   }
-  for (const f of foldersToDelete) {
-    nodes.delete(f.id);
+  promises.push(...foldersToDelete.map((f) => nodeStore.delete(f.id)));
+  await Promise.all(promises);
+
+  if (folder.unreadCount) {
+    const nodes = await nodeStore.getAll();
+    const nodeMap = getNodeMap(nodes);
+    const ancestors = getAncestors(folder.parentId, nodeMap);
+    const promises = ancestors.map((a) =>
+      nodeStore.put({
+        ...a,
+        unreadCount: Math.max(a.unreadCount - folder.unreadCount, 0),
+      }),
+    );
+    await Promise.all(promises);
   }
 
   try {
-    await txDone(tx);
+    await txDone(unwrap(tx));
   } catch (e) {
     const msg =
       "Unable to delete the folder and its contents, please try again.";
