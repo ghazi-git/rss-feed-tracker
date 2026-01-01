@@ -5,6 +5,7 @@ import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
 import { getBookmarks } from "@/background/feeds/posts-get-bookmarks";
 import { getUnreadBookmarksCount } from "@/background/feeds/posts-get-unread-bookmarks-count";
+import { markAllBookmarksAsRead } from "@/background/feeds/posts-mark-all-bookmarks-as-read";
 import { toggleBookmarkedPost } from "@/background/feeds/posts-toggle-bookmarked";
 import { toggleUnreadPost } from "@/background/feeds/posts-toggle-unread";
 import { getErrorMsg } from "@/background/utils/errors";
@@ -143,3 +144,20 @@ onMessage("posts/toggle-bookmarked", (payload, sender, sendResponse) => {
     });
   return true;
 });
+
+onMessage(
+  "posts/mark-all-bookmarks-as-read",
+  (payload, sender, sendResponse) => {
+    markAllBookmarksAsRead()
+      .then(() => {
+        sendResponse({ success: true, data: undefined, errorMsg: null });
+      })
+      .catch((err) => {
+        const defaultMsg =
+          "An unexpected error occurred while marking the bookmarks as read.";
+        const errorMsg = getErrorMsg(err, defaultMsg);
+        sendResponse({ success: false, data: null, errorMsg });
+      });
+    return true;
+  },
+);
