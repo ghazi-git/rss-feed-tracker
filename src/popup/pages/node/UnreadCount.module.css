@@ -5,7 +5,6 @@
   background-color: var(--brand);
   color: var(--surface-1);
   font-size: var(--font-size-0);
-  font-weight: var(--font-weight-7);
   border-radius: var(--radius-2);
   cursor: pointer;
 }
@@ -16,6 +15,13 @@
   }
 }
 
-.count:hover {
+.count:focus-visible,
+.count:not([disabled]):hover {
   transform: scale(133%);
+  background-color: var(--brand);
+}
+
+.count[disabled] {
+  background-color: light-dark(var(--brand-1), var(--brand-0));
+  cursor: default;
 }

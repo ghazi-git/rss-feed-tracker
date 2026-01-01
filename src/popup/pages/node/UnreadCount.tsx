@@ -1,5 +1,7 @@
 import { createMemo, JSX } from "solid-js";
 
+import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
+
 import styles from "./UnreadCount.module.css";
 
 export default function UnreadCount(props: UnreadCountProps) {
@@ -13,26 +15,19 @@ export default function UnreadCount(props: UnreadCountProps) {
     }
   });
   return (
-    <span
+    <UnstyledButton
       class={styles.count}
       onClick={(e) => {
         props.onClick(e);
       }}
       title="Mark all as read"
-      role="button"
-      tabindex="0"
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          props.onClick(event);
-        }
-      }}
     >
       {count()}
-    </span>
+    </UnstyledButton>
   );
 }
 
 interface UnreadCountProps {
   count: number;
-  onClick: JSX.EventHandler<HTMLSpanElement, UIEvent>;
+  onClick: JSX.EventHandler<HTMLButtonElement, MouseEvent>;
 }
