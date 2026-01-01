@@ -25,3 +25,9 @@
   background-color: light-dark(var(--brand-1), var(--brand-0));
   cursor: default;
 }
+
+.count svg {
+  margin-block: var(--size-1);
+  inline-size: 1em;
+  block-size: auto;
+}

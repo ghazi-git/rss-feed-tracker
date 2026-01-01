@@ -1,44 +1,45 @@
 import { useSearchParams } from "@solidjs/router";
-import { batch, createSignal, Match, onMount, Show, Switch } from "solid-js";
+import {
+  batch,
+  createEffect,
+  createSignal,
+  Match,
+  onMount,
+  Show,
+  Switch,
+  untrack,
+} from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
-import {
-  BookmarksContext,
-  useBookmarksContext,
-} from "@/popup/pages/bookmarks-context";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { PostsContext } from "@/popup/pages/node-posts/posts-context";
+import {
+  PostsFilterUnreadCountContext,
+  UpdateUnreadCountArgs,
+  usePostsFilterUnreadCountContext,
+} from "@/popup/pages/posts-filter-unread-count-context";
+import { createMutation } from "@/popup/utils/mutation";
 import { notifyError } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
 
 import styles from "./Bookmarks.module.css";
 
 export default function Bookmarks() {
-  const [unreadCount, setUnreadCount] = createSignal(0);
-  onMount(async () => {
-    const resp = await sendMessage(
-      "posts/get-unread-bookmarks-count",
-      undefined,
-    );
-    if (resp.success) {
-      setUnreadCount(resp.data);
-    } else {
-      notifyError(resp.errorMsg);
-    }
-  });
-  const incrementUnread = () => setUnreadCount((prev) => prev + 1);
-  const decrementUnread = () => setUnreadCount((prev) => Math.max(prev - 1, 0));
+  const [unreadCount, updateUnreadCount] = createUnreadCountSignal();
+  const markAsReadMutation = createMarkAllAsReadMutation();
 
   const [searchParams] = useSearchParams();
   const unread = () => searchParams.unread === "true";
 
   return (
-    <BookmarksContext.Provider value={{ incrementUnread, decrementUnread }}>
+    <PostsFilterUnreadCountContext.Provider
+      value={{ markAsReadMutation, updateUnreadCount }}
+    >
       <PageHeaderWrapper>
         <PostsFilter
           pageUrl="/bookmarks"
@@ -55,16 +56,35 @@ export default function Bookmarks() {
       ) : (
         <BookmarkedPosts postsView="all" />
       )}
-    </BookmarksContext.Provider>
+    </PostsFilterUnreadCountContext.Provider>
   );
 }
 
 function BookmarkedPosts(props: { postsView: PostsView }) {
-  // prettier-ignore
-  // eslint-disable-next-line solid/reactivity
-  const { query, fetchPosts, toggleUnread, mutateBookmarked } = createBookmarksQuery(props.postsView);
+  const { query, fetchPosts, toggleUnread, mutateBookmarked, mutateAllUnread } =
+    // eslint-disable-next-line solid/reactivity
+    createBookmarksQuery(props.postsView);
   onMount(async () => {
     await fetchPosts();
+  });
+
+  const ctx = usePostsFilterUnreadCountContext();
+  createEffect(() => {
+    const isSuccess = ctx?.markAsReadMutation.isSuccess();
+    const isError = ctx?.markAsReadMutation.isError();
+    if (isSuccess) {
+      batch(() => {
+        mutateAllUnread();
+        ctx?.updateUnreadCount({ value: 0 });
+        ctx?.markAsReadMutation.reset();
+      });
+    } else if (isError) {
+      const msg = ctx?.markAsReadMutation.errorMsg() ?? "";
+      if (msg) {
+        notifyError(msg);
+      }
+      ctx?.markAsReadMutation.reset();
+    }
   });
 
   return (
@@ -105,8 +125,62 @@ function BookmarkedPosts(props: { postsView: PostsView }) {
   );
 }
 
+function createUnreadCountSignal() {
+  const [unreadCount, setUnreadCount] = createSignal(0);
+  onMount(async () => {
+    const resp = await sendMessage(
+      "posts/get-unread-bookmarks-count",
+      undefined,
+    );
+    if (resp.success) {
+      setUnreadCount(resp.data);
+    } else {
+      notifyError(resp.errorMsg);
+    }
+  });
+  const updateUnreadCount = ({ delta, value }: UpdateUnreadCountArgs) => {
+    if (delta) {
+      setUnreadCount((prev) => Math.max(prev + delta, 0));
+    } else if (value !== undefined) {
+      setUnreadCount(value);
+    }
+  };
+  return [unreadCount, updateUnreadCount] as const;
+}
+
+function createMarkAllAsReadMutation() {
+  const { mutation, sendMsg, reset } = createMutation(
+    "posts/mark-all-bookmarks-as-read",
+  );
+  return {
+    async markAll() {
+      await sendMsg(undefined);
+    },
+
+    isLoading() {
+      return mutation.isLoading;
+    },
+
+    isSuccess() {
+      return mutation.isSuccess;
+    },
+
+    isError() {
+      return mutation.isError;
+    },
+
+    errorMsg() {
+      return mutation.errorMsg;
+    },
+
+    reset() {
+      reset();
+    },
+  };
+}
+
 function createBookmarksQuery(postsView: PostsView) {
-  const { incrementUnread, decrementUnread } = useBookmarksContext();
+  const ctx = usePostsFilterUnreadCountContext();
   const { query, setQuery, sendMsg } = createQuery(
     "posts/get-bookmarks",
     { posts: [], postsView, cursor: null, nextPageCursor: null },
@@ -137,11 +211,7 @@ function createBookmarksQuery(postsView: PostsView) {
           "unread",
           unread ? 1 : 0,
         );
-        if (unread) {
-          incrementUnread();
-        } else {
-          decrementUnread();
-        }
+        ctx?.updateUnreadCount({ delta: unread ? 1 : -1 });
       });
     } else {
       notifyError(resp.errorMsg);
@@ -164,14 +234,14 @@ function createBookmarksQuery(postsView: PostsView) {
         (p) => p.feedId === feedId && p.guid === guid,
       );
       if (post?.unread) {
-        if (bookmarked) {
-          incrementUnread();
-        } else {
-          decrementUnread();
-        }
+        ctx?.updateUnreadCount({ delta: bookmarked ? 1 : -1 });
       }
     });
   };
+  const mutateAllUnread = () => {
+    const postsCount = untrack(() => query.data.posts.length);
+    setQuery("data", "posts", { from: 0, to: postsCount - 1 }, "unread", 0);
+  };
 
-  return { query, fetchPosts, toggleUnread, mutateBookmarked };
+  return { query, fetchPosts, toggleUnread, mutateBookmarked, mutateAllUnread };
 }

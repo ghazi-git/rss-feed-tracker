@@ -1,14 +1,14 @@
 import { createSignal, Show } from "solid-js";
-import { dismissToast } from "solid-notifications";
 
 import Anchor from "@/popup/components/Anchor";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
-import { notifyInfo } from "@/popup/utils/notifications";
+import { usePostsFilterUnreadCountContext } from "@/popup/pages/posts-filter-unread-count-context";
 
 import styles from "./PostsFilter.module.css";
 
 export default function PostsFilter(props: PostsFilterProps) {
   const [activeFilter, setActiveFilter] = createSignal(props.initialFilter);
+  const ctx = usePostsFilterUnreadCountContext();
 
   return (
     <div class={`${props.class} ${styles["filter-options"]}`}>
@@ -22,11 +22,11 @@ export default function PostsFilter(props: PostsFilterProps) {
         <Show when={props.unreadCount}>
           <UnreadCount
             count={props.unreadCount}
+            isLoading={ctx?.markAsReadMutation.isLoading() ?? false}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              dismissToast();
-              notifyInfo("Marked as read (not really though)");
+              ctx?.markAsReadMutation.markAll();
             }}
           />
         </Show>

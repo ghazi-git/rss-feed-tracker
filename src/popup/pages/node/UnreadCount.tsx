@@ -1,6 +1,7 @@
-import { createMemo, JSX } from "solid-js";
+import { createMemo, JSX, Show } from "solid-js";
 
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
+import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
 
 import styles from "./UnreadCount.module.css";
 
@@ -21,13 +22,17 @@ export default function UnreadCount(props: UnreadCountProps) {
         props.onClick(e);
       }}
       title="Mark all as read"
+      disabled={props.isLoading}
     >
-      {count()}
+      <Show when={props.isLoading} fallback={count()}>
+        <LoadingIcon />
+      </Show>
     </UnstyledButton>
   );
 }
 
 interface UnreadCountProps {
+  isLoading: boolean;
   count: number;
   onClick: JSX.EventHandler<HTMLButtonElement, MouseEvent>;
 }
