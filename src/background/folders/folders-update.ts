@@ -3,7 +3,11 @@ import { unwrap } from "idb";
 import { getDBConnection } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
-import { getAncestors, getNodeMap } from "@/background/utils/nodes";
+import {
+  getAncestors,
+  getHighestSortOrder,
+  getNodeMap,
+} from "@/background/utils/nodes";
 
 export async function updateFolder(
   id: number,
@@ -25,20 +29,16 @@ export async function updateFolder(
   const updated = structuredClone(old);
   updated.name = name;
   updated.parentId = parent;
-  await nodeStore.put(updated);
-
   const newParentId = updated.parentId;
   if (newParentId && newParentId !== old.parentId) {
     // update the sort order when moving the folder
-    const index = nodeStore.index("by_parent_id_sort_order");
-    const children = await index.getAll({
-      query: IDBKeyRange.bound([newParentId, 0], [newParentId, Infinity]),
-      count: 1,
-      direction: "prev",
-    });
-    updated.sortOrder = (children[0]?.sortOrder ?? 0) + 10_000;
+    updated.sortOrder = await getHighestSortOrder(tx, newParentId);
     await nodeStore.put(updated);
+  }
 
+  await nodeStore.put(updated);
+
+  if (newParentId && newParentId !== old.parentId) {
     // update the unread counts
     if (old.parentId && updated.unreadCount) {
       const nodes = await nodeStore.getAll();

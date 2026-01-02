@@ -3,7 +3,11 @@ import { unwrap } from "idb";
 import { FeedMetadata, getDBConnection } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
-import { getAncestors, getNodeMap } from "@/background/utils/nodes";
+import {
+  getAncestors,
+  getHighestSortOrder,
+  getNodeMap,
+} from "@/background/utils/nodes";
 import { FeedFormData } from "@/messaging-wrapper";
 
 /**
@@ -28,22 +32,16 @@ export async function updateFeed(id: number, feedData: FeedFormData) {
   const updated = structuredClone(old);
   updated.name = feedData.name;
   updated.parentId = feedData.folder;
+  const newParentId = updated.parentId;
+  if (newParentId && newParentId !== old.parentId) {
+    // update the sort order when moving the feed to a new folder
+    updated.sortOrder = await getHighestSortOrder(tx, newParentId);
+  }
   updated.feed.url = feedData.url;
   updated.feed.updateFrequency = feedData.frequency;
   await nodeStore.put(updated);
 
-  const newParentId = updated.parentId;
   if (newParentId && newParentId !== old.parentId) {
-    // update the sort order when moving the feed to a new folder
-    const index = nodeStore.index("by_parent_id_sort_order");
-    const children = await index.getAll({
-      query: IDBKeyRange.bound([newParentId, 0], [newParentId, Infinity]),
-      count: 1,
-      direction: "prev",
-    });
-    updated.sortOrder = (children[0]?.sortOrder ?? 0) + 10_000;
-    await nodeStore.put(updated);
-
     // update the unread counts
     if (updated.unreadCount) {
       const nodes = await nodeStore.getAll();
