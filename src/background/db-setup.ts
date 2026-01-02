@@ -66,6 +66,18 @@ export async function getDBConnection() {
           "feedId",
           "guid",
         ]);
+        store.createIndex("by_unread_received_at_feed_id_guid", [
+          "unread",
+          "receivedAt",
+          "feedId",
+          "guid",
+        ]);
+        store.createIndex("by_feed_id_unread_received_at_guid", [
+          "feedId",
+          "unread",
+          "receivedAt",
+          "guid",
+        ]);
       }
     },
   });
@@ -135,6 +147,12 @@ export interface FeedTrackerDB extends DBSchema {
         number,
         string,
       ];
+      // for marking all posts inside a folder as read even if new posts are
+      // coming in at the same time
+      by_unread_received_at_feed_id_guid: [BooleanFlag, number, number, string];
+      // for marking all posts inside a feed as read even if new posts are
+      // coming in at the same time
+      by_feed_id_unread_received_at_guid: [number, BooleanFlag, number, string];
     };
   };
 }
