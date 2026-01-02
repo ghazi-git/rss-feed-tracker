@@ -93,7 +93,10 @@ interface ToggleBookmarkedParams {
   guid: string;
   bookmarked: boolean;
 }
-export type NodeResponse = TreeNode & { children: TreeNode[] };
+export type NodeResponse = TreeNode & {
+  lastRunAt: number;
+  children: TreeNode[];
+};
 export type RootFolder = { id: number; hasChildNodes: boolean };
 export interface FolderFormData {
   name: string;
