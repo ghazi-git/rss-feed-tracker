@@ -1,7 +1,8 @@
 import { unwrap } from "idb";
 
-import { FeedMetadata, getDBConnection } from "@/background/db-setup";
+import { getDBConnection } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
+import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
 import { txDone } from "@/background/utils/idb-helpers";
 import {
   getAncestors,
@@ -67,15 +68,7 @@ export async function updateFeed(id: number, feedData: FeedFormData) {
     const metadataStore = tx.objectStore("feedmetadata");
     let metadata = await metadataStore.get(id);
     if (!metadata) {
-      metadata = {
-        feedId: id,
-        nextRunAt: null,
-        lastRunAt: null,
-        lastRunResult: null,
-        lastRunNotes: null,
-        lastSuccessfulRunAt: null,
-        lastUpdatedAt: null,
-      } as FeedMetadata;
+      metadata = getInitialFeedmetadata(id);
     }
     const nextRunAt = metadata.lastRunAt
       ? metadata.lastRunAt + updated.feed.updateFrequency
