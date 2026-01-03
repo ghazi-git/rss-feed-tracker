@@ -1,20 +1,17 @@
 import { useNavigate } from "@solidjs/router";
-import { Setter } from "solid-js";
 
-import { NodeResponse } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import CloseIcon from "@/popup/components/svg-icons/CloseIcon";
+import { useNodeContext } from "@/popup/pages/node/node-context";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 
 import styles from "./DeleteNodeDialog.module.css";
 
-export default function DeleteNodeDialog(props: {
-  updateChildNodes?: Setter<NodeResponse | undefined>;
-}) {
+export default function DeleteNodeDialog() {
   let dialogRef!: HTMLDialogElement;
   const { store } = useDeleteNodeContext();
   const navigate = useNavigate();
@@ -39,9 +36,11 @@ export default function DeleteNodeDialog(props: {
     store.nodeType === "folder"
       ? folderMutation.isLoading
       : feedMutation.isLoading;
+
+  const mutateNode = useMutateNode();
   const removeChildNode = (deletedNodeId: number) => {
-    if (props.updateChildNodes) {
-      props.updateChildNodes((resp) => {
+    if (mutateNode) {
+      mutateNode((resp) => {
         if (!resp) return resp;
 
         const deletionIdx = resp.children.findIndex(
@@ -155,4 +154,15 @@ export default function DeleteNodeDialog(props: {
       </footer>
     </dialog>
   );
+}
+
+function useMutateNode() {
+  // context-node is provided in the Node component only where we display folder
+  // children and need to update the node children after deleting folder/feed
+  try {
+    const { mutateNode } = useNodeContext();
+    return mutateNode;
+  } catch {
+    return undefined;
+  }
 }
