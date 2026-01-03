@@ -22,6 +22,6 @@ export default function FolderChildren(props: FolderChildrenProps) {
 }
 
 interface FolderChildrenProps {
-  childNodes: TreeNode[];
+  childNodes: (TreeNode & { markAsReadUntil: number })[];
   folderId: number;
 }
