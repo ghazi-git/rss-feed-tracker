@@ -55,7 +55,7 @@ export default function Node() {
 }
 
 async function getNodeInfo(id: number) {
-  const response = await sendMessage("nodes/get", { id });
+  const response = await sendMessage("nodes/get-for-node-page", { id });
   if (!response.success) throw new Error(response.errorMsg);
 
   return response.data;

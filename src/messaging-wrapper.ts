@@ -37,7 +37,7 @@ interface MessageMap {
   "posts/toggle-bookmarked"(data: ToggleBookmarkedParams): void;
   "posts/mark-all-bookmarks-as-read"(): void;
   "posts/mark-all-posts-as-read"(data: MarkAllPostsAsReadParams): void;
-  "nodes/get"(data: { id: number }): NodeResponse;
+  "nodes/get-for-node-page"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
   "folders/get-root"(): RootFolder;

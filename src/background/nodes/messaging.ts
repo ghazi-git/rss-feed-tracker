@@ -1,8 +1,8 @@
-import { getNode } from "@/background/nodes/nodes-get";
+import { getNode } from "@/background/nodes/nodes-get-for-node-page";
 import { getErrorMsg } from "@/background/utils/errors";
 import { onMessage } from "@/messaging-wrapper";
 
-onMessage("nodes/get", (payload, sender, sendResponse) => {
+onMessage("nodes/get-for-node-page", (payload, sender, sendResponse) => {
   getNode(payload.id)
     .then((node) => {
       sendResponse({ success: true, data: node, errorMsg: null });
