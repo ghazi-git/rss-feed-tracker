@@ -1,4 +1,10 @@
-import { Folder, ReadTX, ReadWriteTX, TreeNode } from "@/background/db-setup";
+import {
+  FeedMetadata,
+  Folder,
+  ReadTX,
+  ReadWriteTX,
+  TreeNode,
+} from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
 
 export async function getHighestSortOrder(
@@ -38,4 +44,25 @@ export function getChildFeedIds(folder: Folder, nodes: TreeNode[]) {
   const nodeTree = getNodeTree(folder, nodes);
   const childFeeds = nodeTree.map(([n]) => n).filter((n) => n.type === "feed");
   return new Set(childFeeds.map((f) => f.id));
+}
+
+export function getNodeLastRunAt(
+  node: TreeNode,
+  allNodes: TreeNode[],
+  metadata: FeedMetadata[],
+  defaultTime: number,
+) {
+  if (node.type === "feed") {
+    const feedMetadata = metadata.find((m) => m.feedId === node.id);
+    return feedMetadata?.lastRunAt ?? defaultTime;
+  } else {
+    // the folder's lastRunAt is the max lastRunAt of feeds inside it
+    const childFeedIds = getChildFeedIds(node, allNodes);
+    const lastRunAts = metadata
+      .filter((m) => childFeedIds.has(m.feedId))
+      .map((m) => m.lastRunAt)
+      .filter((runAt) => runAt !== null)
+      .toSorted();
+    return lastRunAts.at(-1) ?? defaultTime;
+  }
 }
