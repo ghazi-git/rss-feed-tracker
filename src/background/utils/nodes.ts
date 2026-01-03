@@ -1,4 +1,5 @@
-import { ReadTX, ReadWriteTX, TreeNode } from "@/background/db-setup";
+import { Folder, ReadTX, ReadWriteTX, TreeNode } from "@/background/db-setup";
+import { getNodeTree } from "@/background/folders/folders-options";
 
 export async function getHighestSortOrder(
   tx: ReadTX | ReadWriteTX,
@@ -31,4 +32,10 @@ export function getAncestors(nodeId: number, nodeMap: Map<number, TreeNode>) {
   }
 
   return ancestors;
+}
+
+export function getChildFeedIds(folder: Folder, nodes: TreeNode[]) {
+  const nodeTree = getNodeTree(folder, nodes);
+  const childFeeds = nodeTree.map(([n]) => n).filter((n) => n.type === "feed");
+  return new Set(childFeeds.map((f) => f.id));
 }

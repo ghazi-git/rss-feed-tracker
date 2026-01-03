@@ -1,11 +1,6 @@
-import {
-  FeedMetadata,
-  Folder,
-  getDBConnection,
-  TreeNode,
-} from "@/background/db-setup";
-import { getNodeTree } from "@/background/folders/folders-options";
+import { FeedMetadata, getDBConnection, TreeNode } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
+import { getChildFeedIds } from "@/background/utils/nodes";
 import { NodeResponse } from "@/messaging-wrapper";
 
 /**
@@ -22,37 +17,47 @@ export async function getNode(id: number): Promise<NodeResponse> {
     const msg = "Unable to find the feed/folder, it may have been deleted.";
     throw new NotFoundError(msg);
   }
+
+  const now = Date.now();
   if (node.type === "feed") {
     const metadata = await metadataStore.get(id);
     // lastRunAt will be the starting time for marking all posts as read
-    const lastRunAt = metadata?.lastRunAt ?? Date.now();
-    return { ...node, lastRunAt, children: [] };
+    const lastRunAt = metadata?.lastRunAt ?? now;
+    return { ...node, markAsReadUntil: lastRunAt, children: [] };
   }
 
   const allNodes = await nodeStore.getAll();
-  const childFeedIds = getChildFeedIds(node, allNodes);
-  let lastRunAt: number | null = null;
-  if (childFeedIds.size) {
-    const metadata = await metadataStore.getAll();
-    lastRunAt = getFolderLastRunAt(metadata, childFeedIds);
-  }
+  const metadata = await metadataStore.getAll();
+  const folderLastRunAt = getNodeLastRunAt(node, allNodes, metadata, now);
+
   const children = allNodes
     .filter((n) => n.parentId === id)
+    .map((n) => {
+      const lastRunAt = getNodeLastRunAt(n, allNodes, metadata, now);
+      return { ...n, markAsReadUntil: lastRunAt };
+    })
     .toSorted((n1, n2) => n1.sortOrder - n2.sortOrder);
-  return { ...node, lastRunAt: lastRunAt ?? Date.now(), children };
+
+  return { ...node, markAsReadUntil: folderLastRunAt, children };
 }
 
-function getChildFeedIds(folder: Folder, nodes: TreeNode[]) {
-  const nodeTree = getNodeTree(folder, nodes);
-  const childFeeds = nodeTree.map(([n]) => n).filter((n) => n.type === "feed");
-  return new Set(childFeeds.map((f) => f.id));
-}
-
-function getFolderLastRunAt(metadata: FeedMetadata[], feedIds: Set<number>) {
-  // the folder's lastRunAt is the max lastRunAt of feeds inside it
-  const lastRunAts = metadata
-    .filter((m) => feedIds.has(m.feedId))
-    .map((m) => m.lastRunAt)
-    .filter((runAt) => runAt !== null);
-  return lastRunAts.length ? Math.max(...lastRunAts) : null;
+function getNodeLastRunAt(
+  node: TreeNode,
+  allNodes: TreeNode[],
+  metadata: FeedMetadata[],
+  defaultTime: number,
+) {
+  if (node.type === "feed") {
+    const feedMetadata = metadata.find((m) => m.feedId === node.id);
+    return feedMetadata?.lastRunAt ?? defaultTime;
+  } else {
+    // the folder's lastRunAt is the max lastRunAt of feeds inside it
+    const childFeedIds = getChildFeedIds(node, allNodes);
+    const lastRunAts = metadata
+      .filter((m) => childFeedIds.has(m.feedId))
+      .map((m) => m.lastRunAt)
+      .filter((runAt) => runAt !== null)
+      .toSorted();
+    return lastRunAts.at(-1) ?? defaultTime;
+  }
 }

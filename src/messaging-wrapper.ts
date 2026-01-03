@@ -94,8 +94,8 @@ interface ToggleBookmarkedParams {
   bookmarked: boolean;
 }
 export type NodeResponse = TreeNode & {
-  lastRunAt: number;
-  children: TreeNode[];
+  markAsReadUntil: number;
+  children: (TreeNode & { markAsReadUntil: number })[];
 };
 export type RootFolder = { id: number; hasChildNodes: boolean };
 export interface FolderFormData {
