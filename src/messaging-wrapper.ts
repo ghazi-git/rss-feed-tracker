@@ -36,6 +36,7 @@ interface MessageMap {
   "posts/toggle-unread"(data: ToggleUnreadParams): void;
   "posts/toggle-bookmarked"(data: ToggleBookmarkedParams): void;
   "posts/mark-all-bookmarks-as-read"(): void;
+  "posts/mark-all-posts-as-read"(data: MarkAllPostsAsReadParams): void;
   "nodes/get"(data: { id: number }): NodeResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
@@ -92,6 +93,10 @@ interface ToggleBookmarkedParams {
   feedId: number;
   guid: string;
   bookmarked: boolean;
+}
+interface MarkAllPostsAsReadParams {
+  nodeId: number;
+  markAsReadUntil: number;
 }
 export type NodeResponse = TreeNode & {
   markAsReadUntil: number;
