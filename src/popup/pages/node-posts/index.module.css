@@ -1,7 +1,9 @@
-.previous-url {
-  flex-shrink: 0;
+.blank-space-while-loading-header {
+  padding-block: var(--size-4);
 }
 
-.posts-filter {
-  margin-inline-start: auto;
+.error {
+  text-align: center;
+  color: var(--error-color);
+  text-wrap: balance;
 }
