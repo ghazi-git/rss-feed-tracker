@@ -47,9 +47,9 @@ export async function getDBConnection() {
           "publishedAt",
           "guid",
         ]);
-        store.createIndex("by_feed_id_unread_published_at_guid", [
-          "feedId",
+        store.createIndex("by_unread_feed_id_published_at_guid", [
           "unread",
+          "feedId",
           "publishedAt",
           "guid",
         ]);
@@ -72,9 +72,9 @@ export async function getDBConnection() {
           "feedId",
           "guid",
         ]);
-        store.createIndex("by_feed_id_unread_received_at_guid", [
-          "feedId",
+        store.createIndex("by_unread_feed_id_received_at_guid", [
           "unread",
+          "feedId",
           "receivedAt",
           "guid",
         ]);
@@ -126,9 +126,9 @@ export interface FeedTrackerDB extends DBSchema {
       // for displaying all posts sorted inside a feed
       by_feed_id_published_at_guid: [number, number, string];
       // for displaying all unread posts sorted inside a feed
-      by_feed_id_unread_published_at_guid: [
-        number,
+      by_unread_feed_id_published_at_guid: [
         BooleanFlag,
+        number,
         number,
         string,
       ];
@@ -152,7 +152,7 @@ export interface FeedTrackerDB extends DBSchema {
       by_unread_received_at_feed_id_guid: [BooleanFlag, number, number, string];
       // for marking all posts inside a feed as read even if new posts are
       // coming in at the same time
-      by_feed_id_unread_received_at_guid: [number, BooleanFlag, number, string];
+      by_unread_feed_id_received_at_guid: [BooleanFlag, number, number, string];
     };
   };
 }

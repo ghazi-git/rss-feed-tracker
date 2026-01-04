@@ -68,19 +68,19 @@ async function getFeedPosts(
   cursor: PostsCursor | null,
 ) {
   if (postsView === "unread" && cursor) {
-    const lower = [feedId, 1];
-    const upper = [feedId, 1, cursor.publishedAt, cursor.guid];
+    const lower = [1, feedId];
+    const upper = [1, feedId, cursor.publishedAt, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
-      "by_feed_id_unread_published_at_guid",
+      "by_unread_feed_id_published_at_guid",
       query,
     );
   } else if (postsView === "unread") {
-    const query = IDBKeyRange.bound([feedId, 1], [feedId + 1, 1], false, true);
+    const query = IDBKeyRange.bound([1, feedId], [1, feedId + 1], false, true);
     return await getPostsFromIndex(
       tx,
-      "by_feed_id_unread_published_at_guid",
+      "by_unread_feed_id_published_at_guid",
       query,
     );
   } else if (cursor) {

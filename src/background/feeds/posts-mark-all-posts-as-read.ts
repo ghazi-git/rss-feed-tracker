@@ -29,9 +29,9 @@ export async function markAllPostsAsRead(
   let posts: Post[] = [];
   const postStore = tx.objectStore("posts");
   if (node.type === "feed") {
-    const index = postStore.index("by_feed_id_unread_received_at_guid");
+    const index = postStore.index("by_unread_feed_id_received_at_guid");
     posts = await index.getAll(
-      IDBKeyRange.bound([nodeId, 1, 0], [nodeId, 1, markAsReadUntil + 1]),
+      IDBKeyRange.bound([1, nodeId, 0], [1, nodeId, markAsReadUntil + 1]),
     );
   } else if (!node.parentId) {
     // root folder: mark all unread as read
