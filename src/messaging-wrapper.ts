@@ -33,6 +33,7 @@ interface MessageMap {
   "feeds/delete"(data: { id: number }): void;
   "posts/get-unread-bookmarks-count"(): number;
   "posts/get-bookmarks"(data: BookmarkedPostsParams): PostsResponse;
+  "posts/list"(data: NodePostsParams): PostsResponse;
   "posts/toggle-unread"(data: ToggleUnreadParams): void;
   "posts/toggle-bookmarked"(data: ToggleBookmarkedParams): void;
   "posts/mark-all-bookmarks-as-read"(): void;
@@ -84,6 +85,11 @@ export interface PostsCursor {
   publishedAt: number;
   feedId: number;
   guid: string;
+}
+export interface NodePostsParams {
+  nodeId: number;
+  postsView: PostsView;
+  cursor: PostsCursor | null;
 }
 interface ToggleUnreadParams {
   feedId: number;

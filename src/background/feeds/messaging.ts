@@ -5,6 +5,7 @@ import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
 import { getBookmarks } from "@/background/feeds/posts-get-bookmarks";
 import { getUnreadBookmarksCount } from "@/background/feeds/posts-get-unread-bookmarks-count";
+import { listPosts } from "@/background/feeds/posts-list";
 import { markAllBookmarksAsRead } from "@/background/feeds/posts-mark-all-bookmarks-as-read";
 import { markAllPostsAsRead } from "@/background/feeds/posts-mark-all-posts-as-read";
 import { toggleBookmarkedPost } from "@/background/feeds/posts-toggle-bookmarked";
@@ -108,6 +109,20 @@ onMessage("posts/get-bookmarks", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while getting the bookmarked posts.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("posts/list", (payload, sender, sendResponse) => {
+  listPosts(payload.nodeId, payload.postsView, payload.cursor)
+    .then((resp) => {
+      sendResponse({ success: true, data: resp, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while getting the posts.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
