@@ -1,28 +1,59 @@
 import { useParams, useSearchParams } from "@solidjs/router";
-import { createResource, Match, Show, Switch } from "solid-js";
+import { createResource, Match, Switch } from "solid-js";
 
 import { sendMessage } from "@/messaging-wrapper";
-import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
-import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
-import NoPosts from "@/popup/components/NoPosts";
 import NodeHeader from "@/popup/pages/node-posts/NodeHeader";
-import Posts from "@/popup/pages/node-posts/Posts";
+import PostList from "@/popup/pages/node-posts/PostList";
+import {
+  PostsFilterUnreadCountContext,
+  UpdateUnreadCountArgs,
+} from "@/popup/pages/posts-filter-unread-count-context";
+import { createMutation } from "@/popup/utils/mutation";
 
 import styles from "./index.module.css";
 
 export default function NodePosts() {
-  const { node } = createNodeResource();
   const [searchParams] = useSearchParams();
-  const noPostsMsg = () => {
-    if (searchParams.unread === "true") {
-      return "No unread posts";
-    } else {
-      return "No posts published yet";
-    }
+  const params = useParams();
+  const nodeId = () => parseInt(params.id);
+
+  const { node, updateUnreadCount } = createNodeResource();
+  const { mutation, sendMsg, reset } = createMutation(
+    "posts/mark-all-posts-as-read",
+  );
+  const markAsReadMutation = {
+    async markAll() {
+      const markAsReadUntil = node()?.markAsReadUntil;
+      if (markAsReadUntil) {
+        await sendMsg({ nodeId: nodeId(), markAsReadUntil });
+      }
+    },
+
+    isLoading() {
+      return mutation.isLoading;
+    },
+
+    isSuccess() {
+      return mutation.isSuccess;
+    },
+
+    isError() {
+      return mutation.isError;
+    },
+
+    errorMsg() {
+      return mutation.errorMsg;
+    },
+
+    reset() {
+      reset();
+    },
   };
 
   return (
-    <DeleteNodeProvider>
+    <PostsFilterUnreadCountContext.Provider
+      value={{ markAsReadMutation, updateUnreadCount }}
+    >
       <Switch>
         <Match when={node.error}>
           <div class={styles.error}>
@@ -37,11 +68,15 @@ export default function NodePosts() {
         </Match>
       </Switch>
 
-      <Show when={[].length > 0} fallback={<NoPosts msg={noPostsMsg()} />}>
-        <Posts posts={[]} />
-      </Show>
-      <DeleteNodeDialog />
-    </DeleteNodeProvider>
+      {/* Intentionally creating separate components instances based on the
+       posts view to reset the cursor without complicating the posts query
+       any further */}
+      {searchParams.unread === "true" ? (
+        <PostList postsView="unread" nodeId={nodeId()} />
+      ) : (
+        <PostList postsView="all" nodeId={nodeId()} />
+      )}
+    </PostsFilterUnreadCountContext.Provider>
   );
 }
 
@@ -58,5 +93,20 @@ function createNodeResource() {
       return response.data;
     },
   );
-  return { node, mutateNode: mutate };
+  const updateUnreadCount = ({ delta, value }: UpdateUnreadCountArgs) => {
+    if (delta) {
+      mutate((resp) => {
+        if (!resp) return resp;
+
+        return { ...resp, unreadCount: resp.unreadCount + delta };
+      });
+    } else if (value !== undefined) {
+      mutate((resp) => {
+        if (!resp) return resp;
+
+        return { ...resp, unreadCount: value };
+      });
+    }
+  };
+  return { node, updateUnreadCount };
 }
