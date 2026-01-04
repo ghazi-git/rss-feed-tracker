@@ -11,8 +11,8 @@ import {
 } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
-import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import ErrorAlert from "@/popup/components/ErrorAlert";
+import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
@@ -109,15 +109,12 @@ function BookmarkedPosts(props: { postsView: PostsView }) {
           <ErrorAlert errorMsg={query.errorMsg} />
           <Posts posts={query.data.posts} />
           <Show when={query.data.nextPageCursor}>
-            <UnstyledButton
-              class={styles["load-more"]}
-              disabled={query.isLoading}
+            <LoadMorePosts
+              loading={query.isLoading}
               onClick={() => {
                 fetchPosts();
               }}
-            >
-              {query.isLoading ? "Loading..." : "Load more"}
-            </UnstyledButton>
+            />
           </Show>
         </Match>
       </Switch>
