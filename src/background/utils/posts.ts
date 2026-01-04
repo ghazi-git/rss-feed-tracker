@@ -1,20 +1,34 @@
-import { unwrap } from "idb";
+import { IndexNames, unwrap } from "idb";
 
-import { ExtensionDB, Post, ReadWriteTX } from "@/background/db-setup";
+import {
+  Feed,
+  FeedTrackerDB,
+  Post,
+  ReadTX,
+  ReadWriteTX,
+} from "@/background/db-setup";
 import { PAGE_SIZE } from "@/background/settings";
 import { FeedPost, PostsCursor } from "@/messaging-wrapper";
 
-export async function addFeedData(
-  db: ExtensionDB,
-  posts: Post[],
-): Promise<FeedPost[]> {
-  const nodes = await db.getAllFromIndex("nodes", "by_type", "feed");
-  const feedEntries = nodes
-    .filter((n) => n.type === "feed")
-    .map((f) => [f.id, f] as const);
-  const feeds = new Map(feedEntries);
+export async function getPostsFromIndex(
+  tx: ReadTX,
+  indexName: IndexNames<FeedTrackerDB, "posts">,
+  query: IDBKeyRange | null,
+) {
+  const store = tx.objectStore("posts");
+  const index = store.index(indexName);
+  return await index.getAll({
+    query,
+    direction: "prev",
+    count: PAGE_SIZE,
+  });
+}
+
+export function addFeedData(feeds: Feed[], posts: Post[]): FeedPost[] {
+  const feedEntries = feeds.map((f) => [f.id, f] as const);
+  const feedMap = new Map(feedEntries);
   return posts.map((post) => {
-    const f = feeds.get(post.feedId);
+    const f = feedMap.get(post.feedId);
     const feedName = f ? f.name : "Deleted Feed";
     const feedFavicon = f ? f.feed.favicon : null;
     return { ...post, feedName, feedFavicon };

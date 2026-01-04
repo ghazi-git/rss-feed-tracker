@@ -48,7 +48,7 @@ export async function markAllPostsAsRead(
     while (cursor) {
       const post = cursor.value;
       if (feedIds.has(post.feedId)) {
-        posts.push(cursor.value);
+        posts.push(post);
       }
       cursor = await cursor.continue();
     }

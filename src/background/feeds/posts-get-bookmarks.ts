@@ -1,6 +1,9 @@
-import { getDBConnection, Post } from "@/background/db-setup";
-import { PAGE_SIZE } from "@/background/settings";
-import { addFeedData, getNextPageCursor } from "@/background/utils/posts";
+import { getDBConnection, Post, ReadTX } from "@/background/db-setup";
+import {
+  addFeedData,
+  getNextPageCursor,
+  getPostsFromIndex,
+} from "@/background/utils/posts";
 import { PostsCursor, PostsResponse, PostsView } from "@/messaging-wrapper";
 
 export async function getBookmarks(
@@ -8,42 +11,52 @@ export async function getBookmarks(
   cursor: PostsCursor | null,
 ): Promise<PostsResponse> {
   using conn = await getDBConnection();
+  const tx = conn.db.transaction(["posts", "nodes"]);
+
   let posts: Post[];
   if (postsView === "unread" && cursor) {
     const lower = [1, 1];
     const upper = [1, 1, cursor.publishedAt, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
-    posts = await conn.db.getAllFromIndex(
-      "posts",
+    posts = await getPostsFromIndex(
+      tx,
       "by_bookmarked_unread_published_at_feed_id_guid",
-      { query, direction: "prev", count: PAGE_SIZE },
+      query,
     );
   } else if (postsView === "unread") {
     const query = IDBKeyRange.lowerBound([1, 1]);
-    posts = await conn.db.getAllFromIndex(
-      "posts",
+    posts = await getPostsFromIndex(
+      tx,
       "by_bookmarked_unread_published_at_feed_id_guid",
-      { query, direction: "prev", count: PAGE_SIZE },
+      query,
     );
   } else if (cursor) {
     const lower = [1];
     const upper = [1, cursor.publishedAt, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
-    posts = await conn.db.getAllFromIndex(
-      "posts",
+    posts = await getPostsFromIndex(
+      tx,
       "by_bookmarked_published_at_feed_id_guid",
-      { query, direction: "prev", count: PAGE_SIZE },
+      query,
     );
   } else {
     const query = IDBKeyRange.lowerBound([1]);
-    posts = await conn.db.getAllFromIndex(
-      "posts",
+    posts = await getPostsFromIndex(
+      tx,
       "by_bookmarked_published_at_feed_id_guid",
-      { query, direction: "prev", count: PAGE_SIZE },
+      query,
     );
   }
 
-  const feedPosts = await addFeedData(conn.db, posts);
+  const feeds = await getFeeds(tx);
+  const feedPosts = addFeedData(feeds, posts);
   const nextPageCursor = getNextPageCursor(feedPosts);
   return { posts: feedPosts, postsView, cursor, nextPageCursor };
+}
+
+async function getFeeds(tx: ReadTX) {
+  const store = tx.objectStore("nodes");
+  const index = store.index("by_type");
+  const nodes = await index.getAll("feed");
+  return nodes.filter((n) => n.type === "feed");
 }
