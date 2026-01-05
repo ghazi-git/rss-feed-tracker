@@ -5,12 +5,11 @@ export const PostsFilterUnreadCountContext =
 
 export function usePostsFilterUnreadCountContext() {
   const context = useContext(PostsFilterUnreadCountContext);
-  // todo uncomment after adding the context to Folder pages
-  // if (!context) {
-  //   throw new Error(
-  //     "usePostsFilterUnreadCountContext: cannot find PostsFilterUnreadCountContext",
-  //   );
-  // }
+  if (!context) {
+    throw new Error(
+      "usePostsFilterUnreadCountContext: cannot find PostsFilterUnreadCountContext",
+    );
+  }
 
   return context;
 }

@@ -21,7 +21,7 @@ import styles from "./FolderChild.module.css";
 
 export default function FolderChild(props: FolderChildProps) {
   const { mutation, sendMsg } = createMutation("posts/mark-all-posts-as-read");
-  const ctx = usePostsFilterUnreadCountContext();
+  const { updateUnreadCount } = usePostsFilterUnreadCountContext();
   const { mutateNode } = useNodeContext();
   const markAllAsRead = async () => {
     await sendMsg({
@@ -30,7 +30,7 @@ export default function FolderChild(props: FolderChildProps) {
     });
     if (mutation.isSuccess) {
       batch(() => {
-        ctx?.updateUnreadCount({ delta: -props.node.unreadCount });
+        updateUnreadCount({ delta: -props.node.unreadCount });
         mutateNode((resp) => {
           if (!resp) return resp;
 

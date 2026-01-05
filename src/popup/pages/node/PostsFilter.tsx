@@ -8,7 +8,7 @@ import styles from "./PostsFilter.module.css";
 
 export default function PostsFilter(props: PostsFilterProps) {
   const [activeFilter, setActiveFilter] = createSignal(props.initialFilter);
-  const ctx = usePostsFilterUnreadCountContext();
+  const { markAsReadMutation } = usePostsFilterUnreadCountContext();
 
   return (
     <div class={`${props.class} ${styles["filter-options"]}`}>
@@ -22,11 +22,11 @@ export default function PostsFilter(props: PostsFilterProps) {
         <Show when={props.unreadCount}>
           <UnreadCount
             count={props.unreadCount}
-            isLoading={ctx?.markAsReadMutation.isLoading() ?? false}
+            isLoading={markAsReadMutation.isLoading() ?? false}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              ctx?.markAsReadMutation.markAll();
+              markAsReadMutation.markAll();
             }}
           />
         </Show>

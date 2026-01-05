@@ -27,22 +27,23 @@ export default function PostList(props: PostListProps) {
     await fetchPosts();
   });
 
-  const ctx = usePostsFilterUnreadCountContext();
+  const { markAsReadMutation, updateUnreadCount } =
+    usePostsFilterUnreadCountContext();
   createEffect(() => {
-    const isSuccess = ctx?.markAsReadMutation.isSuccess();
-    const isError = ctx?.markAsReadMutation.isError();
+    const isSuccess = markAsReadMutation.isSuccess();
+    const isError = markAsReadMutation.isError();
     if (isSuccess) {
       batch(() => {
         mutateAllUnread();
-        ctx?.updateUnreadCount({ value: 0 });
-        ctx?.markAsReadMutation.reset();
+        updateUnreadCount({ value: 0 });
+        markAsReadMutation.reset();
       });
     } else if (isError) {
-      const msg = ctx?.markAsReadMutation.errorMsg() ?? "";
+      const msg = markAsReadMutation.errorMsg() ?? "";
       if (msg) {
         notifyError(msg);
       }
-      ctx?.markAsReadMutation.reset();
+      markAsReadMutation.reset();
     }
   });
 
@@ -82,7 +83,7 @@ export default function PostList(props: PostListProps) {
 }
 
 function createPostsQuery(nodeId: number, postsView: PostsView) {
-  const ctx = usePostsFilterUnreadCountContext();
+  const { updateUnreadCount } = usePostsFilterUnreadCountContext();
   const { query, setQuery, sendMsg } = createQuery(
     "posts/list",
     { posts: [], postsView, cursor: null, nextPageCursor: null },
@@ -114,7 +115,7 @@ function createPostsQuery(nodeId: number, postsView: PostsView) {
           "unread",
           unread ? 1 : 0,
         );
-        ctx?.updateUnreadCount({ delta: unread ? 1 : -1 });
+        updateUnreadCount({ delta: unread ? 1 : -1 });
       });
     } else {
       notifyError(resp.errorMsg);
