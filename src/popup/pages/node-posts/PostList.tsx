@@ -70,6 +70,7 @@ export default function PostList(props: PostListProps) {
           <Posts posts={query.data.posts} />
           <Show when={query.data.nextPageCursor}>
             <LoadMorePosts
+              postsCount={query.data.posts.length}
               loading={query.isLoading}
               onClick={() => {
                 fetchPosts();

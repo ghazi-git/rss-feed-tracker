@@ -1,3 +1,5 @@
+import { Show } from "solid-js";
+
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 
 import styles from "./LoadMorePosts.module.css";
@@ -11,7 +13,10 @@ export default function LoadMorePosts(props: LoadMorePostsProps) {
         props.onClick();
       }}
     >
-      {props.loading ? "Loading..." : "Load more"}
+      <Show when={!props.loading} fallback="Loading...">
+        Load more
+        <span>(already showing {props.postsCount} posts)</span>
+      </Show>
     </UnstyledButton>
   );
 }
@@ -19,4 +24,5 @@ export default function LoadMorePosts(props: LoadMorePostsProps) {
 interface LoadMorePostsProps {
   loading: boolean;
   onClick: () => void;
+  postsCount: number;
 }

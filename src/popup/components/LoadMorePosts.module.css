@@ -8,8 +8,8 @@
   margin-block-start: var(--size-2);
   padding: var(--size-3);
 
-  svg {
-    inline-size: var(--size-3);
-    block-size: auto;
+  span {
+    font-size: 0.95rem;
+    margin-block-start: 2px;
   }
 }
