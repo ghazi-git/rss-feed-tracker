@@ -8,6 +8,10 @@
   border-radius: var(--radius-2);
 }
 
+.child:hover {
+  background-color: var(--surface-2);
+}
+
 .icon {
   position: relative;
   flex-shrink: 0;
