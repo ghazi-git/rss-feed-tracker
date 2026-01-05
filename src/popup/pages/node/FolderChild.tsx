@@ -1,7 +1,9 @@
+import { useNavigate } from "@solidjs/router";
 import { batch, Show } from "solid-js";
 
 import { TreeNode } from "@/background/db-setup";
 import Anchor from "@/popup/components/Anchor";
+import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import Dropdown from "@/popup/components/dropdown/Dropdown";
 import Menu from "@/popup/components/dropdown/Menu";
 import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
@@ -20,6 +22,7 @@ import { notifyError } from "@/popup/utils/notifications";
 import styles from "./FolderChild.module.css";
 
 export default function FolderChild(props: FolderChildProps) {
+  const navigate = useNavigate();
   const { mutation, sendMsg } = createMutation("posts/mark-all-posts-as-read");
   const { updateUnreadCount } = usePostsFilterUnreadCountContext();
   const { mutateNode } = useNodeContext();
@@ -66,6 +69,17 @@ export default function FolderChild(props: FolderChildProps) {
         </Show>
       </div>
       <SingleLineText text={props.node.name} />
+      <Show when={props.node.unreadCount}>
+        <UnstyledButton
+          class={styles["unread-link"]}
+          onClick={(event) => {
+            event.preventDefault();
+            navigate(`/library/nodes/${props.node.id}/posts?unread=true`);
+          }}
+        >
+          Unread
+        </UnstyledButton>
+      </Show>
       <Dropdown placement="bottom-end" fallbackPlacement="left">
         <MenuTrigger onClick={(event) => event.preventDefault()}>
           <ThreeDotIcon class={styles["post-actions-icon"]} />

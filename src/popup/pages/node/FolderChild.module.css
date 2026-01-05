@@ -3,9 +3,17 @@
   justify-content: flex-start;
   align-items: center;
   gap: var(--size-3);
-  padding: var(--size-2) var(--size-3);
+  padding: var(--size-2) var(--size-1) var(--size-2) var(--size-2);
   border: var(--border-size-1) solid var(--surface-4);
   border-radius: var(--radius-2);
+
+  button {
+    flex-shrink: 0;
+
+    &:first-of-type {
+      margin-inline-start: auto;
+    }
+  }
 }
 
 .child:hover {
@@ -35,6 +43,8 @@
   opacity: 0.75;
 }
 
-.child button {
-  margin-inline-start: auto;
+.unread-link {
+  margin-inline-end: calc(-1 * var(--size-3));
+  color: var(--brand);
+  font-size: 0.9rem;
 }
