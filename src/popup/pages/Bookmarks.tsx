@@ -10,9 +10,11 @@ import {
   untrack,
 } from "solid-js";
 
+import { PAGE_SIZE } from "@/background/settings";
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
+import NoMorePosts from "@/popup/components/NoMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
@@ -67,6 +69,7 @@ function BookmarkedPosts(props: { postsView: PostsView }) {
   onMount(async () => {
     await fetchPosts();
   });
+  const postsCount = () => query.data.posts.length;
 
   const { markAsReadMutation, updateUnreadCount } =
     usePostsFilterUnreadCountContext();
@@ -91,13 +94,13 @@ function BookmarkedPosts(props: { postsView: PostsView }) {
   return (
     <PostsContext.Provider value={{ toggleUnread, mutateBookmarked }}>
       <Switch>
-        <Match when={query.data.posts.length === 0 && query.isError}>
+        <Match when={postsCount() === 0 && query.isError}>
           <NoPosts msg={query.errorMsg!} />
         </Match>
-        <Match when={query.data.posts.length === 0 && query.isLoading}>
+        <Match when={postsCount() === 0 && query.isLoading}>
           <NoPosts msg="Loading bookmarked posts..." />
         </Match>
-        <Match when={query.data.posts.length === 0}>
+        <Match when={postsCount() === 0}>
           <NoPosts
             msg={
               props.postsView === "all"
@@ -106,17 +109,20 @@ function BookmarkedPosts(props: { postsView: PostsView }) {
             }
           />
         </Match>
-        <Match when={query.data.posts.length > 0}>
+        <Match when={postsCount() > 0}>
           <ErrorAlert errorMsg={query.errorMsg} />
           <Posts posts={query.data.posts} />
           <Show when={query.data.nextPageCursor}>
             <LoadMorePosts
-              postsCount={query.data.posts.length}
+              postsCount={postsCount()}
               loading={query.isLoading}
               onClick={() => {
                 fetchPosts();
               }}
             />
+          </Show>
+          <Show when={!query.data.nextPageCursor && postsCount() >= PAGE_SIZE}>
+            <NoMorePosts postsCount={postsCount()} />
           </Show>
         </Match>
       </Switch>

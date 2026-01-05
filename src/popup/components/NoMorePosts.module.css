@@ -1,0 +1,15 @@
+.no-more-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--size-1);
+  inline-size: 100%;
+  background-color: var(--surface-2);
+  margin-block-start: var(--size-2);
+  padding: var(--size-1);
+
+  span {
+    font-size: 0.95rem;
+    margin-block-start: 2px;
+  }
+}
