@@ -1,4 +1,4 @@
-import { pollFeeds } from "@/background/utils/feed-polling";
+import { runFeedPollingAlarmHandler } from "@/background/utils/feed-polling";
 
 const FEED_POLLING_ALARM = "feed-polling";
 
@@ -13,7 +13,7 @@ chrome.runtime.onStartup.addListener(async () => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === FEED_POLLING_ALARM) {
     const scheduledAt = new Date(alarm.scheduledTime).toISOString();
-    await pollFeeds(scheduledAt);
+    await runFeedPollingAlarmHandler(scheduledAt);
   }
 });
 

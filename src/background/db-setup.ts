@@ -80,6 +80,9 @@ export async function getDBConnection() {
           "guid",
         ]);
       }
+      if (!db.objectStoreNames.contains("locks")) {
+        db.createObjectStore("locks", { keyPath: "id" });
+      }
     },
   });
 
@@ -155,6 +158,10 @@ export interface FeedTrackerDB extends DBSchema {
       // coming in at the same time
       by_unread_feed_id_received_at_guid: [BooleanFlag, number, number, string];
     };
+  };
+  locks: {
+    key: string;
+    value: Lock;
   };
 }
 
@@ -254,6 +261,15 @@ export interface Post {
   // receivedAt might help with marking all read especially that new posts can
   // arrive while the user is viewing at the unread files
   receivedAt: number;
+}
+
+export interface Lock {
+  // we can acquire a lock by creating a new object with a specific id
+  // using `store.add()`, if the creation fails with a ConstraintError,
+  // then the lock has already been acquired. If a lock is too old (based
+  // on createdAt), it can be forcibly released by deleting the entry.
+  id: string;
+  createdAt: number;
 }
 
 type BooleanFlag = 0 | 1;

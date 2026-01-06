@@ -12,14 +12,24 @@ import {
   parseFeedContent,
 } from "@/background/utils/feeds-fetch-from-source";
 import { getAllFromIndex, txDone } from "@/background/utils/idb-helpers";
+import { acquireLock } from "@/background/utils/locks";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
-export async function pollFeeds(scheduledAt: string) {
+export async function runFeedPollingAlarmHandler(scheduledAt: string) {
   const start = performance.now();
   using conn = await getDBConnection();
+
+  // acquire a lock to avoid cases where feeds' loading exceeds the interval
+  // between 2 consecutive alarm runs.
+  const lockId = "feed-polling";
+  await using lock = await acquireLock(conn.db, lockId);
+  if (!lock.id) {
+    FeedPollingLogger.log(`aborted (cannot acquire a lock)`);
+    return;
+  }
 
   FeedPollingLogger.log(scheduledAt, "determining due feeds...");
   const dueFeeds = await getDueFeeds(conn.db);
