@@ -1,3 +1,5 @@
+import { unwrap } from "idb";
+
 import { Feed, getDBConnection, ReadWriteTX } from "@/background/db-setup";
 import {
   getInitialFeedmetadata,
@@ -8,6 +10,7 @@ import {
   getPostObjects,
   parseFeedContent,
 } from "@/background/utils/feeds-fetch-from-source";
+import { txDone } from "@/background/utils/idb-helpers";
 import {
   getHighestSortOrder,
   updateFeedUnreadCount,
@@ -52,6 +55,8 @@ export async function loadAndCreateFeed(data: FeedFormData) {
   } else {
     await saveSuccessMetadata(tx, feedId, data.frequency, fetchTime);
   }
+
+  await txDone(unwrap(tx));
 
   return feedId;
 }
