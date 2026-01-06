@@ -11,29 +11,39 @@ import {
   parseFeedContent,
 } from "@/background/utils/feeds-fetch-from-source";
 import { getAllFromIndex, txDone } from "@/background/utils/idb-helpers";
-import { log, logError } from "@/background/utils/logging";
+import { FeedPollingLogger } from "@/background/utils/logging";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
-export async function pollFeeds() {
+export async function pollFeeds(scheduledAt: string) {
+  const start = performance.now();
   using conn = await getDBConnection();
 
+  FeedPollingLogger.log(scheduledAt, "determining due feeds...");
   const dueFeeds = await getDueFeeds(conn.db);
   if (!dueFeeds.length) {
-    log("feed-polling: no feeds are due");
+    FeedPollingLogger.log(scheduledAt, "done (no feeds are due)");
     return;
   }
 
+  FeedPollingLogger.log(`found ${dueFeeds.length} due feeds`);
+
   for (const feed of dueFeeds) {
+    const logger = new FeedPollingLogger(feed.id, scheduledAt);
+
     try {
-      await pollFeed(conn.db, feed);
+      await pollFeed(conn.db, feed, logger);
     } catch (e) {
-      logError(`feed-polling: failure feedId=${feed.id}`, e);
+      logger.error(e);
       const msg = e instanceof Error ? e.message : "Unexpected error";
       await saveFailureMetadata(conn.db, feed, msg);
     }
   }
+
+  const end = performance.now();
+  const took = (end - start) / 1000;
+  FeedPollingLogger.log(`done took=${took.toFixed(3)} seconds`);
 }
 
 async function getDueFeeds(db: ExtensionDB) {
@@ -52,8 +62,14 @@ async function getDueFeeds(db: ExtensionDB) {
     .filter((f) => feedIds.includes(f.id));
 }
 
-async function pollFeed(db: ExtensionDB, node: Feed) {
+async function pollFeed(
+  db: ExtensionDB,
+  node: Feed,
+  logger: FeedPollingLogger,
+) {
+  logger.debug(`fetching url=${node.feed.url}`);
   const feedContent = await fetchFeedContent(node.feed.url);
+  logger.debug("parsing feed...");
   const parsedFeed = parseFeedContent(node.feed.url, feedContent);
 
   const fetchTime = Date.now();
@@ -63,9 +79,11 @@ async function pollFeed(db: ExtensionDB, node: Feed) {
     const notes = "Feed has no posts.";
     await saveSuccessMetadata(tx, node.id, frequency, fetchTime, false, notes);
     await txDone(unwrap(tx));
+    logger.debug("done (no posts)");
     return;
   }
 
+  logger.debug(`parsed ${parsedFeed.posts.length} post(s)`);
   const preferences = await loadPreferences();
   const markNewPostsUnread = preferences.markNewPostsUnread;
   // prettier-ignore
@@ -74,7 +92,9 @@ async function pollFeed(db: ExtensionDB, node: Feed) {
   const tx = db.transaction(["posts", "feedmetadata", "nodes"], "readwrite");
   const results = await bulkAddPosts(tx, posts);
   const insertedPosts = results.filter((res) => res.success).length;
+  logger.debug(`inserted ${parsedFeed.posts.length} new post(s) in indexedDB`);
   if (insertedPosts && markNewPostsUnread) {
+    logger.debug(`updating unread counts`);
     await updateFeedUnreadCount(tx, node.id, insertedPosts);
   }
   const notes = describeSaveResults(results);
@@ -88,4 +108,6 @@ async function pollFeed(db: ExtensionDB, node: Feed) {
   );
 
   await txDone(unwrap(tx));
+
+  logger.debug(`done notes=${notes ?? "All parsed posts were inserted"}`);
 }
