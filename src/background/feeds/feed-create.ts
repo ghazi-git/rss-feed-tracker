@@ -5,14 +5,14 @@ import {
   ReadWriteTX,
 } from "@/background/db-setup";
 import {
-  fetchFeedContent,
-  ParsedPost,
-  parseFeedContent,
-} from "@/background/feeds/feeds-fetch-from-source";
-import {
   getInitialFeedmetadata,
   saveSuccessMetadata,
 } from "@/background/utils/feedmetadata";
+import {
+  fetchFeedContent,
+  ParsedPost,
+  parseFeedContent,
+} from "@/background/utils/feeds-fetch-from-source";
 import {
   getAncestors,
   getHighestSortOrder,

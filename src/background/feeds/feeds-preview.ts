@@ -1,7 +1,7 @@
 import {
   fetchFeedContent,
   parseFeedContent,
-} from "@/background/feeds/feeds-fetch-from-source";
+} from "@/background/utils/feeds-fetch-from-source";
 import { FeedPreviewResponse } from "@/messaging-wrapper";
 
 /**
