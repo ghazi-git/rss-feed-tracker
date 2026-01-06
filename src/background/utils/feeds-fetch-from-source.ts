@@ -1,6 +1,7 @@
 import type { AtomFeed, JsonFeed, RssFeed } from "feedsmith";
 import { parseFeed } from "feedsmith";
 
+import { Post } from "@/background/db-setup";
 import { FeedParseError, HttpError } from "@/background/utils/errors";
 import { retry } from "@/background/utils/retry-on-error";
 
@@ -184,6 +185,21 @@ function getAtomFeedWebsite(links: AtomFeed<string>["links"]) {
   }
 }
 
+export function getPostObjects(
+  parsedPosts: ParsedPost[],
+  feedId: number,
+  fetchTime: number,
+  markNewPostsUnread: boolean,
+) {
+  return parsedPosts.map((post) => ({
+    ...post,
+    unread: markNewPostsUnread ? 1 : 0,
+    bookmarked: 0,
+    feedId,
+    receivedAt: fetchTime,
+  })) as Post[];
+}
+
 interface ParsedFeed {
   name: string;
   favicon: string | null;
@@ -191,7 +207,7 @@ interface ParsedFeed {
   posts: ParsedPost[];
 }
 
-export interface ParsedPost {
+interface ParsedPost {
   guid: string;
   title: string;
   url: string;

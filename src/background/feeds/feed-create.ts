@@ -1,22 +1,16 @@
-import {
-  Feed,
-  getDBConnection,
-  Post,
-  ReadWriteTX,
-} from "@/background/db-setup";
+import { Feed, getDBConnection, ReadWriteTX } from "@/background/db-setup";
 import {
   getInitialFeedmetadata,
   saveSuccessMetadata,
 } from "@/background/utils/feedmetadata";
 import {
   fetchFeedContent,
-  ParsedPost,
+  getPostObjects,
   parseFeedContent,
 } from "@/background/utils/feeds-fetch-from-source";
 import {
-  getAncestors,
   getHighestSortOrder,
-  getNodeMap,
+  updateFeedUnreadCount,
 } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { FeedFormData } from "@/messaging-wrapper";
@@ -44,7 +38,7 @@ export async function loadAndCreateFeed(data: FeedFormData) {
     const results = await bulkAddPosts(tx, posts);
     const insertedPosts = results.filter((res) => res.success).length;
     if (insertedPosts && markNewPostsUnread) {
-      await updateUnreadCount(tx, feedId, insertedPosts);
+      await updateFeedUnreadCount(tx, feedId, insertedPosts);
     }
     const notes = describeSaveResults(results);
     await saveSuccessMetadata(
@@ -90,37 +84,4 @@ async function createFeed(
   await feedmatadata.add(metadata);
 
   return feedId;
-}
-
-function getPostObjects(
-  parsedPosts: ParsedPost[],
-  feedId: number,
-  fetchTime: number,
-  markNewPostsUnread: boolean,
-) {
-  return parsedPosts.map((post) => ({
-    ...post,
-    unread: markNewPostsUnread ? 1 : 0,
-    bookmarked: 0,
-    feedId,
-    receivedAt: fetchTime,
-  })) as Post[];
-}
-
-async function updateUnreadCount(
-  tx: ReadWriteTX,
-  feedId: number,
-  newPostsCount: number,
-) {
-  const nodeStore = tx.objectStore("nodes");
-  const nodes = await nodeStore.getAll();
-  const nodeMap = getNodeMap(nodes);
-  const ancestors = getAncestors(feedId, nodeMap);
-  const promises = ancestors.map((a) =>
-    nodeStore.put({
-      ...a,
-      unreadCount: a.unreadCount + newPostsCount,
-    }),
-  );
-  await Promise.all(promises);
 }

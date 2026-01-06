@@ -66,3 +66,20 @@ export function getNodeLastRunAt(
     return lastRunAts.at(-1) ?? defaultTime;
   }
 }
+export async function updateFeedUnreadCount(
+  tx: ReadWriteTX,
+  feedId: number,
+  newPostsCount: number,
+) {
+  const nodeStore = tx.objectStore("nodes");
+  const nodes = await nodeStore.getAll();
+  const nodeMap = getNodeMap(nodes);
+  const ancestors = getAncestors(feedId, nodeMap);
+  const promises = ancestors.map((a) =>
+    nodeStore.put({
+      ...a,
+      unreadCount: a.unreadCount + newPostsCount,
+    }),
+  );
+  await Promise.all(promises);
+}
