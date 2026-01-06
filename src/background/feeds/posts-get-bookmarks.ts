@@ -1,4 +1,5 @@
 import { getDBConnection, Post, ReadTX } from "@/background/db-setup";
+import { getAllFromIndex } from "@/background/utils/idb-helpers";
 import {
   addFeedData,
   getNextPageCursor,
@@ -55,8 +56,8 @@ export async function getBookmarks(
 }
 
 async function getFeeds(tx: ReadTX) {
-  const store = tx.objectStore("nodes");
-  const index = store.index("by_type");
-  const nodes = await index.getAll("feed");
+  const nodes = await getAllFromIndex(tx, "nodes", "by_type", {
+    query: "feed",
+  });
   return nodes.filter((n) => n.type === "feed");
 }

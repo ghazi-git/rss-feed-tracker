@@ -8,6 +8,7 @@ import {
 } from "@/background/db-setup";
 import { PAGE_SIZE } from "@/background/settings";
 import { NotFoundError } from "@/background/utils/errors";
+import { getAllFromIndex } from "@/background/utils/idb-helpers";
 import { getChildFeedIds } from "@/background/utils/nodes";
 import {
   addFeedData,
@@ -125,9 +126,9 @@ async function getRootFolderPosts(
 }
 
 async function getFeeds(tx: ReadTX) {
-  const store = tx.objectStore("nodes");
-  const index = store.index("by_type");
-  const nodes = await index.getAll("feed");
+  const nodes = await getAllFromIndex(tx, "nodes", "by_type", {
+    query: "feed",
+  });
   return nodes.filter((n) => n.type === "feed");
 }
 

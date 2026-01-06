@@ -2,6 +2,7 @@ import {
   DBSchema,
   IDBPDatabase,
   IDBPTransaction,
+  IndexNames,
   openDB,
   StoreNames,
   StoreValue,
@@ -159,6 +160,10 @@ export interface FeedTrackerDB extends DBSchema {
 
 export type ExtensionDB = IDBPDatabase<FeedTrackerDB>;
 export type ExtStoreName = StoreNames<FeedTrackerDB>;
+export type ExtIndexName<Name extends ExtStoreName> = IndexNames<
+  FeedTrackerDB,
+  Name
+>;
 // must use arrays when creating a transaction so it corresponds to the below
 // TX types `db.transaction(["nodes"])`, and not `db.transaction("nodes")`
 export type ReadTX = IDBPTransaction<FeedTrackerDB, ExtStoreName[]>;

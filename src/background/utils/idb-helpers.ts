@@ -1,10 +1,14 @@
-import { unwrap } from "idb";
+import { IDBPIndexGetAllOptions, unwrap } from "idb";
 
 import {
   ExtensionDB,
+  ExtIndexName,
   ExtStoreName,
   ExtStoreValue,
+  FeedTrackerDB,
   PrimaryKey,
+  ReadTX,
+  ReadWriteTX,
 } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
 
@@ -77,6 +81,20 @@ export function txDone(tx: IDBTransaction) {
       reject(error);
     };
   });
+}
+
+export async function getAllFromIndex<
+  StoreName extends ExtStoreName,
+  IndexName extends ExtIndexName<StoreName>,
+>(
+  tx: ReadTX | ReadWriteTX,
+  storeName: StoreName,
+  indexName: IndexName,
+  options?: IDBPIndexGetAllOptions<FeedTrackerDB, StoreName, IndexName>,
+) {
+  const store = tx.objectStore(storeName);
+  const index = store.index(indexName);
+  return await index.getAll(options);
 }
 
 type StoreUpdateFn<Name extends ExtStoreName> = (

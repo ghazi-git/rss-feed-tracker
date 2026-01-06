@@ -8,6 +8,7 @@ import {
   ReadWriteTX,
 } from "@/background/db-setup";
 import { PAGE_SIZE } from "@/background/settings";
+import { getAllFromIndex } from "@/background/utils/idb-helpers";
 import { FeedPost, PostsCursor } from "@/messaging-wrapper";
 
 export async function getPostsFromIndex(
@@ -15,9 +16,7 @@ export async function getPostsFromIndex(
   indexName: IndexNames<FeedTrackerDB, "posts">,
   query: IDBKeyRange | null,
 ) {
-  const store = tx.objectStore("posts");
-  const index = store.index(indexName);
-  return await index.getAll({
+  return await getAllFromIndex(tx, "posts", indexName, {
     query,
     direction: "prev",
     count: PAGE_SIZE,
