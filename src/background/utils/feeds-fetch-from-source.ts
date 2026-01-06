@@ -7,15 +7,17 @@ import { retry } from "@/background/utils/retry-on-error";
 
 /**
  * fetch the feed xml from its remote source
- * @raises HttpError
+ * @raises HttpError, TimeoutError
  */
-export async function fetchFeedContent(url: string) {
+export async function fetchFeedContent(url: string, timeout = 10_000) {
   return await retry(async () => {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: AbortSignal.timeout(timeout) });
     if (!response.ok) {
       const msg = `Unable to get the feed data. Please make sure the URL is \
         the correct and the server is reachable.`;
-      throw new HttpError(msg);
+      throw new HttpError(msg, {
+        cause: `status=${response.status} statusText=${response.statusText}`,
+      });
     }
 
     return await response.text();
