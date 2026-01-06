@@ -1,6 +1,7 @@
 import { unwrap } from "idb";
 
 import { ExtensionDB, Feed, getDBConnection } from "@/background/db-setup";
+import { getChunks } from "@/background/utils/chunks";
 import {
   saveFailureMetadata,
   saveSuccessMetadata,
@@ -11,7 +12,7 @@ import {
   parseFeedContent,
 } from "@/background/utils/feeds-fetch-from-source";
 import { getAllFromIndex, txDone } from "@/background/utils/idb-helpers";
-import { FeedPollingLogger } from "@/background/utils/logging";
+import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
@@ -29,17 +30,7 @@ export async function pollFeeds(scheduledAt: string) {
 
   FeedPollingLogger.log(`found ${dueFeeds.length} due feeds`);
 
-  for (const feed of dueFeeds) {
-    const logger = new FeedPollingLogger(feed.id, scheduledAt);
-
-    try {
-      await pollFeed(conn.db, feed, logger);
-    } catch (e) {
-      logger.error(e);
-      const msg = e instanceof Error ? e.message : "Unexpected error";
-      await saveFailureMetadata(conn.db, feed, msg);
-    }
-  }
+  await loadFeeds(conn.db, dueFeeds, scheduledAt);
 
   const end = performance.now();
   const took = (end - start) / 1000;
@@ -62,7 +53,25 @@ async function getDueFeeds(db: ExtensionDB) {
     .filter((f) => feedIds.includes(f.id));
 }
 
-async function pollFeed(
+async function loadFeeds(db: ExtensionDB, feeds: Feed[], scheduledAt: string) {
+  // load feeds in parallel
+  const chunks = getChunks(feeds, 5);
+  for (const chunk of chunks) {
+    const promises = chunk.map((feed, idx) => {
+      const colorCode = COLOR_CODES[idx % COLOR_CODES.length];
+      const logger = new FeedPollingLogger(feed.id, scheduledAt, colorCode);
+
+      return loadFeedPosts(db, feed, logger).catch(async (e) => {
+        logger.error(e);
+        const msg = e instanceof Error ? e.message : "Unexpected error";
+        await saveFailureMetadata(db, feed, msg);
+      });
+    });
+    await Promise.all(promises);
+  }
+}
+
+async function loadFeedPosts(
   db: ExtensionDB,
   node: Feed,
   logger: FeedPollingLogger,

@@ -3,12 +3,12 @@ export class FeedPollingLogger {
   private readonly scheduledAt: string;
   private readonly colorCode: string;
 
-  constructor(feedId: number, scheduledAt: string) {
+  constructor(feedId: number, scheduledAt: string, colorCode: string) {
     this.feedId = feedId;
     this.scheduledAt = scheduledAt;
     // logs for a specific feed will have the same color, so it is easier to
     // follow them when multiple feeds are updating in parallel
-    this.colorCode = COLOR_CODES[feedId % COLOR_CODES.length];
+    this.colorCode = colorCode;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,7 +37,7 @@ export class FeedPollingLogger {
   }
 }
 
-const COLOR_CODES = [
+export const COLOR_CODES = [
   "#007ACC",
   "#00875A",
   "#FFA500",
