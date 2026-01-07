@@ -13,7 +13,9 @@ export async function acquireLock(db: ExtensionDB, lockId: string) {
     if (lock && lock.createdAt + 15 * 60 * 1000 < Date.now()) {
       await db.delete("locks", lockId);
       const now = new Date().toISOString();
-      console.log(`[${now}] lock=${lockId} released forcibly`);
+      console.log(
+        `[${now}] lock=${lockId} released forcibly so it can be used in the next run`,
+      );
     }
 
     // dummy lock
