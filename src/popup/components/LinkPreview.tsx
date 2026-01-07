@@ -20,7 +20,15 @@ export default function LinkPreview() {
     <div
       class={`${styles["link-preview"]} ${preview.show ? styles.visible : ""}`}
     >
-      {preview.url}
+      {previewURL(preview.url)}
     </div>
   );
+}
+
+function previewURL(url: string) {
+  try {
+    return decodeURI(preview.url);
+  } catch {
+    return url;
+  }
 }
