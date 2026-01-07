@@ -57,19 +57,17 @@ export default function FolderChild(props: FolderChildProps) {
             name={props.node.name}
           />
         </Show>
-        <Show when={props.node.unreadCount}>
-          <UnreadCount
-            count={props.node.unreadCount}
-            isLoading={mutation.isLoading}
-            onClick={(event) => {
-              event.preventDefault();
-              markAllAsRead();
-            }}
-          />
-        </Show>
       </div>
       <SingleLineText text={props.node.name} />
       <Show when={props.node.unreadCount}>
+        <UnreadCount
+          count={props.node.unreadCount}
+          isLoading={mutation.isLoading}
+          onClick={(event) => {
+            event.preventDefault();
+            markAllAsRead();
+          }}
+        />
         <UnstyledButton
           class={styles["unread-link"]}
           onClick={(event) => {

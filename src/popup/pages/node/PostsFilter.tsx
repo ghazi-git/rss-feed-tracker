@@ -18,7 +18,6 @@ export default function PostsFilter(props: PostsFilterProps) {
         classList={{ [styles.active]: activeFilter() === "unread" }}
         onClick={() => setActiveFilter("unread")}
       >
-        <span>Unread</span>
         <Show when={props.unreadCount}>
           <UnreadCount
             count={props.unreadCount}
@@ -30,6 +29,7 @@ export default function PostsFilter(props: PostsFilterProps) {
             }}
           />
         </Show>
+        <span>Unread</span>
       </Anchor>
       <Anchor
         href={props.pageUrl}

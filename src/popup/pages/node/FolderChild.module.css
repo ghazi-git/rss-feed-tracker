@@ -7,6 +7,30 @@
   border: var(--border-size-1) solid var(--surface-4);
   border-radius: var(--radius-2);
 
+  &:hover {
+    background-color: var(--surface-2);
+  }
+
+  .icon {
+    flex-shrink: 0;
+
+    & > :first-child {
+      inline-size: var(--size-4);
+      block-size: auto;
+    }
+  }
+
+  .unread-link {
+    margin-inline: -0.75rem calc(-1 * var(--size-3));
+    color: var(--brand);
+    font-size: 0.9rem;
+  }
+
+  .post-actions-icon {
+    inline-size: var(--size-4);
+    opacity: 0.75;
+  }
+
   button {
     flex-shrink: 0;
 
@@ -14,37 +38,4 @@
       margin-inline-start: auto;
     }
   }
-}
-
-.child:hover {
-  background-color: var(--surface-2);
-}
-
-.icon {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.icon > :first-child {
-  inline-size: var(--size-7);
-  block-size: var(--size-7);
-}
-
-.icon:has(> :nth-child(2)) > :last-child {
-  /* styles applied only if there is more than one child, i.e. applied
-   to the unread count */
-  position: absolute;
-  inset-block-start: var(--size-00);
-  inset-inline-end: var(--size-000);
-}
-
-.post-actions-icon {
-  inline-size: var(--size-4);
-  opacity: 0.75;
-}
-
-.unread-link {
-  margin-inline-end: calc(-1 * var(--size-3));
-  color: var(--brand);
-  font-size: 0.9rem;
 }
