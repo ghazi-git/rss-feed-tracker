@@ -64,11 +64,16 @@ function getRSSFeedContent(feed: RssFeed<string>, feedURL: string): ParsedFeed {
 
     // defaulting to the guid is according to the spec
     // https://www.rssboard.org/rss-specification#ltguidgtSubelementOfLtitemgt
-    const url = item.link || (item.guid?.isPermaLink ? item.guid?.value : null);
+    let url = item.link || (item.guid?.isPermaLink ? item.guid?.value : null);
     if (!url) {
-      const msg = `Processing RSS Feed ${feedURL} - No URL - Ignoring item`;
-      console.debug(msg, item);
-      continue;
+      // Some RSS feed items might use enclosure to provide a URL to an
+      // audio/video file. Podcasts sometimes do that (like techmeme ride
+      // home or syntaxFM).
+      // The main idea is to always have a URL for the item. Even if an
+      // enclosure is not found, we'll default to the feed website or the
+      // RSS feed URL. Then, the user can still see the new item and go to
+      // the website to see what it actually is
+      url = getRSSItemURLFromEnclosure(item.enclosures) ?? feed.link ?? feedURL;
     }
 
     const title = item.title || truncateText(item.description) || url;
@@ -90,14 +95,10 @@ function getAtomFeedContent(
 ): ParsedFeed {
   const items = feed.entries ?? [];
   const posts: ParsedPost[] = [];
+  const websiteURL = getAtomFeedWebsite(feed.links);
   for (const item of items) {
     const guid = item.id;
-    const url = getAtomEntryURL(item.links, feedURL);
-    if (!url) {
-      const msg = `Processing Atom Feed ${feedURL} - No URL - Ignoring item`;
-      console.debug(msg, item);
-      continue;
-    }
+    const url = getAtomEntryURL(item.links) ?? websiteURL ?? feedURL;
 
     const title = item.title || url;
     const publishedAt =
@@ -105,7 +106,6 @@ function getAtomFeedContent(
     posts.push({ guid, url, title, publishedAt, commentsURL: null });
   }
 
-  const websiteURL = getAtomFeedWebsite(feed.links);
   return {
     name: feed.title,
     favicon: getFaviconURL(websiteURL),
@@ -121,11 +121,13 @@ function getJSONFeedContent(
   const posts: ParsedPost[] = [];
   for (const item of feed.items) {
     const guid = item.id;
-    const url = item.url || item.id;
+    let url = item.url || item.id;
     if (!URL.parse(url)) {
-      const msg = `Processing JSON Feed ${feedURL} - No URL - Ignoring item`;
-      console.debug(msg, item);
-      continue;
+      // check if there's an audio/video link in attachments
+      url =
+        getJSONFeedItemURLFromAttachments(item.attachments) ??
+        feed.home_page_url ??
+        feedURL;
     }
 
     const title = item.title || truncateText(item.content_text) || url;
@@ -163,17 +165,46 @@ function getTimestamp(value: string | undefined) {
   return dt.getTime() || null;
 }
 
-function getAtomEntryURL(links: AtomFeed<string>["links"], feedURL: string) {
-  // refer to https://validator.w3.org/feed/docs/atom.html#link
-  const urls = (links || []).filter(
-    (link) => !link.rel || link.rel === "alternate",
+function getRSSItemURLFromEnclosure(enclosures: Enclosure[] | undefined) {
+  if (!enclosures) return undefined;
+
+  const audio = enclosures.find(
+    (e) => e.type?.startsWith("audio/") && URL.parse(e.url),
   );
-  if (urls.length) {
+  if (audio) return audio.url;
+
+  const video = enclosures.find(
+    (e) => e.type?.startsWith("video/") && URL.parse(e.url),
+  );
+  if (video) return video.url;
+}
+
+function getAtomEntryURL(links: AtomFeed<string>["links"]) {
+  if (!links) return undefined;
+
+  // refer to https://validator.w3.org/feed/docs/atom.html#link
+  const link = links.find(
     // account for relative URLs by adding the feed URL as base
-    const url = URL.parse(urls[0].href, feedURL);
-    return url?.href || null;
-  }
-  return null;
+    (l) => (!l.rel || l.rel === "alternate") && URL.parse(l.href),
+  );
+  if (link) return link.href;
+
+  // if no link, then check if there's a URL for an audio or video file
+  const audio = links.find(
+    (link) =>
+      link.rel === "enclosure" &&
+      link.type?.startsWith("audio/") &&
+      URL.parse(link.href),
+  );
+  if (audio) return audio.href;
+
+  const video = links.find(
+    (link) =>
+      link.rel === "enclosure" &&
+      link.type?.startsWith("video/") &&
+      URL.parse(link.href),
+  );
+  if (video) return video.href;
 }
 
 function getAtomFeedWebsite(links: AtomFeed<string>["links"]) {
@@ -185,6 +216,22 @@ function getAtomFeedWebsite(links: AtomFeed<string>["links"]) {
     const url = URL.parse(urls[0].href);
     return url?.href;
   }
+}
+
+function getJSONFeedItemURLFromAttachments(
+  attachments: Attachment[] | undefined,
+) {
+  if (!attachments) return undefined;
+
+  const audio = attachments.find(
+    (a) => a.mime_type?.startsWith("audio/") && URL.parse(a.url),
+  );
+  if (audio) return audio.url;
+
+  const video = attachments.find(
+    (a) => a.mime_type?.startsWith("video/") && URL.parse(a.url),
+  );
+  if (video) return video.url;
 }
 
 export function getPostObjects(
@@ -216,3 +263,14 @@ interface ParsedPost {
   publishedAt: number;
   commentsURL: string | null;
 }
+
+type Enclosure = {
+  url: string;
+  length: number;
+  type: string;
+};
+
+type Attachment = {
+  url: string;
+  mime_type: string;
+};
