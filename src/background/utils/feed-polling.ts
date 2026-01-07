@@ -19,6 +19,7 @@ import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
 export async function runFeedPollingAlarmHandler(scheduledAt: string) {
+  FeedPollingLogger.log(scheduledAt, "start");
   const start = performance.now();
   using conn = await getDBConnection();
 
@@ -27,7 +28,7 @@ export async function runFeedPollingAlarmHandler(scheduledAt: string) {
   const lockId = "feed-polling";
   await using lock = await acquireLock(conn.db, lockId);
   if (!lock.id) {
-    FeedPollingLogger.log(`aborted (cannot acquire a lock)`);
+    FeedPollingLogger.log(scheduledAt, `aborted (cannot acquire a lock)`);
     return;
   }
 
@@ -38,13 +39,13 @@ export async function runFeedPollingAlarmHandler(scheduledAt: string) {
     return;
   }
 
-  FeedPollingLogger.log(`found ${dueFeeds.length} due feeds`);
+  FeedPollingLogger.log(scheduledAt, `found ${dueFeeds.length} due feeds`);
 
   await loadFeeds(conn.db, dueFeeds, scheduledAt);
 
   const end = performance.now();
   const took = (end - start) / 1000;
-  FeedPollingLogger.log(`done took=${took.toFixed(3)} seconds`);
+  FeedPollingLogger.log(scheduledAt, `done took=${took.toFixed(3)} seconds`);
 }
 
 async function getDueFeeds(db: ExtensionDB) {
@@ -111,7 +112,7 @@ async function loadFeedPosts(
   const tx = db.transaction(["posts", "feedmetadata", "nodes"], "readwrite");
   const results = await bulkAddPosts(tx, posts);
   const insertedPosts = results.filter((res) => res.success).length;
-  logger.debug(`inserted ${parsedFeed.posts.length} new post(s) in indexedDB`);
+  logger.debug(`inserted ${insertedPosts} new post(s) in indexedDB`);
   if (insertedPosts && markNewPostsUnread) {
     logger.debug(`updating unread counts`);
     await updateFeedUnreadCount(tx, node.id, insertedPosts);
