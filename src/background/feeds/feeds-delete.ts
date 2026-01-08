@@ -3,7 +3,7 @@ import { unwrap } from "idb";
 import { getDBConnection } from "@/background/db-setup";
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
-import { getAncestors, getNodeMap } from "@/background/utils/nodes";
+import { updateFeedUnreadCount } from "@/background/utils/nodes";
 
 /**
  * Delete the feed, its metadata and posts in the same transaction, then
@@ -36,16 +36,7 @@ export async function deleteFeed(id: number) {
   ]);
 
   if (feed.unreadCount) {
-    const nodes = await nodeStore.getAll();
-    const nodeMap = getNodeMap(nodes);
-    const ancestors = getAncestors(feed.parentId, nodeMap);
-    const promises = ancestors.map((a) =>
-      nodeStore.put({
-        ...a,
-        unreadCount: Math.max(a.unreadCount - feed.unreadCount, 0),
-      }),
-    );
-    await Promise.all(promises);
+    await updateFeedUnreadCount(tx, feed.parentId, -feed.unreadCount);
   }
   try {
     await txDone(unwrap(tx));

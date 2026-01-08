@@ -4,7 +4,7 @@ import { getDBConnection } from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
-import { getAncestors, getNodeMap } from "@/background/utils/nodes";
+import { updateFeedUnreadCount } from "@/background/utils/nodes";
 
 export async function deleteFolder(id: number) {
   using conn = await getDBConnection();
@@ -52,16 +52,7 @@ export async function deleteFolder(id: number) {
   await Promise.all(promises);
 
   if (folder.unreadCount) {
-    const nodes = await nodeStore.getAll();
-    const nodeMap = getNodeMap(nodes);
-    const ancestors = getAncestors(folder.parentId, nodeMap);
-    const promises = ancestors.map((a) =>
-      nodeStore.put({
-        ...a,
-        unreadCount: Math.max(a.unreadCount - folder.unreadCount, 0),
-      }),
-    );
-    await Promise.all(promises);
+    await updateFeedUnreadCount(tx, folder.parentId, -folder.unreadCount);
   }
 
   try {

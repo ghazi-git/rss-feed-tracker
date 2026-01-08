@@ -3,7 +3,7 @@ import { unwrap } from "idb";
 import { getDBConnection } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
-import { getAncestors, getNodeMap } from "@/background/utils/nodes";
+import { updateFeedUnreadCount } from "@/background/utils/nodes";
 
 export async function toggleUnreadPost(
   feedId: number,
@@ -24,16 +24,7 @@ export async function toggleUnreadPost(
   await postStore.put(post);
 
   // update the unread count of parent folders
-  const nodeStore = tx.objectStore("nodes");
-  const nodes = await nodeStore.getAll();
-  const nodeMap = getNodeMap(nodes);
-  const ancestors = getAncestors(feedId, nodeMap);
-  const countChange = unread ? 1 : -1;
-  const promises = ancestors.map((a) =>
-    nodeStore.put({
-      ...a,
-      unreadCount: Math.max(a.unreadCount + countChange, 0),
-    }),
-  );
-  await Promise.all([...promises, txDone(unwrap(tx))]);
+  await updateFeedUnreadCount(tx, feedId, unread ? 1 : -1);
+
+  await txDone(unwrap(tx));
 }

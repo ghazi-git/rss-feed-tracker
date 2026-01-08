@@ -1,6 +1,7 @@
 import { unwrap } from "idb";
 
 import { getDBConnection } from "@/background/db-setup";
+import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { txDone } from "@/background/utils/idb-helpers";
 import { getAncestors, getNodeMap } from "@/background/utils/nodes";
 
@@ -38,6 +39,12 @@ export async function markAllBookmarksAsRead() {
       return nodeStore.put(a);
     });
     await Promise.all(proms);
+  }
+
+  // update the unread count on the extension badge
+  const rootFolder = nodes.find((n) => !n.parentId);
+  if (rootFolder) {
+    setUnreadCountOnExtensionBadge(rootFolder.unreadCount);
   }
 
   await txDone(unwrap(tx));

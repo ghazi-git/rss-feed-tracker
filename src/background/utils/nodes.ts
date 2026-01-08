@@ -6,6 +6,7 @@ import {
   TreeNode,
 } from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
+import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 
 export async function getHighestSortOrder(
   tx: ReadTX | ReadWriteTX,
@@ -68,18 +69,21 @@ export function getNodeLastRunAt(
 }
 export async function updateFeedUnreadCount(
   tx: ReadWriteTX,
-  feedId: number,
-  newPostsCount: number,
+  nodeId: number,
+  delta: number,
 ) {
   const nodeStore = tx.objectStore("nodes");
   const nodes = await nodeStore.getAll();
   const nodeMap = getNodeMap(nodes);
-  const ancestors = getAncestors(feedId, nodeMap);
-  const promises = ancestors.map((a) =>
-    nodeStore.put({
-      ...a,
-      unreadCount: a.unreadCount + newPostsCount,
-    }),
-  );
+  const ancestors = getAncestors(nodeId, nodeMap);
+  const promises = ancestors.map((a) => {
+    a.unreadCount = Math.max(a.unreadCount + delta, 0);
+    nodeStore.put(a);
+  });
   await Promise.all(promises);
+  // update the unread count on the extension badge
+  const rootFolder = ancestors.find((n) => !n.parentId);
+  if (rootFolder) {
+    setUnreadCountOnExtensionBadge(rootFolder.unreadCount);
+  }
 }

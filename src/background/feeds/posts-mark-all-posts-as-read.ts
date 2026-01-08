@@ -1,6 +1,7 @@
 import { unwrap } from "idb";
 
 import { getDBConnection, Post } from "@/background/db-setup";
+import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
 import {
@@ -75,6 +76,12 @@ export async function markAllPostsAsRead(
       return nodeStore.put(a);
     });
     await Promise.all(proms);
+  }
+
+  // update the unread count on the extension badge
+  const rootFolder = allNodes.find((n) => !n.parentId);
+  if (rootFolder) {
+    setUnreadCountOnExtensionBadge(rootFolder.unreadCount);
   }
 
   await txDone(unwrap(tx));
