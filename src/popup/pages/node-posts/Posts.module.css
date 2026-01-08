@@ -7,7 +7,7 @@
 }
 
 .post {
-  padding: var(--size-2);
+  padding: var(--size-1) var(--size-2);
   border: var(--border-size-1) solid var(--surface-4);
   border-radius: var(--radius-2);
   color: var(--text-1);

@@ -3,7 +3,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: var(--size-3);
-  padding: var(--size-2) var(--size-1) var(--size-2) var(--size-2);
+  padding: var(--size-1) var(--size-1) var(--size-1) var(--size-2);
   border: var(--border-size-1) solid var(--surface-4);
   border-radius: var(--radius-2);
 
@@ -22,6 +22,7 @@
 
   .unread-link {
     margin-inline: -0.75rem calc(-1 * var(--size-3));
+    padding-block: 0.2rem;
     color: var(--brand);
     font-size: 0.9rem;
   }
