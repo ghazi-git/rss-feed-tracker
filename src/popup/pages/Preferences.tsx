@@ -21,6 +21,7 @@ export default function Preferences() {
     <>
       <ThemeSwitcher />
       <FrequencyField
+        label="Default Update Frequency For Feeds"
         value={store.defaultFeedUpdateFrequency}
         onChange={(e) => {
           setDefaultFeedUpdateFrequency(parseInt(e.target.value));
