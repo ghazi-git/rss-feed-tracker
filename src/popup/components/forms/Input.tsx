@@ -1,4 +1,4 @@
-import { JSX, splitProps } from "solid-js";
+import { JSX, Show, splitProps } from "solid-js";
 
 import { FieldWrapper } from "@/popup/components/forms/FieldWrapper";
 import { addDefaultId } from "@/popup/components/forms/utils";
@@ -15,6 +15,9 @@ export default function InputField(props: InputProps) {
       required={propsWithId.required}
     >
       <Input {...propsWithId} />
+      <Show when={propsWithId.helpText}>
+        <div class={styles["help-text"]}>{propsWithId.helpText}</div>
+      </Show>
     </FieldWrapper>
   );
 }
@@ -30,4 +33,5 @@ function Input(props: InputProps) {
 interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   label: string;
+  helpText?: string;
 }

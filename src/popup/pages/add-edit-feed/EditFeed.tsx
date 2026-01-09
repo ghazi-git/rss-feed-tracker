@@ -2,7 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { batch, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { FeedFormData, sendMessage } from "@/messaging-wrapper";
+import { sendMessage, UpdateFeedFormData } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
@@ -17,11 +17,12 @@ import { getSearchString } from "@/popup/utils/urls";
 export default function EditFeed() {
   const { mutation, sendMsg } = createMutation("feeds/update");
   const navigate = useNavigate();
-  const [formdata, setFormdata] = createStore<FeedFormData>({
+  const [formdata, setFormdata] = createStore<UpdateFeedFormData>({
     url: "",
     name: "",
     frequency: 2 * 60 * 60 * 1000,
     folder: 0,
+    iconURL: "",
   });
   const [searchParams] = useSearchParams<{ previousUrl?: string }>();
   const params = useParams();
@@ -79,6 +80,14 @@ export default function EditFeed() {
           required={true}
           value={formdata.frequency}
           onChange={(e) => setFormdata("frequency", parseInt(e.target.value))}
+        />
+        <InputField
+          type="url"
+          name="iconURL"
+          label="Icon URL"
+          helpText="The icon will be cached after the first time it is shown"
+          value={formdata.iconURL}
+          onInput={(e) => setFormdata("iconURL", e.target.value)}
         />
         <SelectField
           name="folder"

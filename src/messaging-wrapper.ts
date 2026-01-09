@@ -29,7 +29,7 @@ interface MessageMap {
   "feeds/preview"(data: { url: string }): FeedPreviewResponse;
   "feeds/create"(data: FeedFormData): { feedId: number };
   "feeds/get"(data: { id: number }): FeedFormWithOptions;
-  "feeds/update"(data: { id: number } & FeedFormData): void;
+  "feeds/update"(data: { id: number } & UpdateFeedFormData): void;
   "feeds/delete"(data: { id: number }): void;
   "posts/get-unread-bookmarks-count"(): number;
   "posts/get-bookmarks"(data: BookmarkedPostsParams): PostsResponse;
@@ -63,7 +63,10 @@ export interface FeedFormData {
   frequency: number;
   folder: number;
 }
-interface FeedFormWithOptions extends FeedFormData {
+export interface UpdateFeedFormData extends FeedFormData {
+  iconURL: string;
+}
+interface FeedFormWithOptions extends UpdateFeedFormData {
   folderOptions: FolderOption[];
 }
 export interface BookmarkedPostsParams {

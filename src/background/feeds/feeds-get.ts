@@ -22,6 +22,7 @@ export async function getFeed(id: number) {
     name: node.name,
     frequency: node.feed.updateFrequency,
     folder: node.parentId,
+    iconURL: node.feed.favicon ?? "",
     folderOptions,
   };
 }

@@ -9,7 +9,7 @@ import {
   getHighestSortOrder,
   getNodeMap,
 } from "@/background/utils/nodes";
-import { FeedFormData } from "@/messaging-wrapper";
+import { UpdateFeedFormData } from "@/messaging-wrapper";
 
 /**
  * - Save the updated feed data provided by the user
@@ -17,7 +17,7 @@ import { FeedFormData } from "@/messaging-wrapper";
  * if the parent folder changes
  * - Update feed metadata if the update frequency changes
  */
-export async function updateFeed(id: number, feedData: FeedFormData) {
+export async function updateFeed(id: number, feedData: UpdateFeedFormData) {
   using conn = await getDBConnection();
 
   const tx = conn.db.transaction(["nodes", "feedmetadata"], "readwrite");
@@ -40,6 +40,7 @@ export async function updateFeed(id: number, feedData: FeedFormData) {
   }
   updated.feed.url = feedData.url;
   updated.feed.updateFrequency = feedData.frequency;
+  updated.feed.favicon = feedData.iconURL || null;
   await nodeStore.put(updated);
 
   if (newParentId && newParentId !== old.parentId) {
