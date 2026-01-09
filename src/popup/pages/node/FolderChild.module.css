@@ -16,7 +16,7 @@
 
     & > :first-child {
       inline-size: var(--size-4);
-      block-size: auto;
+      block-size: var(--size-4);
     }
   }
 

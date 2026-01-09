@@ -15,12 +15,14 @@
   inset-inline-start: 0;
   inline-size: 100%;
   block-size: 100%;
-  display: grid;
-  place-items: center;
   border: var(--border-size-1) solid var(--surface-4);
   border-radius: var(--radius-2);
   background-color: var(--surface-2);
+  display: grid;
+  place-items: center;
   color: var(--gray-6);
+  font-size: var(--font-size-0);
+  line-height: var(--font-lineheight-1);
   font-weight: var(--font-weight-7);
   text-transform: uppercase;
 }
