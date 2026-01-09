@@ -37,7 +37,7 @@ html {
   --info-color-light: var(--indigo-9);
   --info-color-dark: var(--indigo-1);
   --info-color: var(--info-color-light);
-  --info-bg-color-light: var(--blue-0);
+  --info-bg-color-light: #f0f7fd;
   --info-bg-color-dark: var(--blue-11);
   --info-bg-color: var(--info-bg-color-light);
 }

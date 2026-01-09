@@ -16,7 +16,7 @@ import NoFeedsYet from "@/popup/pages/no-feeds-yet";
 import Node from "@/popup/pages/node";
 import NodePosts from "@/popup/pages/node-posts";
 import NotFound from "@/popup/pages/NotFound";
-import Preferences from "@/popup/pages/Preferences";
+import Preferences from "@/popup/pages/preferences";
 import {
   getLastVisitedPage,
   saveLastVisitedPage,

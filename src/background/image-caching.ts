@@ -1,4 +1,4 @@
-const CACHE_NAME = "image-cache-v1";
+export const ICONS_CACHE = "image-cache-v1";
 
 (self as unknown as ServiceWorkerGlobalScope).addEventListener(
   "fetch",
@@ -10,7 +10,7 @@ const CACHE_NAME = "image-cache-v1";
 );
 
 async function getFromCacheOrDefaultToNetwork(request: FetchEvent["request"]) {
-  const cache = await caches.open(CACHE_NAME);
+  const cache = await caches.open(ICONS_CACHE);
   const cachedResponse = await cache.match(request.url);
   if (cachedResponse) return cachedResponse;
 

@@ -1,0 +1,13 @@
+.clear {
+  inline-size: 100%;
+  background-color: var(--surface-2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--size-2);
+
+  svg {
+    inline-size: var(--size-3);
+    block-size: auto;
+  }
+}

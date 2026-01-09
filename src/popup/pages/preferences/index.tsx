@@ -1,13 +1,8 @@
 import Checkbox from "@/popup/components/forms/Checkbox";
-import RadioGroup from "@/popup/components/forms/RadioGroup";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
+import ClearCache from "@/popup/pages/preferences/ClearCache";
+import { ThemeSwitcher } from "@/popup/pages/preferences/ThemeSwitcher";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
-import {
-  detectSystemTheme,
-  enableTheme,
-  storeTheme,
-  uiTheme,
-} from "@/popup/utils/ui-theme";
 
 export default function Preferences() {
   const {
@@ -44,29 +39,7 @@ export default function Preferences() {
           setClickPostToToggleUnread(event.target.checked);
         }}
       />
+      <ClearCache />
     </>
-  );
-}
-
-function ThemeSwitcher() {
-  const themes = [
-    { label: "System", value: "" },
-    { label: "Light", value: "light" },
-    { label: "Dark", value: "dark" },
-  ];
-
-  return (
-    <RadioGroup
-      name="theme"
-      label="Theme Switcher"
-      options={themes}
-      value={uiTheme() ?? ""}
-      onChange={(e) => {
-        const newTheme = e.target.value;
-        storeTheme(newTheme);
-        const theme = newTheme || detectSystemTheme();
-        enableTheme(theme);
-      }}
-    />
   );
 }
