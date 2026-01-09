@@ -1,40 +1,31 @@
 import { createStore } from "solid-js/store";
 
 import {
-  MessageData,
-  MessagePayload,
-  MessageType,
+  NodePostsParams,
+  PostsResponse,
+  PostsView,
   sendMessage,
 } from "@/messaging-wrapper";
 
-/**
- * Note that:
- * - initial data must be the same type as the returned data to avoid accounting
- * for data being null (but the restriction can be removed if createQuery is
- * needed with initial data as null)
- * - successDataHandler can be used for accumulating posts across requests (as
- * the user loads more posts)
- * - old data is preserved on load/error
- * - if caching is needed, consider solid-query
- */
-export function createQuery<K extends MessageType>(
-  messageType: K,
-  initialData: MessageData<K>,
-  successDataHandler?: SuccessDataHandler<K>,
+export function createPostsQuery(
+  source: () => NodePostsParams,
+  initialPostsView: PostsView,
 ) {
-  const [query, setQuery] = createStore<Query<MessageData<K>>>({
+  const [query, setQuery] = createStore<PostsQuery>({
     status: "idle",
-    data: initialData,
+    data: {
+      posts: [],
+      postsView: initialPostsView,
+      cursor: null,
+      nextPageCursor: null,
+    },
     errorMsg: null,
     isLoading: false,
     isSuccess: false,
     isError: false,
   });
-  const defaultSuccessDataHandler: SuccessDataHandler<K> = (oldData, newData) =>
-    newData;
-  const dataHandler = successDataHandler ?? defaultSuccessDataHandler;
 
-  async function sendMsg(payload: MessagePayload<K>) {
+  async function sendMsg(payload: NodePostsParams) {
     setQuery(({ data }) => ({
       status: "loading",
       data,
@@ -43,16 +34,16 @@ export function createQuery<K extends MessageType>(
       isSuccess: false,
       isError: false,
     }));
-    const resp = await sendMessage(messageType, payload);
+    const resp = await sendMessage("posts/list", payload);
     if (resp.success) {
-      setQuery(({ data }) => ({
+      setQuery({
         status: "success",
-        data: dataHandler(data, resp.data),
+        data: resp.data,
         errorMsg: null,
         isLoading: false,
         isSuccess: true,
         isError: false,
-      }));
+      });
     } else {
       setQuery(({ data }) => ({
         status: "error",
@@ -65,52 +56,47 @@ export function createQuery<K extends MessageType>(
     }
   }
 
-  return { query, setQuery, sendMsg };
+  const fetchPosts = async () => {
+    await sendMsg(source());
+  };
+
+  return { query, fetchPosts };
 }
 
-type SuccessDataHandler<K extends MessageType> = (
-  oldData: MessageData<K>,
-  newData: MessageData<K>,
-) => MessageData<K>;
-
-interface QueryIdle<TData> {
+interface QueryIdle {
   status: "idle";
-  data: TData;
+  data: PostsResponse;
   errorMsg: null;
   isLoading: false;
   isSuccess: false;
   isError: false;
 }
 
-interface QueryLoading<TData> {
+interface QueryLoading {
   status: "loading";
-  data: TData;
+  data: PostsResponse;
   errorMsg: null;
   isLoading: true;
   isSuccess: false;
   isError: false;
 }
 
-interface QuerySuccess<TData> {
+interface QuerySuccess {
   status: "success";
-  data: TData;
+  data: PostsResponse;
   errorMsg: null;
   isLoading: false;
   isSuccess: true;
   isError: false;
 }
 
-interface QueryError<TData> {
+interface QueryError {
   status: "error";
-  data: TData;
+  data: PostsResponse;
   errorMsg: string;
   isLoading: false;
   isSuccess: false;
   isError: true;
 }
 
-export type Query<TData> =
-  | QueryIdle<TData>
-  | QueryLoading<TData>
-  | QuerySuccess<TData>
-  | QueryError<TData>;
+export type PostsQuery = QueryIdle | QueryLoading | QuerySuccess | QueryError;

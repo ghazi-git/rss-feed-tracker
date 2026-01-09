@@ -1,152 +1,54 @@
-import {
-  batch,
-  createEffect,
-  Match,
-  onMount,
-  Show,
-  Switch,
-  untrack,
-} from "solid-js";
+import { Match, Show, Switch } from "solid-js";
 
 import { PAGE_SIZE } from "@/background/settings";
-import { PostsView, sendMessage } from "@/messaging-wrapper";
+import { PostsView } from "@/messaging-wrapper";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import NoMorePosts from "@/popup/components/NoMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
 import Posts from "@/popup/pages/node-posts/Posts";
-import { usePostsFilterUnreadCountContext } from "@/popup/pages/posts-filter-unread-count-context";
-import { notifyError } from "@/popup/utils/notifications";
-import { createQuery } from "@/popup/utils/query";
 
-import { PostsContext } from "./posts-context";
+import { usePostsContext } from "./posts-context";
 
 export default function PostList(props: PostListProps) {
-  const { query, fetchPosts, toggleUnread, mutateBookmarked, mutateAllUnread } =
-    // eslint-disable-next-line solid/reactivity
-    createPostsQuery(props.nodeId, props.postsView);
-  onMount(async () => {
-    await fetchPosts();
-  });
-  const postsCount = () => query.data.posts.length;
-
-  const { markAsReadMutation, updateUnreadCount } =
-    usePostsFilterUnreadCountContext();
-  createEffect(() => {
-    const isSuccess = markAsReadMutation.isSuccess();
-    const isError = markAsReadMutation.isError();
-    if (isSuccess) {
-      batch(() => {
-        mutateAllUnread();
-        updateUnreadCount({ value: 0 });
-        markAsReadMutation.reset();
-      });
-    } else if (isError) {
-      const msg = markAsReadMutation.errorMsg() ?? "";
-      if (msg) {
-        notifyError(msg);
-      }
-      markAsReadMutation.reset();
-    }
-  });
+  const { query, posts, fetchPosts } = usePostsContext();
+  const postsCount = () => posts().length;
 
   return (
-    <PostsContext.Provider value={{ toggleUnread, mutateBookmarked }}>
-      <Switch>
-        <Match when={postsCount() === 0 && query.isError}>
-          <NoPosts msg={query.errorMsg!} />
-        </Match>
-        <Match when={postsCount() === 0 && query.isLoading}>
-          <NoPosts msg="Loading posts..." />
-        </Match>
-        <Match when={postsCount() === 0}>
-          <NoPosts
-            msg={
-              props.postsView === "all"
-                ? "No posts yet."
-                : "No unread posts found."
-            }
+    <Switch>
+      <Match when={postsCount() === 0 && query.isError}>
+        <NoPosts msg={query.errorMsg!} />
+      </Match>
+      <Match when={postsCount() === 0 && query.isLoading}>
+        <NoPosts msg="Loading posts..." />
+      </Match>
+      <Match when={postsCount() === 0}>
+        <NoPosts
+          msg={
+            props.postsView === "all"
+              ? "No posts yet."
+              : "No unread posts found."
+          }
+        />
+      </Match>
+      <Match when={postsCount() > 0}>
+        <ErrorAlert errorMsg={query.errorMsg} />
+        <Posts posts={posts()} />
+        <Show when={query.data.nextPageCursor}>
+          <LoadMorePosts
+            postsCount={postsCount()}
+            loading={query.isLoading}
+            onClick={() => {
+              fetchPosts();
+            }}
           />
-        </Match>
-        <Match when={postsCount() > 0}>
-          <ErrorAlert errorMsg={query.errorMsg} />
-          <Posts posts={query.data.posts} />
-          <Show when={query.data.nextPageCursor}>
-            <LoadMorePosts
-              postsCount={postsCount()}
-              loading={query.isLoading}
-              onClick={() => {
-                fetchPosts();
-              }}
-            />
-          </Show>
-          <Show when={!query.data.nextPageCursor && postsCount() >= PAGE_SIZE}>
-            <NoMorePosts postsCount={postsCount()} />
-          </Show>
-        </Match>
-      </Switch>
-    </PostsContext.Provider>
+        </Show>
+        <Show when={!query.data.nextPageCursor && postsCount() >= PAGE_SIZE}>
+          <NoMorePosts postsCount={postsCount()} />
+        </Show>
+      </Match>
+    </Switch>
   );
-}
-
-function createPostsQuery(nodeId: number, postsView: PostsView) {
-  const { updateUnreadCount } = usePostsFilterUnreadCountContext();
-  const { query, setQuery, sendMsg } = createQuery(
-    "posts/list",
-    { posts: [], postsView, cursor: null, nextPageCursor: null },
-    (oldData, newData) => {
-      return { ...newData, posts: [...oldData.posts, ...newData.posts] };
-    },
-  );
-
-  const fetchPosts = async () => {
-    await sendMsg({ nodeId, postsView, cursor: query.data.nextPageCursor });
-  };
-
-  const toggleUnread = async (
-    feedId: number,
-    guid: string,
-    unread: boolean,
-  ) => {
-    const resp = await sendMessage("posts/toggle-unread", {
-      feedId,
-      guid,
-      unread,
-    });
-    if (resp.success) {
-      batch(() => {
-        setQuery(
-          "data",
-          "posts",
-          (post) => post.feedId === feedId && post.guid === guid,
-          "unread",
-          unread ? 1 : 0,
-        );
-        updateUnreadCount({ delta: unread ? 1 : -1 });
-      });
-    } else {
-      notifyError(resp.errorMsg);
-    }
-  };
-  const mutateBookmarked = (
-    feedId: number,
-    guid: string,
-    bookmarked: boolean,
-  ) => {
-    setQuery(
-      "data",
-      "posts",
-      (post) => post.feedId === feedId && post.guid === guid,
-      "bookmarked",
-      bookmarked ? 1 : 0,
-    );
-  };
-  const mutateAllUnread = () => {
-    const postsCount = untrack(() => query.data.posts.length);
-    setQuery("data", "posts", { from: 0, to: postsCount - 1 }, "unread", 0);
-  };
-
-  return { query, fetchPosts, toggleUnread, mutateBookmarked, mutateAllUnread };
 }
 
 interface PostListProps {

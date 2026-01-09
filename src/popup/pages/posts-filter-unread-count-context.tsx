@@ -18,10 +18,6 @@ interface PostsFilterUnreadCountContextType {
   markAsReadMutation: {
     markAll: () => Promise<void>;
     isLoading: () => boolean;
-    isSuccess: () => boolean;
-    isError: () => boolean;
-    errorMsg: () => string | null;
-    reset: () => void;
   };
   updateUnreadCount: (args: UpdateUnreadCountArgs) => void;
 }

@@ -1,5 +1,8 @@
 import { createContext, useContext } from "solid-js";
 
+import { FeedPost } from "@/messaging-wrapper";
+import { PostsQuery } from "@/popup/utils/query";
+
 export const PostsContext = createContext<PostsContextType>();
 
 export function usePostsContext() {
@@ -12,6 +15,9 @@ export function usePostsContext() {
 }
 
 interface PostsContextType {
+  query: PostsQuery;
+  posts: () => FeedPost[];
+  fetchPosts: () => Promise<void>;
   toggleUnread: (
     feedId: number,
     guid: string,
