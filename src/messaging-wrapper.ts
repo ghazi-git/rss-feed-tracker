@@ -80,8 +80,6 @@ export interface FeedPost extends Post {
 }
 export interface PostsResponse {
   posts: FeedPost[];
-  postsView: PostsView;
-  cursor: PostsCursor | null;
   nextPageCursor: PostsCursor | null;
 }
 export interface PostsCursor {

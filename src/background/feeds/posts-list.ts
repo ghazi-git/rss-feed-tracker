@@ -59,7 +59,7 @@ export async function listPosts(
   }
 
   const nextPageCursor = getNextPageCursor(feedPosts);
-  return { posts: feedPosts, postsView, cursor, nextPageCursor };
+  return { posts: feedPosts, nextPageCursor };
 }
 
 async function getFeedPosts(

@@ -33,14 +33,11 @@ export default function NodePosts() {
   const [paginationCursor, setPaginationCursor] =
     createSignal<PostsCursor | null>(null);
   const [posts, setPosts] = createSignal<FeedPost[]>([]);
-  const { query, fetchPosts } = createPostsQuery(
-    () => ({
-      nodeId: nodeId(),
-      postsView: postsView(),
-      cursor: paginationCursor(),
-    }),
-    postsView(),
-  );
+  const { query, fetchPosts } = createPostsQuery(() => ({
+    nodeId: nodeId(),
+    postsView: postsView(),
+    cursor: paginationCursor(),
+  }));
 
   // fetch posts when the user switches between the Unread/all posts filter
   createEffect(() => {

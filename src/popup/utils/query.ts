@@ -3,22 +3,13 @@ import { createStore } from "solid-js/store";
 import {
   NodePostsParams,
   PostsResponse,
-  PostsView,
   sendMessage,
 } from "@/messaging-wrapper";
 
-export function createPostsQuery(
-  source: () => NodePostsParams,
-  initialPostsView: PostsView,
-) {
+export function createPostsQuery(source: () => NodePostsParams) {
   const [query, setQuery] = createStore<PostsQuery>({
     status: "idle",
-    data: {
-      posts: [],
-      postsView: initialPostsView,
-      cursor: null,
-      nextPageCursor: null,
-    },
+    data: { posts: [], nextPageCursor: null },
     errorMsg: null,
     isLoading: false,
     isSuccess: false,
