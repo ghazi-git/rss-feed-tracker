@@ -4,6 +4,8 @@ import ClearCache from "@/popup/pages/preferences/ClearCache";
 import { ThemeSwitcher } from "@/popup/pages/preferences/ThemeSwitcher";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 
+import styles from "./index.module.css";
+
 export default function Preferences() {
   const {
     store,
@@ -14,7 +16,9 @@ export default function Preferences() {
 
   return (
     <>
-      <ThemeSwitcher />
+      <div class={styles.margin}>
+        <ThemeSwitcher />
+      </div>
       <FrequencyField
         label="Default Update Frequency For Feeds"
         value={store.defaultFeedUpdateFrequency}
