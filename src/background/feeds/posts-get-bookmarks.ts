@@ -52,7 +52,7 @@ export async function getBookmarks(
   const feeds = await getFeeds(tx);
   const feedPosts = addFeedData(feeds, posts);
   const nextPageCursor = getNextPageCursor(feedPosts);
-  return { posts: feedPosts, postsView, cursor, nextPageCursor };
+  return { posts: feedPosts, nextPageCursor };
 }
 
 async function getFeeds(tx: ReadTX) {

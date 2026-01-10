@@ -11,7 +11,12 @@ import {
 } from "solid-js";
 
 import { PAGE_SIZE } from "@/background/settings";
-import { PostsView, sendMessage } from "@/messaging-wrapper";
+import {
+  FeedPost,
+  PostsCursor,
+  PostsView,
+  sendMessage,
+} from "@/messaging-wrapper";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import NoMorePosts from "@/popup/components/NoMorePosts";
@@ -19,114 +24,197 @@ import NoPosts from "@/popup/components/NoPosts";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import Posts from "@/popup/pages/node-posts/Posts";
-import { PostsContext } from "@/popup/pages/node-posts/posts-context";
+import {
+  PostsContext,
+  usePostsContext,
+} from "@/popup/pages/node-posts/posts-context";
 import {
   PostsFilterUnreadCountContext,
   UpdateUnreadCountArgs,
-  usePostsFilterUnreadCountContext,
 } from "@/popup/pages/posts-filter-unread-count-context";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError } from "@/popup/utils/notifications";
-import { createQuery } from "@/popup/utils/query";
+import { createPostsQuery } from "@/popup/utils/query";
 
 import styles from "./Bookmarks.module.css";
 
 export default function Bookmarks() {
   const [unreadCount, updateUnreadCount] = createUnreadCountSignal();
-  const markAsReadMutation = createMarkAllAsReadMutation();
-
   const [searchParams] = useSearchParams();
   const unread = () => searchParams.unread === "true";
+  const postsView = () => (unread() ? "unread" : "all");
+
+  const [paginationCursor, setPaginationCursor] =
+    createSignal<PostsCursor | null>(null);
+  const [posts, setPosts] = createSignal<FeedPost[]>([]);
+  const { query, fetchPosts } = createPostsQuery("posts/get-bookmarks", () => ({
+    postsView: postsView(),
+    cursor: paginationCursor(),
+  }));
+
+  // fetch posts when the user switches between the Unread/all posts filter
+  createEffect(() => {
+    postsView();
+    untrack(() => {
+      batch(() => {
+        // reset the cursor and posts values every time postsView changes
+        setPosts([]);
+        setPaginationCursor(null);
+        fetchPosts();
+      });
+    });
+  });
+
+  // update the pagination cursor and posts after fetching new posts
+  createEffect(() => {
+    const newPosts = query.data.posts;
+    const nextPageCursor = query.data.nextPageCursor;
+    batch(() => {
+      setPosts((oldPosts) => [...oldPosts, ...newPosts]);
+      setPaginationCursor(nextPageCursor);
+    });
+  });
+  const toggleUnread = async (
+    feedId: number,
+    guid: string,
+    unread: boolean,
+  ) => {
+    const resp = await sendMessage("posts/toggle-unread", {
+      feedId,
+      guid,
+      unread,
+    });
+    if (resp.success) {
+      batch(() => {
+        setPosts((oldPosts) => {
+          return oldPosts.map((post) => {
+            if (post.feedId === feedId && post.guid === guid) {
+              return { ...post, unread: unread ? 1 : 0 };
+            } else {
+              return post;
+            }
+          });
+        });
+        updateUnreadCount({ delta: unread ? 1 : -1 });
+      });
+    } else {
+      notifyError(resp.errorMsg);
+    }
+  };
+  const mutateBookmarked = (
+    feedId: number,
+    guid: string,
+    bookmarked: boolean,
+  ) => {
+    batch(() => {
+      setPosts((oldPosts) => {
+        return oldPosts.map((post) => {
+          if (post.feedId === feedId && post.guid === guid) {
+            return { ...post, bookmarked: bookmarked ? 1 : 0 };
+          } else {
+            return post;
+          }
+        });
+      });
+      const post = posts().find((p) => p.feedId === feedId && p.guid === guid);
+      if (post?.unread) {
+        updateUnreadCount({ delta: bookmarked ? 1 : -1 });
+      }
+    });
+  };
+
+  const { mutation, sendMsg, reset } = createMutation(
+    "posts/mark-all-bookmarks-as-read",
+  );
+  const markAsReadMutation = {
+    async markAll() {
+      await sendMsg(undefined);
+
+      if (mutation.isSuccess) {
+        batch(() => {
+          setPosts((oldPosts) =>
+            oldPosts.map((post) => ({ ...post, unread: 0 })),
+          );
+          updateUnreadCount({ value: 0 });
+          reset();
+        });
+      } else if (mutation.isError) {
+        notifyError(mutation.errorMsg);
+        reset();
+      }
+    },
+
+    isLoading() {
+      return mutation.isLoading;
+    },
+  };
 
   return (
-    <PostsFilterUnreadCountContext.Provider
-      value={{ markAsReadMutation, updateUnreadCount }}
+    <PostsContext.Provider
+      value={{
+        query,
+        posts,
+        fetchPosts,
+        toggleUnread,
+        mutateBookmarked,
+      }}
     >
-      <PageHeaderWrapper>
-        <PostsFilter
-          pageUrl="/bookmarks"
-          unreadCount={unreadCount()}
-          initialFilter={unread() ? "unread" : "all"}
-          class={styles["posts-filter"]}
-        />
-      </PageHeaderWrapper>
-      {/* Intentionally creating separate components instances based on the
-       posts view to reset the cursor without complicating the bookmark
-       query any further */}
-      {unread() ? (
-        <BookmarkedPosts postsView="unread" />
-      ) : (
-        <BookmarkedPosts postsView="all" />
-      )}
-    </PostsFilterUnreadCountContext.Provider>
+      <PostsFilterUnreadCountContext.Provider
+        value={{ markAsReadMutation, updateUnreadCount }}
+      >
+        <PageHeaderWrapper>
+          <PostsFilter
+            pageUrl="/bookmarks"
+            unreadCount={unreadCount()}
+            initialFilter={unread() ? "unread" : "all"}
+            class={styles["posts-filter"]}
+          />
+        </PageHeaderWrapper>
+
+        <BookmarkedPosts postsView={postsView()} />
+      </PostsFilterUnreadCountContext.Provider>
+    </PostsContext.Provider>
   );
 }
 
 function BookmarkedPosts(props: { postsView: PostsView }) {
-  const { query, fetchPosts, toggleUnread, mutateBookmarked, mutateAllUnread } =
-    // eslint-disable-next-line solid/reactivity
-    createBookmarksQuery(props.postsView);
-  onMount(async () => {
-    await fetchPosts();
-  });
-  const postsCount = () => query.data.posts.length;
-
-  const { markAsReadMutation, updateUnreadCount } =
-    usePostsFilterUnreadCountContext();
-  createEffect(() => {
-    const isSuccess = markAsReadMutation.isSuccess();
-    const isError = markAsReadMutation.isError();
-    if (isSuccess) {
-      batch(() => {
-        mutateAllUnread();
-        updateUnreadCount({ value: 0 });
-        markAsReadMutation.reset();
-      });
-    } else if (isError) {
-      const msg = markAsReadMutation.errorMsg() ?? "";
-      if (msg) {
-        notifyError(msg);
-      }
-      markAsReadMutation.reset();
-    }
-  });
+  const { query, posts, fetchPosts } = usePostsContext();
+  const postsCount = () => posts().length;
 
   return (
-    <PostsContext.Provider value={{ toggleUnread, mutateBookmarked }}>
-      <Switch>
-        <Match when={postsCount() === 0 && query.isError}>
-          <NoPosts msg={query.errorMsg!} />
-        </Match>
-        <Match when={postsCount() === 0 && query.isLoading}>
-          <NoPosts msg="Loading bookmarked posts..." />
-        </Match>
-        <Match when={postsCount() === 0}>
-          <NoPosts
-            msg={
-              props.postsView === "all"
-                ? "No posts bookmarked yet."
-                : "No unread bookmarks found."
-            }
+    <Switch>
+      <Match when={postsCount() === 0 && query.isError}>
+        <NoPosts msg={query.errorMsg!} />
+      </Match>
+      <Match when={postsCount() === 0 && query.isLoading}>
+        <NoPosts msg="Loading bookmarked posts..." />
+      </Match>
+      <Match when={postsCount() === 0}>
+        <NoPosts
+          msg={
+            props.postsView === "all"
+              ? "No posts bookmarked yet."
+              : "No unread bookmarks found."
+          }
+        />
+      </Match>
+      <Match when={postsCount() > 0}>
+        <ErrorAlert errorMsg={query.errorMsg} />
+        <Posts posts={posts()} />
+        <Show when={query.data.nextPageCursor}>
+          <LoadMorePosts
+            postsCount={postsCount()}
+            loading={query.isLoading}
+            onClick={() => {
+              fetchPosts();
+            }}
           />
-        </Match>
-        <Match when={postsCount() > 0}>
-          <ErrorAlert errorMsg={query.errorMsg} />
-          <Posts posts={query.data.posts} />
-          <Show when={query.data.nextPageCursor}>
-            <LoadMorePosts
-              postsCount={postsCount()}
-              loading={query.isLoading}
-              onClick={() => {
-                fetchPosts();
-              }}
-            />
-          </Show>
-          <Show when={!query.data.nextPageCursor && postsCount() >= PAGE_SIZE}>
-            <NoMorePosts postsCount={postsCount()} />
-          </Show>
-        </Match>
-      </Switch>
-    </PostsContext.Provider>
+        </Show>
+        <Show when={!query.data.nextPageCursor && postsCount() >= PAGE_SIZE}>
+          <NoMorePosts postsCount={postsCount()} />
+        </Show>
+      </Match>
+    </Switch>
   );
 }
 
@@ -151,102 +239,4 @@ function createUnreadCountSignal() {
     }
   };
   return [unreadCount, updateUnreadCount] as const;
-}
-
-function createMarkAllAsReadMutation() {
-  const { mutation, sendMsg, reset } = createMutation(
-    "posts/mark-all-bookmarks-as-read",
-  );
-  return {
-    async markAll() {
-      await sendMsg(undefined);
-    },
-
-    isLoading() {
-      return mutation.isLoading;
-    },
-
-    isSuccess() {
-      return mutation.isSuccess;
-    },
-
-    isError() {
-      return mutation.isError;
-    },
-
-    errorMsg() {
-      return mutation.errorMsg;
-    },
-
-    reset() {
-      reset();
-    },
-  };
-}
-
-function createBookmarksQuery(postsView: PostsView) {
-  const { updateUnreadCount } = usePostsFilterUnreadCountContext();
-  const { query, setQuery, sendMsg } = createQuery(
-    "posts/get-bookmarks",
-    { posts: [], postsView, cursor: null, nextPageCursor: null },
-    (oldData, newData) => {
-      return { ...newData, posts: [...oldData.posts, ...newData.posts] };
-    },
-  );
-
-  const fetchPosts = async () => {
-    await sendMsg({ postsView, cursor: query.data.nextPageCursor });
-  };
-  const toggleUnread = async (
-    feedId: number,
-    guid: string,
-    unread: boolean,
-  ) => {
-    const resp = await sendMessage("posts/toggle-unread", {
-      feedId,
-      guid,
-      unread,
-    });
-    if (resp.success) {
-      batch(() => {
-        setQuery(
-          "data",
-          "posts",
-          (post) => post.feedId === feedId && post.guid === guid,
-          "unread",
-          unread ? 1 : 0,
-        );
-        updateUnreadCount({ delta: unread ? 1 : -1 });
-      });
-    } else {
-      notifyError(resp.errorMsg);
-    }
-  };
-  const mutateBookmarked = (
-    feedId: number,
-    guid: string,
-    bookmarked: boolean,
-  ) => {
-    batch(() => {
-      setQuery(
-        "data",
-        "posts",
-        (post) => post.feedId === feedId && post.guid === guid,
-        "bookmarked",
-        bookmarked ? 1 : 0,
-      );
-      const post = query.data.posts.find(
-        (p) => p.feedId === feedId && p.guid === guid,
-      );
-      if (post?.unread) {
-        updateUnreadCount({ delta: bookmarked ? 1 : -1 });
-      }
-    });
-  };
-  const mutateAllUnread = () => {
-    const postsCount = untrack(() => query.data.posts.length);
-    setQuery("data", "posts", { from: 0, to: postsCount - 1 }, "unread", 0);
-  };
-
-  return { query, fetchPosts, toggleUnread, mutateBookmarked, mutateAllUnread };
 }

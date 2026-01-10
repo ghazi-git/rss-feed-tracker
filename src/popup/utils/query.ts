@@ -1,12 +1,14 @@
 import { createStore } from "solid-js/store";
 
 import {
-  NodePostsParams,
+  MessagePayload,
   PostsResponse,
   sendMessage,
 } from "@/messaging-wrapper";
 
-export function createPostsQuery(source: () => NodePostsParams) {
+export function createPostsQuery<
+  K extends "posts/list" | "posts/get-bookmarks",
+>(messageType: K, source: () => MessagePayload<K>) {
   const [query, setQuery] = createStore<PostsQuery>({
     status: "idle",
     data: { posts: [], nextPageCursor: null },
@@ -16,7 +18,7 @@ export function createPostsQuery(source: () => NodePostsParams) {
     isError: false,
   });
 
-  async function sendMsg(payload: NodePostsParams) {
+  async function sendMsg(payload: MessagePayload<K>) {
     setQuery(({ data }) => ({
       status: "loading",
       data,
@@ -25,7 +27,7 @@ export function createPostsQuery(source: () => NodePostsParams) {
       isSuccess: false,
       isError: false,
     }));
-    const resp = await sendMessage("posts/list", payload);
+    const resp = await sendMessage(messageType, payload);
     if (resp.success) {
       setQuery({
         status: "success",

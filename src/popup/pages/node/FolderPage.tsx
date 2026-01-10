@@ -29,9 +29,7 @@ export function FolderPage(props: FolderPageProps) {
     }
   };
 
-  const { mutation, sendMsg, reset } = createMutation(
-    "posts/mark-all-posts-as-read",
-  );
+  const { mutation, sendMsg } = createMutation("posts/mark-all-posts-as-read");
   const markAsReadMutation = {
     async markAll() {
       await sendMsg({
@@ -53,22 +51,6 @@ export function FolderPage(props: FolderPageProps) {
 
     isLoading() {
       return mutation.isLoading;
-    },
-
-    isSuccess() {
-      return mutation.isSuccess;
-    },
-
-    isError() {
-      return mutation.isError;
-    },
-
-    errorMsg() {
-      return mutation.errorMsg;
-    },
-
-    reset() {
-      reset();
     },
   };
 

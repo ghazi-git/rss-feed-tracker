@@ -33,7 +33,7 @@ export default function NodePosts() {
   const [paginationCursor, setPaginationCursor] =
     createSignal<PostsCursor | null>(null);
   const [posts, setPosts] = createSignal<FeedPost[]>([]);
-  const { query, fetchPosts } = createPostsQuery(() => ({
+  const { query, fetchPosts } = createPostsQuery("posts/list", () => ({
     nodeId: nodeId(),
     postsView: postsView(),
     cursor: paginationCursor(),
@@ -126,9 +126,7 @@ export default function NodePosts() {
             reset();
           });
         } else if (mutation.isError) {
-          if (mutation.errorMsg) {
-            notifyError(mutation.errorMsg);
-          }
+          notifyError(mutation.errorMsg);
           reset();
         }
       }
