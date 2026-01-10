@@ -9,7 +9,7 @@ import AddFeed from "@/popup/pages/add-edit-feed/AddFeed";
 import EditFeed from "@/popup/pages/add-edit-feed/EditFeed";
 import AddFolder from "@/popup/pages/add-edit-folder/AddFolder";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder";
-import Bookmarks from "@/popup/pages/Bookmarks";
+import Bookmarks from "@/popup/pages/bookmarks";
 import ImportFeeds from "@/popup/pages/import-feeds";
 import Library from "@/popup/pages/Library";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet";

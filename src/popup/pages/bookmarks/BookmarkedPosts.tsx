@@ -1,4 +1,4 @@
-import { Match, Show, Switch } from "solid-js";
+import { batch, Match, Show, Switch } from "solid-js";
 
 import { PAGE_SIZE } from "@/background/settings";
 import { PostsView, sendMessage } from "@/messaging-wrapper";
@@ -7,13 +7,14 @@ import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import NoMorePosts from "@/popup/components/NoMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
 import Posts from "@/popup/pages/node-posts/Posts";
+import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
+import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
 import { ToggleUnreadContextProvider } from "@/popup/pages/node-posts/toggle-unread-context";
+import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
 
-import { usePostsContext } from "./posts-context";
-import { ToggleBookmarkedContext } from "./toggle-bookmarked-context";
-
-export default function PostList(props: PostListProps) {
+export function BookmarkedPosts(props: { postsView: PostsView }) {
+  const { mutateUnreadCount } = useUnreadCountContext();
   const { query, posts, setPosts, fetchPosts } = usePostsContext();
   const postsCount = () => posts().length;
 
@@ -28,14 +29,22 @@ export default function PostList(props: PostListProps) {
       bookmarked,
     });
     if (resp.success) {
-      setPosts((oldPosts) => {
-        return oldPosts.map((post) => {
-          if (post.feedId === feedId && post.guid === guid) {
-            return { ...post, bookmarked: bookmarked ? 1 : 0 };
-          } else {
-            return post;
-          }
+      batch(() => {
+        setPosts((oldPosts) => {
+          return oldPosts.map((post) => {
+            if (post.feedId === feedId && post.guid === guid) {
+              return { ...post, bookmarked: bookmarked ? 1 : 0 };
+            } else {
+              return post;
+            }
+          });
         });
+        const post = posts().find(
+          (p) => p.feedId === feedId && p.guid === guid,
+        );
+        if (post?.unread) {
+          mutateUnreadCount({ delta: bookmarked ? 1 : -1 });
+        }
       });
     } else {
       notifyError(resp.errorMsg);
@@ -48,14 +57,14 @@ export default function PostList(props: PostListProps) {
         <NoPosts msg={query.errorMsg!} />
       </Match>
       <Match when={postsCount() === 0 && query.isLoading}>
-        <NoPosts msg="Loading posts..." />
+        <NoPosts msg="Loading bookmarked posts..." />
       </Match>
       <Match when={postsCount() === 0}>
         <NoPosts
           msg={
             props.postsView === "all"
-              ? "No posts yet."
-              : "No unread posts found."
+              ? "No posts bookmarked yet."
+              : "No unread bookmarks found."
           }
         />
       </Match>
@@ -81,9 +90,4 @@ export default function PostList(props: PostListProps) {
       </Match>
     </Switch>
   );
-}
-
-interface PostListProps {
-  nodeId: number;
-  postsView: PostsView;
 }

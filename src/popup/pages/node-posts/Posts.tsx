@@ -9,7 +9,7 @@ import {
 import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
-import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
+import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
@@ -30,7 +30,7 @@ function Post(props: { post: FeedPost }) {
   const { store: ctxMenu, showMenu } = usePostMenuContext();
   let ref!: HTMLAnchorElement;
 
-  const { toggleUnread } = usePostsContext();
+  const { toggleUnread } = useToggleUnreadContext();
   const { store } = usePreferencesContext();
   const [showTooltip, setShowTooltip] = createSignal(false);
   let titleRef!: HTMLDivElement;

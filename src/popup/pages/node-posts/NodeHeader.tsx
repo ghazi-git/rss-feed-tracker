@@ -1,5 +1,5 @@
 import { useSearchParams } from "@solidjs/router";
-import { Show } from "solid-js";
+import { batch, Show } from "solid-js";
 
 import { TreeNode } from "@/background/db-setup";
 import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
@@ -8,6 +8,10 @@ import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
+import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
+import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
+import { createMutation } from "@/popup/utils/mutation";
+import { notifyError } from "@/popup/utils/notifications";
 
 import styles from "./NodeHeader.module.css";
 
@@ -19,6 +23,39 @@ export default function NodeHeader(props: NodeHeaderProps) {
     } else {
       return `/library/nodes/${props.node.parentId}`;
     }
+  };
+
+  const { setPosts } = usePostsContext();
+  const { mutateUnreadCount } = useUnreadCountContext();
+  const {
+    mutation,
+    sendMsg: markAsRead,
+    reset,
+  } = createMutation("posts/mark-all-posts-as-read");
+  const markAsReadMutation = {
+    async markAll() {
+      await markAsRead({
+        nodeId: props.node.id,
+        markAsReadUntil: props.node.markAsReadUntil,
+      });
+
+      if (mutation.isSuccess) {
+        batch(() => {
+          setPosts((oldPosts) =>
+            oldPosts.map((post) => ({ ...post, unread: 0 })),
+          );
+          mutateUnreadCount({ value: 0 });
+          reset();
+        });
+      } else if (mutation.isError) {
+        notifyError(mutation.errorMsg);
+        reset();
+      }
+    },
+
+    isLoading() {
+      return mutation.isLoading;
+    },
   };
 
   return (
@@ -40,6 +77,7 @@ export default function NodeHeader(props: NodeHeaderProps) {
           pageUrl={`/library/nodes/${props.node.id}/posts`}
           initialFilter={searchParams.unread === "true" ? "unread" : "all"}
           class={styles["posts-filter"]}
+          markAsReadMutation={markAsReadMutation}
         />
       </Show>
     </PageHeaderWrapper>
@@ -47,5 +85,5 @@ export default function NodeHeader(props: NodeHeaderProps) {
 }
 
 interface NodeHeaderProps {
-  node: TreeNode & { hasPosts: boolean };
+  node: TreeNode & { hasPosts: boolean; markAsReadUntil: number };
 }

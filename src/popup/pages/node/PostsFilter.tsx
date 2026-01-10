@@ -2,13 +2,11 @@ import { createSignal, Show } from "solid-js";
 
 import Anchor from "@/popup/components/Anchor";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
-import { usePostsFilterUnreadCountContext } from "@/popup/pages/posts-filter-unread-count-context";
 
 import styles from "./PostsFilter.module.css";
 
 export default function PostsFilter(props: PostsFilterProps) {
   const [activeFilter, setActiveFilter] = createSignal(props.initialFilter);
-  const { markAsReadMutation } = usePostsFilterUnreadCountContext();
 
   return (
     <div class={`${props.class} ${styles["filter-options"]}`}>
@@ -21,11 +19,11 @@ export default function PostsFilter(props: PostsFilterProps) {
         <Show when={props.unreadCount}>
           <UnreadCount
             count={props.unreadCount}
-            isLoading={markAsReadMutation.isLoading() ?? false}
+            isLoading={props.markAsReadMutation.isLoading() ?? false}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              markAsReadMutation.markAll();
+              props.markAsReadMutation.markAll();
             }}
           />
         </Show>
@@ -48,4 +46,8 @@ interface PostsFilterProps {
   pageUrl: string;
   class: string;
   initialFilter: "all" | "unread" | null;
+  markAsReadMutation: {
+    markAll: () => Promise<void>;
+    isLoading: () => boolean;
+  };
 }

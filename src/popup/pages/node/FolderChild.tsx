@@ -15,7 +15,7 @@ import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
-import { usePostsFilterUnreadCountContext } from "@/popup/pages/posts-filter-unread-count-context";
+import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError } from "@/popup/utils/notifications";
 
@@ -24,7 +24,7 @@ import styles from "./FolderChild.module.css";
 export default function FolderChild(props: FolderChildProps) {
   const navigate = useNavigate();
   const { mutation, sendMsg } = createMutation("posts/mark-all-posts-as-read");
-  const { updateUnreadCount } = usePostsFilterUnreadCountContext();
+  const { mutateUnreadCount } = useUnreadCountContext();
   const { mutateNode } = useNodeContext();
   const markAllAsRead = async () => {
     await sendMsg({
@@ -33,7 +33,7 @@ export default function FolderChild(props: FolderChildProps) {
     });
     if (mutation.isSuccess) {
       batch(() => {
-        updateUnreadCount({ delta: -props.node.unreadCount });
+        mutateUnreadCount({ delta: -props.node.unreadCount });
         mutateNode((resp) => {
           if (!resp) return resp;
 

@@ -1,4 +1,4 @@
-import { createContext, useContext } from "solid-js";
+import { Accessor, createContext, Setter, useContext } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
 import { PostsQuery } from "@/popup/utils/query";
@@ -16,12 +16,7 @@ export function usePostsContext() {
 
 interface PostsContextType {
   query: PostsQuery;
-  posts: () => FeedPost[];
+  posts: Accessor<FeedPost[]>;
+  setPosts: Setter<FeedPost[]>;
   fetchPosts: () => Promise<void>;
-  toggleUnread: (
-    feedId: number,
-    guid: string,
-    unread: boolean,
-  ) => Promise<void>;
-  mutateBookmarked: (feedId: number, guid: string, bookmarked: boolean) => void;
 }

@@ -13,11 +13,9 @@ import { FeedPost, PostsCursor, sendMessage } from "@/messaging-wrapper";
 import NodeHeader from "@/popup/pages/node-posts/NodeHeader";
 import PostList from "@/popup/pages/node-posts/PostList";
 import {
-  PostsFilterUnreadCountContext,
-  UpdateUnreadCountArgs,
-} from "@/popup/pages/posts-filter-unread-count-context";
-import { createMutation } from "@/popup/utils/mutation";
-import { notifyError } from "@/popup/utils/notifications";
+  MutateUnreadCountArgs,
+  UnreadCountContext,
+} from "@/popup/pages/node-posts/unread-count-context";
 import { createPostsQuery } from "@/popup/utils/query";
 
 import styles from "./index.module.css";
@@ -62,93 +60,17 @@ export default function NodePosts() {
     });
   });
 
-  const { node, updateUnreadCount } = createNodeResource();
-  const toggleUnread = async (
-    feedId: number,
-    guid: string,
-    unread: boolean,
-  ) => {
-    const resp = await sendMessage("posts/toggle-unread", {
-      feedId,
-      guid,
-      unread,
-    });
-    if (resp.success) {
-      batch(() => {
-        setPosts((oldPosts) => {
-          return oldPosts.map((post) => {
-            if (post.feedId === feedId && post.guid === guid) {
-              return { ...post, unread: unread ? 1 : 0 };
-            } else {
-              return post;
-            }
-          });
-        });
-        updateUnreadCount({ delta: unread ? 1 : -1 });
-      });
-    } else {
-      notifyError(resp.errorMsg);
-    }
-  };
-  const mutateBookmarked = (
-    feedId: number,
-    guid: string,
-    bookmarked: boolean,
-  ) => {
-    setPosts((oldPosts) => {
-      return oldPosts.map((post) => {
-        if (post.feedId === feedId && post.guid === guid) {
-          return { ...post, bookmarked: bookmarked ? 1 : 0 };
-        } else {
-          return post;
-        }
-      });
-    });
-  };
-
-  const {
-    mutation,
-    sendMsg: markAsRead,
-    reset,
-  } = createMutation("posts/mark-all-posts-as-read");
-  const markAsReadMutation = {
-    async markAll() {
-      const markAsReadUntil = node()?.markAsReadUntil;
-      if (markAsReadUntil) {
-        await markAsRead({ nodeId: nodeId(), markAsReadUntil });
-
-        if (mutation.isSuccess) {
-          batch(() => {
-            setPosts((oldPosts) =>
-              oldPosts.map((post) => ({ ...post, unread: 0 })),
-            );
-            updateUnreadCount({ value: 0 });
-            reset();
-          });
-        } else if (mutation.isError) {
-          notifyError(mutation.errorMsg);
-          reset();
-        }
-      }
-    },
-
-    isLoading() {
-      return mutation.isLoading;
-    },
-  };
+  const { node, mutateUnreadCount } = createNodeResource();
 
   return (
-    <PostsContext.Provider
-      value={{
-        query,
-        posts,
-        fetchPosts,
-        toggleUnread,
-        mutateBookmarked,
-      }}
-    >
-      <PostsFilterUnreadCountContext.Provider
-        value={{ markAsReadMutation, updateUnreadCount }}
+    <UnreadCountContext.Provider value={{ mutateUnreadCount }}>
+      <PostsContext.Provider
+        value={{
+          query,
+          posts,
+          setPosts,
+          fetchPosts,
+        }}
       >
         <Switch>
           <Match when={node.error}>
@@ -165,8 +87,8 @@ export default function NodePosts() {
         </Switch>
 
         <PostList postsView={postsView()} nodeId={nodeId()} />
-      </PostsFilterUnreadCountContext.Provider>
-    </PostsContext.Provider>
+      </PostsContext.Provider>
+    </UnreadCountContext.Provider>
   );
 }
 
@@ -183,7 +105,7 @@ function createNodeResource() {
       return response.data;
     },
   );
-  const updateUnreadCount = ({ delta, value }: UpdateUnreadCountArgs) => {
+  const mutateUnreadCount = ({ delta, value }: MutateUnreadCountArgs) => {
     if (delta) {
       mutate((resp) => {
         if (!resp) return resp;
@@ -198,5 +120,5 @@ function createNodeResource() {
       });
     }
   };
-  return { node, updateUnreadCount };
+  return { node, mutateUnreadCount };
 }

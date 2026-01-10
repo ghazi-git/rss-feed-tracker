@@ -2,7 +2,7 @@ import ContextMenu from "@/popup/components/context-menu/ContextMenu";
 import ContextMenuItem from "@/popup/components/context-menu/ContextMenuItem";
 import ContextMenuSeparator from "@/popup/components/context-menu/ContextMenuSeparator";
 import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-context";
-import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
+import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
@@ -86,7 +86,7 @@ function usePostsContextWithDefault() {
   // the context menu is used when previewing a feed, and in that case the posts
   // context is not provided because we don't need to toggl unread.
   try {
-    return usePostsContext();
+    return useToggleUnreadContext();
   } catch {
     return { toggleUnread: undefined };
   }
