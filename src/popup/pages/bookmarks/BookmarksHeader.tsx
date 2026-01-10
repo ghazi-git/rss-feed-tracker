@@ -41,7 +41,7 @@ export default function BookmarksHeader(props: BookmarksHeaderProps) {
   };
 
   return (
-    <PageHeaderWrapper>
+    <PageHeaderWrapper sticky={true}>
       <PostsFilter
         pageUrl="/bookmarks"
         unreadCount={props.unreadCount}

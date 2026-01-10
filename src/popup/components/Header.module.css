@@ -11,6 +11,7 @@
 
 .tab {
   flex-grow: 1;
+  flex-basis: 33%;
   display: grid;
   place-items: center;
   background-color: var(--surface-2);

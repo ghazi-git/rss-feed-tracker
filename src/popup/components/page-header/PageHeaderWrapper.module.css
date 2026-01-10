@@ -1,8 +1,26 @@
+.sticky {
+  position: sticky;
+  inset-block-start: 0;
+  background-color: var(--surface-1);
+  z-index: var(--layer-2);
+  container-type: scroll-state; /* stylelint-disable-line declaration-property-value-no-unknown */
+  container-name: page-header;
+}
+
 .page-header-wrapper {
-  block-size: 40px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   gap: var(--size-2);
-  margin-block-end: var(--size-2);
+  padding-block: var(--size-2);
+
+  @container page-header scroll-state(stuck: top) {
+    --shadow-color: rgb(0 0 0 / 50%);
+
+    html[data-theme="dark"] & {
+      --shadow-color: rgb(255 255 255 / 80%);
+    }
+
+    box-shadow: 0 6px 4px -6px var(--shadow-color);
+  }
 }

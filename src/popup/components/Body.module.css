@@ -1,6 +1,6 @@
 .body {
   position: relative;
-  padding: var(--size-3) 0 var(--size-3) var(--size-3);
+  padding: 0 0 var(--size-3) var(--size-3);
   block-size: calc(100% - var(--header-size));
   overflow-block: auto;
   scrollbar-gutter: stable;

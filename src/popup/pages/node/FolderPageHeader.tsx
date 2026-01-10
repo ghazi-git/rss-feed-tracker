@@ -39,7 +39,7 @@ export default function FolderPageHeader(props: FolderPageHeaderProps) {
   };
 
   return (
-    <PageHeaderWrapper>
+    <PageHeaderWrapper sticky={true}>
       <Show
         when={props.folder.parentId}
         fallback={<div class={styles["previous-url-placeholder"]} />}

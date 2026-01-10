@@ -59,7 +59,7 @@ export default function NodeHeader(props: NodeHeaderProps) {
   };
 
   return (
-    <PageHeaderWrapper>
+    <PageHeaderWrapper sticky={true}>
       <BackLink url={previousUrl()} class={styles["previous-url"]} />
       <DeleteNodeProvider>
         <PageTitleButton
