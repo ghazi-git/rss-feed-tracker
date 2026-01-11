@@ -40,6 +40,7 @@ interface MessageMap {
   "posts/mark-all-posts-as-read"(data: MarkAllPostsAsReadParams): void;
   "nodes/get-for-node-page"(data: { id: number }): NodeResponse;
   "nodes/get-for-node-posts-page"(data: { id: number }): NodePostsResponse;
+  "nodes/reload"(data: { id: number }): NodeReloadResponse;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
   "folders/get-root"(): RootFolder;
@@ -114,6 +115,11 @@ export type NodePostsResponse = TreeNode & {
   markAsReadUntil: number;
   hasPosts: boolean;
 };
+export interface NodeReloadResponse {
+  newPostsCount: number;
+  unreadCount: number;
+  markAsReadUntil: number;
+}
 export type RootFolder = { id: number; hasChildNodes: boolean };
 export interface FolderFormData {
   name: string;
