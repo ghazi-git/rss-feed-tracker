@@ -1,4 +1,9 @@
-import { IDBPIndexGetAllOptions, unwrap } from "idb";
+import {
+  IDBPIndexGetAllOptions,
+  IDBPStoreGetAllOptions,
+  StoreKey,
+  unwrap,
+} from "idb";
 
 import {
   ExtensionDB,
@@ -95,6 +100,24 @@ export async function getAllFromIndex<
   const store = tx.objectStore(storeName);
   const index = store.index(indexName);
   return await index.getAll(options);
+}
+
+export async function getAll<Name extends ExtStoreName>(
+  tx: ReadTX | ReadWriteTX,
+  storeName: Name,
+  options?: IDBPStoreGetAllOptions<FeedTrackerDB, Name>,
+) {
+  const store = tx.objectStore(storeName);
+  return await store.getAll(options);
+}
+
+export async function getObject<Name extends ExtStoreName>(
+  tx: ReadTX | ReadWriteTX,
+  storeName: Name,
+  key: StoreKey<FeedTrackerDB, Name> | IDBKeyRange,
+) {
+  const store = tx.objectStore(storeName);
+  return await store.get(key);
 }
 
 type StoreUpdateFn<Name extends ExtStoreName> = (
