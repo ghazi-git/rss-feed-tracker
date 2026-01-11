@@ -64,7 +64,12 @@ async function getDueFeeds(db: ExtensionDB) {
     .filter((f) => feedIds.includes(f.id));
 }
 
-async function loadFeeds(db: ExtensionDB, feeds: Feed[], scheduledAt: string) {
+export async function loadFeeds(
+  db: ExtensionDB,
+  feeds: Feed[],
+  scheduledAt: string,
+) {
+  let totalNewPosts = 0;
   // load feeds in parallel
   const chunks = getChunks(feeds, 5);
   for (const chunk of chunks) {
@@ -76,13 +81,16 @@ async function loadFeeds(db: ExtensionDB, feeds: Feed[], scheduledAt: string) {
         logger.error(e);
         const msg = e instanceof Error ? e.message : "Unexpected error";
         await saveFailureMetadata(db, feed, msg);
+        return 0;
       });
     });
-    await Promise.all(promises);
+    const newPosts = await Promise.all(promises);
+    totalNewPosts += newPosts.reduce((acc, val) => acc + val, 0);
   }
+  return totalNewPosts;
 }
 
-async function loadFeedPosts(
+export async function loadFeedPosts(
   db: ExtensionDB,
   node: Feed,
   logger: FeedPollingLogger,
@@ -100,7 +108,7 @@ async function loadFeedPosts(
     await saveSuccessMetadata(tx, node.id, frequency, fetchTime, false, notes);
     await txDone(unwrap(tx));
     logger.debug("done (no posts)");
-    return;
+    return 0;
   }
 
   logger.debug(`parsed ${parsedFeed.posts.length} post(s)`);
@@ -130,4 +138,5 @@ async function loadFeedPosts(
   await txDone(unwrap(tx));
 
   logger.debug(`done notes=${notes ?? "All parsed posts were inserted"}`);
+  return insertedPosts;
 }
