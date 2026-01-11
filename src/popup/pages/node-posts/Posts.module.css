@@ -11,6 +11,14 @@
   border: var(--border-size-1) solid var(--surface-4);
   border-radius: var(--radius-2);
   color: var(--text-1);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: outline-offset 50ms var(--ease-2);
+  }
+
+  &:focus-visible {
+    outline-offset: -1px;
+  }
 }
 
 .title {
