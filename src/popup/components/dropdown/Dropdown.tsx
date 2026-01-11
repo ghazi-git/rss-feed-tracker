@@ -191,8 +191,9 @@ function accountForHeader(fallbackPlacement: Placement | undefined) {
         const headerSize = getComputedStyle(
           document.documentElement,
         ).getPropertyValue("--header-size");
-        // header size + a bit of leeway
-        const threshold = parseInt(headerSize) + 16;
+        // header size + a bit of leeway + sticky page header size
+        const stickyNodeHeaderSize = 60;
+        const threshold = parseInt(headerSize) + 16 + stickyNodeHeaderSize;
         if (state.y <= threshold && state.rects.reference.y > threshold) {
           return { reset: { placement: fallbackPlacement } };
         }
