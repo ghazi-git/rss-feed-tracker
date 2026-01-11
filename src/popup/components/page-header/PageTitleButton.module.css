@@ -6,6 +6,10 @@
   min-inline-size: 0;
 }
 
+.dropdown-menu {
+  z-index: var(--layer-2);
+}
+
 .node-actions {
   flex-shrink: 0;
 }
@@ -14,12 +18,4 @@
   margin-block-start: var(--size-1);
   inline-size: var(--size-3);
   opacity: 0.75;
-}
-
-.delete {
-  color: var(--error-color);
-}
-
-.delete:focus {
-  background-color: var(--error-color);
 }

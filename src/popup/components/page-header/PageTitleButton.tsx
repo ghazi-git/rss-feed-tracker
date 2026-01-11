@@ -19,7 +19,7 @@ export default function PageTitleButton(props: PageTitleButtonProps) {
         </div>
         <PageTitle title={props.title} />
       </MenuTrigger>
-      <Menu>
+      <Menu class={styles["dropdown-menu"]}>
         <Show
           when={props.nodeType === "folder"}
           fallback={
