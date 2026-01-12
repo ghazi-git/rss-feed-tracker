@@ -1,17 +1,34 @@
 import { createStore } from "solid-js/store";
 
 import {
+  MessageData,
   MessagePayload,
-  PostsResponse,
+  MessageType,
   sendMessage,
 } from "@/messaging-wrapper";
 
-export function createPostsQuery<
-  K extends "posts/list" | "posts/get-bookmarks",
->(messageType: K, source: () => MessagePayload<K>) {
-  const [query, setQuery] = createStore<PostsQuery>({
+export function createQuery<K extends MessageType>(
+  messageType: K,
+): {
+  query: Query<MessageData<K> | null, MessageData<K>>;
+  sendMsg: (payload: MessagePayload<K>) => Promise<void>;
+};
+export function createQuery<K extends MessageType>(
+  messageType: K,
+  initialValue: MessageData<K>,
+): {
+  query: Query<MessageData<K>, MessageData<K>>;
+  sendMsg: (payload: MessagePayload<K>) => Promise<void>;
+};
+export function createQuery<K extends MessageType>(
+  messageType: K,
+  initialValue: MessageData<K> | null = null,
+) {
+  const [query, setQuery] = createStore<
+    Query<MessageData<K> | null, MessageData<K>>
+  >({
     status: "idle",
-    data: { posts: [], nextPageCursor: null },
+    data: initialValue,
     errorMsg: null,
     isLoading: false,
     isSuccess: false,
@@ -49,47 +66,49 @@ export function createPostsQuery<
     }
   }
 
-  const fetchPosts = async () => {
-    await sendMsg(source());
-  };
-
-  return { query, fetchPosts };
+  return { query, sendMsg };
 }
 
-interface QueryIdle {
+interface QueryIdle<TData> {
   status: "idle";
-  data: PostsResponse;
+  data: TData;
   errorMsg: null;
   isLoading: false;
   isSuccess: false;
   isError: false;
 }
 
-interface QueryLoading {
+interface QueryLoading<TData> {
   status: "loading";
-  data: PostsResponse;
+  data: TData;
   errorMsg: null;
   isLoading: true;
   isSuccess: false;
   isError: false;
 }
 
-interface QuerySuccess {
+interface QuerySuccess<TData> {
   status: "success";
-  data: PostsResponse;
+  data: TData;
   errorMsg: null;
   isLoading: false;
   isSuccess: true;
   isError: false;
 }
 
-interface QueryError {
+interface QueryError<TData> {
   status: "error";
-  data: PostsResponse;
+  data: TData;
   errorMsg: string;
   isLoading: false;
   isSuccess: false;
   isError: true;
 }
 
-export type PostsQuery = QueryIdle | QueryLoading | QuerySuccess | QueryError;
+// separate success and other data types to ensure success data type does not
+// include null even when the initial value is null
+export type Query<TData, SuccessData> =
+  | QueryIdle<TData>
+  | QueryLoading<TData>
+  | QuerySuccess<SuccessData>
+  | QueryError<TData>;

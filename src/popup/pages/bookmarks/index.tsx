@@ -10,7 +10,7 @@ import {
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
-import { createPostsQuery } from "@/popup/utils/query";
+import { createQuery } from "@/popup/utils/query";
 
 export default function Bookmarks() {
   const [unreadCount, mutateUnreadCount] = createUnreadCountSignal();
@@ -21,10 +21,16 @@ export default function Bookmarks() {
   const [paginationCursor, setPaginationCursor] =
     createSignal<PostsCursor | null>(null);
   const [posts, setPosts] = createSignal<FeedPost[]>([]);
-  const { query, fetchPosts } = createPostsQuery("posts/get-bookmarks", () => ({
-    postsView: postsView(),
-    cursor: paginationCursor(),
-  }));
+  const { query, sendMsg } = createQuery("posts/get-bookmarks", {
+    posts: [],
+    nextPageCursor: null,
+  });
+  const fetchPosts = async () => {
+    await sendMsg({
+      postsView: postsView(),
+      cursor: paginationCursor(),
+    });
+  };
 
   // fetch posts when the user switches between the Unread/all posts filter
   createEffect(() => {

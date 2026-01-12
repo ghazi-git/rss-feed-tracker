@@ -16,7 +16,7 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
-import { createPostsQuery } from "@/popup/utils/query";
+import { createQuery } from "@/popup/utils/query";
 
 import styles from "./index.module.css";
 import { PostsContext } from "./posts-context";
@@ -31,11 +31,18 @@ export default function NodePosts() {
   const [paginationCursor, setPaginationCursor] =
     createSignal<PostsCursor | null>(null);
   const [posts, setPosts] = createSignal<FeedPost[]>([]);
-  const { query, fetchPosts } = createPostsQuery("posts/list", () => ({
-    nodeId: nodeId(),
-    postsView: postsView(),
-    cursor: paginationCursor(),
-  }));
+  const { query, sendMsg } = createQuery("posts/list", {
+    posts: [],
+    nextPageCursor: null,
+  });
+
+  const fetchPosts = async () => {
+    await sendMsg({
+      nodeId: nodeId(),
+      postsView: postsView(),
+      cursor: paginationCursor(),
+    });
+  };
 
   // fetch posts when the user switches between the Unread/all posts filter
   createEffect(() => {
