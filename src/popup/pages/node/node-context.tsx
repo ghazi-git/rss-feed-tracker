@@ -14,5 +14,5 @@ export function useNodeContext() {
 }
 
 interface NodeContextType {
-  mutateNode: Setter<NodeResponse | undefined>;
+  mutateNode: (setterFunc: (oldValue: NodeResponse) => NodeResponse) => void;
 }

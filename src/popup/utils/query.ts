@@ -12,6 +12,9 @@ export function createQuery<K extends MessageType>(
 ): {
   query: Query<MessageData<K> | null, MessageData<K>>;
   sendMsg: (payload: MessagePayload<K>) => Promise<void>;
+  mutateData: (
+    setterFunc: (oldValue: MessageData<K>) => MessageData<K>,
+  ) => void;
 };
 export function createQuery<K extends MessageType>(
   messageType: K,
@@ -19,6 +22,9 @@ export function createQuery<K extends MessageType>(
 ): {
   query: Query<MessageData<K>, MessageData<K>>;
   sendMsg: (payload: MessagePayload<K>) => Promise<void>;
+  mutateData: (
+    setterFunc: (oldValue: MessageData<K>) => MessageData<K>,
+  ) => void;
 };
 export function createQuery<K extends MessageType>(
   messageType: K,
@@ -66,7 +72,16 @@ export function createQuery<K extends MessageType>(
     }
   }
 
-  return { query, sendMsg };
+  const mutateData = (
+    setterFunc: (oldValue: MessageData<K>) => MessageData<K>,
+  ) => {
+    setQuery((oldValue) => {
+      if (!oldValue.data) return oldValue;
+
+      return { ...oldValue, data: setterFunc(oldValue.data) };
+    });
+  };
+  return { query, sendMsg, mutateData };
 }
 
 interface QueryIdle<TData> {
