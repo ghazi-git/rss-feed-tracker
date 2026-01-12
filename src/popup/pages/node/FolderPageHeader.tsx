@@ -23,8 +23,6 @@ export default function FolderPageHeader(props: FolderPageHeaderProps) {
       if (mutation.isSuccess) {
         // set the unread count of the folder and all its children to 0
         mutateNode((resp) => {
-          if (!resp) return resp;
-
           const children = resp.children.map((c) => ({ ...c, unreadCount: 0 }));
           return { ...resp, unreadCount: 0, children };
         });

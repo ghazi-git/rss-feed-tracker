@@ -1,9 +1,9 @@
 import { Navigate, useParams } from "@solidjs/router";
-import { createResource, Match, Show, Switch } from "solid-js";
+import { createEffect, Match, Show, Switch, untrack } from "solid-js";
 
-import { sendMessage } from "@/messaging-wrapper";
 import Anchor from "@/popup/components/Anchor";
 import { FolderPage } from "@/popup/pages/node/FolderPage";
+import { createQuery } from "@/popup/utils/query";
 
 import styles from "./index.module.css";
 import { NodeContext } from "./node-context";
@@ -14,30 +14,35 @@ import { NodeContext } from "./node-context";
  */
 export default function Node() {
   const params = useParams();
-  const [node, { mutate }] = createResource(
-    () => parseInt(params.id),
-    getNodeInfo,
-  );
+  const nodeId = () => parseInt(params.id);
+  const { query, sendMsg, mutateData } = createQuery("nodes/get-for-node-page");
+  createEffect(() => {
+    const id = nodeId();
+    untrack(() => {
+      sendMsg({ id });
+    });
+  });
+
   const folderNode = () => {
-    const nd = node();
+    const nd = query.data;
     return nd?.type === "folder" ? nd : null;
   };
 
   return (
-    <NodeContext.Provider value={{ mutateNode: mutate }}>
+    <NodeContext.Provider value={{ mutateNode: mutateData }}>
       <Switch>
-        <Match when={node.error}>
+        <Match when={!query.data && query.isError}>
           <div class={`${styles.centered} ${styles.error}`}>
-            <span>{node.error.message || "An unexpected error occurred"}</span>
+            <span>{query.errorMsg}</span>
             <Anchor href="/library" replace={true} class="btn">
               Go back to Library
             </Anchor>
           </div>
         </Match>
-        <Match when={node.loading}>
+        <Match when={!query.data && query.isLoading}>
           <div class={styles.centered}>Loading feeds...</div>
         </Match>
-        <Match when={node()}>
+        <Match when={query.data}>
           {(currentNode) => (
             <Show
               when={folderNode()}
@@ -52,11 +57,4 @@ export default function Node() {
       </Switch>
     </NodeContext.Provider>
   );
-}
-
-async function getNodeInfo(id: number) {
-  const response = await sendMessage("nodes/get-for-node-page", { id });
-  if (!response.success) throw new Error(response.errorMsg);
-
-  return response.data;
 }

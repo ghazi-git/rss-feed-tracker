@@ -13,17 +13,12 @@ export function FolderPage(props: FolderPageProps) {
   const { mutateNode } = useNodeContext();
   const mutateUnreadCount = ({ delta, value }: MutateUnreadCountArgs) => {
     if (delta) {
-      mutateNode((resp) => {
-        if (!resp) return resp;
-
-        return { ...resp, unreadCount: resp.unreadCount + delta };
-      });
+      mutateNode((resp) => ({
+        ...resp,
+        unreadCount: resp.unreadCount + delta,
+      }));
     } else if (value !== undefined) {
-      mutateNode((resp) => {
-        if (!resp) return resp;
-
-        return { ...resp, unreadCount: value };
-      });
+      mutateNode((resp) => ({ ...resp, unreadCount: value }));
     }
   };
 

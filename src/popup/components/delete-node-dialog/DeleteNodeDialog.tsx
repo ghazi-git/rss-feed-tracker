@@ -41,8 +41,6 @@ export default function DeleteNodeDialog() {
   const removeChildNode = (deletedNodeId: number) => {
     if (mutateNode) {
       mutateNode((resp) => {
-        if (!resp) return resp;
-
         const deletionIdx = resp.children.findIndex(
           (n) => n.id === deletedNodeId,
         );

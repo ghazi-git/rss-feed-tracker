@@ -1,4 +1,4 @@
-import { createContext, Setter, useContext } from "solid-js";
+import { createContext, useContext } from "solid-js";
 
 import { NodeResponse } from "@/messaging-wrapper";
 

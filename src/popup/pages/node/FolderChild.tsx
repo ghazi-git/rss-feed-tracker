@@ -35,8 +35,6 @@ export default function FolderChild(props: FolderChildProps) {
       batch(() => {
         mutateUnreadCount({ delta: -props.node.unreadCount });
         mutateNode((resp) => {
-          if (!resp) return resp;
-
           const children = resp.children.map((c) => {
             return c.id === props.node.id ? { ...c, unreadCount: 0 } : c;
           });
