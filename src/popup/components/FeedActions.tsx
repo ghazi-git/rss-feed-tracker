@@ -1,15 +1,18 @@
 import { useLocation, useNavigate } from "@solidjs/router";
+import { Show } from "solid-js";
 
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
 import { useDropdownContext } from "@/popup/components/dropdown/context";
 import MenuItem from "@/popup/components/dropdown/MenuItem";
 import Separator from "@/popup/components/dropdown/Separator";
-import { notifyInfo } from "@/popup/utils/notifications";
+import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
+import { useReloadFeedsContext } from "@/popup/pages/node-posts/reload-feeds-context";
 import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./FeedActions.module.css";
 
 export default function FeedActions(props: FeedActionsProps) {
+  const { mutation, reloadFeeds } = useReloadFeedsContext();
   const { closeMenu } = useDropdownContext();
   const { openModal } = useDeleteNodeContext();
   const navigate = useNavigate();
@@ -24,12 +27,17 @@ export default function FeedActions(props: FeedActionsProps) {
     <>
       <MenuItem onClick={() => navigate(editUrl())}>Edit</MenuItem>
       <MenuItem
-        onClick={() => {
-          notifyInfo("Reloading Feed...");
-          closeMenu();
+        class={mutation.isLoading ? styles.reloading : ""}
+        onClick={async () => {
+          if (!mutation.isLoading) {
+            await reloadFeeds(props.feedId);
+            closeMenu();
+          }
         }}
       >
-        Reload
+        <Show when={mutation.isLoading} fallback="Reload">
+          Reloading <LoadingIcon />
+        </Show>
       </MenuItem>
       <Separator />
       <MenuItem

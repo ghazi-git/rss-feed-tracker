@@ -3,6 +3,12 @@ import { createEffect, Match, Show, Switch, untrack } from "solid-js";
 
 import Anchor from "@/popup/components/Anchor";
 import { FolderPage } from "@/popup/pages/node/FolderPage";
+import {
+  getReloadSuccessMessage,
+  ReloadFeedsContext,
+} from "@/popup/pages/node-posts/reload-feeds-context";
+import { createMutation } from "@/popup/utils/mutation";
+import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
 
 import styles from "./index.module.css";
@@ -15,11 +21,15 @@ import { NodeContext } from "./node-context";
 export default function Node() {
   const params = useParams();
   const nodeId = () => parseInt(params.id);
-  const { query, sendMsg, mutateData } = createQuery("nodes/get-for-node-page");
+  const {
+    query,
+    sendMsg: fetchNode,
+    mutateData,
+  } = createQuery("nodes/get-for-node-page");
   createEffect(() => {
     const id = nodeId();
     untrack(() => {
-      sendMsg({ id });
+      fetchNode({ id });
     });
   });
 
@@ -28,33 +38,49 @@ export default function Node() {
     return nd?.type === "folder" ? nd : null;
   };
 
+  const { mutation, sendMsg: reload } = createMutation("nodes/reload");
+  const reloadFeeds = async (id: number) => {
+    await reload({ id });
+    if (mutation.isSuccess) {
+      notifySuccess(getReloadSuccessMessage(mutation.data.newPostsCount));
+      await fetchNode({ id: nodeId() });
+      if (query.isError) {
+        notifyError(query.errorMsg);
+      }
+    } else if (mutation.isError) {
+      notifyError(mutation.errorMsg);
+    }
+  };
+
   return (
     <NodeContext.Provider value={{ mutateNode: mutateData }}>
-      <Switch>
-        <Match when={!query.data && query.isError}>
-          <div class={`${styles.centered} ${styles.error}`}>
-            <span>{query.errorMsg}</span>
-            <Anchor href="/library" replace={true} class="btn">
-              Go back to Library
-            </Anchor>
-          </div>
-        </Match>
-        <Match when={!query.data && query.isLoading}>
-          <div class={styles.centered}>Loading feeds...</div>
-        </Match>
-        <Match when={query.data}>
-          {(currentNode) => (
-            <Show
-              when={folderNode()}
-              fallback={
-                <Navigate href={`/library/nodes/${currentNode().id}/posts`} />
-              }
-            >
-              {(folder) => <FolderPage folder={folder()} />}
-            </Show>
-          )}
-        </Match>
-      </Switch>
+      <ReloadFeedsContext.Provider value={{ mutation, reloadFeeds }}>
+        <Switch>
+          <Match when={!query.data && query.isError}>
+            <div class={`${styles.centered} ${styles.error}`}>
+              <span>{query.errorMsg}</span>
+              <Anchor href="/library" replace={true} class="btn">
+                Go back to Library
+              </Anchor>
+            </div>
+          </Match>
+          <Match when={!query.data && query.isLoading}>
+            <div class={styles.centered}>Loading feeds...</div>
+          </Match>
+          <Match when={query.data}>
+            {(currentNode) => (
+              <Show
+                when={folderNode()}
+                fallback={
+                  <Navigate href={`/library/nodes/${currentNode().id}/posts`} />
+                }
+              >
+                {(folder) => <FolderPage folder={folder()} />}
+              </Show>
+            )}
+          </Match>
+        </Switch>
+      </ReloadFeedsContext.Provider>
     </NodeContext.Provider>
   );
 }

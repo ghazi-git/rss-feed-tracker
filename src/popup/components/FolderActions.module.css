@@ -5,3 +5,16 @@
 .delete:focus {
   background-color: var(--error-color);
 }
+
+.reloading {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-1);
+  color: var(--text-2);
+
+  svg {
+    inline-size: 1em;
+    block-size: auto;
+  }
+}
