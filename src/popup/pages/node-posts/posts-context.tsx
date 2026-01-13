@@ -1,7 +1,7 @@
 import { Accessor, createContext, Setter, useContext } from "solid-js";
 
-import { FeedPost } from "@/messaging-wrapper";
-import { PostsQuery } from "@/popup/utils/query";
+import { FeedPost, PostsResponse } from "@/messaging-wrapper";
+import { Query } from "@/popup/utils/query";
 
 export const PostsContext = createContext<PostsContextType>();
 
@@ -15,7 +15,7 @@ export function usePostsContext() {
 }
 
 interface PostsContextType {
-  query: PostsQuery;
+  query: Query<PostsResponse, PostsResponse>;
   posts: Accessor<FeedPost[]>;
   setPosts: Setter<FeedPost[]>;
   fetchPosts: () => Promise<void>;
