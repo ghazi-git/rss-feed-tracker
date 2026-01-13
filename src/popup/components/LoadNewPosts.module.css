@@ -1,0 +1,7 @@
+.load-new-posts {
+  text-align: center;
+  inline-size: 100%;
+  background-color: var(--surface-2);
+  padding: var(--size-3);
+  margin-block-end: var(--size-2);
+}

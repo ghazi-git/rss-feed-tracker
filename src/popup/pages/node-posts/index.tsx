@@ -8,14 +8,22 @@ import {
   Switch,
   untrack,
 } from "solid-js";
+import { createStore } from "solid-js/store";
 
 import { FeedPost, PostsCursor, sendMessage } from "@/messaging-wrapper";
 import NodeHeader from "@/popup/pages/node-posts/NodeHeader";
 import PostList from "@/popup/pages/node-posts/PostList";
 import {
+  getReloadSuccessMessage,
+  ReloadFeedsContext,
+} from "@/popup/pages/node-posts/reload-feeds-context";
+import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
+import { createMutation } from "@/popup/utils/mutation";
+import { notifyError, notifySuccess } from "@/popup/utils/notifications";
+import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { createQuery } from "@/popup/utils/query";
 
 import styles from "./index.module.css";
@@ -49,6 +57,18 @@ export default function NodePosts() {
     postsView();
     untrack(() => {
       batch(() => {
+        // When the user reloads the feed, then changes the tab without clicking
+        // on "Load new posts", update the unread count since he's going to see
+        // the new posts
+        if (newPostsStore.hasNewPosts) {
+          mutateUnreadCount({ value: newPostsStore.unreadCount });
+          mutateMarkAsReadUntil(newPostsStore.markAsReadUntil);
+          setNewPostsStore({
+            hasNewPosts: false,
+            unreadCount: null,
+            markAsReadUntil: null,
+          });
+        }
         // reset the cursor and posts values every time postsView changes
         setPosts([]);
         setPaginationCursor(null);
@@ -67,7 +87,52 @@ export default function NodePosts() {
     });
   });
 
-  const { node, mutateUnreadCount } = createNodeResource();
+  const { node, mutateUnreadCount, mutateMarkAsReadUntil } =
+    createNodeResource();
+  const { store: preferences } = usePreferencesContext();
+  const [newPostsStore, setNewPostsStore] = createStore<NewPostsStore>({
+    hasNewPosts: false,
+    unreadCount: null,
+    markAsReadUntil: null,
+  });
+  const { mutation, sendMsg: reload } = createMutation("nodes/reload");
+  const reloadFeeds = async (id: number) => {
+    await reload({ id });
+    if (mutation.isSuccess) {
+      notifySuccess(getReloadSuccessMessage(mutation.data.newPostsCount));
+      // don't show the newPosts element when preferences.markNewPostsUnread
+      // is false and the user is in the Unread tab
+      const hasNewPosts = !!mutation.data.newPostsCount;
+      if (
+        hasNewPosts &&
+        (postsView() === "all" || preferences.markNewPostsUnread)
+      ) {
+        setNewPostsStore({
+          hasNewPosts: true,
+          markAsReadUntil: mutation.data.markAsReadUntil,
+          unreadCount: mutation.data.unreadCount,
+        });
+      }
+    } else if (mutation.isError) {
+      notifyError(mutation.errorMsg);
+    }
+  };
+  const loadNewPosts = () => {
+    batch(() => {
+      if (newPostsStore.hasNewPosts) {
+        mutateUnreadCount({ value: newPostsStore.unreadCount });
+        mutateMarkAsReadUntil(newPostsStore.markAsReadUntil);
+        setNewPostsStore({
+          hasNewPosts: false,
+          unreadCount: null,
+          markAsReadUntil: null,
+        });
+      }
+      setPosts([]);
+      setPaginationCursor(null);
+      fetchPosts();
+    });
+  };
 
   return (
     <UnreadCountContext.Provider value={{ mutateUnreadCount }}>
@@ -89,11 +154,20 @@ export default function NodePosts() {
             <div class={styles["blank-space-while-loading-header"]} />
           </Match>
           <Match when={node()}>
-            {(currentNode) => <NodeHeader node={currentNode()} />}
+            {(currentNode) => (
+              <ReloadFeedsContext.Provider value={{ mutation, reloadFeeds }}>
+                <NodeHeader node={currentNode()} />
+              </ReloadFeedsContext.Provider>
+            )}
           </Match>
         </Switch>
 
-        <PostList postsView={postsView()} nodeId={nodeId()} />
+        <PostList
+          postsView={postsView()}
+          nodeId={nodeId()}
+          hasNewPosts={newPostsStore.hasNewPosts}
+          loadNewPosts={loadNewPosts}
+        />
       </PostsContext.Provider>
     </UnreadCountContext.Provider>
   );
@@ -127,5 +201,24 @@ function createNodeResource() {
       });
     }
   };
-  return { node, mutateUnreadCount };
+  const mutateMarkAsReadUntil = (value: number) => {
+    mutate((resp) => {
+      if (!resp) return resp;
+
+      return { ...resp, markAsReadUntil: value };
+    });
+  };
+  return { node, mutateUnreadCount, mutateMarkAsReadUntil };
 }
+
+type NewPostsStore =
+  | {
+      hasNewPosts: false;
+      unreadCount: null;
+      markAsReadUntil: null;
+    }
+  | {
+      hasNewPosts: true;
+      unreadCount: number;
+      markAsReadUntil: number;
+    };

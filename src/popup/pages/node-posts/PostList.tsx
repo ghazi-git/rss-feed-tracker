@@ -4,6 +4,7 @@ import { PAGE_SIZE } from "@/background/settings";
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
+import LoadNewPosts from "@/popup/components/LoadNewPosts";
 import NoMorePosts from "@/popup/components/NoMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
 import Posts from "@/popup/pages/node-posts/Posts";
@@ -41,6 +42,8 @@ export default function PostList(props: PostListProps) {
       notifyError(resp.errorMsg);
     }
   };
+  const noPostsMsg = () =>
+    props.postsView === "all" ? "No posts yet." : "No unread posts found.";
 
   return (
     <Switch>
@@ -51,16 +54,18 @@ export default function PostList(props: PostListProps) {
         <NoPosts msg="Loading posts..." />
       </Match>
       <Match when={postsCount() === 0}>
-        <NoPosts
-          msg={
-            props.postsView === "all"
-              ? "No posts yet."
-              : "No unread posts found."
-          }
-        />
+        <Show
+          when={props.hasNewPosts}
+          fallback={<NoPosts msg={noPostsMsg()} />}
+        >
+          <LoadNewPosts onClick={() => props.loadNewPosts()} />
+        </Show>
       </Match>
       <Match when={postsCount() > 0}>
         <ErrorAlert errorMsg={query.errorMsg} />
+        <Show when={props.hasNewPosts}>
+          <LoadNewPosts onClick={() => props.loadNewPosts()} />
+        </Show>
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContextProvider>
             <Posts posts={posts()} />
@@ -86,4 +91,6 @@ export default function PostList(props: PostListProps) {
 interface PostListProps {
   nodeId: number;
   postsView: PostsView;
+  hasNewPosts: boolean;
+  loadNewPosts: () => void;
 }
