@@ -3,13 +3,24 @@ import type { Atom, Json, Rss } from "feedsmith/types";
 
 import { Post } from "@/background/db-setup";
 import { FeedParseError, HttpError } from "@/background/utils/errors";
+import { FeedPollingLogger, log } from "@/background/utils/logging";
 import { retry } from "@/background/utils/retry-on-error";
+
+export async function fetchAndParseFeed(
+  url: string,
+  logger: FeedPollingLogger | null = null,
+) {
+  log(`fetching url=${url}`, logger);
+  const feedContent = await fetchFeedContent(url);
+  log("parsing feed...", logger);
+  return parseFeedContent(url, feedContent);
+}
 
 /**
  * fetch the feed xml from its remote source
  * @raises HttpError, TimeoutError
  */
-export async function fetchFeedContent(url: string, timeout = 10_000) {
+async function fetchFeedContent(url: string, timeout = 10_000) {
   return await retry(async () => {
     const response = await fetch(url, { signal: AbortSignal.timeout(timeout) });
     if (!response.ok) {
@@ -29,10 +40,7 @@ export async function fetchFeedContent(url: string, timeout = 10_000) {
  * feed formats.
  * @raises FeedParseError
  */
-export function parseFeedContent(
-  feedURL: string,
-  feedContent: string,
-): ParsedFeed {
+function parseFeedContent(feedURL: string, feedContent: string): ParsedFeed {
   try {
     const { format, feed } = parseFeed(feedContent);
     if (format === "rss") {

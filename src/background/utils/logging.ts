@@ -37,6 +37,15 @@ export class FeedPollingLogger {
   }
 }
 
+export function log(msg: string, logger: FeedPollingLogger | null = null) {
+  if (logger) {
+    logger.debug(msg);
+  } else {
+    const now = new Date().toISOString();
+    console.log(`[${now}]`, msg);
+  }
+}
+
 export const COLOR_CODES = [
   "#007ACC",
   "#00875A",

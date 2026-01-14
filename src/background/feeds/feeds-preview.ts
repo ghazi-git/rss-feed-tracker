@@ -1,7 +1,4 @@
-import {
-  fetchFeedContent,
-  parseFeedContent,
-} from "@/background/utils/feeds-fetch-from-source";
+import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { FeedPreviewResponse } from "@/messaging-wrapper";
 
 /**
@@ -9,8 +6,7 @@ import { FeedPreviewResponse } from "@/messaging-wrapper";
  * @raises FeedParseError, HttpError
  */
 export async function previewFeed(url: string): Promise<FeedPreviewResponse> {
-  const feedContent = await fetchFeedContent(url);
-  const feed = parseFeedContent(url, feedContent);
+  const feed = await fetchAndParseFeed(url);
   return {
     feedName: feed.name,
     posts: feed.posts.slice(0, 3).map(({ title, url, publishedAt }) => ({

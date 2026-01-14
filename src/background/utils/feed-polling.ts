@@ -1,19 +1,28 @@
 import { unwrap } from "idb";
 
-import { ExtensionDB, Feed, getDBConnection } from "@/background/db-setup";
+import {
+  ExtensionDB,
+  Feed,
+  getDBConnection,
+  ReadWriteTX,
+} from "@/background/db-setup";
 import { getChunks } from "@/background/utils/chunks";
 import {
   saveFailureMetadata,
   saveSuccessMetadata,
 } from "@/background/utils/feedmetadata";
 import {
-  fetchFeedContent,
+  fetchAndParseFeed,
   getPostObjects,
-  parseFeedContent,
+  ParsedPost,
 } from "@/background/utils/feeds-fetch-from-source";
 import { getAllFromIndex, txDone } from "@/background/utils/idb-helpers";
 import { acquireLock } from "@/background/utils/locks";
-import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
+import {
+  COLOR_CODES,
+  FeedPollingLogger,
+  log,
+} from "@/background/utils/logging";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
@@ -95,10 +104,7 @@ export async function loadFeedPosts(
   node: Feed,
   logger: FeedPollingLogger,
 ) {
-  logger.debug(`fetching url=${node.feed.url}`);
-  const feedContent = await fetchFeedContent(node.feed.url);
-  logger.debug("parsing feed...");
-  const parsedFeed = parseFeedContent(node.feed.url, feedContent);
+  const parsedFeed = await fetchAndParseFeed(node.feed.url, logger);
 
   const fetchTime = Date.now();
   if (!parsedFeed.posts.length) {
@@ -114,15 +120,36 @@ export async function loadFeedPosts(
   logger.debug(`parsed ${parsedFeed.posts.length} post(s)`);
   const preferences = await loadPreferences();
   const markNewPostsUnread = preferences.markNewPostsUnread;
-  // prettier-ignore
-  const posts = getPostObjects(parsedFeed.posts, node.id, fetchTime, markNewPostsUnread);
-
   const tx = db.transaction(["posts", "feedmetadata", "nodes"], "readwrite");
+  const insertedPosts = await savePosts(
+    tx,
+    node,
+    parsedFeed.posts,
+    fetchTime,
+    markNewPostsUnread,
+    logger,
+  );
+
+  await txDone(unwrap(tx));
+
+  return insertedPosts;
+}
+
+export async function savePosts(
+  tx: ReadWriteTX,
+  node: Feed,
+  parsedPosts: ParsedPost[],
+  fetchTime: number,
+  markNewPostsUnread: boolean,
+  logger: FeedPollingLogger | null = null,
+) {
+  // prettier-ignore
+  const posts = getPostObjects(parsedPosts, node.id, fetchTime, markNewPostsUnread);
   const results = await bulkAddPosts(tx, posts);
   const insertedPosts = results.filter((res) => res.success).length;
-  logger.debug(`inserted ${insertedPosts} new post(s) in indexedDB`);
+  log(`inserted ${insertedPosts} new post(s) in indexedDB`, logger);
   if (insertedPosts && markNewPostsUnread) {
-    logger.debug(`updating unread counts`);
+    log(`updating unread counts`, logger);
     await updateFeedUnreadCount(tx, node.id, insertedPosts);
   }
   const notes = describeSaveResults(results);
@@ -134,9 +161,7 @@ export async function loadFeedPosts(
     !!insertedPosts,
     notes,
   );
+  log(`done notes=${notes ?? "All parsed posts were inserted"}`, logger);
 
-  await txDone(unwrap(tx));
-
-  logger.debug(`done notes=${notes ?? "All parsed posts were inserted"}`);
   return insertedPosts;
 }

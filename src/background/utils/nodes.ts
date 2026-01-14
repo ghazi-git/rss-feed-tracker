@@ -1,4 +1,5 @@
 import {
+  Feed,
   FeedMetadata,
   Folder,
   ReadTX,
@@ -7,6 +8,8 @@ import {
 } from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
+import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
+import { FeedFormData } from "@/messaging-wrapper";
 
 export async function getHighestSortOrder(
   tx: ReadTX | ReadWriteTX,
@@ -67,6 +70,7 @@ export function getNodeLastRunAt(
     return lastRunAts.at(-1) ?? defaultTime;
   }
 }
+
 export async function updateFeedUnreadCount(
   tx: ReadWriteTX,
   nodeId: number,
@@ -86,4 +90,34 @@ export async function updateFeedUnreadCount(
   if (rootFolder) {
     setUnreadCountOnExtensionBadge(rootFolder.unreadCount);
   }
+}
+
+export async function createFeed(
+  tx: ReadWriteTX,
+  data: FeedFormData,
+  favicon: string | null,
+  createdAt: number,
+) {
+  const sortOrder = await getHighestSortOrder(tx, data.folder);
+  const feed = {
+    type: "feed",
+    name: data.name,
+    parentId: data.folder,
+    unreadCount: 0,
+    sortOrder,
+    createdAt,
+    feed: {
+      favicon,
+      url: data.url,
+      updateFrequency: data.frequency,
+    },
+  } as Feed;
+  const nodes = tx.objectStore("nodes");
+  const feedId = await nodes.add(feed);
+
+  const metadata = getInitialFeedmetadata(feedId);
+  const feedmatadata = tx.objectStore("feedmetadata");
+  await feedmatadata.add(metadata);
+
+  return { ...feed, id: feedId } as Feed;
 }
