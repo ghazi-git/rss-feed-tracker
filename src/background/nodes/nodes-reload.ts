@@ -1,3 +1,5 @@
+import { unwrap } from "idb";
+
 import {
   ExtensionDB,
   Feed,
@@ -6,10 +8,12 @@ import {
 } from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
 import { NotFoundError } from "@/background/utils/errors";
-import { insertParsedPosts, loadFeeds } from "@/background/utils/feed-polling";
+import { loadFeeds, savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
+import { txDone } from "@/background/utils/idb-helpers";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { NodeReloadResponse } from "@/messaging-wrapper";
+import { loadPreferences } from "@/popup/utils/preferences-storage";
 
 export async function reloadNode(id: number): Promise<NodeReloadResponse> {
   using conn = await getDBConnection();
@@ -37,10 +41,24 @@ export async function reloadNode(id: number): Promise<NodeReloadResponse> {
 }
 
 async function reloadFeed(db: ExtensionDB, node: Feed) {
+  const preferences = await loadPreferences();
+  const markNewPostsUnread = preferences.markNewPostsUnread;
   const now = new Date().toISOString();
   const logger = new FeedPollingLogger(node.id, now, COLOR_CODES[0]);
   const parsedFeed = await fetchAndParseFeed(node.feed.url, logger);
-  return await insertParsedPosts(db, node, parsedFeed.posts, logger);
+
+  const tx = db.transaction(["posts", "feedmetadata", "nodes"], "readwrite");
+  const insertedPosts = await savePosts(
+    tx,
+    node,
+    parsedFeed.posts,
+    Date.now(),
+    markNewPostsUnread,
+    logger,
+  );
+  await txDone(unwrap(tx));
+
+  return insertedPosts;
 }
 
 async function reloadFolder(db: ExtensionDB, node: Folder) {

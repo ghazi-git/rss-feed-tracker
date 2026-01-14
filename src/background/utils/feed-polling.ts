@@ -78,6 +78,9 @@ export async function loadFeeds(
   feeds: Feed[],
   scheduledAt: string,
 ) {
+  const preferences = await loadPreferences();
+  const markNewPostsUnread = preferences.markNewPostsUnread;
+
   let totalNewPosts = 0;
   // load feeds in parallel
   const chunks = getChunks(feeds, 5);
@@ -87,8 +90,22 @@ export async function loadFeeds(
       const logger = new FeedPollingLogger(feed.id, scheduledAt, colorCode);
 
       return fetchAndParseFeed(feed.feed.url, logger)
-        .then((parsedFeed) => {
-          return insertParsedPosts(db, feed, parsedFeed.posts, logger);
+        .then(async (parsedFeed) => {
+          const tx = db.transaction(
+            ["posts", "feedmetadata", "nodes"],
+            "readwrite",
+          );
+          const insertedPosts = await savePosts(
+            tx,
+            feed,
+            parsedFeed.posts,
+            Date.now(),
+            markNewPostsUnread,
+            logger,
+          );
+          await txDone(unwrap(tx));
+
+          return insertedPosts;
         })
         .catch(async (e) => {
           logger.error(e);
@@ -101,29 +118,6 @@ export async function loadFeeds(
     totalNewPosts += newPosts.reduce((acc, val) => acc + val, 0);
   }
   return totalNewPosts;
-}
-
-export async function insertParsedPosts(
-  db: ExtensionDB,
-  node: Feed,
-  posts: ParsedPost[],
-  logger: FeedPollingLogger,
-) {
-  const preferences = await loadPreferences();
-  const markNewPostsUnread = preferences.markNewPostsUnread;
-  const tx = db.transaction(["posts", "feedmetadata", "nodes"], "readwrite");
-  const insertedPosts = await savePosts(
-    tx,
-    node,
-    posts,
-    Date.now(),
-    markNewPostsUnread,
-    logger,
-  );
-
-  await txDone(unwrap(tx));
-
-  return insertedPosts;
 }
 
 export async function savePosts(
