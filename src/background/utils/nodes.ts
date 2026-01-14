@@ -121,3 +121,25 @@ export async function createFeed(
 
   return { ...feed, id: feedId } as Feed;
 }
+
+export async function saveFolder(
+  tx: ReadWriteTX,
+  name: string,
+  parentId: number,
+) {
+  const sortOrder = await getHighestSortOrder(tx, parentId);
+  const folder = {
+    type: "folder",
+    name,
+    parentId,
+    sortOrder,
+    createdAt: Date.now(),
+    unreadCount: 0,
+    feed: null,
+  } as Folder;
+
+  const nodeStore = tx.objectStore("nodes");
+  const folderId = await nodeStore.add(folder);
+
+  return { ...folder, id: folderId } as Folder;
+}
