@@ -6,7 +6,8 @@ import {
 } from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
 import { NotFoundError } from "@/background/utils/errors";
-import { loadFeedPosts, loadFeeds } from "@/background/utils/feed-polling";
+import { insertParsedPosts, loadFeeds } from "@/background/utils/feed-polling";
+import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { NodeReloadResponse } from "@/messaging-wrapper";
 
@@ -38,7 +39,8 @@ export async function reloadNode(id: number): Promise<NodeReloadResponse> {
 async function reloadFeed(db: ExtensionDB, node: Feed) {
   const now = new Date().toISOString();
   const logger = new FeedPollingLogger(node.id, now, COLOR_CODES[0]);
-  return await loadFeedPosts(db, node, logger);
+  const parsedFeed = await fetchAndParseFeed(node.feed.url, logger);
+  return await insertParsedPosts(db, node, parsedFeed.posts, logger);
 }
 
 async function reloadFolder(db: ExtensionDB, node: Folder) {

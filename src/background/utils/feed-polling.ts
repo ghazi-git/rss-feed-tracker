@@ -86,12 +86,16 @@ export async function loadFeeds(
       const colorCode = COLOR_CODES[idx % COLOR_CODES.length];
       const logger = new FeedPollingLogger(feed.id, scheduledAt, colorCode);
 
-      return loadFeedPosts(db, feed, logger).catch(async (e) => {
-        logger.error(e);
-        const msg = e instanceof Error ? e.message : "Unexpected error";
-        await saveFailureMetadata(db, feed, msg);
-        return 0;
-      });
+      return fetchAndParseFeed(feed.feed.url, logger)
+        .then((parsedFeed) => {
+          return insertParsedPosts(db, feed, parsedFeed.posts, logger);
+        })
+        .catch(async (e) => {
+          logger.error(e);
+          const msg = e instanceof Error ? e.message : "Unexpected error";
+          await saveFailureMetadata(db, feed, msg);
+          return 0;
+        });
     });
     const newPosts = await Promise.all(promises);
     totalNewPosts += newPosts.reduce((acc, val) => acc + val, 0);
@@ -99,33 +103,20 @@ export async function loadFeeds(
   return totalNewPosts;
 }
 
-export async function loadFeedPosts(
+export async function insertParsedPosts(
   db: ExtensionDB,
   node: Feed,
+  posts: ParsedPost[],
   logger: FeedPollingLogger,
 ) {
-  const parsedFeed = await fetchAndParseFeed(node.feed.url, logger);
-
-  const fetchTime = Date.now();
-  if (!parsedFeed.posts.length) {
-    const tx = db.transaction(["feedmetadata"], "readwrite");
-    const frequency = node.feed.updateFrequency;
-    const notes = "Feed has no posts.";
-    await saveSuccessMetadata(tx, node.id, frequency, fetchTime, false, notes);
-    await txDone(unwrap(tx));
-    logger.debug("done (no posts)");
-    return 0;
-  }
-
-  logger.debug(`parsed ${parsedFeed.posts.length} post(s)`);
   const preferences = await loadPreferences();
   const markNewPostsUnread = preferences.markNewPostsUnread;
   const tx = db.transaction(["posts", "feedmetadata", "nodes"], "readwrite");
   const insertedPosts = await savePosts(
     tx,
     node,
-    parsedFeed.posts,
-    fetchTime,
+    posts,
+    Date.now(),
     markNewPostsUnread,
     logger,
   );
@@ -143,6 +134,15 @@ export async function savePosts(
   markNewPostsUnread: boolean,
   logger: FeedPollingLogger | null = null,
 ) {
+  if (!parsedPosts.length) {
+    const frequency = node.feed.updateFrequency;
+    const notes = "Feed has no posts.";
+    await saveSuccessMetadata(tx, node.id, frequency, fetchTime, false, notes);
+    log("done (no posts)", logger);
+    return 0;
+  }
+
+  log(`parsed ${parsedPosts.length} post(s)`, logger);
   // prettier-ignore
   const posts = getPostObjects(parsedPosts, node.id, fetchTime, markNewPostsUnread);
   const results = await bulkAddPosts(tx, posts);

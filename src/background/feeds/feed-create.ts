@@ -2,7 +2,6 @@ import { unwrap } from "idb";
 
 import { getDBConnection } from "@/background/db-setup";
 import { savePosts } from "@/background/utils/feed-polling";
-import { saveSuccessMetadata } from "@/background/utils/feedmetadata";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { txDone } from "@/background/utils/idb-helpers";
 import { createFeed } from "@/background/utils/nodes";
@@ -24,11 +23,7 @@ export async function loadAndCreateFeed(data: FeedFormData) {
 
   const feed = await createFeed(tx, data, favicon, fetchTime);
 
-  if (parsedFeed.posts.length) {
-    await savePosts(tx, feed, parsedFeed.posts, fetchTime, markNewPostsUnread);
-  } else {
-    await saveSuccessMetadata(tx, feed.id, data.frequency, fetchTime);
-  }
+  await savePosts(tx, feed, parsedFeed.posts, fetchTime, markNewPostsUnread);
 
   await txDone(unwrap(tx));
 
