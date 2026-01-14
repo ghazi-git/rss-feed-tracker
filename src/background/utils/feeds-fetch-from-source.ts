@@ -1,5 +1,5 @@
-import type { AtomFeed, JsonFeed, RssFeed } from "feedsmith";
 import { parseFeed } from "feedsmith";
+import type { Atom, Json, Rss } from "feedsmith/types";
 
 import { Post } from "@/background/db-setup";
 import { FeedParseError, HttpError } from "@/background/utils/errors";
@@ -36,11 +36,11 @@ export function parseFeedContent(
   try {
     const { format, feed } = parseFeed(feedContent);
     if (format === "rss") {
-      return getRSSFeedContent(feed as RssFeed<string>, feedURL);
+      return getRSSFeedContent(feed as Rss.Feed<string>, feedURL);
     } else if (format === "atom") {
-      return getAtomFeedContent(feed as AtomFeed<string>, feedURL);
+      return getAtomFeedContent(feed as Atom.Feed<string>, feedURL);
     } else if (format === "json") {
-      return getJSONFeedContent(feed as JsonFeed<string>, feedURL);
+      return getJSONFeedContent(feed as Json.Feed<string>, feedURL);
     } else {
       throw new FeedParseError("Unsupported feed format.");
     }
@@ -51,7 +51,10 @@ export function parseFeedContent(
   }
 }
 
-function getRSSFeedContent(feed: RssFeed<string>, feedURL: string): ParsedFeed {
+function getRSSFeedContent(
+  feed: Rss.Feed<string>,
+  feedURL: string,
+): ParsedFeed {
   const items = feed.items ?? [];
   const posts: ParsedPost[] = [];
   for (const item of items) {
@@ -90,7 +93,7 @@ function getRSSFeedContent(feed: RssFeed<string>, feedURL: string): ParsedFeed {
 }
 
 function getAtomFeedContent(
-  feed: AtomFeed<string>,
+  feed: Atom.Feed<string>,
   feedURL: string,
 ): ParsedFeed {
   const items = feed.entries ?? [];
@@ -115,7 +118,7 @@ function getAtomFeedContent(
 }
 
 function getJSONFeedContent(
-  feed: JsonFeed<string>,
+  feed: Json.Feed<string>,
   feedURL: string,
 ): ParsedFeed {
   const posts: ParsedPost[] = [];
@@ -165,7 +168,7 @@ function getTimestamp(value: string | undefined) {
   return dt.getTime() || null;
 }
 
-function getRSSItemURLFromEnclosure(enclosures: Enclosure[] | undefined) {
+function getRSSItemURLFromEnclosure(enclosures: Rss.Enclosure[] | undefined) {
   if (!enclosures) return undefined;
 
   const audio = enclosures.find(
@@ -179,7 +182,7 @@ function getRSSItemURLFromEnclosure(enclosures: Enclosure[] | undefined) {
   if (video) return video.url;
 }
 
-function getAtomEntryURL(links: AtomFeed<string>["links"]) {
+function getAtomEntryURL(links: Atom.Link<string>[] | undefined) {
   if (!links) return undefined;
 
   // refer to https://validator.w3.org/feed/docs/atom.html#link
@@ -207,7 +210,7 @@ function getAtomEntryURL(links: AtomFeed<string>["links"]) {
   if (video) return video.href;
 }
 
-function getAtomFeedWebsite(links: AtomFeed<string>["links"]) {
+function getAtomFeedWebsite(links: Atom.Link<string>[] | undefined) {
   // refer to https://validator.w3.org/feed/docs/atom.html#link
   const urls = (links || []).filter(
     (link) => !link.rel || link.rel === "alternate",
@@ -219,7 +222,7 @@ function getAtomFeedWebsite(links: AtomFeed<string>["links"]) {
 }
 
 function getJSONFeedItemURLFromAttachments(
-  attachments: Attachment[] | undefined,
+  attachments: Json.Attachment[] | undefined,
 ) {
   if (!attachments) return undefined;
 
@@ -256,21 +259,10 @@ interface ParsedFeed {
   posts: ParsedPost[];
 }
 
-interface ParsedPost {
+export interface ParsedPost {
   guid: string;
   title: string;
   url: string;
   publishedAt: number;
   commentsURL: string | null;
 }
-
-type Enclosure = {
-  url: string;
-  length: number;
-  type: string;
-};
-
-type Attachment = {
-  url: string;
-  mime_type: string;
-};
