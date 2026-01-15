@@ -6,7 +6,7 @@
   background-color: var(--error-color);
 }
 
-.reloading {
+.loading {
   display: flex;
   justify-content: flex-start;
   align-items: center;

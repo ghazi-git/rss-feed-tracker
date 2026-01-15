@@ -7,12 +7,15 @@ import MenuItem from "@/popup/components/dropdown/MenuItem";
 import Separator from "@/popup/components/dropdown/Separator";
 import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
 import { useReloadFeedsContext } from "@/popup/pages/node-posts/reload-feeds-context";
-import { notifyInfo } from "@/popup/utils/notifications";
+import { createMutation } from "@/popup/utils/mutation";
+import { notifyError } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./FolderActions.module.css";
 
 export default function FolderActions(props: FolderActionsProps) {
+  const { mutation: exportMutation, sendMsg: exportOPML } =
+    createMutation("opml/export");
   const { mutation, reloadFeeds } = useReloadFeedsContext();
   const { closeMenu } = useDropdownContext();
   const { openModal } = useDeleteNodeContext();
@@ -39,7 +42,7 @@ export default function FolderActions(props: FolderActionsProps) {
     <>
       <MenuItem onClick={() => navigate(editUrl())}>Edit</MenuItem>
       <MenuItem
-        class={mutation.isLoading ? styles.reloading : ""}
+        class={mutation.isLoading ? styles.loading : ""}
         onClick={async () => {
           if (!mutation.isLoading) {
             await reloadFeeds(props.folderId);
@@ -59,12 +62,24 @@ export default function FolderActions(props: FolderActionsProps) {
         Import Feeds
       </MenuItem>
       <MenuItem
-        onClick={() => {
-          notifyInfo("Exporting Feeds under this folder...");
-          closeMenu();
+        class={exportMutation.isLoading ? styles.loading : ""}
+        onClick={async () => {
+          if (!exportMutation.isLoading) {
+            await exportOPML({ folder: props.folderId });
+            if (exportMutation.isSuccess) {
+              const filename = `feeds_export_${new Date().toISOString()}.opml`;
+              const opmlFileContent = exportMutation.data;
+              triggerFileDownload(filename, opmlFileContent, "application/xml");
+            } else if (exportMutation.isError) {
+              notifyError(exportMutation.errorMsg);
+            }
+            closeMenu();
+          }
         }}
       >
-        Export Feeds
+        <Show when={mutation.isLoading} fallback="Export Feeds">
+          Exporting...
+        </Show>
       </MenuItem>
       <Show when={!props.isRoot}>
         <Separator />
@@ -81,6 +96,23 @@ export default function FolderActions(props: FolderActionsProps) {
       </Show>
     </>
   );
+}
+
+function triggerFileDownload(
+  filename: string,
+  fileContent: string,
+  mimeType: string,
+) {
+  const url = URL.createObjectURL(new Blob([fileContent], { type: mimeType }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 interface FolderActionsProps {

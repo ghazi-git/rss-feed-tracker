@@ -146,4 +146,4 @@ interface FolderOutline {
   name: string;
   children: OutlineElement[];
 }
-type OutlineElement = FolderOutline | FeedOutline;
+export type OutlineElement = FolderOutline | FeedOutline;
