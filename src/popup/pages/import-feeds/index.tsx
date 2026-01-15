@@ -1,16 +1,21 @@
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { batch, createSignal, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { sendMessage } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
+import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
 import SelectField, { SelectOption } from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
-import { notifyError } from "@/popup/utils/notifications";
+import { createMutation } from "@/popup/utils/mutation";
+import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 
 export default function ImportFeeds() {
+  const navigate = useNavigate();
+  const [errorMsg, setErrorMsg] = createSignal<string | null>(null);
+  const { mutation, sendMsg: importOPML } = createMutation("opml/import");
   const [searchParams] = useSearchParams<{
     previousUrl?: string;
     parentFolderId?: string;
@@ -34,6 +39,38 @@ export default function ImportFeeds() {
     }
   });
 
+  const onSubmit = async (file: File | null, parent: number | null) => {
+    if (!file || !parent) {
+      setErrorMsg("Both fields are required.");
+      return;
+    }
+    if (!file.name.toLowerCase().endsWith(".opml")) {
+      setErrorMsg("The selected file should have the extension 'opml'.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      // OPML files contain just a list of feeds so they're usually below
+      // 1MB. Also, keep in mind the limit for message passing is 64MB.
+      // https://developer.chrome.com/docs/extensions/develop/concepts/messaging#message_size_limits
+      setErrorMsg("The file is too big (more than 10MB).");
+      return;
+    }
+    const content = await file.text();
+    if (!content.trim()) {
+      setErrorMsg("Empty file.");
+      return;
+    }
+
+    setErrorMsg(null);
+    await importOPML({ fileContent: content, folder: parent });
+    if (mutation.isSuccess) {
+      notifySuccess(
+        "Feeds created. The posts are being loaded in the background.",
+      );
+      navigate(`/library/nodes/${parent}`);
+    }
+  };
+
   return (
     <>
       <PageHeader
@@ -41,28 +78,32 @@ export default function ImportFeeds() {
         previousUrl={searchParams.previousUrl ?? "/library"}
       />
       <form
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault();
-          console.log("formdata", formdata);
+          await onSubmit(formdata.file, formdata.parent);
         }}
       >
+        <ErrorAlert errorMsg={errorMsg() || mutation.errorMsg} />
         <InputField
           type="file"
           name="file"
           label="OPML File"
           required={true}
-          accept=".xml"
+          accept=".opml"
           onChange={(e) => setFormdata("file", e.target.files?.item(0) ?? null)}
         />
         <SelectField
           name="parent"
           label="Parent Folder"
           options={parentOptions()}
+          required={true}
           value={formdata.parent ?? undefined}
           onChange={(e) => setFormdata("parent", parseInt(e.target.value))}
         />
         <ButtonContainer>
-          <ActionButton type="submit">Save</ActionButton>
+          <ActionButton type="submit" loading={mutation.isLoading}>
+            Save
+          </ActionButton>
         </ButtonContainer>
       </form>
     </>

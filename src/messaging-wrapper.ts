@@ -47,6 +47,7 @@ interface MessageMap {
   "folders/get"(data: { id: number }): FolderDataWithOptions;
   "folders/update"(data: FolderDataUpdate): void;
   "folders/delete"(data: { id: number }): void;
+  "opml/import"(data: OPMLImportParams): void;
 }
 
 export interface FeedPreviewResponse {
@@ -139,6 +140,10 @@ interface FolderDataUpdate {
   id: number;
   name: string;
   parentFolder: number | null;
+}
+interface OPMLImportParams {
+  folder: number;
+  fileContent: string;
 }
 
 export type MessageType = keyof MessageMap;

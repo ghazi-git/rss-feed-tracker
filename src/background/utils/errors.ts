@@ -13,6 +13,8 @@ export class NotFoundError extends ServiceWorkerError {}
 
 export class DeletionError extends ServiceWorkerError {}
 
+export class OPMLParseError extends ServiceWorkerError {}
+
 export function getErrorMsg(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,

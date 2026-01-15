@@ -2,6 +2,7 @@ import {
   IDBPIndexGetAllOptions,
   IDBPStoreGetAllOptions,
   StoreKey,
+  StoreValue,
   unwrap,
 } from "idb";
 
@@ -118,6 +119,15 @@ export async function getObject<Name extends ExtStoreName>(
 ) {
   const store = tx.objectStore(storeName);
   return await store.get(key);
+}
+
+export async function saveObject<Name extends ExtStoreName>(
+  tx: ReadWriteTX,
+  storeName: Name,
+  obj: StoreValue<FeedTrackerDB, Name>,
+) {
+  const store = tx.objectStore(storeName);
+  return await store.put(obj);
 }
 
 type StoreUpdateFn<Name extends ExtStoreName> = (
