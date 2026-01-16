@@ -3,75 +3,15 @@ import {
   IDBPStoreGetAllOptions,
   StoreKey,
   StoreValue,
-  unwrap,
 } from "idb";
 
-import { NotFoundError } from "@/background/utils/errors";
 import {
-  ExtensionDB,
   ExtIndexName,
   ExtStoreName,
-  ExtStoreValue,
   FeedTrackerDB,
-  PrimaryKey,
   ReadTX,
   ReadWriteTX,
 } from "@/db-setup";
-
-/**
- * Basically, a get and then a put executed in the same transaction.
- * @returns the updated object after applying the updates and the old object.
- * @raises DOMException that happens during the get or the put
- */
-export async function update<Name extends ExtStoreName>(
-  db: ExtensionDB,
-  storeName: Name,
-  pk: PrimaryKey<Name>,
-  updateFn: StoreUpdateFn<Name>,
-): Promise<StoreUpdateReturn<Name>>;
-export async function update<Name extends ExtStoreName>(
-  db: ExtensionDB,
-  storeName: Name,
-  pk: PrimaryKey<Name>,
-  updates: Partial<ExtStoreValue<Name>>,
-): Promise<StoreUpdateReturn<Name>>;
-export async function update<Name extends ExtStoreName>(
-  db: ExtensionDB,
-  storeName: Name,
-  pk: PrimaryKey<Name>,
-  updatesOrUpdateFn: Partial<ExtStoreValue<Name>> | StoreUpdateFn<Name>,
-): Promise<StoreUpdateReturn<Name>> {
-  const tx = unwrap(db.transaction(storeName, "readwrite"));
-  const store = tx.objectStore(storeName);
-  let oldObject: ExtStoreValue<Name> | undefined;
-  const updatedObj = await new Promise<ExtStoreValue<Name>>(
-    (resolve, reject) => {
-      const getRequest = store.get(pk);
-      getRequest.onsuccess = () => {
-        oldObject = getRequest.result as ExtStoreValue<Name> | undefined;
-        if (!oldObject) {
-          const msg = `Object to be updated not found storeName=${storeName} pk=${pk}`;
-          reject(new NotFoundError(msg));
-          return;
-        }
-        let updated: ExtStoreValue<Name>;
-        if (typeof updatesOrUpdateFn === "function") {
-          updated = updatesOrUpdateFn(structuredClone(oldObject));
-        } else {
-          updated = { ...oldObject, ...updatesOrUpdateFn };
-        }
-        const putRequest = store.put(updated);
-        putRequest.onsuccess = () => {
-          resolve(updated);
-        };
-      };
-    },
-  );
-
-  await txDone(tx);
-
-  return [updatedObj, oldObject] as [ExtStoreValue<Name>, ExtStoreValue<Name>];
-}
 
 /**
  * Replaces `tx.done` given the issue in https://github.com/jakearchibald/idb/issues/326
@@ -129,11 +69,3 @@ export async function saveObject<Name extends ExtStoreName>(
   const store = tx.objectStore(storeName);
   return await store.put(obj);
 }
-
-type StoreUpdateFn<Name extends ExtStoreName> = (
-  old: ExtStoreValue<Name>,
-) => ExtStoreValue<Name>;
-type StoreUpdateReturn<Name extends ExtStoreName> = [
-  ExtStoreValue<Name>,
-  ExtStoreValue<Name>,
-];

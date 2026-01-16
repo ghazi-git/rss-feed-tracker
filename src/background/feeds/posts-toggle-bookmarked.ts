@@ -1,5 +1,7 @@
+import { unwrap } from "idb";
+
 import { NotFoundError } from "@/background/utils/errors";
-import { update } from "@/background/utils/idb-helpers";
+import { getObject, saveObject, txDone } from "@/background/utils/idb-helpers";
 import { getDBConnection } from "@/db-setup";
 
 export async function toggleBookmarkedPost(
@@ -9,16 +11,15 @@ export async function toggleBookmarkedPost(
 ) {
   using conn = await getDBConnection();
 
-  try {
-    await update(conn.db, "posts", [feedId, guid], {
-      bookmarked: bookmarked ? 1 : 0,
-    });
-  } catch (e) {
-    if (e instanceof NotFoundError) {
-      const msg = "Unable to find the post, it may have been deleted.";
-      throw new NotFoundError(msg);
-    } else {
-      throw e;
-    }
+  const tx = conn.db.transaction(["posts"], "readwrite");
+  const post = await getObject(tx, "posts", [feedId, guid]);
+  if (!post) {
+    const msg = "Unable to find the post, it may have been deleted.";
+    throw new NotFoundError(msg);
   }
+
+  post.bookmarked = bookmarked ? 1 : 0;
+  await saveObject(tx, "posts", post);
+
+  await txDone(unwrap(tx));
 }
