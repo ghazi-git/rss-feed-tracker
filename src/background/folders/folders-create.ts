@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { txDone } from "@/background/utils/idb-helpers";
 import { saveFolder } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
@@ -10,7 +8,7 @@ export async function createFolder(data: FolderFormData) {
   const tx = conn.db.transaction(["nodes"], "readwrite");
 
   const folder = await saveFolder(tx, data.name, data.parentFolder);
-  await txDone(unwrap(tx));
+  await txDone(tx);
 
   return folder.id;
 }

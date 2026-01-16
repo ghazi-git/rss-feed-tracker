@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { getChunks } from "@/background/utils/chunks";
 import {
   saveFailureMetadata,
@@ -98,7 +96,7 @@ export async function loadFeeds(
             markNewPostsUnread,
             logger,
           );
-          await txDone(unwrap(tx));
+          await txDone(tx);
 
           return insertedPosts;
         })

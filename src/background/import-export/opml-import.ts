@@ -1,6 +1,5 @@
 import { parseOpml } from "feedsmith";
 import type { Opml } from "feedsmith/types";
-import { unwrap } from "idb";
 
 import { getChunks } from "@/background/utils/chunks";
 import { NotFoundError, OPMLParseError } from "@/background/utils/errors";
@@ -36,7 +35,7 @@ export async function importOPML(fileContent: string, folder: number) {
 
   const frequency = preferences.defaultFeedUpdateFrequency;
   const feeds = await createNodes(tx, outlines, folder, frequency);
-  await txDone(unwrap(tx));
+  await txDone(tx);
 
   // don't keep the user waiting for the posts of all feeds to load (load them
   // in the background). If the service worker is killed by chrome for any
@@ -126,7 +125,7 @@ async function loadPosts(feeds: Feed[], markNewPostsUnread: boolean) {
           const posts = parsedFeed.posts;
           const now = Date.now();
           await savePosts(tx, node, posts, now, markNewPostsUnread, logger);
-          await txDone(unwrap(tx));
+          await txDone(tx);
         })
         .catch(async (e) => {
           logger.error(e);

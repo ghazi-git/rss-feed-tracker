@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { NotFoundError } from "@/background/utils/errors";
 import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
 import { txDone } from "@/background/utils/idb-helpers";
@@ -77,5 +75,5 @@ export async function updateFeed(id: number, feedData: UpdateFeedFormData) {
     metadata.nextRunAt = nextRunAt;
     await metadataStore.put(metadata);
   }
-  await txDone(unwrap(tx));
+  await txDone(tx);
 }

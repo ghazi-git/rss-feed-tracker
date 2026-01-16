@@ -1,6 +1,4 @@
-import { unwrap } from "idb";
-
-import { txDone } from "@/background/utils/idb-helpers";
+import { getObject, saveObject, txDone } from "@/background/utils/idb-helpers";
 import { ExtensionDB, Feed, FeedMetadata, ReadWriteTX } from "@/db-setup";
 
 export async function saveSuccessMetadata(
@@ -47,8 +45,8 @@ export async function saveFailureMetadata(
   feed: Feed,
   failureReason: string,
 ) {
-  const tx = db.transaction("feedmetadata", "readwrite");
-  let metadata = await tx.store.get(feed.id);
+  const tx = db.transaction(["feedmetadata"], "readwrite");
+  let metadata = await getObject(tx, "feedmetadata", feed.id);
   if (!metadata) {
     metadata = getInitialFeedmetadata(feed.id);
   }
@@ -59,7 +57,7 @@ export async function saveFailureMetadata(
     lastRunResult: "failure",
     lastRunNotes: failureReason,
   };
-  await tx.store.put({ ...metadata, ...updates });
+  await saveObject(tx, "feedmetadata", { ...metadata, ...updates });
 
-  await txDone(unwrap(tx));
+  await txDone(tx);
 }

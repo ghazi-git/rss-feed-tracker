@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { txDone } from "@/background/utils/idb-helpers";
@@ -25,7 +23,7 @@ export async function loadAndCreateFeed(data: FeedFormData) {
 
   await savePosts(tx, feed, parsedFeed.posts, fetchTime, markNewPostsUnread);
 
-  await txDone(unwrap(tx));
+  await txDone(tx);
 
   return feed.id;
 }

@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
@@ -26,5 +24,5 @@ export async function toggleUnreadPost(
   // update the unread count of parent folders
   await updateFeedUnreadCount(tx, feedId, unread ? 1 : -1);
 
-  await txDone(unwrap(tx));
+  await txDone(tx);
 }

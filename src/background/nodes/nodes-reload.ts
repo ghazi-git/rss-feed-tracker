@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { getNodeTree } from "@/background/folders/folders-options";
 import { NotFoundError } from "@/background/utils/errors";
 import { loadFeeds, savePosts } from "@/background/utils/feed-polling";
@@ -51,7 +49,7 @@ async function reloadFeed(db: ExtensionDB, node: Feed) {
     markNewPostsUnread,
     logger,
   );
-  await txDone(unwrap(tx));
+  await txDone(tx);
 
   return insertedPosts;
 }

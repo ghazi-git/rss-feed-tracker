@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
@@ -84,5 +82,5 @@ export async function markAllPostsAsRead(
     setUnreadCountOnExtensionBadge(rootFolder.unreadCount);
   }
 
-  await txDone(unwrap(tx));
+  await txDone(tx);
 }

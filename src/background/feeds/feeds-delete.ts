@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
@@ -39,7 +37,7 @@ export async function deleteFeed(id: number) {
     await updateFeedUnreadCount(tx, feed.parentId, -feed.unreadCount);
   }
   try {
-    await txDone(unwrap(tx));
+    await txDone(tx);
   } catch (e) {
     const msg = "Unable to delete the feed and its posts, please try again.";
     throw new DeletionError(msg, { cause: e });

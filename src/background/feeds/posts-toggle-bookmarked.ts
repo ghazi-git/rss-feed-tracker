@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { NotFoundError } from "@/background/utils/errors";
 import { getObject, saveObject, txDone } from "@/background/utils/idb-helpers";
 import { getDBConnection } from "@/db-setup";
@@ -21,5 +19,5 @@ export async function toggleBookmarkedPost(
   post.bookmarked = bookmarked ? 1 : 0;
   await saveObject(tx, "posts", post);
 
-  await txDone(unwrap(tx));
+  await txDone(tx);
 }

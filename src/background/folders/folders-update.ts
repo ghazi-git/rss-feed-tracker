@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
 import {
@@ -60,5 +58,5 @@ export async function updateFolder(
     }
   }
 
-  await txDone(unwrap(tx));
+  await txDone(tx);
 }

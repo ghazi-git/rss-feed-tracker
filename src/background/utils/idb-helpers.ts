@@ -3,6 +3,7 @@ import {
   IDBPStoreGetAllOptions,
   StoreKey,
   StoreValue,
+  unwrap,
 } from "idb";
 
 import {
@@ -18,12 +19,13 @@ import {
  * @raises the DOMException triggered by the transaction aborting. Listening to
  * "abort" only since the transaction is automatically aborted on error.
  */
-export function txDone(tx: IDBTransaction) {
+export function txDone(tx: IDBTransaction | ReadWriteTX | ReadTX) {
+  const trx = tx instanceof IDBTransaction ? tx : unwrap(tx);
   return new Promise<void>((resolve, reject) => {
-    tx.oncomplete = () => resolve();
-    tx.onabort = () => {
+    trx.oncomplete = () => resolve();
+    trx.onabort = () => {
       const error =
-        tx.error ?? new DOMException("Request aborted.", "AbortError");
+        trx.error ?? new DOMException("Request aborted.", "AbortError");
       reject(error);
     };
   });

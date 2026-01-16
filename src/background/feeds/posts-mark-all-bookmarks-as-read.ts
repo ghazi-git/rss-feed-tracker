@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { txDone } from "@/background/utils/idb-helpers";
 import { getAncestors, getNodeMap } from "@/background/utils/nodes";
@@ -47,5 +45,5 @@ export async function markAllBookmarksAsRead() {
     setUnreadCountOnExtensionBadge(rootFolder.unreadCount);
   }
 
-  await txDone(unwrap(tx));
+  await txDone(tx);
 }

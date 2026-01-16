@@ -1,5 +1,3 @@
-import { unwrap } from "idb";
-
 import { getNodeTree } from "@/background/folders/folders-options";
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
@@ -56,7 +54,7 @@ export async function deleteFolder(id: number) {
   }
 
   try {
-    await txDone(unwrap(tx));
+    await txDone(tx);
   } catch (e) {
     const msg =
       "Unable to delete the folder and its contents, please try again.";
