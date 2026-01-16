@@ -6,10 +6,10 @@ import { NotFoundError, OPMLParseError } from "@/background/utils/errors";
 import { savePosts } from "@/background/utils/feed-polling";
 import { saveFailureMetadata } from "@/background/utils/feedmetadata";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
-import { getObject, saveObject, txDone } from "@/background/utils/idb-helpers";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { createFeed, saveFolder } from "@/background/utils/nodes";
 import { Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
+import { getObject, saveObject, txDone } from "@/idb-helpers";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
 export async function importOPML(fileContent: string, folder: number) {

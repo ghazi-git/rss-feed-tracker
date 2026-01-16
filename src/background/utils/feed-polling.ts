@@ -8,7 +8,6 @@ import {
   getPostObjects,
   ParsedPost,
 } from "@/background/utils/feeds-fetch-from-source";
-import { getAllFromIndex, txDone } from "@/background/utils/idb-helpers";
 import { acquireLock } from "@/background/utils/locks";
 import {
   COLOR_CODES,
@@ -18,6 +17,7 @@ import {
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
+import { getAllFromIndex, txDone } from "@/idb-helpers";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
 export async function runFeedPollingAlarmHandler(scheduledAt: string) {

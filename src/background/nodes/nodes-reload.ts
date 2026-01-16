@@ -2,9 +2,9 @@ import { getNodeTree } from "@/background/folders/folders-options";
 import { NotFoundError } from "@/background/utils/errors";
 import { loadFeeds, savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
-import { txDone } from "@/background/utils/idb-helpers";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { ExtensionDB, Feed, Folder, getDBConnection } from "@/db-setup";
+import { txDone } from "@/idb-helpers";
 import { NodeReloadResponse } from "@/messaging-wrapper";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 

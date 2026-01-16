@@ -1,10 +1,10 @@
-import { getAllFromIndex } from "@/background/utils/idb-helpers";
 import {
   addFeedData,
   getNextPageCursor,
   getPostsFromIndex,
 } from "@/background/utils/posts";
 import { getDBConnection, Post, ReadTX } from "@/db-setup";
+import { getAllFromIndex } from "@/idb-helpers";
 import { PostsCursor, PostsResponse, PostsView } from "@/messaging-wrapper";
 
 export async function getBookmarks(

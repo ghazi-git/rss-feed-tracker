@@ -1,7 +1,7 @@
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
-import { txDone } from "@/background/utils/idb-helpers";
 import { getAncestors, getNodeMap } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
+import { txDone } from "@/idb-helpers";
 
 export async function markAllBookmarksAsRead() {
   using conn = await getDBConnection();

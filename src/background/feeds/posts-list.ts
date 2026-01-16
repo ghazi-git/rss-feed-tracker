@@ -2,7 +2,6 @@ import { IndexNames } from "idb";
 
 import { PAGE_SIZE } from "@/background/settings";
 import { NotFoundError } from "@/background/utils/errors";
-import { getAllFromIndex } from "@/background/utils/idb-helpers";
 import { getChildFeedIds } from "@/background/utils/nodes";
 import {
   addFeedData,
@@ -10,6 +9,7 @@ import {
   getPostsFromIndex,
 } from "@/background/utils/posts";
 import { FeedTrackerDB, getDBConnection, Post, ReadTX } from "@/db-setup";
+import { getAllFromIndex } from "@/idb-helpers";
 import {
   FeedPost,
   PostsCursor,

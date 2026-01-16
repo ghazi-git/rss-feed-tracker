@@ -1,11 +1,11 @@
 import { NotFoundError } from "@/background/utils/errors";
-import { txDone } from "@/background/utils/idb-helpers";
 import {
   getAncestors,
   getHighestSortOrder,
   getNodeMap,
 } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
+import { txDone } from "@/idb-helpers";
 
 export async function updateFolder(
   id: number,

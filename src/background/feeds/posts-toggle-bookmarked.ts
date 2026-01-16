@@ -1,6 +1,6 @@
 import { NotFoundError } from "@/background/utils/errors";
-import { getObject, saveObject, txDone } from "@/background/utils/idb-helpers";
 import { getDBConnection } from "@/db-setup";
+import { getObject, saveObject, txDone } from "@/idb-helpers";
 
 export async function toggleBookmarkedPost(
   feedId: number,

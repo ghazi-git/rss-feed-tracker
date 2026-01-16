@@ -1,7 +1,7 @@
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
-import { txDone } from "@/background/utils/idb-helpers";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
+import { txDone } from "@/idb-helpers";
 
 /**
  * Delete the feed, its metadata and posts in the same transaction, then

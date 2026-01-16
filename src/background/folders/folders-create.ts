@@ -1,6 +1,6 @@
-import { txDone } from "@/background/utils/idb-helpers";
 import { saveFolder } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
+import { txDone } from "@/idb-helpers";
 import { FolderFormData } from "@/messaging-wrapper";
 
 export async function createFolder(data: FolderFormData) {
