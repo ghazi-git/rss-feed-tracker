@@ -39,7 +39,9 @@ export async function importOPML(fileContent: string, folder: number) {
   await txDone(unwrap(tx));
 
   // don't keep the user waiting for the posts of all feeds to load (load them
-  // in the background)
+  // in the background). If the service worker is killed by chrome for any
+  // reason, then the feeds not fetched will be picked up in the next alarm
+  // tick (in a minute)
   loadPosts(feeds, preferences.markNewPostsUnread);
 }
 

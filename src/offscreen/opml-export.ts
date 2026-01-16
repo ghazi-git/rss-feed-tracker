@@ -2,16 +2,17 @@ import { generateOpml } from "feedsmith";
 import type { Opml } from "feedsmith/types";
 
 import { getDBConnection, TreeNode } from "@/background/db-setup";
-import { OutlineElement } from "@/background/import-export/opml-import";
-import { NotFoundError, OPMLExportError } from "@/background/utils/errors";
 import { getAll, getObject } from "@/background/utils/idb-helpers";
+import { OPMLExportError } from "@/offscreen/errors";
+import { triggerFileDownload } from "@/offscreen/utils";
 
 export async function exportOPML(folder: number) {
+  console.log("offscreen received message", folder);
   using conn = await getDBConnection();
   const tx = conn.db.transaction(["nodes"]);
   const parentFolder = await getObject(tx, "nodes", folder);
   if (!parentFolder || parentFolder.type !== "folder") {
-    throw new NotFoundError(
+    throw new OPMLExportError(
       "Unable to find the folder, it may have been deleted.",
     );
   }
@@ -22,10 +23,13 @@ export async function exportOPML(folder: number) {
     throw new OPMLExportError("There are no feeds to export in this folder.");
   }
 
-  return generateOpml({
+  const fileContent = generateOpml({
     head: { title: "RSS Feed Tracker - Feeds Export", dateCreated: new Date() },
     body: { outlines: getOPMLOutlines(outlines) },
   });
+
+  const filename = `feeds_export_${new Date().toISOString()}.opml`;
+  triggerFileDownload(filename, fileContent, "application/xml");
 }
 
 function getOutlineTree(parentId: number, nodes: TreeNode[]) {
@@ -63,3 +67,15 @@ function getOPMLOutlines(outlines: OutlineElement[]) {
 
   return opmlOutlines;
 }
+
+interface FeedOutline {
+  type: "feed";
+  name: string;
+  url: string;
+}
+interface FolderOutline {
+  type: "folder";
+  name: string;
+  children: OutlineElement[];
+}
+export type OutlineElement = FolderOutline | FeedOutline;

@@ -48,7 +48,8 @@ interface MessageMap {
   "folders/update"(data: FolderDataUpdate): void;
   "folders/delete"(data: { id: number }): void;
   "opml/import"(data: OPMLImportParams): void;
-  "opml/export"(data: { folder: number }): string;
+  "opml/trigger-export"(data: { folder: number }): void;
+  "opml/export"(data: { folder: number }): void;
 }
 
 export interface FeedPreviewResponse {

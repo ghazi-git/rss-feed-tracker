@@ -14,8 +14,8 @@ import { getSearchString } from "@/popup/utils/urls";
 import styles from "./FolderActions.module.css";
 
 export default function FolderActions(props: FolderActionsProps) {
-  const { mutation: exportMutation, sendMsg: exportOPML } =
-    createMutation("opml/export");
+  const { mutation: exportMutation, sendMsg: triggerOPMLExport } =
+    createMutation("opml/trigger-export");
   const { mutation, reloadFeeds } = useReloadFeedsContext();
   const { closeMenu } = useDropdownContext();
   const { openModal } = useDeleteNodeContext();
@@ -65,12 +65,8 @@ export default function FolderActions(props: FolderActionsProps) {
         class={exportMutation.isLoading ? styles.loading : ""}
         onClick={async () => {
           if (!exportMutation.isLoading) {
-            await exportOPML({ folder: props.folderId });
-            if (exportMutation.isSuccess) {
-              const filename = `feeds_export_${new Date().toISOString()}.opml`;
-              const opmlFileContent = exportMutation.data;
-              triggerFileDownload(filename, opmlFileContent, "application/xml");
-            } else if (exportMutation.isError) {
+            await triggerOPMLExport({ folder: props.folderId });
+            if (exportMutation.isError) {
               notifyError(exportMutation.errorMsg);
             }
             closeMenu();
@@ -96,23 +92,6 @@ export default function FolderActions(props: FolderActionsProps) {
       </Show>
     </>
   );
-}
-
-function triggerFileDownload(
-  filename: string,
-  fileContent: string,
-  mimeType: string,
-) {
-  const url = URL.createObjectURL(new Blob([fileContent], { type: mimeType }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }
 
 interface FolderActionsProps {

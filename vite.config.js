@@ -18,6 +18,13 @@ export default defineConfig({
       "@": `${path.resolve(currentFolder, "src")}`,
     },
   },
+  build: {
+    rollupOptions: {
+      input: {
+        offscreen: path.resolve(currentFolder, "src/offscreen/index.html"),
+      },
+    },
+  },
   plugins: [
     solid(),
     crx({ manifest }),
