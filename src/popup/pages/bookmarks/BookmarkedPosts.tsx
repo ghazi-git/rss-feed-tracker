@@ -1,6 +1,5 @@
 import { batch, Match, Show, Switch } from "solid-js";
 
-import { PAGE_SIZE } from "@/background/settings";
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
@@ -12,6 +11,7 @@ import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmar
 import { ToggleUnreadContextProvider } from "@/popup/pages/node-posts/toggle-unread-context";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { PAGE_SIZE } from "@/settings";
 
 export function BookmarkedPosts(props: { postsView: PostsView }) {
   const { mutateUnreadCount } = useUnreadCountContext();

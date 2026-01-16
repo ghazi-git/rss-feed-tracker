@@ -1,6 +1,5 @@
 import { IndexNames } from "idb";
 
-import { PAGE_SIZE } from "@/background/settings";
 import { NotFoundError } from "@/background/utils/errors";
 import { getChildFeedIds } from "@/background/utils/nodes";
 import {
@@ -16,6 +15,7 @@ import {
   PostsResponse,
   PostsView,
 } from "@/messaging-wrapper";
+import { PAGE_SIZE } from "@/settings";
 
 export async function listPosts(
   nodeId: number,

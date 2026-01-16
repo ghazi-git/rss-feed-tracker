@@ -1,6 +1,5 @@
 import { Match, Show, Switch } from "solid-js";
 
-import { PAGE_SIZE } from "@/background/settings";
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
@@ -10,6 +9,7 @@ import NoPosts from "@/popup/components/NoPosts";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { ToggleUnreadContextProvider } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { PAGE_SIZE } from "@/settings";
 
 import { usePostsContext } from "./posts-context";
 import { ToggleBookmarkedContext } from "./toggle-bookmarked-context";

@@ -1,9 +1,9 @@
 import { IndexNames, unwrap } from "idb";
 
-import { PAGE_SIZE } from "@/background/settings";
 import { Feed, FeedTrackerDB, Post, ReadTX, ReadWriteTX } from "@/db-setup";
 import { getAllFromIndex } from "@/idb-helpers";
 import { FeedPost, PostsCursor } from "@/messaging-wrapper";
+import { PAGE_SIZE } from "@/settings";
 
 export async function getPostsFromIndex(
   tx: ReadTX,
