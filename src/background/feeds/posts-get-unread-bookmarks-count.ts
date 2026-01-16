@@ -1,4 +1,4 @@
-import { getDBConnection } from "@/background/db-setup";
+import { getDBConnection } from "@/db-setup";
 
 export async function getUnreadBookmarksCount() {
   using conn = await getDBConnection();

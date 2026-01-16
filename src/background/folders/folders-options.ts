@@ -4,7 +4,7 @@ import {
   Folder,
   getDBConnection,
   TreeNode,
-} from "@/background/db-setup";
+} from "@/db-setup";
 import { FolderOption } from "@/messaging-wrapper";
 
 export async function getFolderOptions(): Promise<FolderOption[]> {

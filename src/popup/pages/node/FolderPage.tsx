@@ -1,4 +1,4 @@
-import { Folder, TreeNode } from "@/background/db-setup";
+import { Folder, TreeNode } from "@/db-setup";
 import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
 import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
 import FolderChildren from "@/popup/pages/node/FolderChildren";

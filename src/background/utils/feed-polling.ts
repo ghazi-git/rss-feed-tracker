@@ -1,11 +1,5 @@
 import { unwrap } from "idb";
 
-import {
-  ExtensionDB,
-  Feed,
-  getDBConnection,
-  ReadWriteTX,
-} from "@/background/db-setup";
 import { getChunks } from "@/background/utils/chunks";
 import {
   saveFailureMetadata,
@@ -25,6 +19,7 @@ import {
 } from "@/background/utils/logging";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
+import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
 export async function runFeedPollingAlarmHandler(scheduledAt: string) {

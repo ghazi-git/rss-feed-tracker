@@ -6,6 +6,7 @@ import {
   unwrap,
 } from "idb";
 
+import { NotFoundError } from "@/background/utils/errors";
 import {
   ExtensionDB,
   ExtIndexName,
@@ -15,8 +16,7 @@ import {
   PrimaryKey,
   ReadTX,
   ReadWriteTX,
-} from "@/background/db-setup";
-import { NotFoundError } from "@/background/utils/errors";
+} from "@/db-setup";
 
 /**
  * Basically, a get and then a put executed in the same transaction.

@@ -1,7 +1,7 @@
 import { useSearchParams } from "@solidjs/router";
 import { batch, Show } from "solid-js";
 
-import { TreeNode } from "@/background/db-setup";
+import { TreeNode } from "@/db-setup";
 import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
 import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
 import BackLink from "@/popup/components/page-header/BackLink";

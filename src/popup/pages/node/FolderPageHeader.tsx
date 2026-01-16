@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 
-import { Folder } from "@/background/db-setup";
+import { Folder } from "@/db-setup";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";

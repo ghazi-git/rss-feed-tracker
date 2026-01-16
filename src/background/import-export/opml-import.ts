@@ -2,7 +2,6 @@ import { parseOpml } from "feedsmith";
 import type { Opml } from "feedsmith/types";
 import { unwrap } from "idb";
 
-import { Feed, getDBConnection, ReadWriteTX } from "@/background/db-setup";
 import { getChunks } from "@/background/utils/chunks";
 import { NotFoundError, OPMLParseError } from "@/background/utils/errors";
 import { savePosts } from "@/background/utils/feed-polling";
@@ -11,6 +10,7 @@ import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { getObject, saveObject, txDone } from "@/background/utils/idb-helpers";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { createFeed, saveFolder } from "@/background/utils/nodes";
+import { Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 
 export async function importOPML(fileContent: string, folder: number) {

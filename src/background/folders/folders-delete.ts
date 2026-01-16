@@ -1,10 +1,10 @@
 import { unwrap } from "idb";
 
-import { getDBConnection } from "@/background/db-setup";
 import { getNodeTree } from "@/background/folders/folders-options";
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
+import { getDBConnection } from "@/db-setup";
 
 export async function deleteFolder(id: number) {
   using conn = await getDBConnection();

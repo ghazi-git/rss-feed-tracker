@@ -1,4 +1,4 @@
-import { Post, TreeNode } from "@/background/db-setup";
+import { Post, TreeNode } from "@/db-setup";
 
 export async function sendMessage<K extends MessageType>(
   messageType: K,

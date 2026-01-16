@@ -1,12 +1,7 @@
 import { unwrap } from "idb";
 
-import {
-  ExtensionDB,
-  Feed,
-  FeedMetadata,
-  ReadWriteTX,
-} from "@/background/db-setup";
 import { txDone } from "@/background/utils/idb-helpers";
+import { ExtensionDB, Feed, FeedMetadata, ReadWriteTX } from "@/db-setup";
 
 export async function saveSuccessMetadata(
   tx: ReadWriteTX,

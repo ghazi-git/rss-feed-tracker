@@ -1,7 +1,7 @@
 import { useNavigate } from "@solidjs/router";
 import { batch, Show } from "solid-js";
 
-import { TreeNode } from "@/background/db-setup";
+import { TreeNode } from "@/db-setup";
 import Anchor from "@/popup/components/Anchor";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import Dropdown from "@/popup/components/dropdown/Dropdown";

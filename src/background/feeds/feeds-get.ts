@@ -1,6 +1,6 @@
-import { getDBConnection } from "@/background/db-setup";
 import { getFolderOptionsAsTree } from "@/background/folders/folders-options";
 import { NotFoundError } from "@/background/utils/errors";
+import { getDBConnection } from "@/db-setup";
 
 /**
  * @raises NotFoundError

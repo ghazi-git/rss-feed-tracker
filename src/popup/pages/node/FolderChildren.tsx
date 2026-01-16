@@ -1,6 +1,6 @@
 import { For, Show } from "solid-js";
 
-import { TreeNode } from "@/background/db-setup";
+import { TreeNode } from "@/db-setup";
 import FolderChild from "@/popup/pages/node/FolderChild";
 import FolderNoChildren from "@/popup/pages/node/FolderNoChildren";
 

@@ -1,8 +1,8 @@
-import { getDBConnection } from "@/background/db-setup";
 import {
   getRootFolderUnreadCount,
   setUnreadCountOnExtensionBadge,
 } from "@/background/utils/badge-unread-count";
+import { getDBConnection } from "@/db-setup";
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   await setBadgeColors();

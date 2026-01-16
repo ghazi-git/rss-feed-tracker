@@ -1,8 +1,8 @@
 import { generateOpml } from "feedsmith";
 import type { Opml } from "feedsmith/types";
 
-import { getDBConnection, TreeNode } from "@/background/db-setup";
 import { getAll, getObject } from "@/background/utils/idb-helpers";
+import { getDBConnection, TreeNode } from "@/db-setup";
 import { OPMLExportError } from "@/offscreen/errors";
 import { triggerFileDownload } from "@/offscreen/utils";
 

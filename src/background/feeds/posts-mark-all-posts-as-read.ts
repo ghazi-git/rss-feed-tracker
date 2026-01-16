@@ -1,6 +1,5 @@
 import { unwrap } from "idb";
 
-import { getDBConnection, Post } from "@/background/db-setup";
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { NotFoundError } from "@/background/utils/errors";
 import { txDone } from "@/background/utils/idb-helpers";
@@ -9,6 +8,7 @@ import {
   getChildFeedIds,
   getNodeMap,
 } from "@/background/utils/nodes";
+import { getDBConnection, Post } from "@/db-setup";
 
 export async function markAllPostsAsRead(
   nodeId: number,

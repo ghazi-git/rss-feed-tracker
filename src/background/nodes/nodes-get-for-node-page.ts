@@ -1,6 +1,6 @@
-import { getDBConnection } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
 import { getNodeLastRunAt } from "@/background/utils/nodes";
+import { getDBConnection } from "@/db-setup";
 import { NodeResponse } from "@/messaging-wrapper";
 
 /**

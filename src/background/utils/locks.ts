@@ -1,4 +1,4 @@
-import { ExtensionDB } from "@/background/db-setup";
+import { ExtensionDB } from "@/db-setup";
 
 export async function acquireLock(db: ExtensionDB, lockId: string) {
   const createdAt = Date.now();

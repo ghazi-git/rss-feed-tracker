@@ -1,6 +1,5 @@
 import { unwrap } from "idb";
 
-import { getDBConnection } from "@/background/db-setup";
 import { NotFoundError } from "@/background/utils/errors";
 import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
 import { txDone } from "@/background/utils/idb-helpers";
@@ -9,6 +8,7 @@ import {
   getHighestSortOrder,
   getNodeMap,
 } from "@/background/utils/nodes";
+import { getDBConnection } from "@/db-setup";
 import { UpdateFeedFormData } from "@/messaging-wrapper";
 
 /**

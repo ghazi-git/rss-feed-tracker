@@ -1,4 +1,4 @@
-import { createRootFolder, getDBConnection } from "@/background/db-setup";
+import { createRootFolder, getDBConnection } from "@/db-setup";
 import { RootFolder } from "@/messaging-wrapper";
 
 export async function getRootFolder(): Promise<RootFolder> {

@@ -1,3 +1,6 @@
+import { getNodeTree } from "@/background/folders/folders-options";
+import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
+import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
 import {
   Feed,
   FeedMetadata,
@@ -5,10 +8,7 @@ import {
   ReadTX,
   ReadWriteTX,
   TreeNode,
-} from "@/background/db-setup";
-import { getNodeTree } from "@/background/folders/folders-options";
-import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
-import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
+} from "@/db-setup";
 import { FeedFormData } from "@/messaging-wrapper";
 
 export async function getHighestSortOrder(

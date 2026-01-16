@@ -1,11 +1,5 @@
 import { IndexNames } from "idb";
 
-import {
-  FeedTrackerDB,
-  getDBConnection,
-  Post,
-  ReadTX,
-} from "@/background/db-setup";
 import { PAGE_SIZE } from "@/background/settings";
 import { NotFoundError } from "@/background/utils/errors";
 import { getAllFromIndex } from "@/background/utils/idb-helpers";
@@ -15,6 +9,7 @@ import {
   getNextPageCursor,
   getPostsFromIndex,
 } from "@/background/utils/posts";
+import { FeedTrackerDB, getDBConnection, Post, ReadTX } from "@/db-setup";
 import {
   FeedPost,
   PostsCursor,

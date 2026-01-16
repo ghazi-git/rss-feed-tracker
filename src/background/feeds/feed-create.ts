@@ -1,10 +1,10 @@
 import { unwrap } from "idb";
 
-import { getDBConnection } from "@/background/db-setup";
 import { savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { txDone } from "@/background/utils/idb-helpers";
 import { createFeed } from "@/background/utils/nodes";
+import { getDBConnection } from "@/db-setup";
 import { FeedFormData } from "@/messaging-wrapper";
 import { loadPreferences } from "@/popup/utils/preferences-storage";
 

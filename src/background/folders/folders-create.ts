@@ -1,8 +1,8 @@
 import { unwrap } from "idb";
 
-import { getDBConnection } from "@/background/db-setup";
 import { txDone } from "@/background/utils/idb-helpers";
 import { saveFolder } from "@/background/utils/nodes";
+import { getDBConnection } from "@/db-setup";
 import { FolderFormData } from "@/messaging-wrapper";
 
 export async function createFolder(data: FolderFormData) {
