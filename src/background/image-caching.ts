@@ -1,4 +1,4 @@
-export const ICONS_CACHE = "image-cache-v1";
+import { ICONS_CACHE } from "@/background/settings";
 
 (self as unknown as ServiceWorkerGlobalScope).addEventListener(
   "fetch",

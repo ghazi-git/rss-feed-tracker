@@ -1,6 +1,6 @@
 import { createSignal, Show } from "solid-js";
 
-import { ICONS_CACHE } from "@/background/image-caching";
+import { ICONS_CACHE } from "@/background/settings";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
 import { notifyInfo, notifySuccess } from "@/popup/utils/notifications";
