@@ -1,6 +1,14 @@
 import { createContext, FlowProps, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
+import {
+  DEFAULT_PREFERENCES,
+  loadPreferences,
+  PreferencesContextType,
+  savePreferences,
+  StoredPreferences,
+} from "@/extension-storage";
+
 const PreferencesContext = createContext<PreferencesContextType>();
 
 export function usePreferencesContext() {
@@ -46,38 +54,4 @@ export function PreferencesProvider(props: FlowProps) {
       {props.children}
     </PreferencesContext.Provider>
   );
-}
-
-async function savePreferences(value: StoredPreferences) {
-  await chrome.storage.local.set({ preferences: value });
-}
-
-export async function loadPreferences(): Promise<StoredPreferences> {
-  const value: { preferences: StoredPreferences } =
-    await chrome.storage.local.get("preferences");
-
-  try {
-    return { ...DEFAULT_PREFERENCES, ...value.preferences };
-  } catch {
-    return { ...DEFAULT_PREFERENCES };
-  }
-}
-
-const DEFAULT_PREFERENCES = {
-  defaultFeedUpdateFrequency: 2 * 60 * 60 * 1000,
-  markNewPostsUnread: true,
-  clickPostToToggleUnread: false,
-};
-
-interface PreferencesContextType {
-  store: StoredPreferences;
-  setDefaultFeedUpdateFrequency: (value: number) => void;
-  setMarkNewPostsUnread: (value: boolean) => void;
-  setClickPostToToggleUnread: (value: boolean) => void;
-}
-
-interface StoredPreferences {
-  defaultFeedUpdateFrequency: number;
-  markNewPostsUnread: boolean;
-  clickPostToToggleUnread: boolean;
 }

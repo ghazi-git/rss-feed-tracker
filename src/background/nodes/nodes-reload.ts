@@ -4,9 +4,9 @@ import { loadFeeds, savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { ExtensionDB, Feed, Folder, getDBConnection } from "@/db-setup";
+import { loadPreferences } from "@/extension-storage";
 import { txDone } from "@/idb-helpers";
 import { NodeReloadResponse } from "@/messaging-wrapper";
-import { loadPreferences } from "@/popup/utils/preferences-storage";
 
 export async function reloadNode(id: number): Promise<NodeReloadResponse> {
   using conn = await getDBConnection();
