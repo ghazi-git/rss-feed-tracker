@@ -89,7 +89,7 @@ export default function NodePosts() {
 
   const { node, mutateUnreadCount, mutateMarkAsReadUntil } =
     createNodeResource();
-  const { store: preferences } = usePreferencesContext();
+  const { preferences } = usePreferencesContext();
   const [newPostsStore, setNewPostsStore] = createStore<NewPostsStore>({
     hasNewPosts: false,
     unreadCount: null,

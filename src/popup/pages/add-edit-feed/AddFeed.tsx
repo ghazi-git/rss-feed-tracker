@@ -20,7 +20,7 @@ import styles from "./AddFeed.module.css";
 
 export default function AddFeed() {
   const { mutation, sendMsg } = createMutation("feeds/create");
-  const { store: preferences } = usePreferencesContext();
+  const { preferences } = usePreferencesContext();
   const [step, setStep] = createSignal<"preview" | "save">("preview");
   const [feedURL, setFeedURL] = createSignal("");
   const [feedPosts, setFeedPosts] = createSignal<PostPreview[]>([]);

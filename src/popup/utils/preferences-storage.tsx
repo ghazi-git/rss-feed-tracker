@@ -4,7 +4,6 @@ import { createStore } from "solid-js/store";
 import {
   DEFAULT_PREFERENCES,
   loadPreferences,
-  PreferencesContextType,
   savePreferences,
   StoredPreferences,
 } from "@/extension-storage";
@@ -29,29 +28,19 @@ export function PreferencesProvider(props: FlowProps) {
     setStore(preferences);
   });
 
-  const setDefaultFeedUpdateFrequency = (value: number) => {
-    setStore("defaultFeedUpdateFrequency", value);
-    savePreferences(store);
-  };
-  const setMarkNewPostsUnread = (value: boolean) => {
-    setStore("markNewPostsUnread", value);
-    savePreferences(store);
-  };
-  const setClickPostToToggleUnread = (value: boolean) => {
-    setStore("clickPostToToggleUnread", value);
-    savePreferences(store);
+  const setPreferences = async (value: Partial<StoredPreferences>) => {
+    setStore((prev) => ({ ...prev, ...value }));
+    await savePreferences(store);
   };
 
   return (
-    <PreferencesContext.Provider
-      value={{
-        store,
-        setDefaultFeedUpdateFrequency,
-        setMarkNewPostsUnread,
-        setClickPostToToggleUnread,
-      }}
-    >
+    <PreferencesContext.Provider value={{ preferences: store, setPreferences }}>
       {props.children}
     </PreferencesContext.Provider>
   );
+}
+
+interface PreferencesContextType {
+  preferences: StoredPreferences;
+  setPreferences: (value: Partial<StoredPreferences>) => Promise<void>;
 }

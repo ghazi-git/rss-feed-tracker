@@ -7,12 +7,7 @@ import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import styles from "./index.module.css";
 
 export default function Preferences() {
-  const {
-    store,
-    setDefaultFeedUpdateFrequency,
-    setMarkNewPostsUnread,
-    setClickPostToToggleUnread,
-  } = usePreferencesContext();
+  const { preferences, setPreferences } = usePreferencesContext();
 
   return (
     <>
@@ -21,26 +16,28 @@ export default function Preferences() {
       </div>
       <FrequencyField
         label="Default Update Frequency For Feeds"
-        value={store.defaultFeedUpdateFrequency}
+        value={preferences.defaultFeedUpdateFrequency}
         onChange={(e) => {
-          setDefaultFeedUpdateFrequency(parseInt(e.target.value));
+          setPreferences({
+            defaultFeedUpdateFrequency: parseInt(e.target.value),
+          });
         }}
       />
       <Checkbox
         name="trackUnread"
         label="Mark new posts as unread"
-        checked={store.markNewPostsUnread}
+        checked={preferences.markNewPostsUnread}
         onChange={(event) => {
-          setMarkNewPostsUnread(event.target.checked);
+          setPreferences({ markNewPostsUnread: event.target.checked });
         }}
       />
       <Checkbox
         name="clickPostToToggleUnread"
         label="Post click toggles unread"
         helpText="When unchecked, clicking on a post will open it in a new tab"
-        checked={store.clickPostToToggleUnread}
+        checked={preferences.clickPostToToggleUnread}
         onChange={(event) => {
-          setClickPostToToggleUnread(event.target.checked);
+          setPreferences({ clickPostToToggleUnread: event.target.checked });
         }}
       />
       <ClearCache />

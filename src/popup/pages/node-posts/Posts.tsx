@@ -31,7 +31,7 @@ function Post(props: { post: FeedPost }) {
   let ref!: HTMLAnchorElement;
 
   const { toggleUnread } = useToggleUnreadContext();
-  const { store } = usePreferencesContext();
+  const { preferences } = usePreferencesContext();
   const [showTooltip, setShowTooltip] = createSignal(false);
   let titleRef!: HTMLDivElement;
   onMount(() => {
@@ -58,7 +58,7 @@ function Post(props: { post: FeedPost }) {
           }
           openWindow(props.post.url);
         } else {
-          if (store.clickPostToToggleUnread) {
+          if (preferences.clickPostToToggleUnread) {
             await toggleUnread(
               props.post.feedId,
               props.post.guid,

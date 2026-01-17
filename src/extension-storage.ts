@@ -19,13 +19,6 @@ export const DEFAULT_PREFERENCES = {
   clickPostToToggleUnread: false,
 };
 
-export interface PreferencesContextType {
-  store: StoredPreferences;
-  setDefaultFeedUpdateFrequency: (value: number) => void;
-  setMarkNewPostsUnread: (value: boolean) => void;
-  setClickPostToToggleUnread: (value: boolean) => void;
-}
-
 export interface StoredPreferences {
   defaultFeedUpdateFrequency: number;
   markNewPostsUnread: boolean;
