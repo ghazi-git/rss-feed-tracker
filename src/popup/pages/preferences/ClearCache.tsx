@@ -1,15 +1,19 @@
 import { useLocation, useNavigate } from "@solidjs/router";
 import { createSignal } from "solid-js";
 
+import { DEFAULT_PREFERENCES } from "@/extension-storage";
 import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyInfo, notifySuccess } from "@/popup/utils/notifications";
+import { usePreferencesContext } from "@/popup/utils/preferences-storage";
+import { setAndEnableTheme } from "@/popup/utils/ui-theme";
 import { getSearchString } from "@/popup/utils/urls";
 import { ICONS_CACHE } from "@/settings";
 
 import styles from "./ClearCache.module.css";
 
 export default function ClearCache() {
+  const { setPreferences } = usePreferencesContext();
   const navigate = useNavigate();
   const location = useLocation();
   const prevUrlSearchString = () => {
@@ -42,7 +46,16 @@ export default function ClearCache() {
       >
         Clear Feed Icons Cache
       </ManageDataButton>
-      <ManageDataButton>Reset Settings</ManageDataButton>
+      <ManageDataButton
+        onClick={async () => {
+          // reset UI theme to system theme
+          setAndEnableTheme("");
+          // reset preferences
+          await setPreferences(DEFAULT_PREFERENCES);
+        }}
+      >
+        Reset Settings
+      </ManageDataButton>
 
       <ManageDataButton
         loading={exportMutation.isLoading}

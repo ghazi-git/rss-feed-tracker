@@ -3,7 +3,7 @@ import { createSignal } from "solid-js";
 const [uiTheme, setUITheme] = createSignal(getStoredTheme());
 export { uiTheme };
 
-export function getStoredTheme(): UITheme | null {
+function getStoredTheme(): UITheme | null {
   const theme = localStorage.getItem("ui-theme");
   if (theme === "light" || theme === "dark") {
     return theme;
@@ -12,13 +12,15 @@ export function getStoredTheme(): UITheme | null {
   }
 }
 
-export function storeTheme(theme: string) {
+export function setAndEnableTheme(theme: string) {
   if (theme === "light" || theme === "dark") {
     setUITheme(theme);
     localStorage.setItem("ui-theme", theme);
+    enableTheme(theme);
   } else {
     setUITheme(null);
     localStorage.removeItem("ui-theme");
+    enableTheme(detectSystemTheme());
   }
 }
 

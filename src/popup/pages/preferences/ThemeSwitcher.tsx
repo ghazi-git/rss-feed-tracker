@@ -1,10 +1,5 @@
 import RadioGroup from "@/popup/components/forms/RadioGroup";
-import {
-  detectSystemTheme,
-  enableTheme,
-  storeTheme,
-  uiTheme,
-} from "@/popup/utils/ui-theme";
+import { setAndEnableTheme, uiTheme } from "@/popup/utils/ui-theme";
 
 export function ThemeSwitcher() {
   const themes = [
@@ -21,9 +16,7 @@ export function ThemeSwitcher() {
       value={uiTheme() ?? ""}
       onChange={(e) => {
         const newTheme = e.target.value;
-        storeTheme(newTheme);
-        const theme = newTheme || detectSystemTheme();
-        enableTheme(theme);
+        setAndEnableTheme(newTheme);
       }}
     />
   );
