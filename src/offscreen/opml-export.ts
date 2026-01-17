@@ -7,7 +7,6 @@ import { OPMLExportError } from "@/offscreen/errors";
 import { triggerFileDownload } from "@/offscreen/utils";
 
 export async function exportOPML(folder: number) {
-  console.log("offscreen received message", folder);
   using conn = await getDBConnection();
   const tx = conn.db.transaction(["nodes"]);
   const parentFolder = await getObject(tx, "nodes", folder);

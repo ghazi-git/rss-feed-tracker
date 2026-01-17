@@ -3,7 +3,6 @@ import { getErrorMsg } from "@/offscreen/errors";
 import { exportOPML } from "@/offscreen/opml-export";
 
 onMessage("opml/export", (payload, sender, sendResponse) => {
-  console.log("offscreen onMessage opml/export");
   exportOPML(payload.folder)
     .then(() => {
       sendResponse({ success: true, data: undefined, errorMsg: null });
