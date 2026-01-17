@@ -1,34 +1,91 @@
-import { createSignal, Show } from "solid-js";
+import { useLocation, useNavigate } from "@solidjs/router";
+import { createSignal } from "solid-js";
 
-import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
-import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
+import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
 import { notifyInfo, notifySuccess } from "@/popup/utils/notifications";
+import { getSearchString } from "@/popup/utils/urls";
 import { ICONS_CACHE } from "@/settings";
 
 import styles from "./ClearCache.module.css";
 
 export default function ClearCache() {
-  const [loading, setLoading] = createSignal(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const prevUrlSearchString = () => {
+    const currentUrl = `${location.pathname}${location.search}`;
+    return getSearchString({ previousUrl: currentUrl });
+  };
+
+  const [clearingCache, setClearingCache] = createSignal(false);
 
   return (
-    <UnstyledButton
-      class={styles.clear}
-      disabled={loading()}
-      onClick={async () => {
-        setLoading(true);
-        const deleted = await caches.delete(ICONS_CACHE);
-        setLoading(false);
-        if (deleted) {
-          notifySuccess("The cache was cleared.", { duration: 3000 });
-        } else {
-          notifyInfo("The cache has already been cleared.", { duration: 3000 });
-        }
-      }}
-    >
-      Clear Feed Icons Cache
-      <Show when={loading()}>
-        <LoadingIcon />
-      </Show>
-    </UnstyledButton>
+    <fieldset class={styles["manage-data"]}>
+      <legend>Manage Extension Data</legend>
+      <ManageDataButton
+        loading={clearingCache()}
+        onClick={async () => {
+          setClearingCache(true);
+          const deleted = await caches.delete(ICONS_CACHE);
+          setClearingCache(false);
+          if (deleted) {
+            notifySuccess("The cache was cleared.", { duration: 3000 });
+          } else {
+            notifyInfo("The cache has already been cleared.", {
+              duration: 3000,
+            });
+          }
+        }}
+      >
+        Clear Feed Icons Cache
+      </ManageDataButton>
+      <ManageDataButton>Reset Settings</ManageDataButton>
+
+      <ManageDataButton>Export OPML</ManageDataButton>
+      <ManageDataButton
+        onClick={async () => {
+          navigate(`/library/feeds/import?${prevUrlSearchString()}`);
+        }}
+      >
+        Import OPML
+      </ManageDataButton>
+
+      <ManageDataButton>Full Data Backup</ManageDataButton>
+      <ManageDataButton
+        onClick={async () => {
+          const accept: Record<MIMEType, FileExtension[]> = {
+            "text/xml": [".opml"],
+            "application/xml": [".opml"],
+            "text/x-opml": [".opml"],
+            "text/x-opml+xml": [".opml"],
+          };
+          let fileHandle: FileSystemFileHandle;
+          try {
+            [fileHandle] = await window.showOpenFilePicker({
+              id: "data-restore",
+              types: [{ accept }],
+            });
+            const file = await fileHandle.getFile();
+            const fileURL = URL.createObjectURL(file);
+            console.log("URL.createObjectURL(file)", fileURL);
+          } catch (e) {
+            if (e instanceof DOMException && e.name === "AbortError") {
+              // user didn't choose a file, do nothing
+            } else {
+              console.error(e);
+            }
+          }
+        }}
+      >
+        Full Data Restore...
+      </ManageDataButton>
+      <p>
+        Backs up everything (folders, feeds, posts, bookmarks and settings) as a
+        zip file.
+      </p>
+      <p>
+        <span class={styles.warning}>Clears existing data</span> before
+        restoring all extension data from the provided backup.
+      </p>
+    </fieldset>
   );
 }

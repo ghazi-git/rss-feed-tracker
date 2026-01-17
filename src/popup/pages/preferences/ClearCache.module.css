@@ -1,13 +1,25 @@
-.clear {
-  inline-size: 100%;
-  background-color: var(--surface-2);
+.manage-data {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
   gap: var(--size-2);
 
-  svg {
-    inline-size: var(--size-3);
-    block-size: auto;
+  & > * {
+    flex-grow: 1;
+    flex-basis: 40%;
+  }
+
+  p {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+
+  .warning {
+    color: var(--error-color);
+  }
+
+  legend {
+    font-size: smaller;
   }
 }
