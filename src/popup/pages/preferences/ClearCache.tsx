@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "@solidjs/router";
 import { createSignal } from "solid-js";
 
 import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
+import { createMutation } from "@/popup/utils/mutation";
 import { notifyInfo, notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 import { ICONS_CACHE } from "@/settings";
@@ -17,6 +18,9 @@ export default function ClearCache() {
   };
 
   const [clearingCache, setClearingCache] = createSignal(false);
+  const { mutation: exportMutation, sendMsg: exportOPML } = createMutation(
+    "opml/trigger-root-export",
+  );
 
   return (
     <fieldset class={styles["manage-data"]}>
@@ -40,13 +44,20 @@ export default function ClearCache() {
       </ManageDataButton>
       <ManageDataButton>Reset Settings</ManageDataButton>
 
-      <ManageDataButton>Export OPML</ManageDataButton>
+      <ManageDataButton
+        loading={exportMutation.isLoading}
+        onClick={async () => {
+          await exportOPML(undefined);
+        }}
+      >
+        Export Feeds
+      </ManageDataButton>
       <ManageDataButton
         onClick={async () => {
           navigate(`/library/feeds/import?${prevUrlSearchString()}`);
         }}
       >
-        Import OPML
+        Import Feeds
       </ManageDataButton>
 
       <ManageDataButton>Full Data Backup</ManageDataButton>

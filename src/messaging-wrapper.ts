@@ -49,6 +49,7 @@ interface MessageMap {
   "folders/delete"(data: { id: number }): void;
   "opml/import"(data: OPMLImportParams): void;
   "opml/trigger-export"(data: { folder: number }): void;
+  "opml/trigger-root-export"(): void;
   "opml/export"(data: { folder: number }): void;
 }
 
