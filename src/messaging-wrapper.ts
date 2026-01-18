@@ -51,6 +51,8 @@ interface MessageMap {
   "opml/trigger-export"(data: { folder: number }): void;
   "opml/trigger-root-export"(): void;
   "opml/export"(data: { folder: number }): void;
+  "full-data/backup-trigger"(): void;
+  "full-data/backup"(): void;
 }
 
 export interface FeedPreviewResponse {

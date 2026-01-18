@@ -4,7 +4,11 @@ import { createSignal } from "solid-js";
 import { DEFAULT_PREFERENCES } from "@/extension-storage";
 import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
 import { createMutation } from "@/popup/utils/mutation";
-import { notifyInfo, notifySuccess } from "@/popup/utils/notifications";
+import {
+  notifyError,
+  notifyInfo,
+  notifySuccess,
+} from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { setAndEnableTheme } from "@/popup/utils/ui-theme";
 import { getSearchString } from "@/popup/utils/urls";
@@ -24,6 +28,9 @@ export default function ClearCache() {
   const [clearingCache, setClearingCache] = createSignal(false);
   const { mutation: exportMutation, sendMsg: exportOPML } = createMutation(
     "opml/trigger-root-export",
+  );
+  const { mutation: backupMutation, sendMsg: backupData } = createMutation(
+    "full-data/backup-trigger",
   );
 
   return (
@@ -61,6 +68,9 @@ export default function ClearCache() {
         loading={exportMutation.isLoading}
         onClick={async () => {
           await exportOPML(undefined);
+          if (exportMutation.isError) {
+            notifyError(exportMutation.errorMsg);
+          }
         }}
       >
         Export Feeds
@@ -73,7 +83,17 @@ export default function ClearCache() {
         Import Feeds
       </ManageDataButton>
 
-      <ManageDataButton>Full Data Backup</ManageDataButton>
+      <ManageDataButton
+        loading={backupMutation.isLoading}
+        onClick={async () => {
+          await backupData(undefined);
+          if (backupMutation.isError) {
+            notifyError(backupMutation.errorMsg);
+          }
+        }}
+      >
+        Full Data Backup
+      </ManageDataButton>
       <ManageDataButton
         onClick={async () => {
           const accept: Record<MIMEType, FileExtension[]> = {

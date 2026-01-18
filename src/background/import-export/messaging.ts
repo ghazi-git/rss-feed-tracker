@@ -1,3 +1,4 @@
+import { triggerBackup } from "@/background/import-export/full-data-trigger-backup";
 import { importOPML } from "@/background/import-export/opml-import";
 import { triggerOPMLExport } from "@/background/import-export/opml-trigger-export";
 import { triggerRootExport } from "@/background/import-export/opml-trigger-root-export";
@@ -40,6 +41,20 @@ onMessage("opml/trigger-root-export", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while exporting the feeds.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("full-data/backup-trigger", (payload, sender, sendResponse) => {
+  triggerBackup()
+    .then(() => {
+      sendResponse({ success: true, data: undefined, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while creating the backup.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
