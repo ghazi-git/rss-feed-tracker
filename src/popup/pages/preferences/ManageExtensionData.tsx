@@ -10,14 +10,14 @@ import {
   notifySuccess,
 } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
-import { setAndEnableTheme } from "@/popup/utils/ui-theme";
+import { setAndEnableTheme, uiTheme } from "@/popup/utils/ui-theme";
 import { getSearchString } from "@/popup/utils/urls";
 import { ICONS_CACHE } from "@/settings";
 
 import styles from "./ManageExtensionData.module.css";
 
 export default function ManageExtensionData() {
-  const { setPreferences } = usePreferencesContext();
+  const { preferences, setPreferences } = usePreferencesContext();
   const navigate = useNavigate();
   const location = useLocation();
   const prevUrlSearchString = () => {
@@ -86,7 +86,7 @@ export default function ManageExtensionData() {
       <ManageDataButton
         loading={backupMutation.isLoading}
         onClick={async () => {
-          await backupData(undefined);
+          await backupData({ uiTheme: uiTheme(), ...preferences });
           if (backupMutation.isError) {
             notifyError(backupMutation.errorMsg);
           }

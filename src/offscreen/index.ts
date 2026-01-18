@@ -18,7 +18,7 @@ onMessage("opml/export", (payload, sender, sendResponse) => {
 });
 
 onMessage("full-data/backup", (payload, sender, sendResponse) => {
-  backupExtension()
+  backupExtension(payload)
     .then(() => {
       sendResponse({ success: true, data: undefined, errorMsg: null });
     })

@@ -48,7 +48,7 @@ onMessage("opml/trigger-root-export", (payload, sender, sendResponse) => {
 });
 
 onMessage("full-data/backup-trigger", (payload, sender, sendResponse) => {
-  triggerBackup()
+  triggerBackup(payload)
     .then(() => {
       sendResponse({ success: true, data: undefined, errorMsg: null });
     })

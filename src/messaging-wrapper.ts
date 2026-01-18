@@ -51,8 +51,8 @@ interface MessageMap {
   "opml/trigger-export"(data: { folder: number }): void;
   "opml/trigger-root-export"(): void;
   "opml/export"(data: { folder: number }): void;
-  "full-data/backup-trigger"(): void;
-  "full-data/backup"(): void;
+  "full-data/backup-trigger"(data: BackupParams): void;
+  "full-data/backup"(data: BackupParams): void;
 }
 
 export interface FeedPreviewResponse {
@@ -149,6 +149,12 @@ interface FolderDataUpdate {
 interface OPMLImportParams {
   folder: number;
   fileContent: string;
+}
+export interface BackupParams {
+  uiTheme: "light" | "dark" | null;
+  defaultFeedUpdateFrequency: number;
+  markNewPostsUnread: boolean;
+  clickPostToToggleUnread: boolean;
 }
 
 export type MessageType = keyof MessageMap;
