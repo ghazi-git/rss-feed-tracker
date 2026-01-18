@@ -8,7 +8,11 @@ import {
   getPostObjects,
   ParsedPost,
 } from "@/background/utils/feeds-fetch-from-source";
-import { acquireLock } from "@/background/utils/locks";
+import {
+  acquireLock,
+  hasLockExpired,
+  releaseLock,
+} from "@/background/utils/locks";
 import {
   COLOR_CODES,
   FeedPollingLogger,
@@ -28,8 +32,17 @@ export async function runFeedPollingAlarmHandler(scheduledAt: string) {
   // acquire a lock to avoid cases where feeds' loading exceeds the interval
   // between 2 consecutive alarm runs.
   const lockId = "feed-polling";
-  await using lock = await acquireLock(conn.db, lockId);
-  if (!lock.id) {
+  await using disposer = new AsyncDisposableStack();
+  try {
+    disposer.use(await acquireLock(conn.db, lockId));
+  } catch {
+    // lock in use
+    const expired = await hasLockExpired(conn.db, lockId);
+    if (expired) {
+      await releaseLock(conn.db, lockId);
+      const msg = `lock=${lockId} released forcibly so it can be used in the next run`;
+      FeedPollingLogger.log(scheduledAt, msg);
+    }
     FeedPollingLogger.log(scheduledAt, `aborted (cannot acquire a lock)`);
     return;
   }
