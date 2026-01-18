@@ -14,9 +14,9 @@ import { setAndEnableTheme } from "@/popup/utils/ui-theme";
 import { getSearchString } from "@/popup/utils/urls";
 import { ICONS_CACHE } from "@/settings";
 
-import styles from "./ClearCache.module.css";
+import styles from "./ManageExtensionData.module.css";
 
-export default function ClearCache() {
+export default function ManageExtensionData() {
   const { setPreferences } = usePreferencesContext();
   const navigate = useNavigate();
   const location = useLocation();

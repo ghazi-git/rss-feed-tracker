@@ -1,6 +1,6 @@
 import Checkbox from "@/popup/components/forms/Checkbox";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
-import ClearCache from "@/popup/pages/preferences/ClearCache";
+import ManageExtensionData from "@/popup/pages/preferences/ManageExtensionData";
 import { ThemeSwitcher } from "@/popup/pages/preferences/ThemeSwitcher";
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 
@@ -40,7 +40,7 @@ export default function Preferences() {
           setPreferences({ clickPostToToggleUnread: event.target.checked });
         }}
       />
-      <ClearCache />
+      <ManageExtensionData />
     </>
   );
 }
