@@ -8,8 +8,9 @@ import {
   StoreValue,
 } from "idb";
 
-export async function getDBConnection() {
-  const db = await openDB<FeedTrackerDB>("FeedTracker", 1, {
+export async function getDBConnection(dbVersion: number | null = null) {
+  const version = dbVersion ?? 1;
+  const db = await openDB<FeedTrackerDB>("FeedTracker", version, {
     async upgrade(db) {
       if (!db.objectStoreNames.contains("nodes")) {
         const store = db.createObjectStore("nodes", {
