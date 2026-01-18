@@ -28,7 +28,8 @@ export async function exportOPML(folder: number) {
   });
 
   const filename = `feeds_export_${new Date().toISOString()}.opml`;
-  triggerFileDownload(filename, fileContent, "application/xml");
+  const file = new Blob([fileContent], { type: "application/xml" });
+  triggerFileDownload(filename, file);
 }
 
 function getOutlineTree(parentId: number, nodes: TreeNode[]) {

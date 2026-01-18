@@ -1,9 +1,5 @@
-export function triggerFileDownload(
-  filename: string,
-  fileContent: string,
-  mimeType: string,
-) {
-  const url = URL.createObjectURL(new Blob([fileContent], { type: mimeType }));
+export function triggerFileDownload(filename: string, blob: Blob) {
+  const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
