@@ -8,14 +8,14 @@ import {
   getPostsFromIndex,
 } from "@/background/utils/posts";
 import { FeedTrackerDB, getDBConnection, Post, ReadTX } from "@/db-setup";
-import { getAllFromIndex } from "@/idb-helpers";
 import {
   FeedPost,
   PostsCursor,
   PostsResponse,
   PostsView,
 } from "@/messaging-wrapper";
-import { PAGE_SIZE } from "@/settings";
+import { getAllFromIndex } from "@/utils/idb-helpers";
+import { PAGE_SIZE } from "@/utils/settings";
 
 export async function listPosts(
   nodeId: number,

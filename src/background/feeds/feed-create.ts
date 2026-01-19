@@ -2,9 +2,9 @@ import { savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { createFeed } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
-import { loadPreferences } from "@/extension-storage";
-import { txDone } from "@/idb-helpers";
 import { FeedFormData } from "@/messaging-wrapper";
+import { loadPreferences } from "@/utils/extension-storage";
+import { txDone } from "@/utils/idb-helpers";
 
 export async function loadAndCreateFeed(data: FeedFormData) {
   const parsedFeed = await fetchAndParseFeed(data.url);

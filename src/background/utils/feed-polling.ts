@@ -21,8 +21,8 @@ import {
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
-import { loadPreferences } from "@/extension-storage";
-import { getAllFromIndex, txDone } from "@/idb-helpers";
+import { loadPreferences } from "@/utils/extension-storage";
+import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
 
 export async function runFeedPollingAlarmHandler(scheduledAt: string) {
   FeedPollingLogger.log(scheduledAt, "start");

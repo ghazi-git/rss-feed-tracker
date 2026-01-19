@@ -6,7 +6,7 @@ import {
   loadPreferences,
   savePreferences,
   StoredPreferences,
-} from "@/extension-storage";
+} from "@/utils/extension-storage";
 
 const PreferencesContext = createContext<PreferencesContextType>();
 

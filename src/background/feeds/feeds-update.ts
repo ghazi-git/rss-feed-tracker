@@ -6,8 +6,8 @@ import {
   getNodeMap,
 } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
-import { txDone } from "@/idb-helpers";
 import { UpdateFeedFormData } from "@/messaging-wrapper";
+import { txDone } from "@/utils/idb-helpers";
 
 /**
  * - Save the updated feed data provided by the user

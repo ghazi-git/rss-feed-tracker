@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "@solidjs/router";
 import { createSignal } from "solid-js";
 
-import { DEFAULT_PREFERENCES } from "@/extension-storage";
 import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
 import { createMutation } from "@/popup/utils/mutation";
 import {
@@ -12,7 +11,8 @@ import {
 import { usePreferencesContext } from "@/popup/utils/preferences-storage";
 import { setAndEnableTheme, uiTheme } from "@/popup/utils/ui-theme";
 import { getSearchString } from "@/popup/utils/urls";
-import { ICONS_CACHE } from "@/settings";
+import { DEFAULT_PREFERENCES } from "@/utils/extension-storage";
+import { ICONS_CACHE } from "@/utils/settings";
 
 import styles from "./ManageExtensionData.module.css";
 

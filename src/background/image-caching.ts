@@ -1,4 +1,4 @@
-import { ICONS_CACHE } from "@/settings";
+import { ICONS_CACHE } from "@/utils/settings";
 
 (self as unknown as ServiceWorkerGlobalScope).addEventListener(
   "fetch",

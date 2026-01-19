@@ -9,7 +9,7 @@ import NoPosts from "@/popup/components/NoPosts";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { ToggleUnreadContextProvider } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
-import { PAGE_SIZE } from "@/settings";
+import { PAGE_SIZE } from "@/utils/settings";
 
 import { usePostsContext } from "./posts-context";
 import { ToggleBookmarkedContext } from "./toggle-bookmarked-context";

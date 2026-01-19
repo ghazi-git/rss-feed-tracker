@@ -1,5 +1,5 @@
 import { ExtensionDB, Feed, FeedMetadata, ReadWriteTX } from "@/db-setup";
-import { getObject, saveObject, txDone } from "@/idb-helpers";
+import { getObject, saveObject, txDone } from "@/utils/idb-helpers";
 
 export async function saveSuccessMetadata(
   tx: ReadWriteTX,

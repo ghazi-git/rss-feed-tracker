@@ -6,7 +6,7 @@ import {
   getNodeMap,
 } from "@/background/utils/nodes";
 import { getDBConnection, Post } from "@/db-setup";
-import { txDone } from "@/idb-helpers";
+import { txDone } from "@/utils/idb-helpers";
 
 export async function markAllPostsAsRead(
   nodeId: number,

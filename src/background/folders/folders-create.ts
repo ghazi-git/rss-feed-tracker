@@ -1,7 +1,7 @@
 import { saveFolder } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
-import { txDone } from "@/idb-helpers";
 import { FolderFormData } from "@/messaging-wrapper";
+import { txDone } from "@/utils/idb-helpers";
 
 export async function createFolder(data: FolderFormData) {
   using conn = await getDBConnection();

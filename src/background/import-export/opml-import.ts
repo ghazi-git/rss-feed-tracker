@@ -9,8 +9,8 @@ import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { createFeed, saveFolder } from "@/background/utils/nodes";
 import { Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
-import { loadPreferences } from "@/extension-storage";
-import { getObject, saveObject, txDone } from "@/idb-helpers";
+import { loadPreferences } from "@/utils/extension-storage";
+import { getObject, saveObject, txDone } from "@/utils/idb-helpers";
 
 export async function importOPML(fileContent: string, folder: number) {
   const opml = parseOPML(fileContent);

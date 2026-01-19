@@ -2,9 +2,9 @@ import { generateOpml } from "feedsmith";
 import type { Opml } from "feedsmith/types";
 
 import { getDBConnection, TreeNode } from "@/db-setup";
-import { getAll, getObject } from "@/idb-helpers";
 import { OPMLExportError } from "@/offscreen/errors";
 import { triggerFileDownload } from "@/offscreen/utils";
+import { getAll, getObject } from "@/utils/idb-helpers";
 
 export async function exportOPML(folder: number) {
   using conn = await getDBConnection();

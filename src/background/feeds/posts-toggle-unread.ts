@@ -1,7 +1,7 @@
 import { NotFoundError } from "@/background/utils/errors";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
-import { txDone } from "@/idb-helpers";
+import { txDone } from "@/utils/idb-helpers";
 
 export async function toggleUnreadPost(
   feedId: number,

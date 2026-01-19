@@ -1,5 +1,5 @@
 import { ReadTX, ReadWriteTX } from "@/db-setup";
-import { getAllFromIndex } from "@/idb-helpers";
+import { getAllFromIndex } from "@/utils/idb-helpers";
 
 export async function setUnreadCountOnExtensionBadge(count: number) {
   if (count > 0) {

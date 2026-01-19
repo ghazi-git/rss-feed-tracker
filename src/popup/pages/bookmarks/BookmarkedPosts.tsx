@@ -11,7 +11,7 @@ import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmar
 import { ToggleUnreadContextProvider } from "@/popup/pages/node-posts/toggle-unread-context";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
-import { PAGE_SIZE } from "@/settings";
+import { PAGE_SIZE } from "@/utils/settings";
 
 export function BookmarkedPosts(props: { postsView: PostsView }) {
   const { mutateUnreadCount } = useUnreadCountContext();
