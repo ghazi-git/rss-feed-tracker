@@ -9,11 +9,6 @@ import {
   ParsedPost,
 } from "@/background/utils/feeds-fetch-from-source";
 import {
-  acquireLock,
-  hasLockExpired,
-  releaseLock,
-} from "@/background/utils/locks";
-import {
   COLOR_CODES,
   FeedPollingLogger,
   log,
@@ -23,6 +18,7 @@ import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { loadPreferences } from "@/utils/extension-storage";
 import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
+import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
 
 export async function runFeedPollingAlarmHandler(scheduledAt: string) {
   FeedPollingLogger.log(scheduledAt, "start");
