@@ -21,7 +21,7 @@ import {
   getLastVisitedPage,
   saveLastVisitedPage,
 } from "@/popup/utils/last-visited-page";
-import { PreferencesProvider } from "@/popup/utils/preferences-storage";
+import { PreferencesProvider } from "@/popup/utils/preferences-context";
 import {
   detectSystemTheme,
   enableTheme,

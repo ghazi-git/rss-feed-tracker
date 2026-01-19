@@ -23,7 +23,7 @@ import {
 } from "@/popup/pages/node-posts/unread-count-context";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
-import { usePreferencesContext } from "@/popup/utils/preferences-storage";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { createQuery } from "@/popup/utils/query";
 
 import styles from "./index.module.css";

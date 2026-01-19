@@ -10,7 +10,7 @@ import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu
 import PostLink from "@/popup/components/PostLink";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
-import { usePreferencesContext } from "@/popup/utils/preferences-storage";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./Posts.module.css";

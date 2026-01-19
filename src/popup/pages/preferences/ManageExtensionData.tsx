@@ -8,7 +8,7 @@ import {
   notifyInfo,
   notifySuccess,
 } from "@/popup/utils/notifications";
-import { usePreferencesContext } from "@/popup/utils/preferences-storage";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { setAndEnableTheme, uiTheme } from "@/popup/utils/ui-theme";
 import { getSearchString } from "@/popup/utils/urls";
 import { DEFAULT_PREFERENCES } from "@/utils/extension-storage";
