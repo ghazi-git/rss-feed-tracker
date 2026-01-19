@@ -2,7 +2,7 @@ import { AsyncZipDeflate, strToU8, Zip } from "fflate";
 
 import { retry } from "@/background/utils/retry-on-error";
 import { ExtensionDB, getDBConnection } from "@/db-setup";
-import { BackupParams } from "@/messaging-wrapper";
+import { PreferencesData } from "@/messaging-wrapper";
 import {
   BackupManifestV1,
   JSONFilename,
@@ -16,7 +16,7 @@ import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
 
 import pkg from "../../../package.json";
 
-export async function backupExtension(params: BackupParams) {
+export async function backupExtension(params: PreferencesData) {
   using conn = await getDBConnection();
   // acquire a lock to avoid data "inconsistency" due to receiving posts while
   // doing the backup (for example, a feed lastRunAt that is not in line with
@@ -40,7 +40,7 @@ export async function backupExtension(params: BackupParams) {
   await generateBackup(conn.db, params);
 }
 
-async function generateBackup(db: ExtensionDB, preferences: BackupParams) {
+async function generateBackup(db: ExtensionDB, preferences: PreferencesData) {
   const chunks: Uint8Array<ArrayBufferLike>[] = [];
 
   return new Promise<void>(async (resolve, reject) => {
@@ -70,7 +70,7 @@ async function generateBackup(db: ExtensionDB, preferences: BackupParams) {
 async function addBackupFiles(
   db: ExtensionDB,
   zipFile: Zip,
-  preferences: BackupParams,
+  preferences: PreferencesData,
 ) {
   // first the folders and feeds file
   const nodesFilename: JSONFilename = "nodes.json";
@@ -137,7 +137,7 @@ async function getPostsData(
 }
 
 async function getManifestData(
-  preferences: BackupParams,
+  preferences: PreferencesData,
   nodesFilename: JSONFilename,
   postsFilename: JSONFilename[],
 ): Promise<BackupManifestV1> {

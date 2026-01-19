@@ -19,6 +19,8 @@ export class OPMLTriggerExportError extends ServiceWorkerError {}
 
 export class TriggerBackupError extends ServiceWorkerError {}
 
+export class TriggerRestoreError extends ServiceWorkerError {}
+
 export function getErrorMsg(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,

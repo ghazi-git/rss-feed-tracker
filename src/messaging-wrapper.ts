@@ -51,8 +51,10 @@ interface MessageMap {
   "opml/trigger-export"(data: { folder: number }): void;
   "opml/trigger-root-export"(): void;
   "opml/export"(data: { folder: number }): void;
-  "full-data/backup-trigger"(data: BackupParams): void;
-  "full-data/backup"(data: BackupParams): void;
+  "full-data/backup-trigger"(data: PreferencesData): void;
+  "full-data/backup"(data: PreferencesData): void;
+  "full-data/restore-trigger"(data: { fileURL: string }): PreferencesData;
+  "full-data/restore"(data: { fileURL: string }): PreferencesData;
 }
 
 export interface FeedPreviewResponse {
@@ -150,7 +152,7 @@ interface OPMLImportParams {
   folder: number;
   fileContent: string;
 }
-export interface BackupParams {
+export interface PreferencesData {
   uiTheme: "light" | "dark" | null;
   defaultFeedUpdateFrequency: number;
   markNewPostsUnread: boolean;

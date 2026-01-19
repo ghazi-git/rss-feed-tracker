@@ -12,7 +12,7 @@ function getStoredTheme(): UITheme | null {
   }
 }
 
-export function setAndEnableTheme(theme: string) {
+export function setAndEnableTheme(theme: string | null) {
   if (theme === "light" || theme === "dark") {
     setUITheme(theme);
     localStorage.setItem("ui-theme", theme);

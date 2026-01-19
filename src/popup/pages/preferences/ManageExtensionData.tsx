@@ -32,6 +32,9 @@ export default function ManageExtensionData() {
   const { mutation: backupMutation, sendMsg: backupData } = createMutation(
     "full-data/backup-trigger",
   );
+  const { mutation: restoreMutation, sendMsg: restoreData } = createMutation(
+    "full-data/restore-trigger",
+  );
 
   return (
     <fieldset class={styles["manage-data"]}>
@@ -56,7 +59,7 @@ export default function ManageExtensionData() {
       <ManageDataButton
         onClick={async () => {
           // reset UI theme to system theme
-          setAndEnableTheme("");
+          setAndEnableTheme(null);
           // reset preferences
           await setPreferences(DEFAULT_PREFERENCES);
         }}
@@ -96,21 +99,21 @@ export default function ManageExtensionData() {
       </ManageDataButton>
       <ManageDataButton
         onClick={async () => {
-          const accept: Record<MIMEType, FileExtension[]> = {
-            "text/xml": [".opml"],
-            "application/xml": [".opml"],
-            "text/x-opml": [".opml"],
-            "text/x-opml+xml": [".opml"],
-          };
-          let fileHandle: FileSystemFileHandle;
           try {
-            [fileHandle] = await window.showOpenFilePicker({
+            const [fileHandle] = await window.showOpenFilePicker({
               id: "data-restore",
-              types: [{ accept }],
+              types: [{ accept: { "application/zip": [".zip"] } }],
             });
             const file = await fileHandle.getFile();
             const fileURL = URL.createObjectURL(file);
-            console.log("URL.createObjectURL(file)", fileURL);
+            await restoreData({ fileURL });
+            if (restoreMutation.isSuccess) {
+              const { uiTheme, ...prefs } = restoreMutation.data;
+              setAndEnableTheme(uiTheme);
+              await setPreferences(prefs);
+            } else if (restoreMutation.isError) {
+              notifyError(restoreMutation.errorMsg);
+            }
           } catch (e) {
             if (e instanceof DOMException && e.name === "AbortError") {
               // user didn't choose a file, do nothing

@@ -1,4 +1,5 @@
 import { triggerBackup } from "@/background/import-export/full-data-trigger-backup";
+import { triggerRestore } from "@/background/import-export/full-data-trigger-restore";
 import { importOPML } from "@/background/import-export/opml-import";
 import { triggerOPMLExport } from "@/background/import-export/opml-trigger-export";
 import { triggerRootExport } from "@/background/import-export/opml-trigger-root-export";
@@ -55,6 +56,20 @@ onMessage("full-data/backup-trigger", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while creating the backup.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("full-data/restore-trigger", (payload, sender, sendResponse) => {
+  triggerRestore(payload.fileURL)
+    .then((preferences) => {
+      sendResponse({ success: true, data: preferences, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while restoring the extension data from the backup.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
