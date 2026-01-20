@@ -98,6 +98,7 @@ export default function ManageExtensionData() {
         Full Data Backup
       </ManageDataButton>
       <ManageDataButton
+        loading={restoreMutation.isLoading}
         onClick={async () => {
           try {
             const [fileHandle] = await window.showOpenFilePicker({
@@ -108,6 +109,7 @@ export default function ManageExtensionData() {
             const fileURL = URL.createObjectURL(file);
             await restoreData({ fileURL });
             if (restoreMutation.isSuccess) {
+              notifySuccess("Backup restored successfully.");
               const { uiTheme, ...prefs } = restoreMutation.data;
               setAndEnableTheme(uiTheme);
               await setPreferences(prefs);
