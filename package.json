@@ -15,7 +15,8 @@
     "idb": "8.0.3",
     "open-props": "1.7.16",
     "solid-js": "1.9.8",
-    "solid-notifications": "1.2.0"
+    "solid-notifications": "1.2.0",
+    "valibot": "1.2.0"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "2.1.0",
