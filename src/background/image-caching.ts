@@ -1,3 +1,4 @@
+import { glogger } from "@/utils/logging";
 import { ICONS_CACHE } from "@/utils/settings";
 
 (self as unknown as ServiceWorkerGlobalScope).addEventListener(
@@ -19,7 +20,7 @@ async function getFromCacheOrDefaultToNetwork(request: FetchEvent["request"]) {
     cache.put(request, response.clone());
     return response;
   } catch (e) {
-    console.error("fetch-image-handler", e);
+    glogger.error("fetch-image-handler", e);
     return new Response(null, { status: 404, statusText: "Not Found" });
   }
 }

@@ -5,6 +5,7 @@ import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-co
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
 import { openTab, openWindow } from "@/popup/utils/urls";
+import { glogger } from "@/utils/logging";
 
 export function PostContextMenu() {
   const { store, registerMenuRef, hideMenu } = usePostMenuContext();
@@ -68,7 +69,7 @@ export function PostContextMenu() {
             try {
               await navigator.clipboard.writeText(store.url!);
             } catch (e) {
-              console.error("copy-link: failure", e);
+              glogger.error("copy-link: failure", e);
               notifyError("Failed to copy the link.");
             }
           })();

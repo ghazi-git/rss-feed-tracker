@@ -17,6 +17,7 @@ import {
 import { RestoreError } from "@/offscreen/errors";
 import { txDone } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
+import { glogger } from "@/utils/logging";
 
 export async function restoreExtension(
   fileURL: string,
@@ -64,7 +65,7 @@ export async function restoreExtension(
         await insertPosts(conn.db, nodePosts);
       }
     } catch (e) {
-      console.error(`Failed to process file=${filename}`, e);
+      glogger.error(`Failed to process file=${filename}`, e);
     }
   }
 

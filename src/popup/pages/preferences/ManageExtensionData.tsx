@@ -12,6 +12,7 @@ import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { setAndEnableTheme, uiTheme } from "@/popup/utils/ui-theme";
 import { getSearchString } from "@/popup/utils/urls";
 import { DEFAULT_PREFERENCES } from "@/utils/extension-storage";
+import { glogger } from "@/utils/logging";
 import { ICONS_CACHE } from "@/utils/settings";
 
 import styles from "./ManageExtensionData.module.css";
@@ -120,7 +121,7 @@ export default function ManageExtensionData() {
             if (e instanceof DOMException && e.name === "AbortError") {
               // user didn't choose a file, do nothing
             } else {
-              console.error(e);
+              glogger.error("data restore failure", e);
             }
           }
         }}

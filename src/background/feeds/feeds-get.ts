@@ -12,9 +12,8 @@ export async function getFeed(id: number) {
     getFolderOptionsAsTree(conn.db),
   ]);
   if (!node || node.type !== "feed") {
-    console.error(`feed-get: failure to get the feed id=${id}`);
     const msg = "Unable to find the feed, it may have been deleted.";
-    throw new NotFoundError(msg);
+    throw new NotFoundError(msg, { cause: `feed not found id=${id}` });
   }
 
   return {

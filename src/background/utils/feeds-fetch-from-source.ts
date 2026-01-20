@@ -4,7 +4,7 @@ import type { Atom, Json, Rss } from "feedsmith/types";
 import { FeedParseError, HttpError } from "@/background/utils/errors";
 import { retry } from "@/background/utils/retry-on-error";
 import { Post } from "@/db-setup";
-import { getLogger, Logger } from "@/utils/logging";
+import { getLogger, glogger, Logger } from "@/utils/logging";
 
 export async function fetchAndParseFeed(
   url: string,
@@ -69,8 +69,10 @@ function getRSSFeedContent(
   for (const item of items) {
     const guid = item.guid?.value || item.link;
     if (!guid) {
-      const msg = `Processing RSS Feed ${feedURL} - No GUID - Ignoring item`;
-      console.debug(msg, item);
+      glogger.debug("No GUID - Ignoring item", {
+        action: "parse-rss-feed",
+        feedURL,
+      });
       continue;
     }
 

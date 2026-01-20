@@ -1,3 +1,5 @@
+import { glogger } from "@/utils/logging";
+
 export class ServiceWorkerError extends Error {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
@@ -26,6 +28,6 @@ export function getErrorMsg(
   err: any,
   defaultMsg = "An unexpected error occurred, please try again.",
 ) {
-  console.error("service-worker-error:", err);
+  glogger.error("service-worker-error:", err);
   return err instanceof ServiceWorkerError ? err.message : defaultMsg;
 }

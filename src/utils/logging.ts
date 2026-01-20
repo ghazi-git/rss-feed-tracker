@@ -79,3 +79,14 @@ function getColorCode() {
   const color = COLOR_GENERATOR.next();
   return color.value as string;
 }
+
+const globalLogger = getLogger();
+export const glogger = {
+  debug(msg: string, obj?: LoggerContext) {
+    globalLogger.debug(msg, obj);
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error(msg: string, e: any) {
+    globalLogger.error(msg, e);
+  },
+};

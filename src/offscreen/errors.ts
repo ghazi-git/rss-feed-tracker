@@ -1,3 +1,5 @@
+import { glogger } from "@/utils/logging";
+
 export class OffscreenError extends Error {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
@@ -16,6 +18,6 @@ export function getErrorMsg(
   err: any,
   defaultMsg = "An unexpected error occurred, please try again.",
 ) {
-  console.error("offscreen-document-error:", err);
+  glogger.error("offscreen-document-error:", err);
   return err instanceof OffscreenError ? err.message : defaultMsg;
 }

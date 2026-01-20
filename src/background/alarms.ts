@@ -1,4 +1,5 @@
 import { runFeedPollingAlarmHandler } from "@/background/utils/feed-polling";
+import { glogger } from "@/utils/logging";
 
 const FEED_POLLING_ALARM = "feed-polling";
 
@@ -25,7 +26,6 @@ async function getOrCreateFeedPollingAlarm() {
       when: Date.now() + 1000,
       periodInMinutes: 1,
     });
-    const now = new Date();
-    console.log(`[${now.toISOString()}] feed polling alarm created`);
+    glogger.debug("feed polling alarm created");
   }
 }

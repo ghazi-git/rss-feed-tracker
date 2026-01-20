@@ -12,9 +12,8 @@ export async function deleteFolder(id: number) {
     .filter((f) => f.type === "folder")
     .find((f) => f.id === id);
   if (!folder) {
-    console.error(`folders-delete: failure to get the folder id=${id}`);
     const msg = "Unable to find the folder, it may have been already deleted.";
-    throw new NotFoundError(msg);
+    throw new NotFoundError(msg, { cause: `folder not found id=${id}` });
   }
   if (!folder.parentId) {
     throw new DeletionError("You cannot delete the top-level folder.");

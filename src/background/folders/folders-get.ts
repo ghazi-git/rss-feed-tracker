@@ -10,9 +10,8 @@ export async function getFolder(id: number) {
     getFolderOptionsAsTree(conn.db),
   ]);
   if (!node || node.type !== "folder") {
-    console.error(`folder-get: failure to get the folder id=${id}`);
     const msg = "Unable to find the folder, it may have been deleted.";
-    throw new NotFoundError(msg);
+    throw new NotFoundError(msg, { cause: `folder not found id=${id}` });
   }
 
   return {
