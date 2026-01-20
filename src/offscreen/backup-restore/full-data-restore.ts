@@ -17,15 +17,19 @@ import {
 import { RestoreError } from "@/offscreen/errors";
 import { txDone } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
-import { glogger } from "@/utils/logging";
+import { getLogger } from "@/utils/logging";
 
 export async function restoreExtension(
   fileURL: string,
 ): Promise<PreferencesData> {
+  const logger = getLogger({ action: "restore-extension" });
+  logger.debug("start");
+  const start = performance.now();
   using conn = await getDBConnection();
   // prevent the background fetch from attempting to insert data while
   // the restore is in progress
   const lockId = "feed-polling";
+  logger.debug("acquiring lock....");
   const getLock = async () => acquireLock(conn.db, lockId);
   await using disposer = new AsyncDisposableStack();
   try {
@@ -34,40 +38,58 @@ export async function restoreExtension(
     // lock in use
     const expired = await hasLockExpired(conn.db, lockId);
     if (expired) {
+      logger.debug("force-releasing expired lock ...");
       await releaseLock(conn.db, lockId);
     }
+    logger.debug("aborted (cannot acquire a lock after 3 retries)");
     throw new RestoreError(
       "The feeds are being updated in the background, please try again once that is done.",
     );
   }
 
+  logger.debug("loading zip backup into memory...");
   const zipFile = await getZipFile(fileURL);
   URL.revokeObjectURL(fileURL);
 
+  logger.debug("extracting manifest file...");
   const manifestContents = extractFile(zipFile, "manifest.json");
+  logger.debug("validating manifest...");
   const manifest = validateManifest(manifestContents);
-  const nodesContent = extractFile(zipFile, manifest.backupFiles.feeds_folders);
+  const nodesFilename = manifest.backupFiles.feeds_folders;
+  logger.debug("extracting nodes file...", { filename: nodesFilename });
+  const nodesContent = extractFile(zipFile, nodesFilename);
+  logger.debug("validating nodes file...");
   const { nodes, feedmetadata } = validateNodesFile(nodesContent);
 
   // now we can start the restore since we did find nodes to import in the backup
+  logger.debug("clearing existing data...");
   await clearDB(conn.db);
+  logger.debug(`inserting nodes...`, { count: nodes.length });
   await insertNodes(conn.db, nodes, feedmetadata);
 
   // best-effort restore: restore posts that correspond to the nodes already
   // inserted and skip invalid posts or files with bad data.
   const nodeIds = new Set(nodes.map((n) => n.id));
   for (const filename of manifest.backupFiles.posts) {
+    const postLogger = logger.child({ filename });
     try {
+      postLogger.debug("extracting posts file...");
       const fileContents = extractFile(zipFile, filename);
+      postLogger.debug("validating posts file...");
       const posts = getPosts(fileContents);
       const nodePosts = posts.filter((p) => nodeIds.has(p.feedId));
       if (nodePosts.length) {
+        postLogger.debug(`inserting posts...`, { count: nodePosts.length });
         await insertPosts(conn.db, nodePosts);
       }
     } catch (e) {
-      glogger.error(`Failed to process file=${filename}`, e);
+      postLogger.error("failure", e);
     }
   }
+
+  const end = performance.now();
+  const took = (end - start) / 1000;
+  logger.debug("done", { time: `${took.toFixed(3)} seconds` });
 
   return manifest.preferences;
 }

@@ -39,7 +39,8 @@ export class Logger {
     }
   }
 
-  error(msg: string, e: Error) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error(msg: string, e: any) {
     const now = new Date().toISOString();
     const contextParts = getContextAsText(this.context);
     const contextText = `[${now}]${contextParts ? ` ${contextParts}` : ""}`;
