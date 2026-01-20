@@ -2,11 +2,11 @@ import { getNodeTree } from "@/background/folders/folders-options";
 import { NotFoundError } from "@/background/utils/errors";
 import { loadFeeds, savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
-import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { ExtensionDB, Feed, Folder, getDBConnection } from "@/db-setup";
 import { NodeReloadResponse } from "@/messaging-wrapper";
 import { loadPreferences } from "@/utils/extension-storage";
 import { txDone } from "@/utils/idb-helpers";
+import { getLogger } from "@/utils/logging";
 
 export async function reloadNode(id: number): Promise<NodeReloadResponse> {
   using conn = await getDBConnection();
@@ -36,8 +36,11 @@ export async function reloadNode(id: number): Promise<NodeReloadResponse> {
 async function reloadFeed(db: ExtensionDB, node: Feed) {
   const preferences = await loadPreferences();
   const markNewPostsUnread = preferences.markNewPostsUnread;
-  const now = new Date().toISOString();
-  const logger = new FeedPollingLogger(node.id, now, COLOR_CODES[0]);
+  const logger = getLogger({
+    action: "reload-feed",
+    scheduledAt: new Date(),
+    feedId: node.id,
+  });
   const parsedFeed = await fetchAndParseFeed(node.feed.url, logger);
 
   const tx = db.transaction(["posts", "feedmetadata", "nodes"], "readwrite");
@@ -58,6 +61,10 @@ async function reloadFolder(db: ExtensionDB, node: Folder) {
   const nodes = await db.getAll("nodes");
   const nodeTree = getNodeTree(node, nodes);
   const childFeeds = nodeTree.map(([n]) => n).filter((n) => n.type === "feed");
-  const now = new Date().toISOString();
-  return await loadFeeds(db, childFeeds, now);
+  const logger = getLogger({
+    action: "reload-folder",
+    scheduledAt: new Date(),
+    folderId: node.id,
+  });
+  return await loadFeeds(db, childFeeds, logger);
 }

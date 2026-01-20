@@ -2,17 +2,18 @@ import { parseFeed } from "feedsmith";
 import type { Atom, Json, Rss } from "feedsmith/types";
 
 import { FeedParseError, HttpError } from "@/background/utils/errors";
-import { FeedPollingLogger, log } from "@/background/utils/logging";
 import { retry } from "@/background/utils/retry-on-error";
 import { Post } from "@/db-setup";
+import { getLogger, Logger } from "@/utils/logging";
 
 export async function fetchAndParseFeed(
   url: string,
-  logger: FeedPollingLogger | null = null,
+  logger: Logger | null = null,
 ) {
-  log(`fetching url=${url}`, logger);
+  logger = logger ?? getLogger({ action: "load-and-parse-feeds" });
+  logger.debug(`fetching...`, { url });
   const feedContent = await fetchFeedContent(url);
-  log("parsing feed...", logger);
+  logger.debug("parsing feed...");
   return parseFeedContent(url, feedContent);
 }
 

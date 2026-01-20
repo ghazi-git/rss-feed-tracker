@@ -6,11 +6,11 @@ import { NotFoundError, OPMLParseError } from "@/background/utils/errors";
 import { savePosts } from "@/background/utils/feed-polling";
 import { saveFailureMetadata } from "@/background/utils/feedmetadata";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
-import { COLOR_CODES, FeedPollingLogger } from "@/background/utils/logging";
 import { createFeed, saveFolder } from "@/background/utils/nodes";
 import { Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { loadPreferences } from "@/utils/extension-storage";
 import { getObject, saveObject, txDone } from "@/utils/idb-helpers";
+import { getLogger } from "@/utils/logging";
 
 export async function importOPML(fileContent: string, folder: number) {
   const opml = parseOPML(fileContent);
@@ -108,9 +108,11 @@ async function loadPosts(feeds: Feed[], markNewPostsUnread: boolean) {
   // load feeds in parallel
   const chunks = getChunks(feeds, 5);
   for (const chunk of chunks) {
-    const promises = chunk.map((node, idx) => {
-      const colorCode = COLOR_CODES[idx % COLOR_CODES.length];
-      const logger = new FeedPollingLogger(node.id, scheduledAt, colorCode);
+    const promises = chunk.map((node) => {
+      const logger = getLogger(
+        { action: "opml-import", scheduledAt, feedId: node.id },
+        true,
+      );
 
       return fetchAndParseFeed(node.feed.url, logger)
         .then(async (parsedFeed) => {
@@ -128,7 +130,7 @@ async function loadPosts(feeds: Feed[], markNewPostsUnread: boolean) {
           await txDone(tx);
         })
         .catch(async (e) => {
-          logger.error(e);
+          logger.error("failure", e);
           const msg = e instanceof Error ? e.message : "Unexpected error";
           await saveFailureMetadata(conn.db, node, msg);
         });
