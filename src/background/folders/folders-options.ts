@@ -1,10 +1,5 @@
-import {
-  createRootFolder,
-  ExtensionDB,
-  Folder,
-  getDBConnection,
-  TreeNode,
-} from "@/db-setup";
+import { createRootFolder } from "@/background/utils/nodes";
+import { ExtensionDB, Folder, getDBConnection, TreeNode } from "@/db-setup";
 import { FolderOption } from "@/messaging-wrapper";
 
 export async function getFolderOptions(): Promise<FolderOption[]> {

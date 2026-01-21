@@ -2,6 +2,7 @@ import { getNodeTree } from "@/background/folders/folders-options";
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
 import {
+  ExtensionDB,
   Feed,
   FeedMetadata,
   Folder,
@@ -142,4 +143,24 @@ export async function saveFolder(
   const folderId = await nodeStore.add(folder);
 
   return { ...folder, id: folderId } as Folder;
+}
+
+export async function createRootFolder(db: ExtensionDB): Promise<Folder> {
+  const root = getRootFolderData();
+  const folderId = await db.add("nodes", root);
+  return { ...root, id: folderId };
+}
+
+function getRootFolderData() {
+  // type casting because idb does not handle the case where the id is set
+  // by indexeddb https://github.com/jakearchibald/idb/issues/150
+  return {
+    type: "folder",
+    name: "My Feeds",
+    parentId: null,
+    createdAt: Date.now(),
+    unreadCount: 0,
+    sortOrder: 10_000,
+    feed: null,
+  } as Folder;
 }
