@@ -1,6 +1,7 @@
 import { strFromU8, unzipSync } from "fflate";
 import * as v from "valibot";
 
+import { getChunks } from "@/background/utils/chunks";
 import { retry } from "@/background/utils/retry-on-error";
 import { DB_NAME, ExtensionDB, getDBConnection } from "@/db-setup";
 import { PreferencesData } from "@/messaging-wrapper";
@@ -270,6 +271,13 @@ function getValidPosts(contents: string): PostBackup[] {
 }
 
 async function insertPosts(db: ExtensionDB, posts: PostBackup[]) {
+  const chunks = getChunks(posts, 2000);
+  for (const chunk of chunks) {
+    await insertPostsChunk(db, chunk);
+  }
+}
+
+async function insertPostsChunk(db: ExtensionDB, posts: PostBackup[]) {
   const tx = db.transaction(["posts"], "readwrite");
   const store = tx.objectStore("posts");
   const promises = posts.map((p) => store.put(p));
