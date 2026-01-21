@@ -2,7 +2,7 @@ import { strFromU8, unzipSync } from "fflate";
 import * as v from "valibot";
 
 import { retry } from "@/background/utils/retry-on-error";
-import { ExtensionDB, getDBConnection } from "@/db-setup";
+import { DB_NAME, ExtensionDB, getDBConnection } from "@/db-setup";
 import { PreferencesData } from "@/messaging-wrapper";
 import {
   BackupManifestSchema,
@@ -17,53 +17,36 @@ import {
 import { RestoreError } from "@/offscreen/errors";
 import { txDone } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
-import { getLogger } from "@/utils/logging";
+import { getLogger, glogger } from "@/utils/logging";
 
 export async function restoreExtension(
   fileURL: string,
 ): Promise<PreferencesData> {
   const logger = getLogger({ action: "restore-extension" });
   logger.debug("start");
-  const start = performance.now();
-  using conn = await getDBConnection();
-  // prevent the background fetch from attempting to insert data while
-  // the restore is in progress
-  const lockId = "feed-polling";
-  logger.debug("acquiring lock....");
-  const getLock = async () => acquireLock(conn.db, lockId);
-  await using disposer = new AsyncDisposableStack();
-  try {
-    disposer.use(await retry(getLock));
-  } catch {
-    // lock in use
-    const expired = await hasLockExpired(conn.db, lockId);
-    if (expired) {
-      logger.debug("force-releasing expired lock ...");
-      await releaseLock(conn.db, lockId);
-    }
-    logger.debug("aborted (cannot acquire a lock after 3 retries)");
-    throw new RestoreError(
-      "The feeds are being updated in the background, please try again once that is done.",
-    );
-  }
+  performance.mark("restore_start");
 
   logger.debug("loading zip backup into memory...");
   const zipFile = await getZipFile(fileURL);
   URL.revokeObjectURL(fileURL);
 
-  logger.debug("extracting manifest file...");
+  logger.debug("validating backup before restore...");
   const manifestContents = extractFile(zipFile, "manifest.json");
-  logger.debug("validating manifest...");
   const manifest = validateManifest(manifestContents);
   const nodesFilename = manifest.backupFiles.feeds_folders;
-  logger.debug("extracting nodes file...", { filename: nodesFilename });
   const nodesContent = extractFile(zipFile, nodesFilename);
-  logger.debug("validating nodes file...");
   const { nodes, feedmetadata } = validateNodesFile(nodesContent);
 
-  // now we can start the restore since we did find nodes to import in the backup
   logger.debug("clearing existing data...");
-  await clearDB(conn.db);
+  // deleting the DB is way faster than clearing the stores one by one.
+  await deleteDB();
+  // Now we can start the restore since we did find nodes to import in the backup
+  // Opening the db will create it again
+  using conn = await getDBConnection();
+  // prevent the background fetch from inserting data while the restore is in progress
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  await using _ = await getLock(conn.db);
+
   logger.debug(`inserting nodes...`, { count: nodes.length });
   await insertNodes(conn.db, nodes, feedmetadata);
 
@@ -76,7 +59,7 @@ export async function restoreExtension(
       postLogger.debug("extracting posts file...");
       const fileContents = extractFile(zipFile, filename);
       postLogger.debug("validating posts file...");
-      const posts = getPosts(fileContents);
+      const posts = getValidPosts(fileContents);
       const nodePosts = posts.filter((p) => nodeIds.has(p.feedId));
       if (nodePosts.length) {
         postLogger.debug(`inserting posts...`, { count: nodePosts.length });
@@ -87,11 +70,30 @@ export async function restoreExtension(
     }
   }
 
-  const end = performance.now();
-  const took = (end - start) / 1000;
-  logger.debug("done", { time: `${took.toFixed(3)} seconds` });
+  const res = performance.measure("restore_duration", "restore_start");
+  logger.debug("done", { restoreDuration: `${res.duration.toFixed(1)} ms` });
 
   return manifest.preferences;
+}
+
+async function getLock(db: ExtensionDB) {
+  const action = "restore-extension";
+  glogger.debug("acquiring lock....", { action });
+  const lockId = "feed-polling";
+  try {
+    return await retry(() => acquireLock(db, lockId));
+  } catch {
+    // lock in use
+    const expired = await hasLockExpired(db, lockId);
+    if (expired) {
+      glogger.debug("force-releasing expired lock ...", { action });
+      await releaseLock(db, lockId);
+    }
+    glogger.debug("aborted (cannot acquire a lock)", { action });
+    throw new RestoreError(
+      "The feeds are being updated in the background, please try again once that is done.",
+    );
+  }
 }
 
 async function getZipFile(url: string) {
@@ -197,12 +199,28 @@ function getTreeElements<T extends TreeElement>(rootNode: T, nodes: T[]) {
   return result;
 }
 
-async function clearDB(db: ExtensionDB) {
-  await Promise.all([
-    db.clear("nodes"),
-    db.clear("feedmetadata"),
-    db.clear("posts"),
-  ]);
+async function deleteDB() {
+  // get a lock to avoid background feed fetching from inserting data while
+  // we're deleting the DB here
+  const conn = await getDBConnection();
+  await getLock(conn.db);
+  conn.db.close();
+
+  return await new Promise<void>((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(DB_NAME);
+    request.onsuccess = () => resolve();
+    request.onerror = async () => {
+      reject(
+        new RestoreError(
+          "Unable to clear DB data before restoring the backup. Please try again.",
+          { cause: request.error },
+        ),
+      );
+      // we also need to remove the lock
+      using conn = await getDBConnection();
+      await releaseLock(conn.db, "feed-polling");
+    };
+  });
 }
 
 async function insertNodes(
@@ -236,7 +254,7 @@ async function insertNodes(
   await txDone(tx);
 }
 
-function getPosts(contents: string): PostBackup[] {
+function getValidPosts(contents: string): PostBackup[] {
   const posts = JSON.parse(contents);
   if (Array.isArray(posts)) {
     const validPosts: PostBackup[] = [];
