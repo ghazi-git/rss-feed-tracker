@@ -230,19 +230,21 @@ async function insertNodes(
   metadata: FeedMetadataBackup[],
 ) {
   const metadataMap = new Map(metadata.map((m) => [m.feedId, m]));
-  const metadataToInsert = nodes.map((node) => {
-    return (
-      metadataMap.get(node.id) ?? {
-        feedId: node.id,
-        nextRunAt: null,
-        lastRunAt: null,
-        lastRunResult: null,
-        lastRunNotes: null,
-        lastSuccessfulRunAt: null,
-        lastUpdatedAt: null,
-      }
-    );
-  });
+  const metadataToInsert = nodes
+    .filter((n) => n.type === "feed")
+    .map((feed) => {
+      return (
+        metadataMap.get(feed.id) ?? {
+          feedId: feed.id,
+          nextRunAt: null,
+          lastRunAt: null,
+          lastRunResult: null,
+          lastRunNotes: null,
+          lastSuccessfulRunAt: null,
+          lastUpdatedAt: null,
+        }
+      );
+    });
 
   const tx = db.transaction(["nodes", "feedmetadata"], "readwrite");
   const nodeStore = tx.objectStore("nodes");
