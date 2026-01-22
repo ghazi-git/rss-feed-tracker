@@ -15,13 +15,20 @@ export function onMessage<K extends MessageType>(
   messageType: K,
   messageCallback: MessageCallback<K>,
 ) {
-  chrome.runtime.onMessage.addListener(
-    (message: MessageRequest<K>, sender, sendResponse) => {
-      if (message.type === messageType) {
-        return messageCallback(message.payload, sender, sendResponse);
-      }
-    },
-  );
+  const eventHandler = (
+    message: MessageRequest<K>,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: MessageResponse<K>) => void,
+  ) => {
+    if (message.type === messageType) {
+      return messageCallback(message.payload, sender, sendResponse);
+    }
+  };
+
+  chrome.runtime.onMessage.addListener(eventHandler);
+  return () => {
+    chrome.runtime.onMessage.removeListener(eventHandler);
+  };
 }
 
 interface MessageMap {
