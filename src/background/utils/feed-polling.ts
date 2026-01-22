@@ -62,14 +62,15 @@ async function getDueFeeds(db: ExtensionDB) {
   const metadata = await getAllFromIndex(tx, "feedmetadata", "by_next_run_at", {
     query: IDBKeyRange.upperBound(Date.now()),
   });
-  const feedIds = metadata.map((m) => m.feedId);
+  const feedIds = new Set(metadata.map((m) => m.feedId));
+  if (!feedIds.size) return [];
+
   const nodes = await getAllFromIndex(tx, "nodes", "by_type", {
     query: "feed",
   });
-
   return nodes
     .filter((n) => n.type === "feed")
-    .filter((f) => feedIds.includes(f.id));
+    .filter((f) => feedIds.has(f.id));
 }
 
 export async function loadFeeds(
