@@ -44,7 +44,7 @@ export class Logger {
     const now = new Date().toISOString();
     const contextParts = getContextAsText(this.context);
     const contextText = `[${now}]${contextParts ? ` ${contextParts}` : ""}`;
-    console.log(contextText, msg, e);
+    console.error(contextText, msg, e);
   }
 }
 
