@@ -68,11 +68,11 @@ export default function NodePosts() {
         // on "Load new posts", update the unread count since he's going to see
         // the new posts
         if (newPostsStore.hasNewPosts) {
-          mutateUnreadCount({ value: newPostsStore.unreadCount });
+          mutateUnreadCount({ delta: newPostsStore.unreadCountDelta });
           mutateMarkAsReadUntil(newPostsStore.markAsReadUntil);
           setNewPostsStore({
             hasNewPosts: false,
-            unreadCount: null,
+            unreadCountDelta: null,
             markAsReadUntil: null,
           });
         }
@@ -99,7 +99,7 @@ export default function NodePosts() {
   const { preferences } = usePreferencesContext();
   const [newPostsStore, setNewPostsStore] = createStore<NewPostsStore>({
     hasNewPosts: false,
-    unreadCount: null,
+    unreadCountDelta: null,
     markAsReadUntil: null,
   });
   const { mutation, sendMsg: reload } = createMutation("nodes/reload");
@@ -114,11 +114,14 @@ export default function NodePosts() {
         hasNewPosts &&
         (postsView() === "all" || preferences.markNewPostsUnread)
       ) {
-        setNewPostsStore({
+        setNewPostsStore(({ unreadCountDelta }) => ({
           hasNewPosts: true,
           markAsReadUntil: mutation.data.markAsReadUntil,
-          unreadCount: mutation.data.unreadCount,
-        });
+          // add to existing delta when reloading more than once before
+          // clicking load new posts
+          unreadCountDelta:
+            mutation.data.newPostsCount + (unreadCountDelta ?? 0),
+        }));
       }
     } else if (mutation.isError) {
       notifyError(mutation.errorMsg);
@@ -127,11 +130,11 @@ export default function NodePosts() {
   const loadNewPosts = () => {
     batch(() => {
       if (newPostsStore.hasNewPosts) {
-        mutateUnreadCount({ value: newPostsStore.unreadCount });
+        mutateUnreadCount({ delta: newPostsStore.unreadCountDelta });
         mutateMarkAsReadUntil(newPostsStore.markAsReadUntil);
         setNewPostsStore({
           hasNewPosts: false,
-          unreadCount: null,
+          unreadCountDelta: null,
           markAsReadUntil: null,
         });
       }
@@ -148,16 +151,18 @@ export default function NodePosts() {
       sendMessage("nodes/get-for-node-posts-page", { id: nodeId() }).then(
         (response) => {
           if (response.success) {
+            const currentCount = getCurrentCount();
             const newCount = response.data.unreadCount;
             if (
-              newCount > getCurrentCount() &&
+              newCount > currentCount &&
               (postsView() === "all" || preferences.markNewPostsUnread)
             ) {
-              setNewPostsStore({
+              setNewPostsStore(({ unreadCountDelta }) => ({
                 hasNewPosts: true,
-                unreadCount: newCount,
+                unreadCountDelta:
+                  newCount - currentCount + (unreadCountDelta ?? 0),
                 markAsReadUntil: response.data.markAsReadUntil,
-              });
+              }));
             }
           }
         },
@@ -256,11 +261,11 @@ function createNodeResource() {
 type NewPostsStore =
   | {
       hasNewPosts: false;
-      unreadCount: null;
+      unreadCountDelta: null;
       markAsReadUntil: null;
     }
   | {
       hasNewPosts: true;
-      unreadCount: number;
+      unreadCountDelta: number;
       markAsReadUntil: number;
     };
