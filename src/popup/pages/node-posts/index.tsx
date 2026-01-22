@@ -5,12 +5,19 @@ import {
   createResource,
   createSignal,
   Match,
+  onCleanup,
+  onMount,
   Switch,
   untrack,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { FeedPost, PostsCursor, sendMessage } from "@/messaging-wrapper";
+import {
+  FeedPost,
+  onMessage,
+  PostsCursor,
+  sendMessage,
+} from "@/messaging-wrapper";
 import NodeHeader from "@/popup/pages/node-posts/NodeHeader";
 import PostList from "@/popup/pages/node-posts/PostList";
 import {
@@ -133,6 +140,41 @@ export default function NodePosts() {
       fetchPosts();
     });
   };
+
+  // listen to notification of new posts to update the unread count
+  let notifCleanup: () => void;
+  onMount(() => {
+    notifCleanup = onMessage("feed-polling/notify-of-new-posts", () => {
+      sendMessage("nodes/get-for-node-posts-page", { id: nodeId() }).then(
+        (response) => {
+          if (response.success) {
+            const newCount = response.data.unreadCount;
+            if (
+              newCount > getCurrentCount() &&
+              (postsView() === "all" || preferences.markNewPostsUnread)
+            ) {
+              setNewPostsStore({
+                hasNewPosts: true,
+                unreadCount: newCount,
+                markAsReadUntil: response.data.markAsReadUntil,
+              });
+            }
+          }
+        },
+      );
+      const getCurrentCount = () => {
+        try {
+          // try/catch since reads may throw in createResource
+          return node()?.unreadCount ?? 0;
+        } catch {
+          return 0;
+        }
+      };
+    });
+  });
+  onCleanup(() => {
+    notifCleanup?.();
+  });
 
   return (
     <UnreadCountContext.Provider value={{ mutateUnreadCount }}>

@@ -11,10 +11,11 @@ import {
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
+import { sendMessage } from "@/messaging-wrapper";
 import { loadPreferences } from "@/utils/extension-storage";
 import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
-import { getLogger, Logger } from "@/utils/logging";
+import { getLogger, glogger, Logger } from "@/utils/logging";
 
 export async function runFeedPollingAlarmHandler(scheduledAt: string) {
   const logger = getLogger({ action: "feed-polling", scheduledAt });
@@ -49,7 +50,10 @@ export async function runFeedPollingAlarmHandler(scheduledAt: string) {
 
   logger.debug(`found ${dueFeeds.length} due feeds`);
 
-  await loadFeeds(conn.db, dueFeeds, logger);
+  const newPostsCount = await loadFeeds(conn.db, dueFeeds, logger);
+  if (newPostsCount) {
+    await notifyOfNewPosts();
+  }
 
   const end = performance.now();
   const took = (end - start) / 1000;
@@ -158,4 +162,13 @@ export async function savePosts(
   logger.debug(`done notes=${notes ?? "All parsed posts were inserted"}`);
 
   return insertedPosts;
+}
+
+async function notifyOfNewPosts() {
+  try {
+    await sendMessage("feed-polling/notify-of-new-posts", undefined);
+  } catch (e) {
+    // no listener available for the notification
+    glogger.error("failed to send new posts notification", e);
+  }
 }

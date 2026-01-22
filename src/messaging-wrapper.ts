@@ -38,6 +38,7 @@ interface MessageMap {
   "feeds/get"(data: { id: number }): FeedFormWithOptions;
   "feeds/update"(data: { id: number } & UpdateFeedFormData): void;
   "feeds/delete"(data: { id: number }): void;
+  "feed-polling/notify-of-new-posts"(): void;
   "posts/get-unread-bookmarks-count"(): number;
   "posts/get-bookmarks"(data: BookmarkedPostsParams): PostsResponse;
   "posts/list"(data: NodePostsParams): PostsResponse;

@@ -1,6 +1,15 @@
 import { Navigate, useParams } from "@solidjs/router";
-import { createEffect, Match, Show, Switch, untrack } from "solid-js";
+import {
+  createEffect,
+  Match,
+  onCleanup,
+  onMount,
+  Show,
+  Switch,
+  untrack,
+} from "solid-js";
 
+import { onMessage } from "@/messaging-wrapper";
 import Anchor from "@/popup/components/Anchor";
 import { FolderPage } from "@/popup/pages/node/FolderPage";
 import {
@@ -31,6 +40,17 @@ export default function Node() {
     untrack(() => {
       fetchNode({ id });
     });
+  });
+
+  // listen to notification of new posts to update the unread count
+  let notifCleanup: () => void;
+  onMount(() => {
+    notifCleanup = onMessage("feed-polling/notify-of-new-posts", () => {
+      fetchNode({ id: nodeId() });
+    });
+  });
+  onCleanup(() => {
+    notifCleanup?.();
   });
 
   const folderNode = () => {
