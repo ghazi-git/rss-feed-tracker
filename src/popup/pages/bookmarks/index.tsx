@@ -1,4 +1,4 @@
-import { useSearchParams } from "@solidjs/router";
+import { useLocation, useSearchParams } from "@solidjs/router";
 import { batch, createEffect, createSignal, onMount, untrack } from "solid-js";
 
 import { FeedPost, PostsCursor, sendMessage } from "@/messaging-wrapper";
@@ -9,6 +9,10 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
+import {
+  restoreScrollPosition,
+  useCurrentURL,
+} from "@/popup/utils/last-visited-page";
 import { notifyError } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
 
@@ -46,6 +50,9 @@ export default function Bookmarks() {
   });
 
   // update the pagination cursor and posts after fetching new posts
+  let isInitialFetch = true;
+  const initialState = useLocation().state;
+  const currentURL = useCurrentURL();
   createEffect(() => {
     const newPosts = query.data.posts;
     const nextPageCursor = query.data.nextPageCursor;
@@ -53,6 +60,14 @@ export default function Bookmarks() {
       setPosts((oldPosts) => [...oldPosts, ...newPosts]);
       setPaginationCursor(nextPageCursor);
     });
+    if (isInitialFetch && initialState && newPosts.length > 0) {
+      isInitialFetch = false;
+      // schedule restoring the scroll position so it runs AFTER the effect
+      // that renders new posts
+      setTimeout(() => {
+        restoreScrollPosition(initialState, currentURL());
+      });
+    }
   });
 
   return (

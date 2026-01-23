@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "@solidjs/router";
+import { useLocation, useParams, useSearchParams } from "@solidjs/router";
 import {
   batch,
   createEffect,
@@ -28,6 +28,10 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
+import {
+  restoreScrollPosition,
+  useCurrentURL,
+} from "@/popup/utils/last-visited-page";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
@@ -85,6 +89,9 @@ export default function NodePosts() {
   });
 
   // update the pagination cursor and posts after fetching new posts
+  let isInitialFetch = true;
+  const initialState = useLocation().state;
+  const currentURL = useCurrentURL();
   createEffect(() => {
     const newPosts = query.data.posts;
     const nextPageCursor = query.data.nextPageCursor;
@@ -92,6 +99,14 @@ export default function NodePosts() {
       setPosts((oldPosts) => [...oldPosts, ...newPosts]);
       setPaginationCursor(nextPageCursor);
     });
+    if (isInitialFetch && initialState && newPosts.length > 0) {
+      isInitialFetch = false;
+      // schedule restoring the scroll position so it runs AFTER the effect
+      // that renders new posts
+      setTimeout(() => {
+        restoreScrollPosition(initialState, currentURL());
+      });
+    }
   });
 
   const { node, mutateUnreadCount, mutateMarkAsReadUntil } =

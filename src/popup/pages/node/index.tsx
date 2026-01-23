@@ -1,4 +1,4 @@
-import { Navigate, useParams } from "@solidjs/router";
+import { Navigate, useLocation, useParams } from "@solidjs/router";
 import {
   createEffect,
   Match,
@@ -16,6 +16,10 @@ import {
   getReloadSuccessMessage,
   ReloadFeedsContext,
 } from "@/popup/pages/node-posts/reload-feeds-context";
+import {
+  restoreScrollPosition,
+  useCurrentURL,
+} from "@/popup/utils/last-visited-page";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
@@ -40,6 +44,17 @@ export default function Node() {
     untrack(() => {
       fetchNode({ id });
     });
+  });
+
+  let isInitialFetch = true;
+  const initialState = useLocation().state;
+  const currentURL = useCurrentURL();
+  createEffect(() => {
+    const isSuccess = query.isSuccess;
+    if (isInitialFetch && initialState && isSuccess) {
+      isInitialFetch = false;
+      restoreScrollPosition(initialState, currentURL());
+    }
   });
 
   // listen to notification of new posts to update the unread count

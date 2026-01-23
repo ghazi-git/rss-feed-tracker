@@ -1,4 +1,4 @@
-import { Navigate, Route, Router, useLocation } from "@solidjs/router";
+import { Navigate, Route, Router } from "@solidjs/router";
 import { createEffect, onMount, ParentComponent } from "solid-js";
 import { Toaster, ToastProvider } from "solid-notifications";
 
@@ -20,6 +20,7 @@ import Preferences from "@/popup/pages/preferences";
 import {
   getLastVisitedPage,
   saveLastVisitedPage,
+  useCurrentURL,
 } from "@/popup/utils/last-visited-page";
 import { PreferencesProvider } from "@/popup/utils/preferences-context";
 import {
@@ -28,26 +29,9 @@ import {
   uiTheme,
 } from "@/popup/utils/ui-theme";
 
-const Layout: ParentComponent = (props) => {
-  const location = useLocation();
-  createEffect(() => {
-    const currentURL = location.pathname + location.search + location.hash;
-    if (!currentURL.endsWith(".html") && currentURL !== "/") {
-      saveLastVisitedPage(currentURL);
-    }
-  });
-
-  return (
-    <>
-      <Header />
-      <Body>{props.children}</Body>
-      <LinkPreview />
-    </>
-  );
-};
-
 function App() {
-  let lastVisitedURL = getLastVisitedPage();
+  // get last visited page on app start to avoid losing on navigation
+  let lastVisited = getLastVisitedPage();
   const theme = uiTheme() ?? detectSystemTheme();
   enableTheme(theme);
   onMount(() => {
@@ -87,10 +71,10 @@ function App() {
           <Route
             path="*"
             component={() => {
-              if (lastVisitedURL) {
-                const redirectTo = lastVisitedURL;
-                lastVisitedURL = null;
-                return <Navigate href={redirectTo} />;
+              if (lastVisited) {
+                const { url, scrollPosition } = lastVisited;
+                lastVisited = null;
+                return <Navigate href={url} state={{ url, scrollPosition }} />;
               }
               return <Navigate href="/library" />;
             }}
@@ -100,5 +84,20 @@ function App() {
     </PreferencesProvider>
   );
 }
+
+const Layout: ParentComponent = (props) => {
+  const currentURL = useCurrentURL();
+  createEffect(() => {
+    saveLastVisitedPage(currentURL());
+  });
+
+  return (
+    <>
+      <Header />
+      <Body>{props.children}</Body>
+      <LinkPreview />
+    </>
+  );
+};
 
 export default App;
