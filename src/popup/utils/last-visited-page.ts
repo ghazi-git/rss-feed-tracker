@@ -37,21 +37,23 @@ export function useCurrentURL() {
   return () => location.pathname + location.search + location.hash;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function restoreScrollPosition(initialState: any, currentURL: string) {
+export function useInitialState(): {
+  url: string;
+  scrollPosition: number;
+} | null {
+  const location = useLocation();
   try {
-    const { scrollPosition, url } = initialState;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { scrollPosition, url } = location.state as any;
     if (
+      typeof url === "string" &&
       typeof scrollPosition === "number" &&
-      scrollPosition >= 0 &&
-      currentURL === url
+      scrollPosition >= 0
     ) {
-      const pageBody = document.getElementById("page-body");
-      if (pageBody) {
-        pageBody.scrollTop = scrollPosition;
-      }
+      return { scrollPosition, url };
     }
   } catch {}
+  return null;
 }
 
 interface LastVisitedPage {

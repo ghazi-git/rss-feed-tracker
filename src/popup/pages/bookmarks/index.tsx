@@ -1,7 +1,8 @@
-import { useLocation, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 import { batch, createEffect, createSignal, onMount, untrack } from "solid-js";
 
 import { FeedPost, PostsCursor, sendMessage } from "@/messaging-wrapper";
+import { useBodyContext } from "@/popup/components/Body";
 import { BookmarkedPosts } from "@/popup/pages/bookmarks/BookmarkedPosts";
 import BookmarksHeader from "@/popup/pages/bookmarks/BookmarksHeader";
 import { PostsContext } from "@/popup/pages/node-posts/posts-context";
@@ -10,8 +11,8 @@ import {
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
 import {
-  restoreScrollPosition,
   useCurrentURL,
+  useInitialState,
 } from "@/popup/utils/last-visited-page";
 import { notifyError } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
@@ -51,8 +52,9 @@ export default function Bookmarks() {
 
   // update the pagination cursor and posts after fetching new posts
   let isInitialFetch = true;
-  const initialState = useLocation().state;
+  const initialState = useInitialState();
   const currentURL = useCurrentURL();
+  const { setScrollPosition } = useBodyContext();
   createEffect(() => {
     const newPosts = query.data.posts;
     const nextPageCursor = query.data.nextPageCursor;
@@ -65,7 +67,9 @@ export default function Bookmarks() {
       // schedule restoring the scroll position so it runs AFTER the effect
       // that renders new posts
       setTimeout(() => {
-        restoreScrollPosition(initialState, currentURL());
+        if (initialState.url === currentURL()) {
+          setScrollPosition(initialState.scrollPosition);
+        }
       });
     }
   });

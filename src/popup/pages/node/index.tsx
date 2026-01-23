@@ -1,4 +1,4 @@
-import { Navigate, useLocation, useParams } from "@solidjs/router";
+import { Navigate, useParams } from "@solidjs/router";
 import {
   createEffect,
   Match,
@@ -11,14 +11,15 @@ import {
 
 import { onMessage } from "@/messaging-wrapper";
 import Anchor from "@/popup/components/Anchor";
+import { useBodyContext } from "@/popup/components/Body";
 import { FolderPage } from "@/popup/pages/node/FolderPage";
 import {
   getReloadSuccessMessage,
   ReloadFeedsContext,
 } from "@/popup/pages/node-posts/reload-feeds-context";
 import {
-  restoreScrollPosition,
   useCurrentURL,
+  useInitialState,
 } from "@/popup/utils/last-visited-page";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
@@ -47,13 +48,16 @@ export default function Node() {
   });
 
   let isInitialFetch = true;
-  const initialState = useLocation().state;
+  const initialState = useInitialState();
   const currentURL = useCurrentURL();
+  const { setScrollPosition } = useBodyContext();
   createEffect(() => {
     const isSuccess = query.isSuccess;
     if (isInitialFetch && initialState && isSuccess) {
       isInitialFetch = false;
-      restoreScrollPosition(initialState, currentURL());
+      if (initialState.url === currentURL()) {
+        setScrollPosition(initialState.scrollPosition);
+      }
     }
   });
 
