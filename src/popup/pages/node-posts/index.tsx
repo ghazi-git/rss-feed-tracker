@@ -56,14 +56,29 @@ export default function NodePosts() {
     nextPageCursor: null,
   });
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (pageSize?: number) => {
     await sendMsg({
       nodeId: nodeId(),
       postsView: postsView(),
       cursor: paginationCursor(),
+      pageSize,
     });
   };
 
+  const {
+    setScrollPosition,
+    registerPostsCountCallback,
+    removePostsCountCallback,
+  } = useBodyContext();
+  onMount(() => {
+    registerPostsCountCallback(() => posts().length);
+  });
+  onCleanup(() => {
+    removePostsCountCallback();
+  });
+  const initialState = useInitialState();
+  // page size for the first request when the last visited page is this one
+  let initialPageSize = initialState?.postsCount ?? undefined;
   // fetch posts when the user switches between the Unread/all posts filter
   createEffect(() => {
     postsView();
@@ -84,16 +99,16 @@ export default function NodePosts() {
         // reset the cursor and posts values every time postsView changes
         setPosts([]);
         setPaginationCursor(null);
-        fetchPosts();
+        fetchPosts(initialPageSize);
+        // only the first request may have a bigger page size
+        initialPageSize = undefined;
       });
     });
   });
 
   // update the pagination cursor and posts after fetching new posts
   let isInitialFetch = true;
-  const initialState = useInitialState();
   const currentURL = useCurrentURL();
-  const { setScrollPosition } = useBodyContext();
   createEffect(() => {
     const newPosts = query.data.posts;
     const nextPageCursor = query.data.nextPageCursor;

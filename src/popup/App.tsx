@@ -72,9 +72,14 @@ function App() {
             path="*"
             component={() => {
               if (lastVisited) {
-                const { url, scrollPosition } = lastVisited;
+                const { url, scrollPosition, postsCount } = lastVisited;
                 lastVisited = null;
-                return <Navigate href={url} state={{ url, scrollPosition }} />;
+                return (
+                  <Navigate
+                    href={url}
+                    state={{ url, scrollPosition, postsCount }}
+                  />
+                );
               }
               return <Navigate href="/library" />;
             }}

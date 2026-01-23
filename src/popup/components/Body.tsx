@@ -9,17 +9,31 @@ import styles from "./Body.module.css";
 
 export default function Body(props: FlowProps) {
   let ref!: HTMLDivElement;
+  let postsCountCallback: PostsCountCallback | undefined;
   const currentURL = useCurrentURL();
 
   const setScrollPosition = (pos: number) => (ref.scrollTop = pos);
+  const registerPostsCountCallback = (callback: PostsCountCallback) => {
+    postsCountCallback = callback;
+  };
+  const removePostsCountCallback = () => {
+    postsCountCallback = undefined;
+  };
 
   return (
-    <BodyContext.Provider value={{ setScrollPosition }}>
+    <BodyContext.Provider
+      value={{
+        setScrollPosition,
+        registerPostsCountCallback,
+        removePostsCountCallback,
+      }}
+    >
       <div
         ref={ref}
         class={styles.body}
         onScrollEnd={(event) => {
-          saveLastVisitedPage(currentURL(), event.target.scrollTop);
+          const postsCount = postsCountCallback?.() ?? null;
+          saveLastVisitedPage(currentURL(), event.target.scrollTop, postsCount);
         }}
       >
         {props.children}
@@ -41,4 +55,8 @@ export function useBodyContext() {
 
 interface BodyContextType {
   setScrollPosition: (position: number) => void;
+  registerPostsCountCallback: (callback: PostsCountCallback) => void;
+  removePostsCountCallback: () => void;
 }
+
+type PostsCountCallback = () => number;
