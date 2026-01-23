@@ -102,7 +102,7 @@ onMessage(
 );
 
 onMessage("posts/get-bookmarks", (payload, sender, sendResponse) => {
-  getBookmarks(payload.postsView, payload.cursor)
+  getBookmarks(payload.postsView, payload.cursor, payload.pageSize)
     .then((resp) => {
       sendResponse({ success: true, data: resp, errorMsg: null });
     })
@@ -116,7 +116,7 @@ onMessage("posts/get-bookmarks", (payload, sender, sendResponse) => {
 });
 
 onMessage("posts/list", (payload, sender, sendResponse) => {
-  listPosts(payload.nodeId, payload.postsView, payload.cursor)
+  listPosts(payload.nodeId, payload.postsView, payload.cursor, payload.pageSize)
     .then((resp) => {
       sendResponse({ success: true, data: resp, errorMsg: null });
     })

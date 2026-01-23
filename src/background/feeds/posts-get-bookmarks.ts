@@ -6,14 +6,17 @@ import {
 import { getDBConnection, Post, ReadTX } from "@/db-setup";
 import { PostsCursor, PostsResponse, PostsView } from "@/messaging-wrapper";
 import { getAllFromIndex } from "@/utils/idb-helpers";
+import { PAGE_SIZE } from "@/utils/settings";
 
 export async function getBookmarks(
   postsView: PostsView,
   cursor: PostsCursor | null,
+  pageSize: number | undefined,
 ): Promise<PostsResponse> {
   using conn = await getDBConnection();
   const tx = conn.db.transaction(["posts", "nodes"]);
 
+  pageSize = pageSize ? Math.max(pageSize, PAGE_SIZE) : PAGE_SIZE;
   let posts: Post[];
   if (postsView === "unread" && cursor) {
     const lower = [1, 1];
@@ -23,6 +26,7 @@ export async function getBookmarks(
       tx,
       "by_bookmarked_unread_published_at_feed_id_guid",
       query,
+      pageSize,
     );
   } else if (postsView === "unread") {
     const query = IDBKeyRange.lowerBound([1, 1]);
@@ -30,6 +34,7 @@ export async function getBookmarks(
       tx,
       "by_bookmarked_unread_published_at_feed_id_guid",
       query,
+      pageSize,
     );
   } else if (cursor) {
     const lower = [1];
@@ -39,6 +44,7 @@ export async function getBookmarks(
       tx,
       "by_bookmarked_published_at_feed_id_guid",
       query,
+      pageSize,
     );
   } else {
     const query = IDBKeyRange.lowerBound([1]);
@@ -46,12 +52,13 @@ export async function getBookmarks(
       tx,
       "by_bookmarked_published_at_feed_id_guid",
       query,
+      pageSize,
     );
   }
 
   const feeds = await getFeeds(tx);
   const feedPosts = addFeedData(feeds, posts);
-  const nextPageCursor = getNextPageCursor(feedPosts);
+  const nextPageCursor = getNextPageCursor(feedPosts, pageSize);
   return { posts: feedPosts, nextPageCursor };
 }
 

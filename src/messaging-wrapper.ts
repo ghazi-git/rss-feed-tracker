@@ -89,6 +89,7 @@ interface FeedFormWithOptions extends UpdateFeedFormData {
 export interface BookmarkedPostsParams {
   postsView: PostsView;
   cursor: PostsCursor | null;
+  pageSize?: number;
 }
 export type PostsView = "all" | "unread";
 export interface FeedPost extends Post {
@@ -108,6 +109,7 @@ export interface NodePostsParams {
   nodeId: number;
   postsView: PostsView;
   cursor: PostsCursor | null;
+  pageSize?: number;
 }
 interface ToggleUnreadParams {
   feedId: number;

@@ -3,17 +3,17 @@ import { IndexNames, unwrap } from "idb";
 import { Feed, FeedTrackerDB, Post, ReadTX, ReadWriteTX } from "@/db-setup";
 import { FeedPost, PostsCursor } from "@/messaging-wrapper";
 import { getAllFromIndex } from "@/utils/idb-helpers";
-import { PAGE_SIZE } from "@/utils/settings";
 
 export async function getPostsFromIndex(
   tx: ReadTX,
   indexName: IndexNames<FeedTrackerDB, "posts">,
   query: IDBKeyRange | null,
+  pageSize: number,
 ) {
   return await getAllFromIndex(tx, "posts", indexName, {
     query,
     direction: "prev",
-    count: PAGE_SIZE,
+    count: pageSize,
   });
 }
 
@@ -28,8 +28,11 @@ export function addFeedData(feeds: Feed[], posts: Post[]): FeedPost[] {
   });
 }
 
-export function getNextPageCursor(posts: Post[]): PostsCursor | null {
-  if (posts.length < PAGE_SIZE) {
+export function getNextPageCursor(
+  posts: Post[],
+  pageSize: number,
+): PostsCursor | null {
+  if (posts.length < pageSize) {
     return null;
   } else {
     const lastPost = posts.at(-1) as Post;
