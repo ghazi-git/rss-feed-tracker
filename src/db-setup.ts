@@ -78,6 +78,29 @@ export async function getDBConnection(dbVersion: number | null = null) {
           "receivedAt",
           "guid",
         ]);
+        store.createIndex("by_received_at_feed_id_guid", [
+          "receivedAt",
+          "feedId",
+          "guid",
+        ]);
+        store.createIndex("by_feed_id_received_at_guid", [
+          "feedId",
+          "receivedAt",
+          "guid",
+        ]);
+        store.createIndex("by_bookmarked_received_at_feed_id_guid", [
+          "bookmarked",
+          "receivedAt",
+          "feedId",
+          "guid",
+        ]);
+        store.createIndex("by_bookmarked_unread_received_at_feed_id_guid", [
+          "bookmarked",
+          "unread",
+          "receivedAt",
+          "feedId",
+          "guid",
+        ]);
       }
       if (!db.objectStoreNames.contains("locks")) {
         db.createObjectStore("locks", { keyPath: "id" });
@@ -144,6 +167,22 @@ export interface FeedTrackerDB extends DBSchema {
       ];
       // for displaying all bookmarked unread posts sorted
       by_bookmarked_unread_published_at_feed_id_guid: [
+        BooleanFlag,
+        BooleanFlag,
+        number,
+        number,
+        string,
+      ];
+      // indexes for displaying posts ordered by receivedAt
+      by_received_at_feed_id_guid: [number, number, string];
+      by_feed_id_received_at_guid: [number, number, string];
+      by_bookmarked_received_at_feed_id_guid: [
+        BooleanFlag,
+        number,
+        number,
+        string,
+      ];
+      by_bookmarked_unread_received_at_feed_id_guid: [
         BooleanFlag,
         BooleanFlag,
         number,

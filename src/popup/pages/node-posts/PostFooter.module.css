@@ -21,7 +21,7 @@
   font-size: var(--font-size-00);
 }
 
-.published-at {
+.time {
   color: var(--text-2);
   flex-shrink: 0;
 }

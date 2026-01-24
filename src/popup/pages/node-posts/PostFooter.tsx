@@ -9,12 +9,15 @@ import { useToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-book
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import UnreadToggle from "@/popup/pages/node-posts/UnreadToggle";
 import { formatTimestamp, humanizeTimestamp } from "@/popup/utils/datetimes";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 
 import styles from "./PostFooter.module.css";
 
 export default function PostFooter(props: { post: FeedPost }) {
   const { toggleUnread } = useToggleUnreadContext();
   const { toggleBookmarked } = useToggleBookmarkedContext();
+  const { preferences } = usePreferencesContext();
+  const orderByReceivedAt = () => preferences.orderPostsBy === "receivedAt";
 
   return (
     <div class={styles.footer}>
@@ -27,10 +30,16 @@ export default function PostFooter(props: { post: FeedPost }) {
       <SingleLineText text={props.post.feedName} class={styles["feed-name"]} />
       <span class={styles.separator}>◆</span>
       <div
-        class={styles["published-at"]}
-        title={formatTimestamp(props.post.publishedAt)}
+        class={styles.time}
+        title={
+          orderByReceivedAt()
+            ? `Fetched at: ${formatTimestamp(props.post.receivedAt)}`
+            : `Published at: ${formatTimestamp(props.post.publishedAt)}`
+        }
       >
-        {humanizeTimestamp(props.post.publishedAt)}
+        {orderByReceivedAt()
+          ? humanizeTimestamp(props.post.receivedAt)
+          : humanizeTimestamp(props.post.publishedAt)}
       </div>
       <div class={styles.actions}>
         <Show when={props.post.commentsURL}>

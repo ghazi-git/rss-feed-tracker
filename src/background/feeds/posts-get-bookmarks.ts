@@ -5,6 +5,7 @@ import {
 } from "@/background/utils/posts";
 import { getDBConnection, Post, ReadTX } from "@/db-setup";
 import { PostsCursor, PostsResponse, PostsView } from "@/messaging-wrapper";
+import { loadPreferences } from "@/utils/extension-storage";
 import { getAllFromIndex } from "@/utils/idb-helpers";
 import { PAGE_SIZE } from "@/utils/settings";
 
@@ -13,6 +14,9 @@ export async function getBookmarks(
   cursor: PostsCursor | null,
   pageSize: number | undefined,
 ): Promise<PostsResponse> {
+  const preferences = await loadPreferences();
+  const orderBy = preferences.orderPostsBy;
+
   using conn = await getDBConnection();
   const tx = conn.db.transaction(["posts", "nodes"]);
 
@@ -24,7 +28,9 @@ export async function getBookmarks(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     posts = await getPostsFromIndex(
       tx,
-      "by_bookmarked_unread_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_bookmarked_unread_received_at_feed_id_guid"
+        : "by_bookmarked_unread_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -32,7 +38,9 @@ export async function getBookmarks(
     const query = IDBKeyRange.lowerBound([1, 1]);
     posts = await getPostsFromIndex(
       tx,
-      "by_bookmarked_unread_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_bookmarked_unread_received_at_feed_id_guid"
+        : "by_bookmarked_unread_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -42,7 +50,9 @@ export async function getBookmarks(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     posts = await getPostsFromIndex(
       tx,
-      "by_bookmarked_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_bookmarked_received_at_feed_id_guid"
+        : "by_bookmarked_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -50,7 +60,9 @@ export async function getBookmarks(
     const query = IDBKeyRange.lowerBound([1]);
     posts = await getPostsFromIndex(
       tx,
-      "by_bookmarked_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_bookmarked_received_at_feed_id_guid"
+        : "by_bookmarked_published_at_feed_id_guid",
       query,
       pageSize,
     );
