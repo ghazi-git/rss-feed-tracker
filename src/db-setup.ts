@@ -206,7 +206,7 @@ export interface Feed extends BaseNode {
   feed: {
     favicon: string | null; // favicon url
     url: string;
-    updateFrequency: number; // in ms since js unix timestamps are in ms
+    updateFrequency: number | null; // in ms since js unix timestamps are in ms
   };
 }
 

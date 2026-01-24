@@ -77,7 +77,7 @@ export interface PostPreview {
 export interface FeedFormData {
   url: string;
   name: string;
-  frequency: number;
+  frequency: number | null;
   folder: number;
 }
 export interface UpdateFeedFormData extends FeedFormData {
@@ -164,7 +164,7 @@ interface OPMLImportParams {
 }
 export interface PreferencesData {
   uiTheme: "light" | "dark" | null;
-  defaultFeedUpdateFrequency: number;
+  defaultFeedUpdateFrequency: number | null;
   markNewPostsUnread: boolean;
   clickPostToToggleUnread: boolean;
 }

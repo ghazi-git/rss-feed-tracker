@@ -32,7 +32,7 @@ export default function AddFeed() {
   const [formdata, setFormdata] = createStore({
     url: "",
     name: "",
-    frequency: preferences.defaultFeedUpdateFrequency,
+    frequency: preferences.defaultFeedUpdateFrequency as number | null,
     folder: parseInt(searchParams.parentFolderId ?? "") || null,
   });
   const [folderOptions, setFolderOptions] = createSignal<SelectOption[]>([]);
@@ -107,7 +107,10 @@ export default function AddFeed() {
           <FrequencyField
             required={true}
             value={formdata.frequency}
-            onChange={(e) => setFormdata("frequency", parseInt(e.target.value))}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFormdata("frequency", val ? parseInt(val) : null);
+            }}
           />
           <SelectField
             name="folder"

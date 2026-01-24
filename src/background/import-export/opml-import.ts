@@ -83,7 +83,7 @@ async function createNodes(
   tx: ReadWriteTX,
   outlines: OutlineElement[],
   parentId: number,
-  frequency: number,
+  frequency: number | null,
 ) {
   const createdAt = Date.now();
   const feeds: Feed[] = [];

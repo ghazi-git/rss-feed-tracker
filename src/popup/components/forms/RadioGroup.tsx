@@ -37,7 +37,7 @@ export default function RadioGroup(props: RadioGroupProps) {
                   name={propsWithId.name}
                   id={id}
                   onChange={propsWithId.onChange}
-                  value={value}
+                  value={value ?? ""}
                   checked={value === propsWithId.value}
                 />
                 {label}
@@ -57,10 +57,10 @@ export interface RadioGroupProps {
   label?: string;
   required?: InputProps["required"];
   onChange?: InputProps["onChange"];
-  value?: InputProps["value"];
+  value?: string | number | null;
 }
 
 interface Option {
   label: string;
-  value: InputProps["value"];
+  value: string | number | null;
 }

@@ -18,8 +18,9 @@ export default function Preferences() {
         label="Default Update Frequency For Feeds"
         value={preferences.defaultFeedUpdateFrequency}
         onChange={(e) => {
+          const val = e.target.value;
           setPreferences({
-            defaultFeedUpdateFrequency: parseInt(e.target.value),
+            defaultFeedUpdateFrequency: val ? parseInt(val) : null,
           });
         }}
       />

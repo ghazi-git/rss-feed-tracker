@@ -9,6 +9,7 @@ export default function FrequencyField(props: FrequencyFieldProps) {
     { label: "4 hours", value: 4 * 60 * 60 * 1000 },
     { label: "6 hours", value: 6 * 60 * 60 * 1000 },
     { label: "1 day", value: 24 * 60 * 60 * 1000 },
+    { label: "off", value: null },
   ];
 
   return (

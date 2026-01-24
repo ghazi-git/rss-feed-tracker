@@ -10,6 +10,7 @@ const FrequencySchema = v.union(
     v.literal(14_400_000),
     v.literal(21_600_000),
     v.literal(86_400_000),
+    v.null(),
   ],
   "The update frequency must be either 3600000 (1 hour), 7200000 (2 hours), 14400000 (4 hours), 21600000 (6 hours), 86400000 (1 day)",
 );
@@ -56,7 +57,7 @@ export type BackupManifestV1 = Omit<InferredManifestV1, "preferences"> & {
   preferences: Omit<
     InferredManifestV1["preferences"],
     "defaultFeedUpdateFrequency"
-  > & { defaultFeedUpdateFrequency: number };
+  > & { defaultFeedUpdateFrequency: number | null };
 };
 
 const IDSchema = v.pipe(v.number(), v.integer(), v.minValue(1));
@@ -94,7 +95,7 @@ export const FeedBackupSchema = v.object({
 type InferredFeedBackup = v.InferOutput<typeof FeedBackupSchema>;
 export type FeedBackup = Omit<InferredFeedBackup, "feed"> & {
   feed: Omit<InferredFeedBackup["feed"], "updateFrequency"> & {
-    updateFrequency: number;
+    updateFrequency: number | null;
   };
 };
 

@@ -4,7 +4,7 @@ import { getObject, saveObject, txDone } from "@/utils/idb-helpers";
 export async function saveSuccessMetadata(
   tx: ReadWriteTX,
   feedId: number,
-  feedFrequency: number,
+  feedFrequency: number | null,
   fetchTime: number,
   hasNewPosts: boolean = false,
   notes: string | null = null,
@@ -16,7 +16,7 @@ export async function saveSuccessMetadata(
   }
 
   const updates: Partial<FeedMetadata> = {
-    nextRunAt: fetchTime + feedFrequency,
+    nextRunAt: feedFrequency ? fetchTime + feedFrequency : null,
     lastRunAt: fetchTime,
     lastRunResult: "success",
     lastRunNotes: notes,
@@ -52,7 +52,9 @@ export async function saveFailureMetadata(
   }
   const now = Date.now();
   const updates: Partial<FeedMetadata> = {
-    nextRunAt: now + feed.feed.updateFrequency,
+    nextRunAt: feed.feed.updateFrequency
+      ? now + feed.feed.updateFrequency
+      : null,
     lastRunAt: now,
     lastRunResult: "failure",
     lastRunNotes: failureReason,

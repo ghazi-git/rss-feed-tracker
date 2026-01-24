@@ -5,10 +5,10 @@
 }
 
 .radio-group label {
-  flex-grow: 1;
+  flex: 1;
   text-align: center;
   background-color: var(--surface-2);
-  padding: var(--size-1) var(--size-2);
+  padding: var(--size-1);
   border-inline: var(--border-size-1) solid var(--surface-4);
 }
 
@@ -48,6 +48,6 @@
    the form with a keyboard */
   position: absolute;
   opacity: 0;
-  width: 0;
-  height: 0;
+  inline-size: 0;
+  block-size: 0;
 }

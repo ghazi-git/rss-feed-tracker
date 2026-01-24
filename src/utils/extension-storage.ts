@@ -20,7 +20,7 @@ export const DEFAULT_PREFERENCES = {
 };
 
 export interface StoredPreferences {
-  defaultFeedUpdateFrequency: number;
+  defaultFeedUpdateFrequency: number | null;
   markNewPostsUnread: boolean;
   clickPostToToggleUnread: boolean;
 }

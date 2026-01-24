@@ -79,7 +79,10 @@ export default function EditFeed() {
         <FrequencyField
           required={true}
           value={formdata.frequency}
-          onChange={(e) => setFormdata("frequency", parseInt(e.target.value))}
+          onChange={(e) => {
+            const val = e.target.value;
+            setFormdata("frequency", val ? parseInt(val) : null);
+          }}
         />
         <InputField
           type="url"

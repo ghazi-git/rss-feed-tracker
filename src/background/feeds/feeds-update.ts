@@ -69,9 +69,12 @@ export async function updateFeed(id: number, feedData: UpdateFeedFormData) {
     if (!metadata) {
       metadata = getInitialFeedmetadata(id);
     }
-    const nextRunAt = metadata.lastRunAt
-      ? metadata.lastRunAt + updated.feed.updateFrequency
-      : Date.now();
+    let nextRunAt: number | null = null;
+    if (updated.feed.updateFrequency) {
+      nextRunAt = metadata.lastRunAt
+        ? metadata.lastRunAt + updated.feed.updateFrequency
+        : Date.now();
+    }
     metadata.nextRunAt = nextRunAt;
     await metadataStore.put(metadata);
   }
