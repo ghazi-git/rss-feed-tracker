@@ -14,6 +14,7 @@ import {
   PostsResponse,
   PostsView,
 } from "@/messaging-wrapper";
+import { loadPreferences } from "@/utils/extension-storage";
 import { getAllFromIndex } from "@/utils/idb-helpers";
 import { PAGE_SIZE } from "@/utils/settings";
 
@@ -23,6 +24,9 @@ export async function listPosts(
   cursor: PostsCursor | null,
   pageSize: number | undefined,
 ): Promise<PostsResponse> {
+  const preferences = await loadPreferences();
+  const orderBy = preferences.orderPostsBy;
+
   using conn = await getDBConnection();
   const tx = conn.db.transaction(["posts", "nodes"]);
 
@@ -62,7 +66,7 @@ export async function listPosts(
     feedPosts = addFeedData(feeds, posts);
   }
 
-  const nextPageCursor = getNextPageCursor(feedPosts, pageSize);
+  const nextPageCursor = getNextPageCursor(feedPosts, pageSize, orderBy);
   return { posts: feedPosts, nextPageCursor };
 }
 
@@ -75,7 +79,7 @@ async function getFeedPosts(
 ) {
   if (postsView === "unread" && cursor) {
     const lower = [1, feedId];
-    const upper = [1, feedId, cursor.publishedAt, cursor.guid];
+    const upper = [1, feedId, cursor.time, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
@@ -93,7 +97,7 @@ async function getFeedPosts(
     );
   } else if (cursor) {
     const lower = [feedId];
-    const upper = [feedId, cursor.publishedAt, cursor.guid];
+    const upper = [feedId, cursor.time, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
@@ -120,7 +124,7 @@ async function getRootFolderPosts(
 ) {
   if (postsView === "unread" && cursor) {
     const lower = [1];
-    const upper = [1, cursor.publishedAt, cursor.feedId, cursor.guid];
+    const upper = [1, cursor.time, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
@@ -137,7 +141,7 @@ async function getRootFolderPosts(
       pageSize,
     );
   } else if (cursor) {
-    const upper = [cursor.publishedAt, cursor.feedId, cursor.guid];
+    const upper = [cursor.time, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.upperBound(upper, true);
     return await getPostsFromIndex(
       tx,
@@ -171,7 +175,7 @@ async function getFolderPosts(
 ) {
   if (postsView === "unread" && cursor) {
     const lower = [1];
-    const upper = [1, cursor.publishedAt, cursor.feedId, cursor.guid];
+    const upper = [1, cursor.time, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsUsingIndexCursor(
       feedIds,
@@ -190,7 +194,7 @@ async function getFolderPosts(
       pageSize,
     );
   } else if (cursor) {
-    const upper = [cursor.publishedAt, cursor.feedId, cursor.guid];
+    const upper = [cursor.time, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.upperBound(upper, true);
     return await getPostsUsingIndexCursor(
       feedIds,

@@ -2,6 +2,7 @@ import { IndexNames, unwrap } from "idb";
 
 import { Feed, FeedTrackerDB, Post, ReadTX, ReadWriteTX } from "@/db-setup";
 import { FeedPost, PostsCursor } from "@/messaging-wrapper";
+import { OrderPostsBy } from "@/utils/extension-storage";
 import { getAllFromIndex } from "@/utils/idb-helpers";
 
 export async function getPostsFromIndex(
@@ -31,13 +32,18 @@ export function addFeedData(feeds: Feed[], posts: Post[]): FeedPost[] {
 export function getNextPageCursor(
   posts: Post[],
   pageSize: number,
+  orderBy: OrderPostsBy,
 ): PostsCursor | null {
   if (posts.length < pageSize) {
     return null;
   } else {
     const lastPost = posts.at(-1) as Post;
-    const { publishedAt, feedId, guid } = lastPost;
-    return { publishedAt, feedId, guid };
+    const { publishedAt, receivedAt, feedId, guid } = lastPost;
+    return {
+      time: orderBy === "receivedAt" ? receivedAt : publishedAt,
+      feedId,
+      guid,
+    };
   }
 }
 

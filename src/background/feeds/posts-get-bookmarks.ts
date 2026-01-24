@@ -24,7 +24,7 @@ export async function getBookmarks(
   let posts: Post[];
   if (postsView === "unread" && cursor) {
     const lower = [1, 1];
-    const upper = [1, 1, cursor.publishedAt, cursor.feedId, cursor.guid];
+    const upper = [1, 1, cursor.time, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
     posts = await getPostsFromIndex(
       tx,
@@ -46,7 +46,7 @@ export async function getBookmarks(
     );
   } else if (cursor) {
     const lower = [1];
-    const upper = [1, cursor.publishedAt, cursor.feedId, cursor.guid];
+    const upper = [1, cursor.time, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.bound(lower, upper, false, true);
     posts = await getPostsFromIndex(
       tx,
@@ -70,7 +70,7 @@ export async function getBookmarks(
 
   const feeds = await getFeeds(tx);
   const feedPosts = addFeedData(feeds, posts);
-  const nextPageCursor = getNextPageCursor(feedPosts, pageSize);
+  const nextPageCursor = getNextPageCursor(feedPosts, pageSize, orderBy);
   return { posts: feedPosts, nextPageCursor };
 }
 

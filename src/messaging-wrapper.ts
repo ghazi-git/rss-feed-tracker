@@ -102,7 +102,7 @@ export interface PostsResponse {
   nextPageCursor: PostsCursor | null;
 }
 export interface PostsCursor {
-  publishedAt: number;
+  time: number;
   feedId: number;
   guid: string;
 }
