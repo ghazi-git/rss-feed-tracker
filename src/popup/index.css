@@ -59,6 +59,8 @@ body {
   min-block-size: 600px;
   font-family: var(--font-humanist);
   font-size: var(--font-size-2);
+  line-height: var(--font-lineheight-2);
+  letter-spacing: -0.2px;
 }
 
 #root {
