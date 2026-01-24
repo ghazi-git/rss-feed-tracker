@@ -14,7 +14,7 @@ import {
   PostsResponse,
   PostsView,
 } from "@/messaging-wrapper";
-import { loadPreferences } from "@/utils/extension-storage";
+import { loadPreferences, OrderPostsBy } from "@/utils/extension-storage";
 import { getAllFromIndex } from "@/utils/idb-helpers";
 import { PAGE_SIZE } from "@/utils/settings";
 
@@ -43,11 +43,24 @@ export async function listPosts(
   pageSize = pageSize ?? PAGE_SIZE;
   let feedPosts: FeedPost[];
   if (node.type === "feed") {
-    const posts = await getFeedPosts(tx, nodeId, postsView, cursor, pageSize);
+    const posts = await getFeedPosts(
+      tx,
+      nodeId,
+      postsView,
+      cursor,
+      pageSize,
+      orderBy,
+    );
     const feeds = await getFeeds(tx);
     feedPosts = addFeedData(feeds, posts);
   } else if (!node.parentId) {
-    const posts = await getRootFolderPosts(tx, postsView, cursor, pageSize);
+    const posts = await getRootFolderPosts(
+      tx,
+      postsView,
+      cursor,
+      pageSize,
+      orderBy,
+    );
     const feeds = await getFeeds(tx);
     feedPosts = addFeedData(feeds, posts);
   } else {
@@ -60,6 +73,7 @@ export async function listPosts(
       postsView,
       cursor,
       pageSize,
+      orderBy,
     );
 
     const feeds = allNodes.filter((n) => n.type === "feed");
@@ -76,6 +90,7 @@ async function getFeedPosts(
   postsView: PostsView,
   cursor: PostsCursor | null,
   pageSize: number,
+  orderBy: OrderPostsBy,
 ) {
   if (postsView === "unread" && cursor) {
     const lower = [1, feedId];
@@ -83,7 +98,9 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
-      "by_unread_feed_id_published_at_guid",
+      orderBy === "receivedAt"
+        ? "by_unread_feed_id_received_at_guid"
+        : "by_unread_feed_id_published_at_guid",
       query,
       pageSize,
     );
@@ -91,7 +108,9 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound([1, feedId], [1, feedId + 1], false, true);
     return await getPostsFromIndex(
       tx,
-      "by_unread_feed_id_published_at_guid",
+      orderBy === "receivedAt"
+        ? "by_unread_feed_id_received_at_guid"
+        : "by_unread_feed_id_published_at_guid",
       query,
       pageSize,
     );
@@ -101,7 +120,9 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
-      "by_feed_id_published_at_guid",
+      orderBy === "receivedAt"
+        ? "by_feed_id_received_at_guid"
+        : "by_feed_id_published_at_guid",
       query,
       pageSize,
     );
@@ -109,7 +130,9 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound([feedId], [feedId + 1], false, true);
     return await getPostsFromIndex(
       tx,
-      "by_feed_id_published_at_guid",
+      orderBy === "receivedAt"
+        ? "by_feed_id_received_at_guid"
+        : "by_feed_id_published_at_guid",
       query,
       pageSize,
     );
@@ -121,6 +144,7 @@ async function getRootFolderPosts(
   postsView: PostsView,
   cursor: PostsCursor | null,
   pageSize: number,
+  orderBy: OrderPostsBy,
 ) {
   if (postsView === "unread" && cursor) {
     const lower = [1];
@@ -128,7 +152,9 @@ async function getRootFolderPosts(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
-      "by_unread_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_unread_received_at_feed_id_guid"
+        : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -136,7 +162,9 @@ async function getRootFolderPosts(
     const query = IDBKeyRange.lowerBound([1]);
     return await getPostsFromIndex(
       tx,
-      "by_unread_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_unread_received_at_feed_id_guid"
+        : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -145,14 +173,18 @@ async function getRootFolderPosts(
     const query = IDBKeyRange.upperBound(upper, true);
     return await getPostsFromIndex(
       tx,
-      "by_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_received_at_feed_id_guid"
+        : "by_published_at_feed_id_guid",
       query,
       pageSize,
     );
   } else {
     return await getPostsFromIndex(
       tx,
-      "by_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_received_at_feed_id_guid"
+        : "by_published_at_feed_id_guid",
       null,
       pageSize,
     );
@@ -172,6 +204,7 @@ async function getFolderPosts(
   postsView: PostsView,
   cursor: PostsCursor | null,
   pageSize: number,
+  orderBy: OrderPostsBy,
 ) {
   if (postsView === "unread" && cursor) {
     const lower = [1];
@@ -180,7 +213,9 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      "by_unread_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_unread_received_at_feed_id_guid"
+        : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -189,7 +224,9 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      "by_unread_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_unread_received_at_feed_id_guid"
+        : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -199,7 +236,9 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      "by_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_received_at_feed_id_guid"
+        : "by_published_at_feed_id_guid",
       query,
       pageSize,
     );
@@ -207,7 +246,9 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      "by_published_at_feed_id_guid",
+      orderBy === "receivedAt"
+        ? "by_received_at_feed_id_guid"
+        : "by_published_at_feed_id_guid",
       null,
       pageSize,
     );
