@@ -7,6 +7,7 @@ import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDi
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
+import DisabledIcon from "@/popup/components/svg-icons/DisabledIcon";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
@@ -58,6 +59,10 @@ export default function NodeHeader(props: NodeHeaderProps) {
     },
   };
 
+  const updatesOff = () => {
+    return props.node.type === "feed" && !props.node.feed.updateFrequency;
+  };
+
   return (
     <PageHeaderWrapper sticky={true}>
       <BackLink url={previousUrl()} class={styles["previous-url"]} />
@@ -68,9 +73,15 @@ export default function NodeHeader(props: NodeHeaderProps) {
           nodeId={props.node.id}
           nodeName={props.node.name}
           isRoot={props.node.parentId === null}
+          feedUpdatesOff={updatesOff()}
         />
         <DeleteNodeDialog />
       </DeleteNodeProvider>
+      <Show when={updatesOff()}>
+        <div class={styles["updates-off"]} title="Feed updates are turned off">
+          <DisabledIcon />
+        </div>
+      </Show>
       <Show when={props.node.hasPosts}>
         <PostsFilter
           unreadCount={props.node.unreadCount}

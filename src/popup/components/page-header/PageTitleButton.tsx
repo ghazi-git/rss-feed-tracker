@@ -13,7 +13,9 @@ import styles from "./PageTitleButton.module.css";
 export default function PageTitleButton(props: PageTitleButtonProps) {
   return (
     <Dropdown placement="bottom-start">
-      <MenuTrigger class={styles["page-title-button"]}>
+      <MenuTrigger
+        class={`${styles["page-title-button"]} ${props.feedUpdatesOff ? styles["updates-off"] : ""}`}
+      >
         <div class={styles["node-actions"]}>
           <MenuStateIndicator />
         </div>
@@ -48,4 +50,5 @@ interface PageTitleButtonProps {
   nodeType: "folder" | "feed";
   nodeId: number;
   nodeName: string;
+  feedUpdatesOff?: boolean;
 }

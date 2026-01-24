@@ -19,6 +19,10 @@
     background-color: var(--surface-2);
   }
 
+  &.updates-off {
+    opacity: 0.6;
+  }
+
   .icon {
     flex-shrink: 0;
 

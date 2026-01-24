@@ -45,9 +45,15 @@ export default function FolderChild(props: FolderChildProps) {
       notifyError(mutation.errorMsg);
     }
   };
+  const updatesOff = () => {
+    return props.node.type === "feed" && !props.node.feed.updateFrequency;
+  };
 
   return (
-    <Anchor class={styles.child} href={`/library/nodes/${props.node.id}`}>
+    <Anchor
+      class={`${styles.child} ${updatesOff() ? styles["updates-off"] : ""}`}
+      href={`/library/nodes/${props.node.id}`}
+    >
       <div class={styles.icon}>
         <Show when={props.node.type === "feed"} fallback={<FolderIcon />}>
           <FeedFavicon
