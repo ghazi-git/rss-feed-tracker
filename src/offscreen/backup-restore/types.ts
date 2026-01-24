@@ -33,6 +33,10 @@ export const BackupManifestSchema = v.object({
     clickPostToToggleUnread: v.boolean(
       "clickPostToToggleUnread must be a boolean",
     ),
+    orderPostsBy: v.union(
+      [v.literal("publishedAt"), v.literal("receivedAt")],
+      "orderPostsBy must be either 'publishedAt' or 'receivedAt'",
+    ),
   }),
   backupFiles: v.object(
     {

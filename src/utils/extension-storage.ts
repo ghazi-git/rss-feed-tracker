@@ -13,14 +13,18 @@ export async function loadPreferences(): Promise<StoredPreferences> {
   }
 }
 
-export const DEFAULT_PREFERENCES = {
+export const DEFAULT_PREFERENCES: StoredPreferences = {
   defaultFeedUpdateFrequency: 2 * 60 * 60 * 1000,
   markNewPostsUnread: true,
   clickPostToToggleUnread: false,
+  orderPostsBy: "publishedAt",
 };
 
 export interface StoredPreferences {
   defaultFeedUpdateFrequency: number | null;
   markNewPostsUnread: boolean;
   clickPostToToggleUnread: boolean;
+  orderPostsBy: OrderPostsBy;
 }
+
+export type OrderPostsBy = "publishedAt" | "receivedAt";

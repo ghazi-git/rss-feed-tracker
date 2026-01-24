@@ -1,6 +1,7 @@
 import Checkbox from "@/popup/components/forms/Checkbox";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
 import ManageExtensionData from "@/popup/pages/preferences/ManageExtensionData";
+import OrderPostsBySetting from "@/popup/pages/preferences/OrderPostsBySetting";
 import { ThemeSwitcher } from "@/popup/pages/preferences/ThemeSwitcher";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 
@@ -22,6 +23,14 @@ export default function Preferences() {
           setPreferences({
             defaultFeedUpdateFrequency: val ? parseInt(val) : null,
           });
+        }}
+      />
+      <OrderPostsBySetting
+        value={preferences.orderPostsBy}
+        onChange={(e) => {
+          const val =
+            e.target.value === "receivedAt" ? "receivedAt" : "publishedAt";
+          setPreferences({ orderPostsBy: val });
         }}
       />
       <Checkbox

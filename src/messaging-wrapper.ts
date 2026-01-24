@@ -1,4 +1,5 @@
 import { Post, TreeNode } from "@/db-setup";
+import { OrderPostsBy } from "@/utils/extension-storage";
 
 export async function sendMessage<K extends MessageType>(
   messageType: K,
@@ -167,6 +168,7 @@ export interface PreferencesData {
   defaultFeedUpdateFrequency: number | null;
   markNewPostsUnread: boolean;
   clickPostToToggleUnread: boolean;
+  orderPostsBy: OrderPostsBy;
 }
 
 export type MessageType = keyof MessageMap;
