@@ -68,7 +68,7 @@ export default function PostList(props: PostListProps) {
         </Show>
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContextProvider>
-            <Posts posts={posts()} />
+            <Posts posts={posts()} isFolder={props.isFolderNode} />
           </ToggleUnreadContextProvider>
         </ToggleBookmarkedContext.Provider>
         <Show when={query.data.nextPageCursor}>
@@ -90,6 +90,7 @@ export default function PostList(props: PostListProps) {
 
 interface PostListProps {
   nodeId: number;
+  isFolderNode: boolean;
   postsView: PostsView;
   hasNewPosts: boolean;
   loadNewPosts: () => void;

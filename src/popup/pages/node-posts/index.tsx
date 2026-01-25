@@ -130,6 +130,7 @@ export default function NodePosts() {
 
   const { node, mutateUnreadCount, mutateMarkAsReadUntil } =
     createNodeResource();
+  const isFolderNode = () => node.latest?.type === "folder";
   const { preferences } = usePreferencesContext();
   const [newPostsStore, setNewPostsStore] = createStore<NewPostsStore>({
     hasNewPosts: false,
@@ -246,6 +247,7 @@ export default function NodePosts() {
         <PostList
           postsView={postsView()}
           nodeId={nodeId()}
+          isFolderNode={isFolderNode()}
           hasNewPosts={newPostsStore.hasNewPosts}
           loadNewPosts={loadNewPosts}
         />

@@ -72,7 +72,7 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
         <ErrorAlert errorMsg={query.errorMsg} />
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContextProvider>
-            <Posts posts={posts()} />
+            <Posts posts={posts()} isFolder={true} />
           </ToggleUnreadContextProvider>
         </ToggleBookmarkedContext.Provider>
         <Show when={query.data.nextPageCursor}>
