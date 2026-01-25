@@ -18,6 +18,7 @@ export const DEFAULT_PREFERENCES: StoredPreferences = {
   markNewPostsUnread: true,
   clickPostToToggleUnread: false,
   orderPostsBy: "publishedAt",
+  groupFolderPosts: false,
 };
 
 export interface StoredPreferences {
@@ -25,6 +26,7 @@ export interface StoredPreferences {
   markNewPostsUnread: boolean;
   clickPostToToggleUnread: boolean;
   orderPostsBy: OrderPostsBy;
+  groupFolderPosts: boolean;
 }
 
 export type OrderPostsBy = "publishedAt" | "receivedAt";

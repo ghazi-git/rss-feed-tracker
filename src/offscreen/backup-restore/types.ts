@@ -37,6 +37,7 @@ export const BackupManifestSchema = v.object({
       [v.literal("publishedAt"), v.literal("receivedAt")],
       "orderPostsBy must be either 'publishedAt' or 'receivedAt'",
     ),
+    groupFolderPosts: v.boolean("groupFolderPosts must be a boolean"),
   }),
   backupFiles: v.object(
     {

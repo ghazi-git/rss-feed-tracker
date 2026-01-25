@@ -169,6 +169,7 @@ export interface PreferencesData {
   markNewPostsUnread: boolean;
   clickPostToToggleUnread: boolean;
   orderPostsBy: OrderPostsBy;
+  groupFolderPosts: boolean;
 }
 
 export type MessageType = keyof MessageMap;
