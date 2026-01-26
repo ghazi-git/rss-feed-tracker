@@ -32,6 +32,6 @@ function Input(props: InputProps) {
 
 interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
   name: string;
-  label: string;
+  label?: string;
   helpText?: string;
 }
