@@ -13,18 +13,14 @@ import styles from "./Posts.module.css";
 export default function Posts(props: PostsProps) {
   const { preferences } = usePreferencesContext();
   const groupPosts = () => props.isFolder && preferences.groupFolderPosts;
-  const groupedPosts = createMemo((prev: FeedPost[]) => {
+  const groupedPosts = createMemo(() => {
     if (groupPosts()) {
-      const lastSlice = props.posts.slice(prev.length);
-      const orderedSlice = getGroupedPosts(
-        lastSlice,
-        preferences.orderPostsBy === "receivedAt",
-      );
-      return [...prev, ...orderedSlice];
+      const orderByReceivedAt = preferences.orderPostsBy === "receivedAt";
+      return getGroupedPosts(props.posts, orderByReceivedAt);
     } else {
       return props.posts;
     }
-  }, []);
+  });
 
   return (
     <PostMenuProvider>
@@ -50,8 +46,6 @@ export default function Posts(props: PostsProps) {
 }
 
 function getGroupedPosts(posts: FeedPost[], orderByReceivedAt: boolean) {
-  // we can have more than PAGE_SIZE of posts when the posts page is the last
-  // page visited by the user and they were viewing more than 1 page of posts
   const chunks = getChunks(posts, PAGE_SIZE);
   const collator = new Intl.Collator(undefined, { sensitivity: "base" });
   const result: FeedPost[] = [];
