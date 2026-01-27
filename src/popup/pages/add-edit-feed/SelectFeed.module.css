@@ -1,0 +1,48 @@
+.enter-url {
+  display: flex;
+  align-items: center;
+  gap: var(--size-3);
+
+  & > :first-child {
+    flex: 1;
+    align-self: stretch;
+    margin: 0;
+  }
+}
+
+button.preview {
+  background: var(--surface-2);
+  padding: var(--size-2);
+  color: var(--text-2);
+}
+
+.or {
+  color: var(--text-2);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+  padding: var(--size-2) var(--size-3);
+  opacity: 0.7;
+
+  &::before,
+  &::after {
+    content: "";
+    flex-grow: 1;
+    border-block-start: var(--border-size-2) solid var(--text-2);
+    opacity: 0.7;
+  }
+}
+
+.find-feeds {
+  text-align: center;
+
+  button {
+    background-color: var(--surface-3);
+    padding: var(--size-2);
+
+    &:hover:not([disabled]) {
+      background-color: var(--surface-4);
+    }
+  }
+}

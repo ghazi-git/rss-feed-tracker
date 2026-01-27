@@ -1,3 +1,15 @@
 .feed-form > :has(input[name="url"]) {
   margin-block-end: var(--size-1);
 }
+
+.fetching {
+  color: var(--text-2);
+  font-size: var(--font-size-1);
+  margin-block-end: var(--size-2);
+}
+
+.error {
+  color: var(--error-color);
+  font-size: var(--font-size-1);
+  margin-block-end: var(--size-2);
+}

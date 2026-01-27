@@ -29,7 +29,7 @@ export default function FolderActions(props: FolderActionsProps) {
     () => `/library/folders/${props.folderId}/edit?${prevUrlSearchString()}`,
   );
   const addFeedUrl = createMemo(() => {
-    return `/library/feeds/add?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
+    return `/library/feeds/select?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;
   });
   const addFolderUrl = createMemo(() => {
     return `/library/folders/add?parentFolderId=${props.folderId}&${prevUrlSearchString()}`;

@@ -7,6 +7,7 @@ import Header from "@/popup/components/Header";
 import LinkPreview from "@/popup/components/LinkPreview";
 import AddFeed from "@/popup/pages/add-edit-feed/AddFeed";
 import EditFeed from "@/popup/pages/add-edit-feed/EditFeed";
+import SelectFeed from "@/popup/pages/add-edit-feed/SelectFeed";
 import AddFolder from "@/popup/pages/add-edit-folder/AddFolder";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder";
 import Bookmarks from "@/popup/pages/bookmarks";
@@ -60,6 +61,7 @@ function App() {
           <Route path="/library/nodes/:id" component={Node} />
           <Route path="/library/nodes/:id/posts" component={NodePosts} />
           <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
+          <Route path="/library/feeds/select" component={SelectFeed} />
           <Route path="/library/feeds/add" component={AddFeed} />
           <Route path="/library/feeds/import" component={ImportFeeds} />
           <Route path="/library/feeds/:id/edit" component={EditFeed} />
