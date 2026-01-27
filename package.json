@@ -10,6 +10,7 @@
   "dependencies": {
     "@floating-ui/dom": "1.7.4",
     "@solidjs/router": "0.15.3",
+    "feedscout": "1.2.0",
     "feedsmith": "2.9.0",
     "fflate": "0.8.2",
     "idb": "8.0.3",
