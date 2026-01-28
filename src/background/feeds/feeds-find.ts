@@ -4,6 +4,7 @@ import type { FeedResult } from "feedscout/feeds";
 import { parseFeed } from "feedsmith";
 
 import { FindFeedError } from "@/background/utils/errors";
+import { getDBConnection } from "@/db-setup";
 import { FeedFound } from "@/messaging-wrapper";
 import { glogger } from "@/utils/logging";
 
@@ -26,16 +27,30 @@ export async function findFeeds(): Promise<FeedFound[]> {
   const html = await fetchHTML(tabURL);
   if (html) {
     const feed = parseAsFeed(html);
-    if (feed)
+    if (feed) {
+      const existingFeedURLs = await getExistingFeedURLs();
       return [
-        { url: tabURL, title: feed.title, description: feed.description },
+        {
+          url: tabURL,
+          title: feed.title,
+          description: feed.description,
+          subscribed: existingFeedURLs.has(tabURL),
+        },
       ];
+    }
   }
 
   const feeds = await findFeedsByURL(tabURL, html);
   if (feeds.length) return feeds;
 
   return await findFeedsInCurrentTab(tabId, tabURL);
+}
+
+async function getExistingFeedURLs() {
+  using conn = await getDBConnection();
+  const nodes = await conn.db.getAllFromIndex("nodes", "by_type", "feed");
+  const urls = nodes.filter((n) => n.type === "feed").map((n) => n.feed.url);
+  return new Set(urls);
 }
 
 async function fetchHTML(url: string) {
@@ -77,7 +92,7 @@ async function findFeedsByURL(tabURL: string, html: string | null) {
       { url: tabURL, content },
       { methods: ["platform"], concurrency: 5 },
     );
-    return getFeedsFromResults(results);
+    return await getFeedsFromResults(results);
   } catch (e) {
     glogger.error("find-feeds: failure when finding based on URL", e);
   }
@@ -85,7 +100,8 @@ async function findFeedsByURL(tabURL: string, html: string | null) {
   return [];
 }
 
-function getFeedsFromResults(results: DiscoverResult<FeedResult>[]) {
+async function getFeedsFromResults(results: DiscoverResult<FeedResult>[]) {
+  const existingFeedURLs = await getExistingFeedURLs();
   return results
     .filter((res) => res.isValid)
     .filter((res) => ["rss", "atom", "json"].includes(res.format))
@@ -93,6 +109,7 @@ function getFeedsFromResults(results: DiscoverResult<FeedResult>[]) {
       url: feed.url,
       title: feed.title || "No Title Found",
       description: feed.description || "No description found.",
+      subscribed: existingFeedURLs.has(feed.url),
     }));
 }
 
@@ -114,7 +131,7 @@ async function findFeedsInCurrentTab(
         { url: tabURL, content: htmlLinksAnchors },
         { methods: ["html"], concurrency: 5 },
       );
-      return getFeedsFromResults(results);
+      return await getFeedsFromResults(results);
     } catch (e) {
       glogger.error("find-feeds: failure when finding URLs in current tab", e);
     }

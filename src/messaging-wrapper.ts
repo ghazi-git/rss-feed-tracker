@@ -80,6 +80,7 @@ export interface FeedFound {
   url: string;
   title: string;
   description: string;
+  subscribed: boolean;
 }
 export interface FeedFormData {
   url: string;

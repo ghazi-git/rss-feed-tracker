@@ -110,12 +110,14 @@ export default function SelectFeed() {
                       class={styles.title}
                       text={decodeURI(feed.url)}
                     />
-                    <UnstyledButton
-                      class={styles.preview}
-                      onClick={() => goToAddFeedPage(feed.url)}
-                    >
-                      Preview
-                    </UnstyledButton>
+                    <Show when={!feed.subscribed} fallback="Subscribed">
+                      <UnstyledButton
+                        class={styles.preview}
+                        onClick={() => goToAddFeedPage(feed.url)}
+                      >
+                        Preview
+                      </UnstyledButton>
+                    </Show>
                   </div>
                   <div class={styles.metadata} dir="auto">
                     {feed.title}: {feed.description}
