@@ -41,7 +41,10 @@ export function createQuery<K extends MessageType>(
     isError: false,
   });
 
+  let lastRequestID = 0;
   async function sendMsg(payload: MessagePayload<K>) {
+    lastRequestID++;
+    const currentRequest = lastRequestID;
     setQuery(({ data }) => ({
       status: "loading",
       data,
@@ -51,6 +54,9 @@ export function createQuery<K extends MessageType>(
       isError: false,
     }));
     const resp = await sendMessage(messageType, payload);
+    // if a new request has already been triggered, then ignore the result of the previous one
+    if (currentRequest !== lastRequestID) return;
+
     if (resp.success) {
       setQuery({
         status: "success",
@@ -72,16 +78,7 @@ export function createQuery<K extends MessageType>(
     }
   }
 
-  const mutateData = (
-    setterFunc: (oldValue: MessageData<K>) => MessageData<K>,
-  ) => {
-    setQuery((oldValue) => {
-      if (!oldValue.data) return oldValue;
-
-      return { ...oldValue, data: setterFunc(oldValue.data) };
-    });
-  };
-  return { query, sendMsg, mutateData };
+  return { query, sendMsg };
 }
 
 interface QueryIdle<TData> {
