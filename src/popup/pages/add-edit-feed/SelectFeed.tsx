@@ -1,10 +1,22 @@
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import {
+  createResource,
+  createSignal,
+  For,
+  Match,
+  Show,
+  Switch,
+} from "solid-js";
 
+import { sendMessage } from "@/messaging-wrapper";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import InputField from "@/popup/components/forms/Input";
 import PageHeader from "@/popup/components/page-header/PageHeader";
+import SingleLineText from "@/popup/components/SingleLineText";
+import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
+import { notifyError, notifyInfo } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
+import { glogger } from "@/utils/logging";
 
 import styles from "./SelectFeed.module.css";
 
@@ -16,6 +28,25 @@ export default function SelectFeed() {
     feedURL?: string;
   }>();
   const [feedURL, setFeedURL] = createSignal(searchParams.feedURL ?? "");
+  const [feeds, { refetch }] = createResource(
+    async () => {
+      const response = await sendMessage("feeds/find", undefined);
+      if (!response.success) throw new Error(response.errorMsg);
+
+      return response.data;
+    },
+    { initialValue: [] },
+  );
+
+  const goToAddFeedPage = (url: string) => {
+    const prevSearchString = getSearchString({ ...searchParams, feedURL: url });
+    const nextSearchString = getSearchString({
+      ...searchParams,
+      previousUrl: `/library/feeds/select?${prevSearchString}`,
+      feedURL: url,
+    });
+    navigate(`/library/feeds/add?${nextSearchString}`);
+  };
 
   return (
     <>
@@ -26,16 +57,7 @@ export default function SelectFeed() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          const prevSearchString = getSearchString({
-            ...searchParams,
-            feedURL: feedURL(),
-          });
-          const nextSearchString = getSearchString({
-            ...searchParams,
-            previousUrl: `/library/feeds/select?${prevSearchString}`,
-            feedURL: feedURL(),
-          });
-          navigate(`/library/feeds/add?${nextSearchString}`);
+          goToAddFeedPage(feedURL());
         }}
       >
         <div class={styles["enter-url"]}>
@@ -52,11 +74,80 @@ export default function SelectFeed() {
             Preview
           </UnstyledButton>
         </div>
-        <div class={styles.or}>OR</div>
-        <div class={styles["find-feeds"]}>
-          <UnstyledButton>Find Feeds in the Current Browser Tab</UnstyledButton>
-        </div>
       </form>
+      <div class={styles.or}>OR</div>
+      <div class={styles["find-feeds"]}>
+        <UnstyledButton disabled={feeds.loading} onClick={() => refetch()}>
+          Find Feeds in the Current Browser Tab
+          <Show when={feeds.loading}>
+            <LoadingIcon />
+          </Show>
+        </UnstyledButton>
+      </div>
+      <Switch>
+        <Match when={feeds.error}>
+          <div class={styles.error}>{feeds.error.message}</div>
+        </Match>
+        <Match when={!feeds.loading}>
+          <Show
+            when={feeds.latest.length > 0}
+            fallback={
+              <div class={styles["no-feeds-found"]}>
+                No feeds found in the current browser tab. You can click the
+                button above to check again.
+              </div>
+            }
+          >
+            <div class={styles["feeds-found"]}>
+              Feed(s) found in the current browser tab:
+            </div>
+            <For each={feeds.latest}>
+              {(feed) => (
+                <>
+                  <div class={styles.header}>
+                    <CopyLinkButton url={feed.url} />
+                    <SingleLineText
+                      class={styles.title}
+                      text={decodeURI(feed.url)}
+                    />
+                    <UnstyledButton
+                      class={styles.preview}
+                      onClick={() => goToAddFeedPage(feed.url)}
+                    >
+                      Preview
+                    </UnstyledButton>
+                  </div>
+                  <div class={styles.metadata} dir="auto">
+                    {feed.title}: {feed.description}
+                  </div>
+                  <hr class={styles.separator} />
+                </>
+              )}
+            </For>
+          </Show>
+        </Match>
+      </Switch>
     </>
+  );
+}
+
+function CopyLinkButton(props: { url: string }) {
+  return (
+    <UnstyledButton
+      class={styles.copy}
+      onClick={() => {
+        navigator.clipboard
+          .writeText(props.url)
+          .then(() => {
+            notifyInfo("Link copied.", { duration: 2000 });
+          })
+          .catch((e) => {
+            glogger.error("copy-link: failure", e);
+            notifyError("Failed to copy the link.");
+          });
+      }}
+    >
+      ⧉
+    </UnstyledButton>
   );
 }

@@ -12,7 +12,7 @@
 
 button.preview {
   background: var(--surface-2);
-  padding: var(--size-2);
+  padding: var(--size-1) var(--size-2);
   color: var(--text-2);
 }
 
@@ -36,13 +36,77 @@ button.preview {
 
 .find-feeds {
   text-align: center;
+  margin-block-end: var(--size-2);
 
   button {
     background-color: var(--surface-3);
     padding: var(--size-2);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-2);
 
     &:hover:not([disabled]) {
       background-color: var(--surface-4);
     }
+
+    svg {
+      inline-size: var(--size-3);
+      block-size: auto;
+    }
   }
+}
+
+.error {
+  color: var(--error-color);
+  text-align: center;
+  margin-block-end: var(--size-2);
+}
+
+.no-feeds-found {
+  text-align: center;
+  margin-block-end: var(--size-2);
+}
+
+.feeds-found {
+  font-weight: var(--font-weight-7);
+  margin-block-end: var(--size-2);
+}
+
+.header {
+  font-size: var(--font-size-1);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-2);
+  margin-block-end: var(--size-1);
+
+  .copy {
+    /* rotated the double square unicode character so it looks like a copy icon */
+    rotate: 90deg;
+    padding-block-end: 0;
+    flex-shrink: 0;
+    background-color: var(--surface-2);
+
+    &:hover:not([disabled]) {
+      background-color: var(--surface-3);
+    }
+  }
+
+  .preview {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+}
+
+.metadata {
+  color: var(--text-2);
+  font-size: var(--font-size-1);
+  display: -webkit-box;
+  -webkit-box-orient: block-axis; /* stylelint-disable-line property-no-deprecated */
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.separator {
+  margin-block: var(--size-3);
 }

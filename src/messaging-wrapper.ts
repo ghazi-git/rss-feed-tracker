@@ -35,6 +35,7 @@ export function onMessage<K extends MessageType>(
 interface MessageMap {
   // define only ONE argument for each method
   "feeds/preview"(data: { url: string }): FeedPreviewResponse;
+  "feeds/find"(): FeedFound[];
   "feeds/create"(data: FeedFormData): { feedId: number };
   "feeds/get"(data: { id: number }): FeedFormWithOptions;
   "feeds/update"(data: { id: number } & UpdateFeedFormData): void;
@@ -74,6 +75,11 @@ export interface PostPreview {
   title: string;
   url: string;
   publishedAt: number;
+}
+export interface FeedFound {
+  url: string;
+  title: string;
+  description: string;
 }
 export interface FeedFormData {
   url: string;

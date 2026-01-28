@@ -1,5 +1,6 @@
 import { loadAndCreateFeed } from "@/background/feeds/feed-create";
 import { deleteFeed } from "@/background/feeds/feeds-delete";
+import { findFeeds } from "@/background/feeds/feeds-find";
 import { getFeed } from "@/background/feeds/feeds-get";
 import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
@@ -21,6 +22,20 @@ onMessage("feeds/preview", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while previewing the feed posts.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("feeds/find", (payload, sender, sendResponse) => {
+  findFeeds()
+    .then((data) => {
+      sendResponse({ success: true, data, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while looking for feeds.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
