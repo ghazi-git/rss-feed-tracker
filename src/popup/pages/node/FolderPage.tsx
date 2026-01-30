@@ -1,7 +1,10 @@
+import { Show } from "solid-js";
+
 import { Folder, TreeNode } from "@/db-setup";
 import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
 import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
 import FolderChildren from "@/popup/pages/node/FolderChildren";
+import FolderNoChildren from "@/popup/pages/node/FolderNoChildren";
 import FolderPageHeader from "@/popup/pages/node/FolderPageHeader";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import {
@@ -29,10 +32,12 @@ export function FolderPage(props: FolderPageProps) {
           folder={props.folder}
           hasChildren={props.folder.children.length > 0}
         />
-        <FolderChildren
-          folderId={props.folder.id}
-          childNodes={props.folder.children}
-        />
+        <Show
+          when={props.folder.children.length > 0}
+          fallback={<FolderNoChildren folderId={props.folder.id} />}
+        >
+          <FolderChildren childNodes={props.folder.children} />
+        </Show>
         <DeleteNodeDialog />
       </DeleteNodeProvider>
     </UnreadCountContext.Provider>
