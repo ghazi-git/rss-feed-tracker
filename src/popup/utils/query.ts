@@ -78,7 +78,16 @@ export function createQuery<K extends MessageType>(
     }
   }
 
-  return { query, sendMsg };
+  const mutateData = (
+    setterFunc: (oldValue: MessageData<K>) => MessageData<K>,
+  ) => {
+    setQuery((oldValue) => {
+      if (!oldValue.data) return oldValue;
+
+      return { ...oldValue, data: setterFunc(oldValue.data) };
+    });
+  };
+  return { query, sendMsg, mutateData };
 }
 
 interface QueryIdle<TData> {
