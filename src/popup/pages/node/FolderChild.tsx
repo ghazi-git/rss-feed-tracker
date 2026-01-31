@@ -50,62 +50,64 @@ export default function FolderChild(props: FolderChildProps) {
   };
 
   return (
-    <Anchor
-      class={`${styles.child} ${updatesOff() ? styles["updates-off"] : ""}`}
-      href={`/library/nodes/${props.node.id}`}
-    >
-      <div class={styles.icon}>
-        <Show when={props.node.type === "feed"} fallback={<FolderIcon />}>
-          <FeedFavicon
-            favicon={props.node.feed!.favicon}
-            name={props.node.name}
-          />
-        </Show>
-      </div>
-      <SingleLineText text={props.node.name} />
-      <Show when={props.node.unreadCount}>
-        <UnreadCount
-          count={props.node.unreadCount}
-          isLoading={mutation.isLoading}
-          onClick={(event) => {
-            event.preventDefault();
-            markAllAsRead();
-          }}
-        />
-        <UnstyledButton
-          class={styles["unread-link"]}
-          onClick={(event) => {
-            event.preventDefault();
-            navigate(`/library/nodes/${props.node.id}/posts?unread=true`);
-          }}
-        >
-          Unread
-        </UnstyledButton>
-      </Show>
-      <Dropdown placement="bottom-end" fallbackPlacement="left">
-        <MenuTrigger onClick={(event) => event.preventDefault()}>
-          <ThreeDotIcon class={styles["post-actions-icon"]} />
-        </MenuTrigger>
-        <Menu>
-          <Show
-            when={props.node.type === "folder"}
-            fallback={
-              <FeedActions
-                feedId={props.node.id}
-                feedName={props.node.name}
-                deletionTrigger="folderChild"
-              />
-            }
-          >
-            <FolderActions
-              folderId={props.node.id}
-              folderName={props.node.name}
-              deletionTrigger="folderChild"
+    <div class={styles.dropzone}>
+      <Anchor
+        class={`${styles.child} ${updatesOff() ? styles["updates-off"] : ""}`}
+        href={`/library/nodes/${props.node.id}`}
+      >
+        <div class={styles.icon}>
+          <Show when={props.node.type === "feed"} fallback={<FolderIcon />}>
+            <FeedFavicon
+              favicon={props.node.feed!.favicon}
+              name={props.node.name}
             />
           </Show>
-        </Menu>
-      </Dropdown>
-    </Anchor>
+        </div>
+        <SingleLineText text={props.node.name} />
+        <Show when={props.node.unreadCount}>
+          <UnreadCount
+            count={props.node.unreadCount}
+            isLoading={mutation.isLoading}
+            onClick={(event) => {
+              event.preventDefault();
+              markAllAsRead();
+            }}
+          />
+          <UnstyledButton
+            class={styles["unread-link"]}
+            onClick={(event) => {
+              event.preventDefault();
+              navigate(`/library/nodes/${props.node.id}/posts?unread=true`);
+            }}
+          >
+            Unread
+          </UnstyledButton>
+        </Show>
+        <Dropdown placement="bottom-end" fallbackPlacement="left">
+          <MenuTrigger onClick={(event) => event.preventDefault()}>
+            <ThreeDotIcon class={styles["post-actions-icon"]} />
+          </MenuTrigger>
+          <Menu>
+            <Show
+              when={props.node.type === "folder"}
+              fallback={
+                <FeedActions
+                  feedId={props.node.id}
+                  feedName={props.node.name}
+                  deletionTrigger="folderChild"
+                />
+              }
+            >
+              <FolderActions
+                folderId={props.node.id}
+                folderName={props.node.name}
+                deletionTrigger="folderChild"
+              />
+            </Show>
+          </Menu>
+        </Dropdown>
+      </Anchor>
+    </div>
   );
 }
 
