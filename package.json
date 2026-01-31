@@ -8,6 +8,9 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "1.7.7",
+    "@atlaskit/pragmatic-drag-and-drop-auto-scroll": "2.1.5",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "1.1.0",
     "@floating-ui/dom": "1.7.4",
     "@solidjs/router": "0.15.3",
     "feedscout": "1.2.0",
