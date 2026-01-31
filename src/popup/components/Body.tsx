@@ -1,4 +1,12 @@
-import { createContext, FlowProps, useContext } from "solid-js";
+import { CleanupFn } from "@atlaskit/pragmatic-drag-and-drop/types";
+import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-scroll/element";
+import {
+  createContext,
+  FlowProps,
+  onCleanup,
+  onMount,
+  useContext,
+} from "solid-js";
 
 import {
   saveLastVisitedPage,
@@ -19,6 +27,12 @@ export default function Body(props: FlowProps) {
   const removePostsCountCallback = () => {
     postsCountCallback = undefined;
   };
+
+  let cleanup: CleanupFn;
+  onMount(() => {
+    cleanup = autoScrollForElements({ element: ref });
+  });
+  onCleanup(() => cleanup());
 
   return (
     <BodyContext.Provider
