@@ -1,5 +1,23 @@
+import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
+import {
+  draggable,
+  dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { CleanupFn } from "@atlaskit/pragmatic-drag-and-drop/types";
+import {
+  attachInstruction,
+  extractInstruction,
+  Operation,
+} from "@atlaskit/pragmatic-drag-and-drop-hitbox/list-item";
 import { useNavigate } from "@solidjs/router";
-import { batch, Show } from "solid-js";
+import {
+  batch,
+  createMemo,
+  createSignal,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 
 import { TreeNode } from "@/db-setup";
 import Anchor from "@/popup/components/Anchor";
@@ -12,6 +30,7 @@ import FolderActions from "@/popup/components/FolderActions";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
+import DropIndicator from "@/popup/pages/node/DropIndicator";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
@@ -48,11 +67,81 @@ export default function FolderChild(props: FolderChildProps) {
   const updatesOff = () => {
     return props.node.type === "feed" && !props.node.feed.updateFrequency;
   };
+  const [dragging, setDragging] = createSignal(false);
+  const [dropIndicator, setDropIndicator] = createSignal<Operation | null>(
+    null,
+  );
+  const beforeOrAfter = createMemo(() => {
+    const indicator = dropIndicator();
+    if (indicator === "reorder-before" || indicator === "reorder-after") {
+      return indicator as "reorder-before" | "reorder-after";
+    }
+    return null;
+  });
+  let wrapper!: HTMLDivElement;
+  let cleanup: CleanupFn;
+  onMount(() => {
+    cleanup = combine(
+      draggable({
+        element: wrapper,
+        getInitialData: () => ({ nodeId: props.node.id }),
+        onDragStart: () => setDragging(true),
+        onDrop: () => setDragging(false),
+      }),
+      dropTargetForElements({
+        element: wrapper,
+        getData: ({ input, element }) => {
+          const data = { nodeId: props.node.id };
+          return attachInstruction(data, {
+            input,
+            element,
+            operations:
+              props.node.type === "folder"
+                ? {
+                    "reorder-before": "available",
+                    "reorder-after": "available",
+                    combine: "available",
+                  }
+                : {
+                    "reorder-before": "available",
+                    "reorder-after": "available",
+                    combine: "not-available",
+                  },
+          });
+        },
+        onDrag: ({ source, self }) => {
+          const draggedNodeId = source.data.nodeId;
+          if (!!draggedNodeId && draggedNodeId !== props.node.id) {
+            const instruction = extractInstruction(self.data);
+            setDropIndicator(instruction?.operation ?? null);
+          }
+        },
+        onDragEnter: ({ source, self }) => {
+          const draggedNodeId = source.data.nodeId;
+          if (!!draggedNodeId && draggedNodeId !== props.node.id) {
+            const instruction = extractInstruction(self.data);
+            setDropIndicator(instruction?.operation ?? null);
+          }
+        },
+        onDragLeave: () => setDropIndicator(null),
+        onDrop: () => setDropIndicator(null),
+      }),
+    );
+  });
+  onCleanup(() => cleanup?.());
 
   return (
-    <div class={styles.dropzone}>
+    <div ref={wrapper} class={styles.dropzone}>
+      <Show when={beforeOrAfter()}>
+        {(placement) => <DropIndicator placement={placement()} />}
+      </Show>
       <Anchor
-        class={`${styles.child} ${updatesOff() ? styles["updates-off"] : ""}`}
+        class={styles.child}
+        classList={{
+          [styles["updates-off"]]: updatesOff(),
+          [styles["drop-inside"]]: dropIndicator() === "combine",
+          [styles.dragging]: dragging(),
+        }}
         href={`/library/nodes/${props.node.id}`}
       >
         <div class={styles.icon}>

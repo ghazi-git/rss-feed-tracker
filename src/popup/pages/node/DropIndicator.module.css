@@ -1,0 +1,45 @@
+.indicator {
+  --indicator-color: light-dark(var(--brand-1), var(--brand-2));
+  --line-block-size: 5px;
+  --donut-size: 10px;
+
+  inline-size: 100%;
+  position: absolute;
+
+  &.start {
+    inset-block-start: calc(var(--line-block-size) / -2);
+  }
+
+  &.end {
+    inset-block-end: calc(var(--line-block-size) / -2);
+  }
+
+  &:first-child {
+    /* so that the drop indicator at the very top isn't half hidden by the page header */
+    z-index: var(--layer-2);
+  }
+
+  .line {
+    position: relative;
+    block-size: var(--line-block-size);
+    background-color: var(--indicator-color);
+    border-radius: var(--radius-1);
+
+    .donut {
+      position: absolute;
+      inset-block-start: calc(var(--line-block-size) / -2);
+      inline-size: var(--donut-size);
+      block-size: var(--donut-size);
+      border: 3px solid var(--indicator-color);
+      border-radius: 50%;
+
+      &.start {
+        inset-inline-start: calc(2px - var(--donut-size));
+      }
+
+      &.end {
+        inset-inline-end: calc(2px - var(--donut-size));
+      }
+    }
+  }
+}

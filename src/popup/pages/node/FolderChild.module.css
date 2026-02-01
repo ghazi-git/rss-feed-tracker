@@ -1,5 +1,15 @@
 .dropzone {
   padding-block: var(--size-1);
+  position: relative;
+
+  .drop-inside {
+    background-color: light-dark(var(--brand-0), var(--brand-2));
+  }
+
+  .dragging {
+    opacity: 0.6;
+    background-color: var(--surface-3);
+  }
 }
 
 .child {

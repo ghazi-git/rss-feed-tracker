@@ -4,4 +4,10 @@
   block-size: calc(100% - var(--header-size));
   overflow-block: auto;
   scrollbar-gutter: stable;
+
+  /* When drag & drop is active and the folder children page is vertically
+  scrollable, the drop indicator causes horizontal overflow that we hide
+  here. That's because, the vertical scrollbar takes the available space
+  on the right due to `scrollbar-gutter: stable` */
+  overflow-inline: hidden;
 }
