@@ -31,28 +31,33 @@ export default function FolderChildren(props: FolderChildrenProps) {
           const targetNodeId = dropTarget.data.nodeId as number;
           const instruction = extractInstruction(dropTarget.data);
           if (instruction?.operation === "combine") {
-            mutateNode((resp) => {
-              const children = moveNodeIntoFolder(
-                resp.children,
-                draggedNodeId,
-                targetNodeId,
-              );
-              return { ...resp, children };
+            document.startViewTransition(() => {
+              mutateNode((resp) => {
+                const children = moveNodeIntoFolder(
+                  resp.children,
+                  draggedNodeId,
+                  targetNodeId,
+                );
+                return { ...resp, children };
+              });
             });
+
             // todo send msg and revert on error using oldChildren
             console.log("oldChildren", oldChildren);
           } else if (
             instruction?.operation === "reorder-before" ||
             instruction?.operation === "reorder-after"
           ) {
-            mutateNode((resp) => {
-              const children = reorderNodes(
-                props.childNodes,
-                draggedNodeId,
-                targetNodeId,
-                instruction.operation,
-              );
-              return { ...resp, children };
+            document.startViewTransition(() => {
+              mutateNode((resp) => {
+                const children = reorderNodes(
+                  props.childNodes,
+                  draggedNodeId,
+                  targetNodeId,
+                  instruction.operation,
+                );
+                return { ...resp, children };
+              });
             });
             // todo sendMsg + revert on error using oldChildren
           }

@@ -131,7 +131,11 @@ export default function FolderChild(props: FolderChildProps) {
   onCleanup(() => cleanup?.());
 
   return (
-    <div ref={wrapper} class={styles.dropzone}>
+    <div
+      ref={wrapper}
+      class={styles.dropzone}
+      style={{ "view-transition-name": `node-${props.node.id}` }}
+    >
       <Show when={beforeOrAfter()}>
         {(placement) => <DropIndicator placement={placement()} />}
       </Show>

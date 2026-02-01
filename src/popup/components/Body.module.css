@@ -10,4 +10,11 @@
   here. That's because, the vertical scrollbar takes the available space
   on the right due to `scrollbar-gutter: stable` */
   overflow-inline: hidden;
+  view-transition-name: folder-children;
+  view-transition-group: contain;
+}
+
+/* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+::view-transition-group-children(folder-children) {
+  overflow: clip;
 }

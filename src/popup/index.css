@@ -99,3 +99,11 @@ h5,
 h6 {
   font-size: var(--font-size-2);
 }
+
+@media (prefers-reduced-motion) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
