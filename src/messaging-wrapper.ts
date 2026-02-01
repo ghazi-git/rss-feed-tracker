@@ -51,6 +51,10 @@ interface MessageMap {
   "nodes/get-for-node-page"(data: { id: number }): NodeResponse;
   "nodes/get-for-node-posts-page"(data: { id: number }): NodePostsResponse;
   "nodes/reload"(data: { id: number }): NodeReloadResponse;
+  "nodes/move-into-sibling-folder"(data: {
+    nodeId: number;
+    folderId: number;
+  }): void;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
   "folders/get-root"(): RootFolder;
