@@ -26,14 +26,13 @@ import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import Dropdown from "@/popup/components/dropdown/Dropdown";
 import Menu from "@/popup/components/dropdown/Menu";
 import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
-import FeedActions from "@/popup/components/FeedActions";
-import FolderActions from "@/popup/components/FolderActions";
-import MoveNodeMenuItems from "@/popup/components/MoveNodeMenuItems";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
 import DropIndicator from "@/popup/pages/node/DropIndicator";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
+import FolderChildFeedActions from "@/popup/pages/node/FolderChildFeedActions";
+import FolderChildFolderActions from "@/popup/pages/node/FolderChildFolderActions";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
@@ -186,34 +185,20 @@ export default function FolderChild(props: FolderChildProps) {
             <Show
               when={props.node.type === "folder"}
               fallback={
-                <FeedActions
+                <FolderChildFeedActions
                   feedId={props.node.id}
                   feedName={props.node.name}
-                  deletionTrigger="folderChild"
-                >
-                  <Show when={props.childrenCount > 1}>
-                    <MoveNodeMenuItems
-                      nodeId={props.node.id}
-                      showMoveUp={props.nodeIndex > 0}
-                      showMoveDown={props.nodeIndex < props.childrenCount - 1}
-                    />
-                  </Show>
-                </FeedActions>
+                  nodeIndex={props.nodeIndex}
+                  childrenCount={props.childrenCount}
+                />
               }
             >
-              <FolderActions
+              <FolderChildFolderActions
                 folderId={props.node.id}
                 folderName={props.node.name}
-                deletionTrigger="folderChild"
-              >
-                <Show when={props.childrenCount > 1}>
-                  <MoveNodeMenuItems
-                    nodeId={props.node.id}
-                    showMoveUp={props.nodeIndex > 0}
-                    showMoveDown={props.nodeIndex < props.childrenCount - 1}
-                  />
-                </Show>
-              </FolderActions>
+                nodeIndex={props.nodeIndex}
+                childrenCount={props.childrenCount}
+              />
             </Show>
           </Menu>
         </Dropdown>

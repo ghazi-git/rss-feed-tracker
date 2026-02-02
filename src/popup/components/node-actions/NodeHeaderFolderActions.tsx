@@ -1,0 +1,39 @@
+import { Show } from "solid-js";
+
+import Separator from "@/popup/components/dropdown/Separator";
+import AddFeedMenuItem from "@/popup/components/node-actions/AddFeedMenuItem";
+import AddFolderMenuItem from "@/popup/components/node-actions/AddFolderMenuItem";
+import DeleteFolderMenuItem from "@/popup/components/node-actions/DeleteFolderMenuItem";
+import EditFolderMenuItem from "@/popup/components/node-actions/EditFolderMenuItem";
+import ExportFeedsMenuItem from "@/popup/components/node-actions/ExportFeedsMenuItem";
+import ImportFeedsMenuItem from "@/popup/components/node-actions/ImportFeedsMenuItem";
+import ReloadNodeMenuItem from "@/popup/components/node-actions/ReloadNodeMenuItem";
+
+export default function NodeHeaderFolderActions(props: FolderActionsProps) {
+  return (
+    <>
+      <EditFolderMenuItem folderId={props.folderId} />
+      <ReloadNodeMenuItem nodeId={props.folderId} />
+      <Separator />
+      <AddFeedMenuItem folderId={props.folderId} />
+      <AddFolderMenuItem folderId={props.folderId} />
+      <Separator />
+      <ImportFeedsMenuItem folderId={props.folderId} />
+      <ExportFeedsMenuItem folderId={props.folderId} />
+      <Show when={!props.isRoot}>
+        <Separator />
+        <DeleteFolderMenuItem
+          folderId={props.folderId}
+          folderName={props.folderName}
+          deletionTrigger="nodeHeader"
+        />
+      </Show>
+    </>
+  );
+}
+
+interface FolderActionsProps {
+  isRoot: boolean;
+  folderId: number;
+  folderName: string;
+}

@@ -1,12 +1,4 @@
-.delete {
-  color: var(--error-color);
-}
-
-.delete:focus {
-  background-color: var(--error-color);
-}
-
-.reloading {
+.loading {
   display: flex;
   justify-content: flex-start;
   align-items: center;
