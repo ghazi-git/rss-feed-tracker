@@ -5,9 +5,10 @@ import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/r
 import { For, onCleanup, onMount } from "solid-js";
 
 import { TreeNode } from "@/db-setup";
-import { RelativePlacement } from "@/messaging-wrapper";
+import { RelativePlacement, sendMessage } from "@/messaging-wrapper";
 import FolderChild from "@/popup/pages/node/FolderChild";
 import { useNodeContext } from "@/popup/pages/node/node-context";
+import { notifyError } from "@/popup/utils/notifications";
 
 import styles from "./FolderChildren.module.css";
 
@@ -29,6 +30,11 @@ export default function FolderChildren(props: FolderChildrenProps) {
           draggedNodeId !== dropTarget.data.nodeId
         ) {
           const oldChildren = [...props.childNodes];
+          const revertDragAndDrop = () => {
+            document.startViewTransition(() => {
+              mutateNode((resp) => ({ ...resp, children: oldChildren }));
+            });
+          };
           const targetNodeId = dropTarget.data.nodeId as number;
           const instruction = extractInstruction(dropTarget.data);
           if (instruction?.operation === "combine") {
@@ -43,8 +49,15 @@ export default function FolderChildren(props: FolderChildrenProps) {
               });
             });
 
-            // todo send msg and revert on error using oldChildren
-            console.log("oldChildren", oldChildren);
+            const payload = { nodeId: draggedNodeId, folderId: targetNodeId };
+            sendMessage("nodes/move-into-sibling-folder", payload).then(
+              (resp) => {
+                if (!resp.success) {
+                  notifyError(resp.errorMsg);
+                  revertDragAndDrop();
+                }
+              },
+            );
           } else if (
             instruction?.operation === "reorder-before" ||
             instruction?.operation === "reorder-after"
@@ -60,7 +73,19 @@ export default function FolderChildren(props: FolderChildrenProps) {
                 return { ...resp, children };
               });
             });
-            // todo sendMsg + revert on error using oldChildren
+            const payload = {
+              nodeId: draggedNodeId,
+              targetId: targetNodeId,
+              placement: instruction.operation,
+            };
+            sendMessage("nodes/move-relative-to-target", payload).then(
+              (resp) => {
+                if (!resp.success) {
+                  notifyError(resp.errorMsg);
+                  revertDragAndDrop();
+                }
+              },
+            );
           }
         }
       },
