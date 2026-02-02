@@ -55,6 +55,11 @@ interface MessageMap {
     nodeId: number;
     folderId: number;
   }): void;
+  "nodes/move-relative-to-target"(data: {
+    nodeId: number;
+    targetId: number;
+    placement: RelativePlacement;
+  }): void;
   "folders/create"(data: FolderFormData): { folderId: number };
   "folders/options"(): FolderOption[];
   "folders/get-root"(): RootFolder;
@@ -150,6 +155,7 @@ export interface NodeReloadResponse {
   unreadCount: number;
   markAsReadUntil: number;
 }
+export type RelativePlacement = "reorder-before" | "reorder-after";
 export type RootFolder = { id: number; hasChildNodes: boolean };
 export interface FolderFormData {
   name: string;

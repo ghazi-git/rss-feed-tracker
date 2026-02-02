@@ -20,6 +20,7 @@ import {
 } from "solid-js";
 
 import { TreeNode } from "@/db-setup";
+import { RelativePlacement } from "@/messaging-wrapper";
 import Anchor from "@/popup/components/Anchor";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import Dropdown from "@/popup/components/dropdown/Dropdown";
@@ -74,7 +75,7 @@ export default function FolderChild(props: FolderChildProps) {
   const beforeOrAfter = createMemo(() => {
     const indicator = dropIndicator();
     if (indicator === "reorder-before" || indicator === "reorder-after") {
-      return indicator as "reorder-before" | "reorder-after";
+      return indicator as RelativePlacement;
     }
     return null;
   });

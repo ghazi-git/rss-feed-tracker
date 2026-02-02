@@ -5,6 +5,7 @@ import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/r
 import { For, onCleanup, onMount } from "solid-js";
 
 import { TreeNode } from "@/db-setup";
+import { RelativePlacement } from "@/messaging-wrapper";
 import FolderChild from "@/popup/pages/node/FolderChild";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 
@@ -102,7 +103,7 @@ function reorderNodes(
   nodes: ChildNode[],
   draggedNodeId: number,
   targetNodeId: number,
-  operation: "reorder-before" | "reorder-after",
+  operation: RelativePlacement,
 ) {
   const currentIndex = findIndex(nodes, draggedNodeId);
   const targetIndex = findIndex(nodes, targetNodeId);

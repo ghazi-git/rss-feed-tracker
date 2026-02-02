@@ -1,8 +1,8 @@
+import { RelativePlacement } from "@/messaging-wrapper";
+
 import styles from "./DropIndicator.module.css";
 
-export default function DropIndicator(props: {
-  placement: "reorder-before" | "reorder-after";
-}) {
+export default function DropIndicator(props: { placement: RelativePlacement }) {
   return (
     <div
       class={styles.indicator}

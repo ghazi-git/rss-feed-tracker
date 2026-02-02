@@ -11,6 +11,7 @@ import {
   TreeNode,
 } from "@/db-setup";
 import { FeedFormData } from "@/messaging-wrapper";
+import { SORT_ORDER_STEP } from "@/utils/settings";
 
 export async function getHighestSortOrder(
   tx: ReadTX | ReadWriteTX,
@@ -24,7 +25,7 @@ export async function getHighestSortOrder(
     direction: "prev",
   });
   const sortOrder = children[0]?.sortOrder ?? 0;
-  return sortOrder + 10_000;
+  return sortOrder + SORT_ORDER_STEP;
 }
 
 export function getNodeMap(nodes: TreeNode[]) {
@@ -160,7 +161,7 @@ function getRootFolderData() {
     parentId: null,
     createdAt: Date.now(),
     unreadCount: 0,
-    sortOrder: 10_000,
+    sortOrder: SORT_ORDER_STEP,
     feed: null,
   } as Folder;
 }
