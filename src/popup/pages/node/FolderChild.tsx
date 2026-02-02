@@ -28,6 +28,7 @@ import Menu from "@/popup/components/dropdown/Menu";
 import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
 import FeedActions from "@/popup/components/FeedActions";
 import FolderActions from "@/popup/components/FolderActions";
+import MoveNodeMenuItems from "@/popup/components/MoveNodeMenuItems";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
 import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
@@ -189,14 +190,30 @@ export default function FolderChild(props: FolderChildProps) {
                   feedId={props.node.id}
                   feedName={props.node.name}
                   deletionTrigger="folderChild"
-                />
+                >
+                  <Show when={props.childrenCount > 1}>
+                    <MoveNodeMenuItems
+                      nodeId={props.node.id}
+                      showMoveUp={props.nodeIndex > 0}
+                      showMoveDown={props.nodeIndex < props.childrenCount - 1}
+                    />
+                  </Show>
+                </FeedActions>
               }
             >
               <FolderActions
                 folderId={props.node.id}
                 folderName={props.node.name}
                 deletionTrigger="folderChild"
-              />
+              >
+                <Show when={props.childrenCount > 1}>
+                  <MoveNodeMenuItems
+                    nodeId={props.node.id}
+                    showMoveUp={props.nodeIndex > 0}
+                    showMoveDown={props.nodeIndex < props.childrenCount - 1}
+                  />
+                </Show>
+              </FolderActions>
             </Show>
           </Menu>
         </Dropdown>
@@ -207,4 +224,6 @@ export default function FolderChild(props: FolderChildProps) {
 
 interface FolderChildProps {
   node: TreeNode & { markAsReadUntil: number };
+  nodeIndex: number;
+  childrenCount: number;
 }

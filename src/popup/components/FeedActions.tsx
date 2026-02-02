@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "@solidjs/router";
-import { Show } from "solid-js";
+import { ParentProps, Show } from "solid-js";
 
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
 import { useDropdownContext } from "@/popup/components/dropdown/context";
@@ -13,7 +13,7 @@ import styles from "./FeedActions.module.css";
 
 export default function FeedActions(props: FeedActionsProps) {
   const { mutation, reloadFeeds } = useReloadFeedsContext();
-  const { closeMenu } = useDropdownContext();
+  const { closeMenu, focusTrigger } = useDropdownContext();
   const { openModal } = useDeleteNodeContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,6 +32,7 @@ export default function FeedActions(props: FeedActionsProps) {
           if (!mutation.isLoading) {
             await reloadFeeds(props.feedId);
             closeMenu();
+            focusTrigger();
           }
         }}
       >
@@ -40,6 +41,7 @@ export default function FeedActions(props: FeedActionsProps) {
         </Show>
       </MenuItem>
       <Separator />
+      {props.children}
       <MenuItem
         class={styles.delete}
         onClick={(event) => {
@@ -54,7 +56,7 @@ export default function FeedActions(props: FeedActionsProps) {
   );
 }
 
-interface FeedActionsProps {
+interface FeedActionsProps extends ParentProps {
   feedId: number;
   feedName: string;
   deletionTrigger: "folderChild" | "nodeHeader";

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "@solidjs/router";
-import { createMemo, Show } from "solid-js";
+import { createMemo, ParentProps, Show } from "solid-js";
 
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
 import { useDropdownContext } from "@/popup/components/dropdown/context";
@@ -17,7 +17,7 @@ export default function FolderActions(props: FolderActionsProps) {
   const { mutation: exportMutation, sendMsg: triggerOPMLExport } =
     createMutation("opml/trigger-export");
   const { mutation, reloadFeeds } = useReloadFeedsContext();
-  const { closeMenu } = useDropdownContext();
+  const { closeMenu, focusTrigger } = useDropdownContext();
   const { openModal } = useDeleteNodeContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,6 +47,7 @@ export default function FolderActions(props: FolderActionsProps) {
           if (!mutation.isLoading) {
             await reloadFeeds(props.folderId);
             closeMenu();
+            focusTrigger();
           }
         }}
       >
@@ -55,6 +56,7 @@ export default function FolderActions(props: FolderActionsProps) {
         </Show>
       </MenuItem>
       <Separator />
+      {props.children}
       <MenuItem onClick={() => navigate(addFeedUrl())}>Add Feed</MenuItem>
       <MenuItem onClick={() => navigate(addFolderUrl())}>Add Folder</MenuItem>
       <Separator />
@@ -94,7 +96,7 @@ export default function FolderActions(props: FolderActionsProps) {
   );
 }
 
-interface FolderActionsProps {
+interface FolderActionsProps extends ParentProps {
   isRoot?: boolean;
   folderId: number;
   folderName: string;

@@ -7,6 +7,7 @@ import { For, onCleanup, onMount } from "solid-js";
 import { TreeNode } from "@/db-setup";
 import { RelativePlacement, sendMessage } from "@/messaging-wrapper";
 import FolderChild from "@/popup/pages/node/FolderChild";
+import { MoveNodeContext } from "@/popup/pages/node/move-node-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import { notifyError } from "@/popup/utils/notifications";
 
@@ -16,6 +17,28 @@ export default function FolderChildren(props: FolderChildrenProps) {
   const { mutateNode } = useNodeContext();
   let elt!: HTMLDivElement;
   let cleanup: CleanupFn;
+  // move the node locally, then save in db but revert if there was an error
+  const saveNodePlacement = (
+    newNodes: ChildNode[],
+    oldNodes: ChildNode[],
+    nodeId: number,
+    targetId: number,
+    placement: RelativePlacement,
+  ) => {
+    document.startViewTransition(() => {
+      mutateNode((resp) => ({ ...resp, children: newNodes }));
+    });
+
+    const payload = { nodeId, targetId, placement };
+    sendMessage("nodes/move-relative-to-target", payload).then((resp) => {
+      if (!resp.success) {
+        notifyError(resp.errorMsg);
+        document.startViewTransition(() => {
+          mutateNode((resp) => ({ ...resp, children: oldNodes }));
+        });
+      }
+    });
+  };
   onMount(() => {
     cleanup = monitorForElements({
       onDrop: ({ source, location }) => {
@@ -30,11 +53,6 @@ export default function FolderChildren(props: FolderChildrenProps) {
           draggedNodeId !== dropTarget.data.nodeId
         ) {
           const oldChildren = [...props.childNodes];
-          const revertDragAndDrop = () => {
-            document.startViewTransition(() => {
-              mutateNode((resp) => ({ ...resp, children: oldChildren }));
-            });
-          };
           const targetNodeId = dropTarget.data.nodeId as number;
           const instruction = extractInstruction(dropTarget.data);
           if (instruction?.operation === "combine") {
@@ -54,7 +72,9 @@ export default function FolderChildren(props: FolderChildrenProps) {
               (resp) => {
                 if (!resp.success) {
                   notifyError(resp.errorMsg);
-                  revertDragAndDrop();
+                  document.startViewTransition(() => {
+                    mutateNode((resp) => ({ ...resp, children: oldChildren }));
+                  });
                 }
               },
             );
@@ -62,29 +82,18 @@ export default function FolderChildren(props: FolderChildrenProps) {
             instruction?.operation === "reorder-before" ||
             instruction?.operation === "reorder-after"
           ) {
-            document.startViewTransition(() => {
-              mutateNode((resp) => {
-                const children = reorderNodes(
-                  props.childNodes,
-                  draggedNodeId,
-                  targetNodeId,
-                  instruction.operation,
-                );
-                return { ...resp, children };
-              });
-            });
-            const payload = {
-              nodeId: draggedNodeId,
-              targetId: targetNodeId,
-              placement: instruction.operation,
-            };
-            sendMessage("nodes/move-relative-to-target", payload).then(
-              (resp) => {
-                if (!resp.success) {
-                  notifyError(resp.errorMsg);
-                  revertDragAndDrop();
-                }
-              },
+            const updatedChildren = reorderNodes(
+              props.childNodes,
+              draggedNodeId,
+              targetNodeId,
+              instruction.operation,
+            );
+            saveNodePlacement(
+              updatedChildren,
+              oldChildren,
+              draggedNodeId,
+              targetNodeId,
+              instruction.operation,
             );
           }
         }
@@ -93,10 +102,47 @@ export default function FolderChildren(props: FolderChildrenProps) {
   });
   onCleanup(() => cleanup?.());
 
+  const modeNodeUpOrDown = (nodeId: number, direction: "up" | "down") => {
+    const nodeIndex = findIndex(props.childNodes, nodeId);
+    const siblingIndex = getSiblingIndex(
+      props.childNodes.length,
+      nodeIndex,
+      direction,
+    );
+    if (siblingIndex !== null) {
+      const oldChildren = [...props.childNodes];
+      const sibling = props.childNodes[siblingIndex];
+      const updatedChildren = reorderWithEdge({
+        list: props.childNodes,
+        axis: "vertical",
+        startIndex: nodeIndex,
+        indexOfTarget: siblingIndex,
+        closestEdgeOfTarget: direction === "up" ? "top" : "bottom",
+      });
+      saveNodePlacement(
+        updatedChildren,
+        oldChildren,
+        nodeId,
+        sibling.id,
+        direction === "up" ? "reorder-before" : "reorder-after",
+      );
+    }
+  };
+
   return (
-    <div ref={elt} class={styles.children}>
-      <For each={props.childNodes}>{(node) => <FolderChild node={node} />}</For>
-    </div>
+    <MoveNodeContext.Provider value={{ modeNodeUpOrDown }}>
+      <div ref={elt} class={styles.children}>
+        <For each={props.childNodes}>
+          {(node, index) => (
+            <FolderChild
+              node={node}
+              nodeIndex={index()}
+              childrenCount={props.childNodes.length}
+            />
+          )}
+        </For>
+      </div>
+    </MoveNodeContext.Provider>
   );
 }
 
@@ -146,6 +192,19 @@ function reorderNodes(
 
 function findIndex(array: ChildNode[], id: number) {
   return array.findIndex((n) => n.id === id);
+}
+
+function getSiblingIndex(
+  nodesCount: number,
+  nodeIndex: number,
+  dir: "up" | "down",
+) {
+  if (nodeIndex > 0 && dir === "up") {
+    return nodeIndex - 1;
+  } else if (nodeIndex >= 0 && nodeIndex < nodesCount - 1 && dir === "down") {
+    return nodeIndex + 1;
+  }
+  return null;
 }
 
 type ChildNode = TreeNode & { markAsReadUntil: number };
