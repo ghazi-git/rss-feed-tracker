@@ -12,5 +12,5 @@ export function useMoveNodeContext() {
 }
 
 interface MoveNodeContextType {
-  modeNodeUpOrDown: (nodeId: number, direction: "up" | "down") => void;
+  modeNodeUpOrDown: (nodeId: number, direction: "up" | "down") => Promise<void>;
 }

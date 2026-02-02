@@ -18,7 +18,7 @@ export default function FolderChildren(props: FolderChildrenProps) {
   let elt!: HTMLDivElement;
   let cleanup: CleanupFn;
   // move the node locally, then save in db but revert if there was an error
-  const saveNodePlacement = (
+  const saveNodePlacement = async (
     newNodes: ChildNode[],
     oldNodes: ChildNode[],
     nodeId: number,
@@ -30,14 +30,14 @@ export default function FolderChildren(props: FolderChildrenProps) {
     });
 
     const payload = { nodeId, targetId, placement };
-    sendMessage("nodes/move-relative-to-target", payload).then((resp) => {
-      if (!resp.success) {
-        notifyError(resp.errorMsg);
-        document.startViewTransition(() => {
-          mutateNode((resp) => ({ ...resp, children: oldNodes }));
-        });
-      }
-    });
+
+    const resp = await sendMessage("nodes/move-relative-to-target", payload);
+    if (!resp.success) {
+      notifyError(resp.errorMsg);
+      document.startViewTransition(() => {
+        mutateNode((resp) => ({ ...resp, children: oldNodes }));
+      });
+    }
   };
   onMount(() => {
     cleanup = monitorForElements({
@@ -102,7 +102,7 @@ export default function FolderChildren(props: FolderChildrenProps) {
   });
   onCleanup(() => cleanup?.());
 
-  const modeNodeUpOrDown = (nodeId: number, direction: "up" | "down") => {
+  const modeNodeUpOrDown = async (nodeId: number, direction: "up" | "down") => {
     const nodeIndex = findIndex(props.childNodes, nodeId);
     const siblingIndex = getSiblingIndex(
       props.childNodes.length,
@@ -119,7 +119,7 @@ export default function FolderChildren(props: FolderChildrenProps) {
         indexOfTarget: siblingIndex,
         closestEdgeOfTarget: direction === "up" ? "top" : "bottom",
       });
-      saveNodePlacement(
+      await saveNodePlacement(
         updatedChildren,
         oldChildren,
         nodeId,
