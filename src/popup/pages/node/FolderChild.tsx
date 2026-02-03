@@ -178,7 +178,12 @@ export default function FolderChild(props: FolderChildProps) {
           </UnstyledButton>
         </Show>
         <Dropdown placement="bottom-end" fallbackPlacement="left">
-          <MenuTrigger onClick={(event) => event.preventDefault()}>
+          <MenuTrigger
+            onClick={(event) => event.preventDefault()}
+            aria-label={
+              props.node.type === "folder" ? "Folder Actions" : "Feed Actions"
+            }
+          >
             <ThreeDotIcon class={styles["post-actions-icon"]} />
           </MenuTrigger>
           <Menu>
