@@ -1,5 +1,3 @@
-import { Show } from "solid-js";
-
 import Separator from "@/popup/components/dropdown/Separator";
 import DeleteFeedMenuItem from "@/popup/components/node-actions/DeleteFeedMenuItem";
 import EditFeedMenuItem from "@/popup/components/node-actions/EditFeedMenuItem";
@@ -13,15 +11,18 @@ export default function FolderChildFeedActions(props: FeedActionsProps) {
       <EditFeedMenuItem feedId={props.feedId} />
       <ReloadNodeMenuItem nodeId={props.feedId} />
       <Separator />
-      <Show when={props.childrenCount > 1}>
-        <Show when={props.nodeIndex > 0}>
-          <MoveNodeUpMenuItem nodeId={props.feedId} />
-        </Show>
-        <Show when={props.nodeIndex < props.childrenCount - 1}>
-          <MoveNodeDownMenuItem nodeId={props.feedId} />
-        </Show>
-        <Separator />
-      </Show>
+      <MoveNodeUpMenuItem
+        nodeId={props.feedId}
+        disabled={props.childrenCount === 1 || props.nodeIndex === 0}
+      />
+      <MoveNodeDownMenuItem
+        nodeId={props.feedId}
+        disabled={
+          props.childrenCount === 1 ||
+          props.nodeIndex === props.childrenCount - 1
+        }
+      />
+      <Separator />
       <DeleteFeedMenuItem
         feedId={props.feedId}
         feedName={props.feedName}

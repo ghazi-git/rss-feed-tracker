@@ -8,3 +8,7 @@
   background-color: var(--brand);
   color: var(--surface-1);
 }
+
+.dropdown-menu-item[aria-disabled="true"] {
+  opacity: 0.5;
+}
