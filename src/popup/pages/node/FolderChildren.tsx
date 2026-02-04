@@ -15,6 +15,26 @@ import styles from "./FolderChildren.module.css";
 
 export default function FolderChildren(props: FolderChildrenProps) {
   const { mutateNode } = useNodeContext();
+  const mutateChildren = (children: ChildNode[]) => {
+    // When using only the keyboard to move up/down folder children and you're
+    // fast enough, the 3-dot menu triggering the node actions dropdown loses
+    // focus despite explicitly focusing it. It turns out the problem is the
+    // view transition. Once it's removed it from the code, the focus is no longer
+    // lost after a couple times moving up or down the same element. Note that
+    // disabling the css animation without removing document.startViewTransition
+    // does not solve the issue. So, this function ensures anyone that prefers
+    // reduced motion doesn't run into the issue at the very least
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReducedMotion) {
+      mutateNode((resp) => ({ ...resp, children }));
+    } else {
+      document.startViewTransition(() => {
+        mutateNode((resp) => ({ ...resp, children }));
+      });
+    }
+  };
   let elt!: HTMLDivElement;
   let cleanup: CleanupFn;
   // move the node locally, then save in db but revert if there was an error
@@ -25,18 +45,13 @@ export default function FolderChildren(props: FolderChildrenProps) {
     targetId: number,
     placement: RelativePlacement,
   ) => {
-    document.startViewTransition(() => {
-      mutateNode((resp) => ({ ...resp, children: newNodes }));
-    });
+    mutateChildren(newNodes);
 
     const payload = { nodeId, targetId, placement };
-
     const resp = await sendMessage("nodes/move-relative-to-target", payload);
     if (!resp.success) {
       notifyError(resp.errorMsg);
-      document.startViewTransition(() => {
-        mutateNode((resp) => ({ ...resp, children: oldNodes }));
-      });
+      mutateChildren(oldNodes);
     }
   };
   onMount(() => {
@@ -56,25 +71,19 @@ export default function FolderChildren(props: FolderChildrenProps) {
           const targetNodeId = dropTarget.data.nodeId as number;
           const instruction = extractInstruction(dropTarget.data);
           if (instruction?.operation === "combine") {
-            document.startViewTransition(() => {
-              mutateNode((resp) => {
-                const children = moveNodeIntoFolder(
-                  resp.children,
-                  draggedNodeId,
-                  targetNodeId,
-                );
-                return { ...resp, children };
-              });
-            });
+            const children = moveNodeIntoFolder(
+              props.childNodes,
+              draggedNodeId,
+              targetNodeId,
+            );
+            mutateChildren(children);
 
             const payload = { nodeId: draggedNodeId, folderId: targetNodeId };
             sendMessage("nodes/move-into-sibling-folder", payload).then(
               (resp) => {
                 if (!resp.success) {
                   notifyError(resp.errorMsg);
-                  document.startViewTransition(() => {
-                    mutateNode((resp) => ({ ...resp, children: oldChildren }));
-                  });
+                  mutateChildren(oldChildren);
                 }
               },
             );
