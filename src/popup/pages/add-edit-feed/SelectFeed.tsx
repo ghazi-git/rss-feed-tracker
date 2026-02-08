@@ -110,7 +110,12 @@ export default function SelectFeed() {
                       class={styles.title}
                       text={decodeURI(feed.url)}
                     />
-                    <Show when={!feed.subscribed} fallback="Subscribed">
+                    <Show
+                      when={!feed.subscribed}
+                      fallback={
+                        <span class={styles.subscribed}>Subscribed</span>
+                      }
+                    >
                       <UnstyledButton
                         class={styles.preview}
                         onClick={() => goToAddFeedPage(feed.url)}

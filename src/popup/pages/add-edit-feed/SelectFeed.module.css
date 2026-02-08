@@ -96,6 +96,12 @@ button.preview {
     flex-shrink: 0;
     margin-inline-start: auto;
   }
+
+  .subscribed {
+    margin-inline-start: auto;
+    color: var(--text-2);
+    font-weight: var(--font-weight-7);
+  }
 }
 
 .metadata {
