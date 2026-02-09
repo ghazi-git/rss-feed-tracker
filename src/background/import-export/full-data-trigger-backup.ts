@@ -5,7 +5,7 @@ import { PreferencesData, sendMessage } from "@/messaging-wrapper";
 export async function triggerBackup(params: PreferencesData) {
   // "await using" not used to avoid cancelling the download triggered
   // in the offscreen doc when chrome.offscreen.closeDocument is called
-  await setupOffscreenDocument();
+  await setupOffscreenDocument("generate data backup");
 
   const response = await sendMessage("full-data/backup", params);
   if (!response.success) {

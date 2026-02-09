@@ -1,7 +1,7 @@
 // code from https://developer.chrome.com/docs/extensions/reference/api/offscreen#maintain_the_lifecycle_of_an_offscreen_document
 // with added explicit resource mgt (using)
 let creating: Promise<void> | null = null; // A global promise to avoid concurrency issues
-export async function setupOffscreenDocument(): Promise<{
+export async function setupOffscreenDocument(justification: string): Promise<{
   status: "created" | "already-created";
   [Symbol.asyncDispose](): Promise<void>;
 }> {
@@ -29,8 +29,8 @@ export async function setupOffscreenDocument(): Promise<{
   } else {
     creating = chrome.offscreen.createDocument({
       url: path,
-      reasons: ["BLOBS"],
-      justification: "file export",
+      reasons: ["BLOBS", "WORKERS"],
+      justification,
     });
     await creating;
     creating = null;

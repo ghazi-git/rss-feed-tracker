@@ -5,7 +5,7 @@ import { sendMessage } from "@/messaging-wrapper";
 export async function triggerOPMLExport(folder: number) {
   // "await using" not used to avoid cancelling the download triggered
   // in the offscreen doc when chrome.offscreen.closeDocument is called
-  await setupOffscreenDocument();
+  await setupOffscreenDocument("export OPML file");
 
   const response = await sendMessage("opml/export", { folder });
   if (!response.success) {
