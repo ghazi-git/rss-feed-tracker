@@ -18,6 +18,7 @@ import Node from "@/popup/pages/node";
 import NodePosts from "@/popup/pages/node-posts";
 import NotFound from "@/popup/pages/NotFound";
 import Preferences from "@/popup/pages/preferences";
+import SearchPage from "@/popup/pages/search";
 import {
   getLastVisitedPage,
   saveLastVisitedPage,
@@ -60,6 +61,7 @@ function App() {
           <Route path="/library" component={Library} />
           <Route path="/library/nodes/:id" component={Node} />
           <Route path="/library/nodes/:id/posts" component={NodePosts} />
+          <Route path="/library/nodes/:id/search" component={SearchPage} />
           <Route path="/library/no-feeds-yet" component={NoFeedsYet} />
           <Route path="/library/feeds/select" component={SelectFeed} />
           <Route path="/library/feeds/add" component={AddFeed} />

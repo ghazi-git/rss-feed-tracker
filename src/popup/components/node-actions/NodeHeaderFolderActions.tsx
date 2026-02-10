@@ -8,12 +8,14 @@ import EditFolderMenuItem from "@/popup/components/node-actions/EditFolderMenuIt
 import ExportFeedsMenuItem from "@/popup/components/node-actions/ExportFeedsMenuItem";
 import ImportFeedsMenuItem from "@/popup/components/node-actions/ImportFeedsMenuItem";
 import ReloadNodeMenuItem from "@/popup/components/node-actions/ReloadNodeMenuItem";
+import SearchMenuItem from "@/popup/components/node-actions/SearchMenuItem";
 
 export default function NodeHeaderFolderActions(props: FolderActionsProps) {
   return (
     <>
       <EditFolderMenuItem folderId={props.folderId} />
       <ReloadNodeMenuItem nodeId={props.folderId} />
+      <SearchMenuItem nodeId={props.folderId} />
       <Separator />
       <AddFeedMenuItem folderId={props.folderId} />
       <AddFolderMenuItem folderId={props.folderId} />
