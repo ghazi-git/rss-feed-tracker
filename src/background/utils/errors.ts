@@ -25,6 +25,8 @@ export class TriggerRestoreError extends ServiceWorkerError {}
 
 export class FindFeedError extends ServiceWorkerError {}
 
+export class TriggerRebuildSearchIndex extends ServiceWorkerError {}
+
 export function getErrorMsg(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,

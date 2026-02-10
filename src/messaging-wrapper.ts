@@ -74,6 +74,8 @@ interface MessageMap {
   "full-data/backup"(data: PreferencesData): void;
   "full-data/restore-trigger"(data: { fileURL: string }): PreferencesData;
   "full-data/restore"(data: { fileURL: string }): PreferencesData;
+  "search-index/trigger-rebuild"(): void;
+  "search-index/rebuild"(): void;
 }
 
 export interface FeedPreviewResponse {

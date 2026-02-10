@@ -36,6 +36,9 @@ export default function ManageExtensionData() {
   const { mutation: restoreMutation, sendMsg: restoreData } = createMutation(
     "full-data/restore-trigger",
   );
+  const { mutation: searchMutation, sendMsg: rebuildIndex } = createMutation(
+    "search-index/trigger-rebuild",
+  );
 
   return (
     <fieldset class={styles["manage-data"]}>
@@ -67,7 +70,18 @@ export default function ManageExtensionData() {
       >
         Reset Settings
       </ManageDataButton>
-
+      <ManageDataButton
+        class={styles.search}
+        loading={searchMutation.isLoading}
+        onClick={async () => {
+          await rebuildIndex(undefined);
+          if (searchMutation.isError) {
+            notifyError(searchMutation.errorMsg);
+          }
+        }}
+      >
+        Rebuild Search Index
+      </ManageDataButton>
       <ManageDataButton
         loading={exportMutation.isLoading}
         onClick={async () => {

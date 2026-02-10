@@ -3,6 +3,7 @@ import { backupExtension } from "@/offscreen/backup-restore/full-data-backup";
 import { restoreExtension } from "@/offscreen/backup-restore/full-data-restore";
 import { getErrorMsg } from "@/offscreen/errors";
 import { exportOPML } from "@/offscreen/opml-export";
+import { rebuildSearchIndex } from "@/offscreen/search";
 
 onMessage("opml/export", (payload, sender, sendResponse) => {
   exportOPML(payload.folder)
@@ -40,6 +41,19 @@ onMessage("full-data/restore", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while restoring the extension data from the backup.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+onMessage("search-index/rebuild", (payload, sender, sendResponse) => {
+  rebuildSearchIndex()
+    .then(() => {
+      sendResponse({ success: true, data: undefined, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while rebuilding the search index.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
