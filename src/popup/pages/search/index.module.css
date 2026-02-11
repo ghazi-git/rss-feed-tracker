@@ -1,0 +1,34 @@
+.search > :first-child {
+  margin-block-end: var(--size-1);
+}
+
+.filters {
+  border-radius: var(--radius-2);
+
+  &:has([popover]:popover-open) [popovertarget] {
+    background-color: var(--surface-3);
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .filters-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--size-3);
+
+    & > * {
+      flex: 1;
+    }
+  }
+
+  .apply-filters {
+    background-color: var(--surface-2);
+    color: var(--text-1);
+    padding-block: var(--size-1);
+  }
+}

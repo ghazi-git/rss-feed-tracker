@@ -1,0 +1,11 @@
+.popover {
+  inline-size: calc(100% - 2 * var(--size-3));
+  position: absolute;
+  inset-block-start: calc(anchor(end) + var(--size-1));
+  /* stylelint-disable-next-line declaration-property-value-no-unknown */
+  inset-inline-start: anchor(start);
+  border-radius: var(--radius-2);
+  padding: var(--size-2);
+  background-color: var(--surface-3);
+  box-shadow: var(--shadow-4);
+}

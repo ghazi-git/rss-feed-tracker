@@ -1,0 +1,12 @@
+.trigger {
+  padding-block: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  svg {
+    inline-size: var(--size-3);
+    block-size: auto;
+    margin-block-start: 2px;
+  }
+}

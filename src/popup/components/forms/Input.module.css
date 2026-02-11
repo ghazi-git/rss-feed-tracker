@@ -4,6 +4,7 @@
 
   &::placeholder {
     font-size: var(--font-size-1);
+    color: var(--text-2);
   }
 }
 
