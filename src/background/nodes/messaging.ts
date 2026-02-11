@@ -1,5 +1,6 @@
 import { getNodeForNodePage } from "@/background/nodes/nodes-get-for-node-page";
 import { getNodeForNodePostsPage } from "@/background/nodes/nodes-get-for-node-posts-page";
+import { getNodeOptions } from "@/background/nodes/nodes-get-options";
 import { moveIntoSiblingFolder } from "@/background/nodes/nodes-move-into-sibling-folder";
 import { moveRelativeToTarget } from "@/background/nodes/nodes-move-relative-to-target";
 import { reloadNode } from "@/background/nodes/nodes-reload";
@@ -28,6 +29,20 @@ onMessage("nodes/get-for-node-posts-page", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while getting the feed/folder data.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("nodes/get-options", (payload, sender, sendResponse) => {
+  getNodeOptions()
+    .then((options) => {
+      sendResponse({ success: true, data: options, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while getting the feed/folder options.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });

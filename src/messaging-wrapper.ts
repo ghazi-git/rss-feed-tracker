@@ -50,6 +50,7 @@ interface MessageMap {
   "posts/mark-all-posts-as-read"(data: MarkAllPostsAsReadParams): void;
   "nodes/get-for-node-page"(data: { id: number }): NodeResponse;
   "nodes/get-for-node-posts-page"(data: { id: number }): NodePostsResponse;
+  "nodes/get-options"(): NodeOptionsResponse;
   "nodes/reload"(data: { id: number }): NodeReloadResponse;
   "nodes/move-into-sibling-folder"(data: {
     nodeId: number;
@@ -152,6 +153,7 @@ export type NodePostsResponse = TreeNode & {
   markAsReadUntil: number;
   hasPosts: boolean;
 };
+export type NodeOptionsResponse = { label: string; value: number }[];
 export interface NodeReloadResponse {
   newPostsCount: number;
   unreadCount: number;

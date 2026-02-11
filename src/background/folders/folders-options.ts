@@ -19,11 +19,7 @@ export async function getFolderOptionsAsTree(
   }
 
   const orderedFolders = getNodeTree(rootFolder, folders);
-  return orderedFolders.map(([n, level]) => ({
-    value: n.id,
-    // \xa0 is a non-breaking space used to illustrate the tree hierarchy
-    label: `${"\xa0".repeat(level * 4)}${n.name}`,
-  }));
+  return getOptions(orderedFolders);
 }
 
 /**
@@ -43,6 +39,14 @@ export function getNodeTree(rootFolder: Folder, nodes: TreeNode[]) {
     stack.unshift(...children.map((f) => [f, level + 1] as NodeItem));
   }
   return result;
+}
+
+export function getOptions(nodes: NodeItem[]) {
+  return nodes.map(([n, level]) => ({
+    value: n.id,
+    // \xa0 is a non-breaking space used to illustrate the tree hierarchy
+    label: `${"\xa0".repeat(level * 4)}${n.name}`,
+  }));
 }
 
 type NodeItem = [TreeNode, number];
