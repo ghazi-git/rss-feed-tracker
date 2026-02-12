@@ -1,20 +1,16 @@
-import { batch, createContext, FlowProps, useContext } from "solid-js";
+import { batch, createContext, useContext } from "solid-js";
 
 import { sendMessage } from "@/messaging-wrapper";
 import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
 
-const ToggleUnreadContext = createContext<ToggleUnreadContextType>();
+export const ToggleUnreadContext = createContext<ToggleUnreadContextType>();
 
-export function ToggleUnreadContextProvider(props: FlowProps) {
+export function useToggleUnread() {
   const { setPosts } = usePostsContext();
   const { mutateUnreadCount } = useUnreadCountContext();
-  const toggleUnread = async (
-    feedId: number,
-    guid: string,
-    unread: boolean,
-  ) => {
+  return async (feedId: number, guid: string, unread: boolean) => {
     const resp = await sendMessage("posts/toggle-unread", {
       feedId,
       guid,
@@ -37,12 +33,6 @@ export function ToggleUnreadContextProvider(props: FlowProps) {
       notifyError(resp.errorMsg);
     }
   };
-
-  return (
-    <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-      {props.children}
-    </ToggleUnreadContext.Provider>
-  );
 }
 
 export function useToggleUnreadContext() {

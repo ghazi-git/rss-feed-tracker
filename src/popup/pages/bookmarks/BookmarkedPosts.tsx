@@ -8,7 +8,10 @@ import NoPosts from "@/popup/components/NoPosts";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
-import { ToggleUnreadContextProvider } from "@/popup/pages/node-posts/toggle-unread-context";
+import {
+  ToggleUnreadContext,
+  useToggleUnread,
+} from "@/popup/pages/node-posts/toggle-unread-context";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
 import { PAGE_SIZE } from "@/utils/settings";
@@ -18,6 +21,7 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
   const { query, posts, setPosts, fetchPosts } = usePostsContext();
   const postsCount = () => posts().length;
 
+  const toggleUnread = useToggleUnread();
   const toggleBookmarked = async (
     feedId: number,
     guid: string,
@@ -71,9 +75,9 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
       <Match when={postsCount() > 0}>
         <ErrorAlert errorMsg={query.errorMsg} />
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
-          <ToggleUnreadContextProvider>
+          <ToggleUnreadContext.Provider value={{ toggleUnread }}>
             <Posts posts={posts()} isFolder={true} />
-          </ToggleUnreadContextProvider>
+          </ToggleUnreadContext.Provider>
         </ToggleBookmarkedContext.Provider>
         <Show when={query.data.nextPageCursor}>
           <LoadMorePosts
