@@ -77,6 +77,10 @@ interface MessageMap {
   "full-data/restore"(data: { fileURL: string }): PreferencesData;
   "search-index/trigger-rebuild"(): void;
   "search-index/rebuild"(): void;
+  "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
+  "search-index/query"(
+    data: SearchQueryParams & { timeField: OrderPostsBy },
+  ): SearchResult[];
 }
 
 export interface FeedPreviewResponse {
@@ -191,6 +195,16 @@ export interface PreferencesData {
   clickPostToToggleUnread: boolean;
   orderPostsBy: OrderPostsBy;
   groupFolderPosts: boolean;
+}
+export interface SearchQueryParams {
+  query: string;
+  nodeId: number;
+  bookmarked: 0 | 1 | null;
+  startDate: number | null;
+  endDate: number | null;
+}
+export interface SearchResult extends FeedPost {
+  relevanceScore: number;
 }
 
 export type MessageType = keyof MessageMap;

@@ -1,5 +1,11 @@
-.search > :first-child {
-  margin-block-end: var(--size-1);
+.search {
+  & > :first-child {
+    margin-block-end: var(--size-1);
+  }
+
+  input {
+    outline-offset: 1px;
+  }
 }
 
 .filters {

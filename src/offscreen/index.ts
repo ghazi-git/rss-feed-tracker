@@ -3,6 +3,7 @@ import { backupExtension } from "@/offscreen/backup-restore/full-data-backup";
 import { restoreExtension } from "@/offscreen/backup-restore/full-data-restore";
 import { getErrorMsg } from "@/offscreen/errors";
 import { exportOPML } from "@/offscreen/opml-export";
+import { querySearchIndex } from "@/offscreen/search-index/search-index-query";
 import { rebuildSearchIndex } from "@/offscreen/search-index/search-index-rebuild";
 
 onMessage("opml/export", (payload, sender, sendResponse) => {
@@ -60,3 +61,20 @@ onMessage("search-index/rebuild", (payload, sender, sendResponse) => {
     });
   return true;
 });
+
+onMessage(
+  "search-index/query",
+  ({ timeField, ...params }, sender, sendResponse) => {
+    querySearchIndex(params, timeField)
+      .then((results) => {
+        sendResponse({ success: true, data: results, errorMsg: null });
+      })
+      .catch((err) => {
+        const defaultMsg =
+          "An unexpected error occurred while performing the search.";
+        const errorMsg = getErrorMsg(err, defaultMsg);
+        sendResponse({ success: false, data: null, errorMsg });
+      });
+    return true;
+  },
+);

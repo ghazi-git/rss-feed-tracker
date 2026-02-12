@@ -1,8 +1,8 @@
 import { useParams, useSearchParams } from "@solidjs/router";
-import { createResource, createSignal, onMount } from "solid-js";
+import { createResource, createSignal, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { sendMessage } from "@/messaging-wrapper";
+import { SearchQueryParams, sendMessage } from "@/messaging-wrapper";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
 import ErrorAlert from "@/popup/components/ErrorAlert";
@@ -11,6 +11,7 @@ import SelectField from "@/popup/components/forms/Select";
 import PageHeader from "@/popup/components/page-header/PageHeader";
 import FiltersButton from "@/popup/pages/search/FiltersButton";
 import FiltersPopover from "@/popup/pages/search/FiltersPopover";
+import SearchResults from "@/popup/pages/search/SearchResults";
 import SortButton from "@/popup/pages/search/SortButton";
 import { createSortSignal } from "@/popup/utils/search";
 
@@ -23,13 +24,7 @@ export default function SearchPage() {
   }>();
   const params = useParams();
   const nodeId = () => parseInt(params.id);
-  const [formdata, setFormdata] = createStore<{
-    query: string;
-    nodeId: number;
-    bookmarked: 0 | 1 | null;
-    startDate: number | null;
-    endDate: number | null;
-  }>({
+  const [formdata, setFormdata] = createStore<SearchQueryParams>({
     query: "",
     nodeId: nodeId(),
     bookmarked: null,
@@ -52,6 +47,15 @@ export default function SearchPage() {
   const [sort, setNextSort] = createSortSignal();
   let searchRef!: HTMLInputElement;
   onMount(() => searchRef.focus());
+  const [searchInput, setSearchInput] = createSignal<SearchQueryParams | null>(
+    null,
+  );
+  const [search, { mutate }] = createResource(searchInput, async (input) => {
+    const resp = await sendMessage("search-index/trigger-query", input);
+    if (!resp.success) throw new Error(resp.errorMsg);
+
+    return resp.data;
+  });
 
   return (
     <>
@@ -90,7 +94,7 @@ export default function SearchPage() {
             formdata.endDate !== null
               ? formdata.endDate + 24 * 60 * 60 * 1000 - 1
               : null;
-          console.log({ ...formdata, before });
+          setSearchInput({ ...formdata, before });
         }}
       >
         <ErrorAlert errorMsg={error()} />
@@ -101,6 +105,7 @@ export default function SearchPage() {
             name="query"
             placeholder="Search for posts"
             aria-label="Search for posts"
+            dir="auto"
             value={formdata.query}
             onInput={(e) => setFormdata("query", e.target.value)}
           />
@@ -166,6 +171,11 @@ export default function SearchPage() {
           </FiltersPopover>
         </div>
       </form>
+      <Show when={search.latest}>
+        {(posts) => (
+          <SearchResults posts={posts()} mutateSearchResults={mutate} />
+        )}
+      </Show>
     </>
   );
 }
