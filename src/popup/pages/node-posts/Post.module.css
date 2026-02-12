@@ -19,4 +19,5 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
   margin-block-end: var(--size-1);
+  overflow-wrap: break-word;
 }
