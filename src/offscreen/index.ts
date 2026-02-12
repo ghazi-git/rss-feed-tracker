@@ -3,7 +3,7 @@ import { backupExtension } from "@/offscreen/backup-restore/full-data-backup";
 import { restoreExtension } from "@/offscreen/backup-restore/full-data-restore";
 import { getErrorMsg } from "@/offscreen/errors";
 import { exportOPML } from "@/offscreen/opml-export";
-import { rebuildSearchIndex } from "@/offscreen/search";
+import { rebuildSearchIndex } from "@/offscreen/search-index/search-index-rebuild";
 
 onMessage("opml/export", (payload, sender, sendResponse) => {
   exportOPML(payload.folder)
@@ -46,6 +46,7 @@ onMessage("full-data/restore", (payload, sender, sendResponse) => {
     });
   return true;
 });
+
 onMessage("search-index/rebuild", (payload, sender, sendResponse) => {
   rebuildSearchIndex()
     .then(() => {
