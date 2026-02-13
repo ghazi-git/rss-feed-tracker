@@ -1,4 +1,4 @@
-import { For, Setter, Show } from "solid-js";
+import { For, Setter } from "solid-js";
 
 import { SearchResult, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
@@ -65,28 +65,16 @@ export default function SearchResults(props: SearchResultsProps) {
   };
 
   return (
-    <Show
-      when={props.posts.length}
-      fallback={
-        <div class={styles["no-results"]}>
-          No posts found matching the search criteria.
-        </div>
-      }
-    >
-      <h1 class={styles["search-results-title"]}>
-        Found {props.posts.length} post{props.posts.length === 1 ? "" : "s"}:
-      </h1>
-      <PostMenuProvider>
-        <PostContextMenu />
-        <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
-          <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-            <div class={styles["search-results"]}>
-              <For each={props.posts}>{(post) => <Post post={post} />}</For>
-            </div>
-          </ToggleUnreadContext.Provider>
-        </ToggleBookmarkedContext.Provider>
-      </PostMenuProvider>
-    </Show>
+    <PostMenuProvider>
+      <PostContextMenu />
+      <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
+        <ToggleUnreadContext.Provider value={{ toggleUnread }}>
+          <div class={styles["search-results"]}>
+            <For each={props.posts}>{(post) => <Post post={post} />}</For>
+          </div>
+        </ToggleUnreadContext.Provider>
+      </ToggleBookmarkedContext.Provider>
+    </PostMenuProvider>
   );
 }
 

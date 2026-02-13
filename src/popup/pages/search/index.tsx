@@ -108,6 +108,22 @@ export default function SearchPage() {
       </PageHeaderWrapper>
       <div class={styles.filters}>
         <div class={styles.buttons}>
+          <Show when={search.latest}>
+            {(posts) => (
+              <Show
+                when={posts().length}
+                fallback={
+                  <div class={styles["search-results-text"]}>
+                    No posts found
+                  </div>
+                }
+              >
+                <div class={styles["search-results-text"]}>
+                  Found {posts().length} post{posts().length === 1 ? "" : "s"}
+                </div>
+              </Show>
+            )}
+          </Show>
           <SortButton sortBy={sort()} onClick={() => setNextSort()} />
           <FiltersButton
             hasFilters={hasFilters()}

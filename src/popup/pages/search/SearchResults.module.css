@@ -1,17 +1,7 @@
-.search-results-title {
-  margin-block: var(--size-2) var(--size-1);
-  font-size: var(--font-size-2);
-}
-
 .search-results {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
   gap: var(--size-2);
-}
-
-.no-results {
-  color: var(--text-2);
-  margin-block-start: var(--size-2);
 }
