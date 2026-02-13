@@ -1,17 +1,9 @@
 import { createSignal } from "solid-js";
 
-export function validateSearchQuery(
-  query: string,
+export function validateTimeFilters(
   startDate: number | null,
   endDate: number | null,
 ): SearchValidationResult {
-  if (query.trim().length < 2) {
-    return {
-      isValid: false,
-      error: "Please enter at least 2 characters as a search query",
-    };
-  }
-
   if (startDate !== null && startDate < 0) {
     return {
       isValid: false,
@@ -32,6 +24,15 @@ export function validateSearchQuery(
   }
 
   return { isValid: true, error: null };
+}
+
+export function debounce(callback: () => void, delay = 200) {
+  let timer: number;
+
+  return () => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(callback, delay);
+  };
 }
 
 export function createSortSignal() {

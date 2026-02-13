@@ -3,22 +3,24 @@ import { createResource, createSignal, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { SearchQueryParams, sendMessage } from "@/messaging-wrapper";
-import ActionButton from "@/popup/components/buttons/ActionButton";
-import ButtonContainer from "@/popup/components/buttons/ButtonContainer";
-import ErrorAlert from "@/popup/components/ErrorAlert";
 import InputField from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
-import PageHeader from "@/popup/components/page-header/PageHeader";
+import BackLink from "@/popup/components/page-header/BackLink";
+import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import FiltersButton from "@/popup/pages/search/FiltersButton";
 import FiltersPopover from "@/popup/pages/search/FiltersPopover";
 import SearchResults from "@/popup/pages/search/SearchResults";
 import SortButton from "@/popup/pages/search/SortButton";
-import { createSortSignal, validateSearchQuery } from "@/popup/utils/search";
+import { notifyError } from "@/popup/utils/notifications";
+import {
+  createSortSignal,
+  debounce,
+  validateTimeFilters,
+} from "@/popup/utils/search";
 
 import styles from "./index.module.css";
 
 export default function SearchPage() {
-  const [error, setError] = createSignal("");
   const [searchParams] = useSearchParams<{
     previousUrl?: string;
   }>();
@@ -50,42 +52,44 @@ export default function SearchPage() {
   const [searchInput, setSearchInput] = createSignal<SearchQueryParams | null>(
     null,
   );
-  const [search, { mutate }] = createResource(searchInput, async (input) => {
-    const resp = await sendMessage("search-index/trigger-query", input);
-    if (!resp.success) throw new Error(resp.errorMsg);
+  const [search, { mutate }] = createResource(
+    () => {
+      const input = searchInput();
+      if (input === null || !input.query.trim()) return null;
 
-    return resp.data;
-  });
+      return input;
+    },
+    async (input) => {
+      const resp = await sendMessage("search-index/trigger-query", input);
+      if (!resp.success) throw new Error(resp.errorMsg);
+
+      return resp.data;
+    },
+  );
+
+  const searchPosts = () => {
+    const { isValid, error } = validateTimeFilters(
+      formdata.startDate,
+      formdata.endDate,
+    );
+    if (!isValid) {
+      notifyError(error, { duration: 5000 });
+      return;
+    }
+
+    // ensure posts on the chosen day will be included in the search results
+    const before =
+      formdata.endDate !== null
+        ? formdata.endDate + 24 * 60 * 60 * 1000 - 1
+        : null;
+    setSearchInput({ ...formdata, before });
+  };
+  const debouncedSearch = debounce(searchPosts, 200);
 
   return (
     <>
-      <PageHeader
-        text="Search"
-        previousUrl={searchParams.previousUrl ?? "/library"}
-      />
-      <form
-        onSubmit={async (event) => {
-          event.preventDefault();
-          setError("");
-          const { isValid, error } = validateSearchQuery(
-            formdata.query,
-            formdata.startDate,
-            formdata.endDate,
-          );
-          if (!isValid) {
-            setError(error);
-            return;
-          }
-
-          // ensure posts on the chosen day will be included in the search results
-          const before =
-            formdata.endDate !== null
-              ? formdata.endDate + 24 * 60 * 60 * 1000 - 1
-              : null;
-          setSearchInput({ ...formdata, before });
-        }}
-      >
-        <ErrorAlert errorMsg={error()} />
+      <PageHeaderWrapper sticky={true}>
+        <BackLink url={searchParams.previousUrl ?? "/library"} />
         <div class={styles.search}>
           <InputField
             ref={searchRef}
@@ -95,70 +99,72 @@ export default function SearchPage() {
             aria-label="Search for posts"
             dir="auto"
             value={formdata.query}
-            onInput={(e) => setFormdata("query", e.target.value)}
+            onInput={(e) => {
+              setFormdata("query", e.target.value);
+              debouncedSearch();
+            }}
           />
         </div>
-        <div class={styles.filters}>
-          <div class={styles.buttons}>
-            <FiltersButton
-              hasFilters={hasFilters()}
-              popovertarget="search-filters"
-            />
-            <SortButton sortBy={sort()} onClick={() => setNextSort()} />
-          </div>
-          <FiltersPopover id="search-filters">
-            <div class={styles["filters-row"]}>
-              <SelectField
-                name="node"
-                label="Search inside"
-                options={nodeOptions.latest}
-                value={formdata.nodeId}
-                onChange={(e) =>
-                  setFormdata("nodeId", parseInt(e.target.value))
-                }
-              />
-              <SelectField
-                name="bookmarked"
-                label="Bookmarked"
-                options={BOOKMARKED_OPTIONS}
-                value={formdata.bookmarked ?? ""}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  const v = isNaN(value) ? null : value ? 1 : 0;
-                  setFormdata("bookmarked", v);
-                }}
-              />
-            </div>
-            <div class={styles["filters-row"]}>
-              <InputField
-                type="date"
-                name="startDate"
-                label="Start Date"
-                value={convertToDateString(formdata.startDate)}
-                onChange={(e) => {
-                  const val = e.target.valueAsNumber;
-                  setFormdata("startDate", isNaN(val) ? null : val);
-                }}
-              />
-              <InputField
-                type="date"
-                name="endDate"
-                label="End Date"
-                value={convertToDateString(formdata.endDate)}
-                onChange={(e) => {
-                  const val = e.target.valueAsNumber;
-                  setFormdata("endDate", isNaN(val) ? null : val);
-                }}
-              />
-            </div>
-            <ButtonContainer>
-              <ActionButton type="submit" class={styles["apply-filters"]}>
-                Apply
-              </ActionButton>
-            </ButtonContainer>
-          </FiltersPopover>
+      </PageHeaderWrapper>
+      <div class={styles.filters}>
+        <div class={styles.buttons}>
+          <SortButton sortBy={sort()} onClick={() => setNextSort()} />
+          <FiltersButton
+            hasFilters={hasFilters()}
+            popovertarget="search-filters"
+          />
         </div>
-      </form>
+        <FiltersPopover id="search-filters">
+          <div class={styles["filters-row"]}>
+            <SelectField
+              name="node"
+              label="Search inside"
+              options={nodeOptions.latest}
+              value={formdata.nodeId}
+              onChange={(e) => {
+                setFormdata("nodeId", parseInt(e.target.value));
+                searchPosts();
+              }}
+            />
+            <SelectField
+              name="bookmarked"
+              label="Bookmarked"
+              options={BOOKMARKED_OPTIONS}
+              value={formdata.bookmarked ?? ""}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                const v = isNaN(value) ? null : value ? 1 : 0;
+                setFormdata("bookmarked", v);
+                searchPosts();
+              }}
+            />
+          </div>
+          <div class={styles["filters-row"]}>
+            <InputField
+              type="date"
+              name="startDate"
+              label="Start Date"
+              value={convertToDateString(formdata.startDate)}
+              onChange={(e) => {
+                const val = e.target.valueAsNumber;
+                setFormdata("startDate", isNaN(val) ? null : val);
+                searchPosts();
+              }}
+            />
+            <InputField
+              type="date"
+              name="endDate"
+              label="End Date"
+              value={convertToDateString(formdata.endDate)}
+              onChange={(e) => {
+                const val = e.target.valueAsNumber;
+                setFormdata("endDate", isNaN(val) ? null : val);
+                searchPosts();
+              }}
+            />
+          </div>
+        </FiltersPopover>
+      </div>
       <Show when={search.latest}>
         {(posts) => (
           <SearchResults posts={posts()} mutateSearchResults={mutate} />

@@ -1,6 +1,10 @@
 .search {
+  flex-grow: 1;
+  align-self: stretch;
+
   & > :first-child {
-    margin-block-end: var(--size-1);
+    block-size: 100%;
+    margin-block-end: 0;
   }
 
   input {
@@ -17,8 +21,9 @@
 
   .buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
+    gap: var(--size-1);
   }
 
   .filters-row {
@@ -30,11 +35,5 @@
     & > * {
       flex: 1;
     }
-  }
-
-  .apply-filters {
-    background-color: var(--surface-2);
-    color: var(--text-1);
-    padding-block: var(--size-1);
   }
 }
