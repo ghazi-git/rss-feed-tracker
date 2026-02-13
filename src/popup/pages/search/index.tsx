@@ -17,6 +17,7 @@ import {
   debounce,
   validateTimeFilters,
 } from "@/popup/utils/search";
+import { SEARCH_RESULTS_LIMIT } from "@/utils/settings";
 
 import styles from "./index.module.css";
 
@@ -183,11 +184,21 @@ export default function SearchPage() {
       </div>
       <Show when={search.latest}>
         {(posts) => (
-          <SearchResults
-            posts={posts()}
-            sortBy={sort()}
-            mutateSearchResults={mutate}
-          />
+          <>
+            <SearchResults
+              posts={posts()}
+              sortBy={sort()}
+              mutateSearchResults={mutate}
+            />
+            <Show
+              when={!hasFilters() && posts().length === SEARCH_RESULTS_LIMIT}
+            >
+              <div class={styles["results-limit-reached"]}>
+                Filter the search results if you didn't find what you're looking
+                for
+              </div>
+            </Show>
+          </>
         )}
       </Show>
     </>

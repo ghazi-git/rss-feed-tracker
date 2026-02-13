@@ -43,3 +43,12 @@
     }
   }
 }
+
+.results-limit-reached {
+  text-align: center;
+  font-size: var(--font-size-1);
+  inline-size: 100%;
+  background-color: var(--surface-2);
+  margin-block-start: var(--size-2);
+  padding: var(--size-1);
+}
