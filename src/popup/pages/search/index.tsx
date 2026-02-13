@@ -1,5 +1,11 @@
 import { useParams, useSearchParams } from "@solidjs/router";
-import { createResource, createSignal, onMount, Show } from "solid-js";
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  onMount,
+  Show,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { SearchQueryParams, sendMessage } from "@/messaging-wrapper";
@@ -22,19 +28,8 @@ import { SEARCH_RESULTS_LIMIT } from "@/utils/settings";
 import styles from "./index.module.css";
 
 export default function SearchPage() {
-  const [searchParams] = useSearchParams<{
-    previousUrl?: string;
-  }>();
-  const params = useParams();
-  const nodeId = () => parseInt(params.id);
-  const [formdata, setFormdata] = createStore<SearchQueryParams>({
-    query: "",
-    nodeId: nodeId(),
-    bookmarked: null,
-    startDate: null,
-    endDate: null,
-  });
-
+  let searchRef!: HTMLInputElement;
+  onMount(() => searchRef.focus());
   const [nodeOptions] = createNodeOptionsResource();
   const hasFilters = () => {
     const hasNodeFilter =
@@ -47,11 +42,47 @@ export default function SearchPage() {
       formdata.endDate !== null
     );
   };
-  const [sort, setNextSort] = createSortSignal();
-  let searchRef!: HTMLInputElement;
-  onMount(() => searchRef.focus());
+
+  const [searchParams, setSearchParams] = useSearchParams<{
+    previousUrl?: string;
+    query?: string;
+    nodeId?: string;
+    bookmarked?: string;
+    startDate?: string;
+    endDate?: string;
+    sortBy?: string;
+  }>();
+  createEffect(() => {
+    setSearchParams(
+      {
+        query: formdata.query,
+        nodeId: formdata.nodeId,
+        bookmarked: formdata.bookmarked,
+        startDate: formdata.startDate,
+        endDate: formdata.endDate,
+        sortBy: sort(),
+      },
+      { replace: true },
+    );
+  });
+  const params = useParams();
+  const nodeId = () => parseInt(params.id);
+  const [formdata, setFormdata] = createStore<SearchQueryParams>({
+    query: searchParams.query || "",
+    nodeId: getIntegerValue(searchParams.nodeId) ?? nodeId(),
+    bookmarked: getInitialBookmarked(searchParams.bookmarked),
+    startDate: getIntegerValue(searchParams.startDate),
+    endDate: getIntegerValue(searchParams.endDate),
+  });
+  const [sort, setNextSort] = createSortSignal(searchParams.sortBy);
   const [searchInput, setSearchInput] = createSignal<SearchQueryParams | null>(
-    null,
+    searchParams.query ||
+      searchParams.nodeId ||
+      searchParams.bookmarked ||
+      searchParams.startDate ||
+      searchParams.endDate
+      ? { ...formdata }
+      : null,
   );
   const [search, { mutate }] = createResource(
     () => {
@@ -232,3 +263,12 @@ const BOOKMARKED_OPTIONS = [
   { label: "Yes", value: 1 },
   { label: "No", value: 0 },
 ];
+
+function getInitialBookmarked(bookmarked?: string) {
+  return bookmarked === "1" ? 1 : bookmarked === "0" ? 0 : null;
+}
+
+function getIntegerValue(date?: string) {
+  const value = parseInt(date ?? "");
+  return !isNaN(value) && value >= 0 ? value : null;
+}

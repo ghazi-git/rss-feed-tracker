@@ -35,8 +35,14 @@ export function debounce(callback: () => void, delay = 200) {
   };
 }
 
-export function createSortSignal() {
-  const [sort, setSort] = createSignal<SortBy>(SORT_OPTIONS[0]);
+export function createSortSignal(initialSort?: string) {
+  const initialValue =
+    initialSort === "relevance" ||
+    initialSort === "time_desc" ||
+    initialSort === "time_asc"
+      ? initialSort
+      : "relevance";
+  const [sort, setSort] = createSignal<SortBy>(initialValue);
 
   const setNextSortOption = () => {
     setSort((prev) => {
