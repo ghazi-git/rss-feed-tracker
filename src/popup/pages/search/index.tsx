@@ -13,7 +13,7 @@ import FiltersButton from "@/popup/pages/search/FiltersButton";
 import FiltersPopover from "@/popup/pages/search/FiltersPopover";
 import SearchResults from "@/popup/pages/search/SearchResults";
 import SortButton from "@/popup/pages/search/SortButton";
-import { createSortSignal } from "@/popup/utils/search";
+import { createSortSignal, validateSearchQuery } from "@/popup/utils/search";
 
 import styles from "./index.module.css";
 
@@ -67,25 +67,13 @@ export default function SearchPage() {
         onSubmit={async (event) => {
           event.preventDefault();
           setError("");
-          if (formdata.query.length < 2) {
-            setError("Please enter at least 2 characters as a search query");
-            return;
-          }
-
-          if (formdata.startDate !== null && formdata.startDate < 0) {
-            setError("'Start Date' must be greater than 1970-01-01");
-            return;
-          }
-          if (formdata.endDate !== null && formdata.endDate < 0) {
-            setError("'End Date' must be greater than 1970-01-01");
-            return;
-          }
-          if (
-            formdata.startDate !== null &&
-            formdata.endDate !== null &&
-            formdata.endDate < formdata.startDate
-          ) {
-            setError("'End Date' must be greater or equal to 'Start Date'");
+          const { isValid, error } = validateSearchQuery(
+            formdata.query,
+            formdata.startDate,
+            formdata.endDate,
+          );
+          if (!isValid) {
+            setError(error);
             return;
           }
 
