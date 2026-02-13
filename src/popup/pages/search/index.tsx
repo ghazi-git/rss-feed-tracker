@@ -183,7 +183,11 @@ export default function SearchPage() {
       </div>
       <Show when={search.latest}>
         {(posts) => (
-          <SearchResults posts={posts()} mutateSearchResults={mutate} />
+          <SearchResults
+            posts={posts()}
+            sortBy={sort()}
+            mutateSearchResults={mutate}
+          />
         )}
       </Show>
     </>

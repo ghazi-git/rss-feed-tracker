@@ -7,10 +7,25 @@ import Post from "@/popup/pages/node-posts/Post";
 import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
 import { ToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
+import { SortBy } from "@/popup/utils/search";
 
 import styles from "./SearchResults.module.css";
 
 export default function SearchResults(props: SearchResultsProps) {
+  const { preferences } = usePreferencesContext();
+  const sortedPosts = () => {
+    const sortField = preferences.orderPostsBy;
+    if (props.sortBy === "time_desc") {
+      return props.posts.toSorted((a, b) => b[sortField] - a[sortField]);
+    } else if (props.sortBy === "time_asc") {
+      return props.posts.toSorted((a, b) => a[sortField] - b[sortField]);
+    } else {
+      return props.posts.toSorted(
+        (a, b) => b.relevanceScore - a.relevanceScore,
+      );
+    }
+  };
   const toggleUnread = async (
     feedId: number,
     guid: string,
@@ -70,7 +85,7 @@ export default function SearchResults(props: SearchResultsProps) {
       <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
         <ToggleUnreadContext.Provider value={{ toggleUnread }}>
           <div class={styles["search-results"]}>
-            <For each={props.posts}>{(post) => <Post post={post} />}</For>
+            <For each={sortedPosts()}>{(post) => <Post post={post} />}</For>
           </div>
         </ToggleUnreadContext.Provider>
       </ToggleBookmarkedContext.Provider>
@@ -81,4 +96,5 @@ export default function SearchResults(props: SearchResultsProps) {
 interface SearchResultsProps {
   posts: SearchResult[];
   mutateSearchResults: Setter<SearchResult[] | undefined>;
+  sortBy: SortBy;
 }
