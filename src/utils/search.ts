@@ -28,7 +28,7 @@ export async function getSearchIndex() {
     include: {
       letter: true,
       number: true,
-      symbol: true,
+      symbol: false,
       punctuation: false,
       control: false,
       char: "",
@@ -38,8 +38,7 @@ export async function getSearchIndex() {
     commit: false,
     document: {
       id: "id",
-      tag: ["feedId", "bookmarked"],
-      store: ["receivedAt", "publishedAt"],
+      store: ["feedId", "bookmarked", "receivedAt", "publishedAt"],
       index: [{ field: "title", encoder: encoder, tokenize: "full" }],
     },
   });
@@ -54,10 +53,9 @@ export type IndexedPost = {
   id: string;
   // title is the only searchable property in the post
   title: string;
-  // feedId and bookmarked are tags
+  // used for filtering after the search is done
   feedId: number;
   bookmarked: 0 | 1;
-  // used for filtering after the search is done
   publishedAt: number;
   receivedAt: number;
 };

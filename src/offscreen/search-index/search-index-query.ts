@@ -1,7 +1,7 @@
 import { NotFoundError } from "@/background/utils/errors";
 import { getChildFeedIds } from "@/background/utils/nodes";
 import { addFeedData } from "@/background/utils/posts";
-import { ExtensionDB, getDBConnection, TreeNode } from "@/db-setup";
+import { ExtensionDB, getDBConnection } from "@/db-setup";
 import { SearchQueryParams, SearchResult } from "@/messaging-wrapper";
 import { OrderPostsBy } from "@/utils/extension-storage";
 import { getPostID, getSearchIndex } from "@/utils/search";
@@ -21,36 +21,47 @@ export async function querySearchIndex(
     );
   }
 
-  const feedIds = getFeedIds(node, nodes);
-  const tags = getTags(feedIds, params.bookmarked);
-  const filterByTime = params.startDate !== null || params.endDate !== null;
   const index = await getSearchIndex();
 
-  // @ts-expect-error tag accepts an array of values per its docs
-  // https://github.com/nextapps-de/flexsearch/blob/master/doc/document-search.md#tags
-  const results = (await index.search({
+  const hasFilters =
+    node.parentId ||
+    params.bookmarked !== null ||
+    params.startDate !== null ||
+    params.endDate !== null;
+  let results = (await index.search({
     query: params.query,
-    // if we filter by time, get more results then, filter by time
-    limit: filterByTime ? 1000 : SEARCH_RESULTS_LIMIT,
+    // if we have filters, get all the results then filter
+    limit: hasFilters ? 0 : SEARCH_RESULTS_LIMIT,
     offset: 0,
     pluck: "title",
     enrich: true,
-    tag: tags,
-    // default typing is wrong due to the above ts-expect-error
-  })) as unknown as IndexSearchResult[];
+  })) as IndexSearchResult[];
 
-  // apply the time filter if any is provided
-  const filteredResults = filterResultsByTime(
-    results,
-    timeField,
-    params.startDate,
-    params.endDate,
-  );
+  if (params.bookmarked !== null) {
+    results = results.filter((res) => res.doc.bookmarked === params.bookmarked);
+  }
+  if (params.startDate !== null || params.endDate !== null) {
+    results = filterByTime(
+      results,
+      timeField,
+      params.startDate,
+      params.endDate,
+    );
+  }
+  // when searching in the root folder (i.e. everywhere), no need to filter
+  // the posts by feedIds
+  if (node.parentId) {
+    const feedIds =
+      node.type === "folder"
+        ? getChildFeedIds(node, nodes)
+        : new Set([node.id]);
+    results = filterByFeedIds(results, feedIds);
+  }
   // flexsearch doesn't always respect the limit set on the query
   // https://github.com/nextapps-de/flexsearch/issues/532
-  const limitedResults = filteredResults.slice(0, SEARCH_RESULTS_LIMIT);
+  results = results.slice(0, SEARCH_RESULTS_LIMIT);
   // fetch posts from db
-  const posts = await getPostsFromDB(conn.db, limitedResults);
+  const posts = await getPostsFromDB(conn.db, results);
   const feedPosts = addFeedData(
     nodes.filter((n) => n.type === "feed"),
     posts,
@@ -64,30 +75,7 @@ export async function querySearchIndex(
   }));
 }
 
-function getFeedIds(node: TreeNode, nodes: TreeNode[]) {
-  // when searching in the root folder (i.e. everywhere), don't return any
-  // feed ID. That means that the search will not add a feedId tag
-  if (!node.parentId) return [];
-
-  if (node.type === "feed") return [node.id];
-
-  return [...getChildFeedIds(node, nodes)];
-}
-
-function getTags(
-  feedIds: number[],
-  bookmarked: 0 | 1 | null,
-): Tags | undefined {
-  if (feedIds.length && bookmarked !== null) {
-    return { bookmarked, feedId: feedIds };
-  } else if (feedIds.length) {
-    return { feedId: feedIds };
-  } else if (bookmarked !== null) {
-    return { bookmarked };
-  }
-}
-
-function filterResultsByTime(
+function filterByTime(
   results: IndexSearchResult[],
   timeField: OrderPostsBy,
   startDate: number | null,
@@ -103,6 +91,13 @@ function filterResultsByTime(
     return results.filter((r) => r.doc[timeField] <= endDate);
   }
   return results;
+}
+
+function filterByFeedIds(results: IndexSearchResult[], feedIds: Set<number>) {
+  return results.filter((res) => {
+    const postID = getPostID(res.id);
+    return postID?.feedId && feedIds.has(postID.feedId);
+  });
 }
 
 async function getPostsFromDB(db: ExtensionDB, results: IndexSearchResult[]) {
@@ -121,10 +116,10 @@ async function getPostsFromDB(db: ExtensionDB, results: IndexSearchResult[]) {
 
 interface IndexSearchResult {
   id: string;
-  doc: { receivedAt: number; publishedAt: number };
+  doc: {
+    feedId: number;
+    bookmarked: 0 | 1;
+    receivedAt: number;
+    publishedAt: number;
+  };
 }
-
-type Tags =
-  | { bookmarked: 0 | 1 }
-  | { feedId: number[] }
-  | { bookmarked: 0 | 1; feedId: number[] };
