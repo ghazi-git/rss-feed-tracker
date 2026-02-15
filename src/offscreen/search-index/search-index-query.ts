@@ -31,7 +31,7 @@ export async function querySearchIndex(
   let results = (await index.search({
     query: params.query,
     // if we have filters, get all the results then filter
-    limit: hasFilters ? 0 : SEARCH_RESULTS_LIMIT,
+    limit: hasFilters ? 1_000_000 : SEARCH_RESULTS_LIMIT,
     offset: 0,
     pluck: "title",
     enrich: true,
