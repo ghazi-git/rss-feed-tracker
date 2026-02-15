@@ -15,10 +15,11 @@ import {
   sendMessage,
 } from "@/messaging-wrapper";
 import { useBodyContext } from "@/popup/components/Body";
-import InputField from "@/popup/components/forms/Input";
+import InputField, { Input } from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
+import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
 import FiltersButton from "@/popup/pages/search/FiltersButton";
 import FiltersPopover from "@/popup/pages/search/FiltersPopover";
 import SearchResults from "@/popup/pages/search/SearchResults";
@@ -134,7 +135,7 @@ export default function SearchPage() {
       <PageHeaderWrapper sticky={true}>
         <BackLink url={searchParams.previousUrl ?? "/library"} />
         <div class={styles.search}>
-          <InputField
+          <Input
             ref={searchRef}
             type="text"
             name="query"
@@ -147,6 +148,9 @@ export default function SearchPage() {
               debouncedSearch();
             }}
           />
+          <Show when={search.loading}>
+            <LoadingIcon class={styles.loading} />
+          </Show>
         </div>
       </PageHeaderWrapper>
       <div class={styles.filters}>

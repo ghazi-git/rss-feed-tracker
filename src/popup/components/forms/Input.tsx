@@ -22,7 +22,7 @@ export default function InputField(props: InputProps) {
   );
 }
 
-function Input(props: InputProps) {
+export function Input(props: InputProps) {
   const [extra, inputProps] = splitProps(props, ["label", "class"]);
 
   return (

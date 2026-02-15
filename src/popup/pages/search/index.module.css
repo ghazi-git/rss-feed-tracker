@@ -1,13 +1,18 @@
 .search {
   flex-grow: 1;
   align-self: stretch;
+  position: relative;
 
-  & > :first-child {
-    block-size: 100%;
-    margin-block-end: 0;
+  svg {
+    position: absolute;
+    inset-block-start: calc(50% - var(--size-3) / 2);
+    inset-inline-end: var(--size-1);
+    inline-size: var(--size-3);
+    block-size: auto;
   }
 
   input {
+    padding-inline-end: var(--size-5);
     outline-offset: -1px;
   }
 }
