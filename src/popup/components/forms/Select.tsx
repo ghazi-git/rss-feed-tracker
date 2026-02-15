@@ -21,6 +21,10 @@ export default function SelectField(props: SelectProps) {
       required={selectProps.required}
     >
       <select class={`${styles.select} ${extra.class ?? ""}`} {...selectProps}>
+        <button>
+          {/* @ts-expect-error tag available in chrome since v135 */}
+          <selectedcontent />
+        </button>
         <For each={extra.options}>
           {({ label, value, ...rest }) => (
             <option

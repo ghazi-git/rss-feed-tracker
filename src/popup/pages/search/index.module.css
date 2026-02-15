@@ -45,6 +45,7 @@
 
     & > * {
       flex: 1;
+      max-inline-size: calc(50% - var(--size-2));
     }
   }
 }
