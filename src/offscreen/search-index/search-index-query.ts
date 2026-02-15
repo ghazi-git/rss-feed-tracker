@@ -35,6 +35,7 @@ export async function querySearchIndex(
     offset: 0,
     pluck: "title",
     enrich: true,
+    suggest: true,
   })) as IndexSearchResult[];
 
   if (params.bookmarked !== null) {
