@@ -3,9 +3,11 @@ import {
   createEffect,
   createResource,
   createSignal,
+  Match,
   onMount,
   Resource,
   Show,
+  Switch,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
@@ -95,12 +97,12 @@ export default function SearchPage() {
       ? { ...formdata }
       : null,
   );
+  const hasSearchTerm = () => !!searchInput()?.query.trim();
   const [search, { mutate }] = createResource(
     () => {
-      const input = searchInput();
-      if (input === null || !input.query.trim()) return null;
+      if (!hasSearchTerm()) return null;
 
-      return input;
+      return searchInput();
     },
     async (input) => {
       const resp = await sendMessage("search-index/trigger-query", input);
@@ -110,6 +112,9 @@ export default function SearchPage() {
     },
   );
   restoreScrollPosition(search);
+  createEffect(() => {
+    if (!hasSearchTerm()) mutate([]);
+  });
 
   const searchPosts = () => {
     const { isValid, error } = validateTimeFilters(
@@ -155,20 +160,20 @@ export default function SearchPage() {
       </PageHeaderWrapper>
       <div class={styles.filters}>
         <div class={styles.buttons}>
-          <Show when={search.latest}>
+          <Show when={hasSearchTerm() && search.latest}>
             {(posts) => (
-              <Show
-                when={posts().length}
-                fallback={
+              <Switch>
+                <Match when={posts().length}>
+                  <div class={styles["search-results-text"]}>
+                    Found {posts().length} post{posts().length === 1 ? "" : "s"}
+                  </div>
+                </Match>
+                <Match when={!posts().length && !search.loading}>
                   <div class={styles["search-results-text"]}>
                     No posts found
                   </div>
-                }
-              >
-                <div class={styles["search-results-text"]}>
-                  Found {posts().length} post{posts().length === 1 ? "" : "s"}
-                </div>
-              </Show>
+                </Match>
+              </Switch>
             )}
           </Show>
           <SortButton sortBy={sort()} onClick={() => setNextSort()} />
