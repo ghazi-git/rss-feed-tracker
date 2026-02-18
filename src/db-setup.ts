@@ -105,6 +105,12 @@ export async function getDBConnection(dbVersion: number | null = null) {
       if (!db.objectStoreNames.contains("locks")) {
         db.createObjectStore("locks", { keyPath: "id" });
       }
+      if (!db.objectStoreNames.contains("searchIndexOperations")) {
+        db.createObjectStore("searchIndexOperations", {
+          keyPath: "id",
+          autoIncrement: true,
+        });
+      }
     },
   });
 
@@ -201,6 +207,10 @@ export interface FeedTrackerDB extends DBSchema {
     key: string;
     value: Lock;
   };
+  searchIndexOperations: {
+    key: number;
+    value: SearchIndexOperation;
+  };
 }
 
 export type ExtensionDB = IDBPDatabase<FeedTrackerDB>;
@@ -289,5 +299,38 @@ export interface Lock {
   id: string;
   createdAt: number;
 }
+
+// searchIndexOperations acts similar to a Write-Ahead Log, that will be used to
+// sync the search index with the main store. When posts are added, updated
+// or removed. A new entry is appended to the log.
+interface BaseSearchIndexOperation {
+  id: number; // auto-incrementing id
+  createdAt: number;
+  // feedId+guid identify the post
+  feedId: number;
+  guid: string;
+}
+interface PostDocument {
+  title: string;
+  bookmarked: BooleanFlag;
+  publishedAt: number;
+  receivedAt: number;
+}
+interface SearchIndexAdd extends BaseSearchIndexOperation {
+  operation: "add";
+  document: PostDocument;
+}
+interface SearchIndexUpdate extends BaseSearchIndexOperation {
+  operation: "update";
+  document: PostDocument;
+}
+interface SearchIndexRemove extends BaseSearchIndexOperation {
+  operation: "remove";
+  document: null;
+}
+export type SearchIndexOperation =
+  | SearchIndexAdd
+  | SearchIndexUpdate
+  | SearchIndexRemove;
 
 type BooleanFlag = 0 | 1;
