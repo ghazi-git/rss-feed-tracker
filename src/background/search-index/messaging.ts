@@ -1,4 +1,6 @@
+import { finishRebuildingSearchIndex } from "@/background/search-index/search-index-finish-rebuild";
 import { isRebuildingSearchIndex } from "@/background/search-index/search-index-is-rebuild-in-progress";
+import { storeRebuildingProgress } from "@/background/search-index/search-index-store-rebuild-progress";
 import { triggerSearchQuery } from "@/background/search-index/search-index-trigger-query";
 import { triggerRebuildSearchIndex } from "@/background/search-index/search-index-trigger-rebuild";
 import { getErrorMsg } from "@/background/utils/errors";
@@ -34,6 +36,37 @@ onMessage(
     return true;
   },
 );
+
+onMessage(
+  "search-index/store-rebuild-progress",
+  (payload, sender, sendResponse) => {
+    storeRebuildingProgress(payload)
+      .then(() => {
+        sendResponse({ success: true, data: undefined, errorMsg: null });
+      })
+      .catch((err) => {
+        const defaultMsg =
+          "An unexpected error occurred while saving the search index rebuilding progress.";
+        const errorMsg = getErrorMsg(err, defaultMsg);
+        sendResponse({ success: false, data: null, errorMsg });
+      });
+    return true;
+  },
+);
+
+onMessage("search-index/finish-rebuild", (payload, sender, sendResponse) => {
+  finishRebuildingSearchIndex(payload.indexName, payload.initialCursor)
+    .then(() => {
+      sendResponse({ success: true, data: undefined, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while rebuilding the search index.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
 
 onMessage("search-index/trigger-query", (payload, sender, sendResponse) => {
   triggerSearchQuery(payload)

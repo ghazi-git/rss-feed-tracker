@@ -77,6 +77,8 @@ interface MessageMap {
   "full-data/restore"(data: { fileURL: string }): PreferencesData;
   "search-index/trigger-rebuild"(): void;
   "search-index/rebuild"(): void;
+  "search-index/store-rebuild-progress"(data: SearchIndexProgressParams): void;
+  "search-index/finish-rebuild"(data: SearchIndexRebuildingDone): void;
   "search-index/is-rebuild-in-progress"(): boolean;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
@@ -196,6 +198,26 @@ export interface PreferencesData {
   clickPostToToggleUnread: boolean;
   orderPostsBy: OrderPostsBy;
   groupFolderPosts: boolean;
+}
+export interface SearchIndexProgressParams {
+  indexName: string;
+  startTime: number;
+  // if the rebuilding process is interrupted midway (due to closing the
+  // browser, for example), we can pick up the work on the next extension startup
+  currentCursor: SearchIndexProgressCursor;
+  // by the time we finish rebuilding the index, there might be new posts
+  // fetched by the extension in the background. So, the initialCursor allows
+  // us to find all of them and trigger their indexing
+  initialCursor: SearchIndexProgressCursor;
+}
+export interface SearchIndexProgressCursor {
+  receivedAt: number;
+  feedId: number;
+  guid: string;
+}
+interface SearchIndexRebuildingDone {
+  indexName: string;
+  initialCursor: SearchIndexProgressCursor;
 }
 export interface SearchQueryParams {
   query: string;

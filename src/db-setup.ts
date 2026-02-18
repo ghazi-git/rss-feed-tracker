@@ -316,15 +316,15 @@ interface PostDocument {
   publishedAt: number;
   receivedAt: number;
 }
-interface SearchIndexAdd extends BaseSearchIndexOperation {
+export interface SearchIndexAdd extends BaseSearchIndexOperation {
   operation: "add";
   document: PostDocument;
 }
-interface SearchIndexUpdate extends BaseSearchIndexOperation {
+export interface SearchIndexUpdate extends BaseSearchIndexOperation {
   operation: "update";
   document: PostDocument;
 }
-interface SearchIndexRemove extends BaseSearchIndexOperation {
+export interface SearchIndexRemove extends BaseSearchIndexOperation {
   operation: "remove";
   document: null;
 }

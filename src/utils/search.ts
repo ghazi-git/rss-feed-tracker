@@ -1,7 +1,5 @@
 import { Document, Encoder, IndexedDB } from "flexsearch";
 
-import { SEARCH_INDEX_STORE } from "@/utils/settings";
-
 const ID_SEPARATOR = "||";
 export function getIndexedPostID(feedId: number, guid: string) {
   return `${feedId}${ID_SEPARATOR}${guid}`;
@@ -20,7 +18,7 @@ export function getPostID(indexedPostID: string) {
   return null;
 }
 
-export async function getSearchIndex() {
+export async function getSearchIndex(indexName: string) {
   const encoder = new Encoder({
     normalize: true,
     dedupe: true,
@@ -42,7 +40,7 @@ export async function getSearchIndex() {
       index: [{ field: "title", encoder: encoder, tokenize: "full" }],
     },
   });
-  const db = new IndexedDB(SEARCH_INDEX_STORE);
+  const db = new IndexedDB(indexName);
   await index.mount(db);
   return index;
 }
