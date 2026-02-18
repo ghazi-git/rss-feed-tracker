@@ -3,6 +3,7 @@ import "./nodes/messaging";
 import "./folders/messaging";
 import "./import-export/messaging";
 import "./search-index/messaging";
+import "./search-index/event-handlers";
 import "./alarms";
 import "./extension-badge";
 import "./image-caching";
