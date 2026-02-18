@@ -77,6 +77,7 @@ interface MessageMap {
   "full-data/restore"(data: { fileURL: string }): PreferencesData;
   "search-index/trigger-rebuild"(): void;
   "search-index/rebuild"(): void;
+  "search-index/is-rebuild-in-progress"(): boolean;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
     data: SearchQueryParams & { timeField: OrderPostsBy },

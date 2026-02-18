@@ -1,6 +1,12 @@
 import { useLocation, useNavigate } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  onCleanup,
+} from "solid-js";
 
+import { sendMessage } from "@/messaging-wrapper";
 import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
 import { createMutation } from "@/popup/utils/mutation";
 import {
@@ -39,6 +45,35 @@ export default function ManageExtensionData() {
   const { mutation: searchMutation, sendMsg: rebuildIndex } = createMutation(
     "search-index/trigger-rebuild",
   );
+  const [trigger, setTrigger] = createSignal(0);
+  const [reindex] = createResource(
+    trigger,
+    async () => {
+      const response = await sendMessage(
+        "search-index/is-rebuild-in-progress",
+        undefined,
+      );
+      if (!response.success) throw new Error(response.errorMsg);
+
+      return response.data;
+    },
+    { initialValue: false },
+  );
+
+  let timerID: number;
+  createEffect(() => {
+    const reindexingInProgress = reindex.latest;
+    if (reindexingInProgress) {
+      // poll to see if the reindexing finished
+      timerID = setInterval(() => setTrigger(Date.now()), 2000);
+    } else {
+      // when reindexing finishes, stop polling
+      if (timerID) clearInterval(timerID);
+    }
+  });
+  onCleanup(() => {
+    if (timerID) clearInterval(timerID);
+  });
 
   return (
     <fieldset class={styles["manage-data"]}>
@@ -72,10 +107,13 @@ export default function ManageExtensionData() {
       </ManageDataButton>
       <ManageDataButton
         class={styles.search}
-        loading={searchMutation.isLoading}
+        loading={searchMutation.isLoading || reindex.latest}
         onClick={async () => {
           await rebuildIndex(undefined);
-          if (searchMutation.isError) {
+          if (searchMutation.isSuccess) {
+            setTrigger(Date.now());
+            notifyInfo("Rebuilding the search index is now in progress");
+          } else if (searchMutation.isError) {
             notifyError(searchMutation.errorMsg);
           }
         }}

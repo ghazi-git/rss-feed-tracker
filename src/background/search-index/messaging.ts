@@ -1,3 +1,4 @@
+import { isRebuildingSearchIndex } from "@/background/search-index/search-index-is-rebuild-in-progress";
 import { triggerSearchQuery } from "@/background/search-index/search-index-trigger-query";
 import { triggerRebuildSearchIndex } from "@/background/search-index/search-index-trigger-rebuild";
 import { getErrorMsg } from "@/background/utils/errors";
@@ -16,6 +17,23 @@ onMessage("search-index/trigger-rebuild", (payload, sender, sendResponse) => {
     });
   return true;
 });
+
+onMessage(
+  "search-index/is-rebuild-in-progress",
+  (payload, sender, sendResponse) => {
+    isRebuildingSearchIndex()
+      .then((inProgress) => {
+        sendResponse({ success: true, data: inProgress, errorMsg: null });
+      })
+      .catch((err) => {
+        const defaultMsg =
+          "An unexpected error occurred while checking if the search index rebuilding is in progress.";
+        const errorMsg = getErrorMsg(err, defaultMsg);
+        sendResponse({ success: false, data: null, errorMsg });
+      });
+    return true;
+  },
+);
 
 onMessage("search-index/trigger-query", (payload, sender, sendResponse) => {
   triggerSearchQuery(payload)
