@@ -48,3 +48,8 @@ export async function getSearchIndexName() {
     ? searchIndexName
     : null;
 }
+
+export async function scheduleSearchIndexing() {
+  // run indexing in 30s because that the earliest an alarm can be scheduled
+  await chrome.alarms.create("search-indexing", { when: Date.now() + 30_000 });
+}

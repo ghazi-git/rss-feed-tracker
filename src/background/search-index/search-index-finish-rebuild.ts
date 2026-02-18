@@ -2,6 +2,7 @@ import {
   getSearchIndexName,
   removeSearchIndexRebuildingProgress,
   saveSearchIndexName,
+  scheduleSearchIndexing,
 } from "@/background/utils/search";
 import { getDBConnection, ReadWriteTX, SearchIndexAdd } from "@/db-setup";
 import { SearchIndexProgressCursor } from "@/messaging-wrapper";
@@ -45,6 +46,7 @@ export async function finishRebuildingSearchIndex(
   const oldIndexName = await getSearchIndexName();
   await saveSearchIndexName(indexName);
   await removeSearchIndexRebuildingProgress();
+  if (newPosts.length) await scheduleSearchIndexing();
   if (oldIndexName) {
     const index = await getSearchIndex(oldIndexName);
     await index.destroy();
