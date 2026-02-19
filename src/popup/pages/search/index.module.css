@@ -11,6 +11,10 @@
     block-size: auto;
   }
 
+  input:dir(rtl) + svg {
+    inset-inline-start: var(--size-1);
+  }
+
   input {
     padding-inline-end: var(--size-5);
     outline-offset: -1px;

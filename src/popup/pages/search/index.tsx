@@ -155,7 +155,7 @@ export default function SearchPage() {
             }}
           />
           <Show when={search.loading}>
-            <LoadingIcon class={styles.loading} />
+            <LoadingIcon />
           </Show>
         </div>
       </PageHeaderWrapper>
