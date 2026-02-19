@@ -79,6 +79,7 @@ interface MessageMap {
   "search-index/rebuild"(): void;
   "search-index/store-rebuild-progress"(data: SearchIndexProgressParams): void;
   "search-index/finish-rebuild"(data: SearchIndexRebuildingDone): void;
+  "search-index/resume-rebuild"(data: SearchIndexProgressParams): void;
   "search-index/is-rebuild-in-progress"(): boolean;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
