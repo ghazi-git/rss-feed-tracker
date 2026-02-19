@@ -46,7 +46,7 @@ export default function ManageExtensionData() {
     "search-index/trigger-rebuild",
   );
   const [trigger, setTrigger] = createSignal(0);
-  const [reindex] = createResource(
+  const [reindex, { mutate: mutateReindex }] = createResource(
     trigger,
     async () => {
       const response = await sendMessage(
@@ -111,7 +111,7 @@ export default function ManageExtensionData() {
         onClick={async () => {
           await rebuildIndex(undefined);
           if (searchMutation.isSuccess) {
-            setTrigger(Date.now());
+            mutateReindex(true);
             notifyInfo("Rebuilding the search index is now in progress");
           } else if (searchMutation.isError) {
             notifyError(searchMutation.errorMsg);
