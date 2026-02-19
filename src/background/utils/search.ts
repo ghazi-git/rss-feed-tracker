@@ -1,4 +1,4 @@
-import { Post, SearchIndexOperation } from "@/db-setup";
+import { Post, SearchIndexOperation, SearchIndexRemove } from "@/db-setup";
 import {
   SearchIndexProgressCursor,
   SearchIndexProgressParams,
@@ -71,4 +71,14 @@ export function getAddOrUpdateOperation(
       receivedAt: post.receivedAt,
     },
   } as SearchIndexOperation;
+}
+
+export function getRemoveOperation(feedId: number, guid: string) {
+  return {
+    feedId,
+    guid,
+    createdAt: Date.now(),
+    operation: "remove",
+    document: null,
+  } as SearchIndexRemove;
 }

@@ -1,6 +1,10 @@
 import { getNodeTree } from "@/background/folders/folders-options";
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
+import {
+  getRemoveOperation,
+  scheduleSearchIndexing,
+} from "@/background/utils/search";
 import { getDBConnection } from "@/db-setup";
 import { txDone } from "@/utils/idb-helpers";
 
@@ -28,19 +32,23 @@ export async function deleteFolder(id: number) {
     .filter((n) => n.type === "folder");
 
   const tx = conn.db.transaction(
-    ["posts", "feedmetadata", "nodes"],
+    ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
     "readwrite",
   );
   const postStore = tx.objectStore("posts");
   const feedmetadataStore = tx.objectStore("feedmetadata");
   const nodeStore = tx.objectStore("nodes");
+  const opStore = tx.objectStore("searchIndexOperations");
 
+  const postsToDelete: [number, string][] = [];
   const promises: Promise<void>[] = [];
   for (const feed of feedsToDelete) {
+    const postsQuery = IDBKeyRange.bound([feed.id], [feed.id + 1], false, true);
+    const toDelete = await postStore.getAllKeys(postsQuery);
+    postsToDelete.push(...toDelete);
+
     promises.push(
-      postStore.delete(
-        IDBKeyRange.bound([feed.id], [feed.id + 1], false, true),
-      ),
+      postStore.delete(postsQuery),
       feedmetadataStore.delete(feed.id),
       nodeStore.delete(feed.id),
     );
@@ -52,6 +60,11 @@ export async function deleteFolder(id: number) {
     await updateFeedUnreadCount(tx, folder.parentId, -folder.unreadCount);
   }
 
+  postsToDelete.forEach(([feedId, guid]) => {
+    const operation = getRemoveOperation(feedId, guid);
+    opStore.add(operation);
+  });
+
   try {
     await txDone(tx);
   } catch (e) {
@@ -59,4 +72,6 @@ export async function deleteFolder(id: number) {
       "Unable to delete the folder and its contents, please try again.";
     throw new DeletionError(msg, { cause: e });
   }
+
+  await scheduleSearchIndexing();
 }
