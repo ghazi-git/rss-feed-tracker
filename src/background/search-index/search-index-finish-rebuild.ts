@@ -7,7 +7,6 @@ import {
 import { getDBConnection, ReadWriteTX, SearchIndexAdd } from "@/db-setup";
 import { SearchIndexProgressCursor } from "@/messaging-wrapper";
 import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
-import { getSearchIndex } from "@/utils/search";
 
 export async function finishRebuildingSearchIndex(
   indexName: string,
@@ -47,10 +46,7 @@ export async function finishRebuildingSearchIndex(
   await saveSearchIndexName(indexName);
   await removeSearchIndexRebuildingProgress();
   if (newPosts.length) await scheduleSearchIndexing();
-  if (oldIndexName) {
-    const index = await getSearchIndex(oldIndexName);
-    await index.destroy();
-  }
+  return oldIndexName;
 }
 
 async function getNewPostsSinceRebuildStart(

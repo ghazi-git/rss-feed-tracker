@@ -1,6 +1,9 @@
 import { getDBConnection } from "@/db-setup";
 import { SearchIndexProgressParams, sendMessage } from "@/messaging-wrapper";
-import { buildSearchIndex } from "@/offscreen/search-index/search-index-rebuild";
+import {
+  buildSearchIndex,
+  finishRebuilding,
+} from "@/offscreen/search-index/search-index-rebuild";
 import { getLogger } from "@/utils/logging";
 import { SEARCH_INDEX_REBUILDING_LOCK } from "@/utils/settings";
 
@@ -22,6 +25,7 @@ export async function resumeRebuildingSearchIndex(
           indexName: params.indexName,
           initialCursor: params.initialCursor,
         });
+        await finishRebuilding(params.indexName, params.initialCursor);
         const res = performance.measure(
           "reindexing-duration",
           "resume-reindexing",

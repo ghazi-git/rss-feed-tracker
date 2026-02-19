@@ -57,8 +57,8 @@ onMessage(
 
 onMessage("search-index/finish-rebuild", (payload, sender, sendResponse) => {
   finishRebuildingSearchIndex(payload.indexName, payload.initialCursor)
-    .then(() => {
-      sendResponse({ success: true, data: undefined, errorMsg: null });
+    .then((oldIndexName) => {
+      sendResponse({ success: true, data: oldIndexName, errorMsg: null });
     })
     .catch((err) => {
       const defaultMsg =

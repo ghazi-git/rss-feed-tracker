@@ -48,17 +48,8 @@ export async function rebuildSearchIndex() {
         await saveRebuildingProgress(params);
         logger.debug("start reindexing", params);
         await buildSearchIndex(conn.db, params, logger);
+        await finishRebuilding(indexName, initialCursor);
 
-        // notify the service worker to finish the rebuilding process:
-        // - schedule for indexing any new posts since rebuilding start
-        // - swap the old and new indexes
-        // - delete the old index
-        // the process is finished in the service worker because it requires
-        // APIs available only there (alarms, storage)
-        await sendMessage("search-index/finish-rebuild", {
-          indexName,
-          initialCursor,
-        });
         const res = performance.measure(
           "reindexing-duration",
           "reindexing-start",
@@ -138,4 +129,26 @@ async function indexPosts(
     index.add({ id, feedId, title, bookmarked, publishedAt, receivedAt });
   }
   await index.commit();
+}
+
+export async function finishRebuilding(
+  indexName: string,
+  initialCursor: SearchIndexProgressCursor,
+) {
+  // notify the service worker to finish the rebuilding process:
+  // - schedule for indexing any new posts since rebuilding start
+  // - swap the old and new indexes
+  // the process is finished in the service worker because it requires
+  // APIs available only there (alarms, storage)
+  const resp = await sendMessage("search-index/finish-rebuild", {
+    indexName,
+    initialCursor,
+  });
+  if (resp.success) {
+    const oldIndexName = resp.data;
+    if (oldIndexName) {
+      const index = await getSearchIndex(oldIndexName);
+      await index.destroy();
+    }
+  }
 }
