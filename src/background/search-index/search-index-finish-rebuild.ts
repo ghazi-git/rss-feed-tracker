@@ -1,10 +1,11 @@
 import {
+  getAddOrUpdateOperation,
   getSearchIndexName,
   removeSearchIndexRebuildingProgress,
   saveSearchIndexName,
   scheduleSearchIndexing,
 } from "@/background/utils/search";
-import { getDBConnection, ReadWriteTX, SearchIndexAdd } from "@/db-setup";
+import { getDBConnection, ReadWriteTX } from "@/db-setup";
 import { SearchIndexProgressCursor } from "@/messaging-wrapper";
 import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
 
@@ -26,18 +27,8 @@ export async function finishRebuildingSearchIndex(
   const operations = tx.objectStore("searchIndexOperations");
   await operations.clear();
   for (const post of newPosts) {
-    operations.add({
-      createdAt: Date.now(),
-      feedId: post.feedId,
-      guid: post.guid,
-      operation: "add",
-      document: {
-        title: post.title,
-        bookmarked: post.bookmarked,
-        receivedAt: post.receivedAt,
-        publishedAt: post.publishedAt,
-      },
-    } as SearchIndexAdd);
+    const addOperation = getAddOrUpdateOperation(post, "add");
+    operations.add(addOperation);
   }
   await txDone(tx);
 

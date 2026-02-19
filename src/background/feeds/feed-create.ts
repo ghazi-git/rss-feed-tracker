@@ -15,7 +15,7 @@ export async function loadAndCreateFeed(data: FeedFormData) {
   const favicon = parsedFeed.favicon;
   using conn = await getDBConnection();
   const tx = conn.db.transaction(
-    ["nodes", "feedmetadata", "posts"],
+    ["nodes", "feedmetadata", "posts", "searchIndexOperations"],
     "readwrite",
   );
 

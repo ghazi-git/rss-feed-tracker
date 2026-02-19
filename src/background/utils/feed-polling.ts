@@ -10,6 +10,10 @@ import {
 } from "@/background/utils/feeds-fetch-from-source";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
+import {
+  getAddOrUpdateOperation,
+  scheduleSearchIndexing,
+} from "@/background/utils/search";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
 import { loadPreferences } from "@/utils/extension-storage";
@@ -95,7 +99,7 @@ export async function loadFeeds(
       return fetchAndParseFeed(feed.feed.url, logger)
         .then(async (parsedFeed) => {
           const tx = db.transaction(
-            ["posts", "feedmetadata", "nodes"],
+            ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
             "readwrite",
           );
           const insertedPosts = await savePosts(
@@ -144,11 +148,20 @@ export async function savePosts(
   // prettier-ignore
   const posts = getPostObjects(parsedPosts, node.id, fetchTime, markNewPostsUnread);
   const results = await bulkAddPosts(tx, posts);
-  const insertedPosts = results.filter((res) => res.success).length;
+  const insertedPosts = results.filter((res) => res.success);
   logger.debug(`inserted ${insertedPosts} new post(s) in indexedDB`);
-  if (insertedPosts && markNewPostsUnread) {
+  if (insertedPosts.length && markNewPostsUnread) {
     logger.debug("updating unread counts");
-    await updateFeedUnreadCount(tx, node.id, insertedPosts);
+    await updateFeedUnreadCount(tx, node.id, insertedPosts.length);
+  }
+  if (insertedPosts.length) {
+    const opStore = tx.objectStore("searchIndexOperations");
+    insertedPosts.forEach((res) => {
+      const operation = getAddOrUpdateOperation(res.item, "add");
+      opStore.add(operation);
+    });
+    // no 'await' to avoid the transaction being prematurely committed
+    scheduleSearchIndexing();
   }
   const notes = describeSaveResults(results);
   await saveSuccessMetadata(
@@ -161,7 +174,7 @@ export async function savePosts(
   );
   logger.debug(`done notes=${notes ?? "All parsed posts were inserted"}`);
 
-  return insertedPosts;
+  return insertedPosts.length;
 }
 
 async function notifyOfNewPosts() {

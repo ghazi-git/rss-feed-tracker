@@ -1,3 +1,4 @@
+import { Post, SearchIndexOperation } from "@/db-setup";
 import {
   SearchIndexProgressCursor,
   SearchIndexProgressParams,
@@ -52,4 +53,22 @@ export async function getSearchIndexName() {
 export async function scheduleSearchIndexing() {
   // run indexing in 30s because that the earliest an alarm can be scheduled
   await chrome.alarms.create("search-indexing", { when: Date.now() + 30_000 });
+}
+
+export function getAddOrUpdateOperation(
+  post: Post,
+  operation: "add" | "update",
+) {
+  return {
+    feedId: post.feedId,
+    guid: post.guid,
+    createdAt: Date.now(),
+    operation,
+    document: {
+      title: post.title,
+      bookmarked: post.bookmarked,
+      publishedAt: post.publishedAt,
+      receivedAt: post.receivedAt,
+    },
+  } as SearchIndexOperation;
 }

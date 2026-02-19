@@ -116,8 +116,10 @@ async function loadPosts(feeds: Feed[], markNewPostsUnread: boolean) {
 
       return fetchAndParseFeed(node.feed.url, logger)
         .then(async (parsedFeed) => {
-          const stores = ["posts", "feedmetadata", "nodes"] as const;
-          const tx = conn.db.transaction(stores, "readwrite");
+          const tx = conn.db.transaction(
+            ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
+            "readwrite",
+          );
           if (parsedFeed.favicon) {
             // set the favicon here since it wasn't set when first creating
             // the nodes extracted from the OPML
