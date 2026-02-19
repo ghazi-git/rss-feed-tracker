@@ -3,6 +3,7 @@ import {
   createEffect,
   createResource,
   createSignal,
+  ErrorBoundary,
   Match,
   onMount,
   Resource,
@@ -160,22 +161,25 @@ export default function SearchPage() {
       </PageHeaderWrapper>
       <div class={styles.filters}>
         <div class={styles.buttons}>
-          <Show when={hasSearchTerm() && search.latest}>
-            {(posts) => (
-              <Switch>
-                <Match when={posts().length}>
-                  <div class={styles["search-results-text"]}>
-                    Found {posts().length} post{posts().length === 1 ? "" : "s"}
-                  </div>
-                </Match>
-                <Match when={!posts().length && !search.loading}>
-                  <div class={styles["search-results-text"]}>
-                    No posts found
-                  </div>
-                </Match>
-              </Switch>
-            )}
-          </Show>
+          <ErrorBoundary fallback={<></>}>
+            <Show when={hasSearchTerm() && search.latest}>
+              {(posts) => (
+                <Switch>
+                  <Match when={posts().length}>
+                    <div class={styles["search-results-text"]}>
+                      Found {posts().length} post
+                      {posts().length === 1 ? "" : "s"}
+                    </div>
+                  </Match>
+                  <Match when={!posts().length && !search.loading}>
+                    <div class={styles["search-results-text"]}>
+                      No posts found
+                    </div>
+                  </Match>
+                </Switch>
+              )}
+            </Show>
+          </ErrorBoundary>
           <SortButton sortBy={sort()} onClick={() => setNextSort()} />
           <FiltersButton
             hasFilters={hasFilters()}
@@ -233,25 +237,33 @@ export default function SearchPage() {
           </div>
         </FiltersPopover>
       </div>
-      <Show when={search.latest}>
-        {(posts) => (
-          <>
-            <SearchResults
-              posts={posts()}
-              sortBy={sort()}
-              mutateSearchResults={mutate}
-            />
-            <Show
-              when={!hasFilters() && posts().length === SEARCH_RESULTS_LIMIT}
-            >
-              <div class={styles["results-limit-reached"]}>
-                Filter the search results if you didn't find what you're looking
-                for
-              </div>
-            </Show>
-          </>
+      <ErrorBoundary
+        fallback={(err) => (
+          <div class={styles.error}>
+            {err.message || "An unexpected error happened."}
+          </div>
         )}
-      </Show>
+      >
+        <Show when={search.latest}>
+          {(posts) => (
+            <>
+              <SearchResults
+                posts={posts()}
+                sortBy={sort()}
+                mutateSearchResults={mutate}
+              />
+              <Show
+                when={!hasFilters() && posts().length === SEARCH_RESULTS_LIMIT}
+              >
+                <div class={styles["results-limit-reached"]}>
+                  Try filtering the search results if you didn't find what
+                  you're looking for
+                </div>
+              </Show>
+            </>
+          )}
+        </Show>
+      </ErrorBoundary>
     </>
   );
 }
