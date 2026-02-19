@@ -8,8 +8,7 @@ import { getDBConnection } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
 
 export async function triggerRestore(fileURL: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  await using _ = await setupOffscreenDocument("restore data from backup");
+  await setupOffscreenDocument("restore data from backup");
 
   const response = await sendMessage("full-data/restore", { fileURL });
   if (response.success) {
