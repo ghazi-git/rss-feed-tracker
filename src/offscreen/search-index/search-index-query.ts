@@ -10,6 +10,7 @@ import { SEARCH_RESULTS_LIMIT } from "@/utils/settings";
 export async function querySearchIndex(
   params: SearchQueryParams,
   timeField: OrderPostsBy,
+  indexName: string,
 ): Promise<SearchResult[]> {
   using conn = await getDBConnection();
   const nodes = await conn.db.getAll("nodes");
@@ -21,7 +22,7 @@ export async function querySearchIndex(
     );
   }
 
-  const index = await getSearchIndex();
+  const index = await getSearchIndex(indexName);
 
   const hasFilters =
     node.parentId ||

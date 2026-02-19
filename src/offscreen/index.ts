@@ -64,8 +64,8 @@ onMessage("search-index/rebuild", (payload, sender, sendResponse) => {
 
 onMessage(
   "search-index/query",
-  ({ timeField, ...params }, sender, sendResponse) => {
-    querySearchIndex(params, timeField)
+  ({ timeField, indexName, ...params }, sender, sendResponse) => {
+    querySearchIndex(params, timeField, indexName)
       .then((results) => {
         sendResponse({ success: true, data: results, errorMsg: null });
       })

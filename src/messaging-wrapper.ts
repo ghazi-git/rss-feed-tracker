@@ -83,7 +83,7 @@ interface MessageMap {
   "search-index/is-rebuild-in-progress"(): boolean;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
-    data: SearchQueryParams & { timeField: OrderPostsBy },
+    data: SearchQueryParams & { timeField: OrderPostsBy; indexName: string },
   ): SearchResult[];
 }
 
