@@ -66,7 +66,7 @@ async function getLatestPost(db: ExtensionDB) {
   const posts = await db.getAllFromIndex(
     "posts",
     "by_received_at_feed_id_guid",
-    { count: 1 },
+    { count: 1, direction: "prev" },
   );
   return posts.length ? posts[0] : null;
 }
