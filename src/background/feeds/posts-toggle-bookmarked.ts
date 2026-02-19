@@ -1,4 +1,8 @@
 import { NotFoundError } from "@/background/utils/errors";
+import {
+  getAddOrUpdateOperation,
+  scheduleSearchIndexing,
+} from "@/background/utils/search";
 import { getDBConnection } from "@/db-setup";
 import { getObject, saveObject, txDone } from "@/utils/idb-helpers";
 
@@ -9,7 +13,10 @@ export async function toggleBookmarkedPost(
 ) {
   using conn = await getDBConnection();
 
-  const tx = conn.db.transaction(["posts"], "readwrite");
+  const tx = conn.db.transaction(
+    ["posts", "searchIndexOperations"],
+    "readwrite",
+  );
   const post = await getObject(tx, "posts", [feedId, guid]);
   if (!post) {
     const msg = "Unable to find the post, it may have been deleted.";
@@ -19,5 +26,11 @@ export async function toggleBookmarkedPost(
   post.bookmarked = bookmarked ? 1 : 0;
   await saveObject(tx, "posts", post);
 
+  const opStore = tx.objectStore("searchIndexOperations");
+  const operation = getAddOrUpdateOperation(post, "update");
+  opStore.add(operation);
+
   await txDone(tx);
+
+  await scheduleSearchIndexing();
 }
