@@ -5,6 +5,7 @@ import { getErrorMsg } from "@/offscreen/errors";
 import { exportOPML } from "@/offscreen/opml-export";
 import { querySearchIndex } from "@/offscreen/search-index/search-index-query";
 import { rebuildSearchIndex } from "@/offscreen/search-index/search-index-rebuild";
+import { resumeRebuildingSearchIndex } from "@/offscreen/search-index/search-index-resume-rebuild";
 
 onMessage("opml/export", (payload, sender, sendResponse) => {
   exportOPML(payload.folder)
@@ -50,6 +51,20 @@ onMessage("full-data/restore", (payload, sender, sendResponse) => {
 
 onMessage("search-index/rebuild", (payload, sender, sendResponse) => {
   rebuildSearchIndex()
+    .then(() => {
+      sendResponse({ success: true, data: undefined, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while rebuilding the search index.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("search-index/resume-rebuild", (payload, sender, sendResponse) => {
+  resumeRebuildingSearchIndex(payload)
     .then(() => {
       sendResponse({ success: true, data: undefined, errorMsg: null });
     })

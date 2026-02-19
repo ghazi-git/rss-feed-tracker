@@ -5,7 +5,6 @@ import { triggerSearchQuery } from "@/background/search-index/search-index-trigg
 import { triggerRebuildSearchIndex } from "@/background/search-index/search-index-trigger-rebuild";
 import { getErrorMsg } from "@/background/utils/errors";
 import { onMessage } from "@/messaging-wrapper";
-import { resumeRebuildingSearchIndex } from "@/offscreen/search-index/search-index-resume-rebuild";
 
 onMessage("search-index/trigger-rebuild", (payload, sender, sendResponse) => {
   triggerRebuildSearchIndex()
@@ -59,20 +58,6 @@ onMessage("search-index/finish-rebuild", (payload, sender, sendResponse) => {
   finishRebuildingSearchIndex(payload.indexName, payload.initialCursor)
     .then((oldIndexName) => {
       sendResponse({ success: true, data: oldIndexName, errorMsg: null });
-    })
-    .catch((err) => {
-      const defaultMsg =
-        "An unexpected error occurred while rebuilding the search index.";
-      const errorMsg = getErrorMsg(err, defaultMsg);
-      sendResponse({ success: false, data: null, errorMsg });
-    });
-  return true;
-});
-
-onMessage("search-index/resume-rebuild", (payload, sender, sendResponse) => {
-  resumeRebuildingSearchIndex(payload)
-    .then(() => {
-      sendResponse({ success: true, data: undefined, errorMsg: null });
     })
     .catch((err) => {
       const defaultMsg =
