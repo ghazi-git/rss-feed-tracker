@@ -6,6 +6,7 @@ import { exportOPML } from "@/offscreen/opml-export";
 import { querySearchIndex } from "@/offscreen/search-index/search-index-query";
 import { rebuildSearchIndex } from "@/offscreen/search-index/search-index-rebuild";
 import { resumeRebuildingSearchIndex } from "@/offscreen/search-index/search-index-resume-rebuild";
+import { updateSearchIndex } from "@/offscreen/search-index/search-index-update";
 
 onMessage("opml/export", (payload, sender, sendResponse) => {
   exportOPML(payload.folder)
@@ -71,6 +72,20 @@ onMessage("search-index/resume-rebuild", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while rebuilding the search index.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("search-index/update", (payload, sender, sendResponse) => {
+  updateSearchIndex(payload.indexName)
+    .then(() => {
+      sendResponse({ success: true, data: undefined, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while updating the search index.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });

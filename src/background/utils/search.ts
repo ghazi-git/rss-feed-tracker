@@ -3,6 +3,7 @@ import {
   SearchIndexProgressCursor,
   SearchIndexProgressParams,
 } from "@/messaging-wrapper";
+import { SEARCH_INDEXING_ALARM } from "@/utils/settings";
 
 export async function saveSearchIndexRebuildingProgress(
   params: SearchIndexProgressParams,
@@ -52,7 +53,9 @@ export async function getSearchIndexName() {
 
 export async function scheduleSearchIndexing() {
   // run indexing in 30s because that the earliest an alarm can be scheduled
-  await chrome.alarms.create("search-indexing", { when: Date.now() + 30_000 });
+  await chrome.alarms.create(SEARCH_INDEXING_ALARM, {
+    when: Date.now() + 30_000,
+  });
 }
 
 export function getAddOrUpdateOperation(
