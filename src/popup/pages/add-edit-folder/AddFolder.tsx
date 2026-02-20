@@ -55,7 +55,7 @@ export default function AddFolder() {
               parentFolder: formdata.parentFolder,
             });
             if (mutation.isSuccess) {
-              notifySuccess("Feed created successfully.");
+              notifySuccess("Folder created successfully.");
               navigate(`/library/nodes/${mutation.data.folderId}`);
             }
           } else {
