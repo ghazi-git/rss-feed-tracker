@@ -116,6 +116,7 @@ export default function AddFeed() {
           name="name"
           label="Name"
           required={true}
+          dir="auto"
           value={formdata.name}
           onInput={(e) => setFormdata("name", e.target.value)}
         />
