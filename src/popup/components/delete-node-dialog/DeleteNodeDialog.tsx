@@ -3,6 +3,7 @@ import { useNavigate } from "@solidjs/router";
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/context";
+import { useDropdownContext } from "@/popup/components/dropdown/context";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import CloseIcon from "@/popup/components/svg-icons/CloseIcon";
 import { useNodeContext } from "@/popup/pages/node/node-context";
@@ -59,6 +60,7 @@ export default function DeleteNodeDialog() {
     }
   };
 
+  const closeModal = useCloseDropdown();
   const confirmDeletion = async () => {
     if (store.nodeId) {
       if (store.nodeType === "folder") {
@@ -66,22 +68,32 @@ export default function DeleteNodeDialog() {
         if (folderMutation.isSuccess) {
           notifySuccess("Folder Deleted.");
           if (store.deletionTrigger === "nodeHeader") {
-            navigate("/library");
+            closeModal?.();
+            navigate(
+              store.parentFolderId
+                ? `/library/nodes/${store.parentFolderId}`
+                : "/library",
+            );
           } else {
             removeChildNode(store.nodeId);
-            dialogRef.close();
           }
+          dialogRef.close();
         }
       } else {
         await sendMsgFeed({ id: store.nodeId });
         if (feedMutation.isSuccess) {
           notifySuccess("Feed Deleted.");
           if (store.deletionTrigger === "nodeHeader") {
-            navigate("/library");
+            closeModal?.();
+            navigate(
+              store.parentFolderId
+                ? `/library/nodes/${store.parentFolderId}`
+                : "/library",
+            );
           } else {
             removeChildNode(store.nodeId);
-            dialogRef.close();
           }
+          dialogRef.close();
         }
       }
     } else {
@@ -160,6 +172,22 @@ function useMutateNode() {
   try {
     const { mutateNode } = useNodeContext();
     return mutateNode;
+  } catch {
+    return undefined;
+  }
+}
+
+function useCloseDropdown() {
+  // when the deletion is triggered from the node header, we need to close
+  // the dropdown menu since it's open. That is not needed when the deletion
+  // is triggered from the folder child.
+  // Keep in mind that The dropdown is left open after clicking delete to return
+  // the focus to the deletion menu item if the user does not confirm the
+  // deletion (clicks cancel or closes the modal). Without the open dropdown,
+  // focus is lost post-modal closing. This can be annoying for keyboard users.
+  try {
+    const { closeMenu } = useDropdownContext();
+    return closeMenu;
   } catch {
     return undefined;
   }

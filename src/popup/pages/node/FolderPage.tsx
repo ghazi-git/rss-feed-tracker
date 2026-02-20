@@ -27,19 +27,19 @@ export function FolderPage(props: FolderPageProps) {
 
   return (
     <UnreadCountContext.Provider value={{ mutateUnreadCount }}>
-      <DeleteNodeProvider>
-        <FolderPageHeader
-          folder={props.folder}
-          hasChildren={props.folder.children.length > 0}
-        />
-        <Show
-          when={props.folder.children.length > 0}
-          fallback={<FolderNoChildren folderId={props.folder.id} />}
-        >
+      <FolderPageHeader
+        folder={props.folder}
+        hasChildren={props.folder.children.length > 0}
+      />
+      <Show
+        when={props.folder.children.length > 0}
+        fallback={<FolderNoChildren folderId={props.folder.id} />}
+      >
+        <DeleteNodeProvider>
           <FolderChildren childNodes={props.folder.children} />
-        </Show>
-        <DeleteNodeDialog />
-      </DeleteNodeProvider>
+          <DeleteNodeDialog />
+        </DeleteNodeProvider>
+      </Show>
     </UnreadCountContext.Provider>
   );
 }

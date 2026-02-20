@@ -53,6 +53,7 @@ export default function FolderPageHeader(props: FolderPageHeaderProps) {
         nodeId={props.folder.id}
         nodeName={props.folder.name}
         isRoot={props.folder.parentId === null}
+        parentFolderId={props.folder.parentId}
       />
       <Show when={props.hasChildren}>
         <PostsFilter

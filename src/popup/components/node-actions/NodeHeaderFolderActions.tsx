@@ -1,5 +1,7 @@
 import { Show } from "solid-js";
 
+import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
+import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
 import Separator from "@/popup/components/dropdown/Separator";
 import AddFeedMenuItem from "@/popup/components/node-actions/AddFeedMenuItem";
 import AddFolderMenuItem from "@/popup/components/node-actions/AddFolderMenuItem";
@@ -24,11 +26,15 @@ export default function NodeHeaderFolderActions(props: FolderActionsProps) {
       <ExportFeedsMenuItem folderId={props.folderId} />
       <Show when={!props.isRoot}>
         <Separator />
-        <DeleteFolderMenuItem
-          folderId={props.folderId}
-          folderName={props.folderName}
-          deletionTrigger="nodeHeader"
-        />
+        <DeleteNodeProvider>
+          <DeleteFolderMenuItem
+            folderId={props.folderId}
+            folderName={props.folderName}
+            deletionTrigger="nodeHeader"
+            parentFolderId={props.parentFolderId}
+          />
+          <DeleteNodeDialog />
+        </DeleteNodeProvider>
       </Show>
     </>
   );
@@ -38,4 +44,5 @@ interface FolderActionsProps {
   isRoot: boolean;
   folderId: number;
   folderName: string;
+  parentFolderId: number | null;
 }

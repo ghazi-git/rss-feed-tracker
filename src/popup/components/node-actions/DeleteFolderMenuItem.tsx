@@ -12,7 +12,13 @@ export default function DeleteFolderMenuItem(props: DeleteFolderProps) {
       onClick={(event) => {
         event.preventDefault();
         const text = `Are you sure you want to delete the folder '${props.folderName}' and all its contents?`;
-        openModal(props.folderId, "folder", text, props.deletionTrigger);
+        openModal(
+          props.folderId,
+          "folder",
+          text,
+          props.deletionTrigger,
+          props.parentFolderId ?? null,
+        );
       }}
     >
       Delete
@@ -23,5 +29,6 @@ export default function DeleteFolderMenuItem(props: DeleteFolderProps) {
 interface DeleteFolderProps {
   folderId: number;
   folderName: string;
+  parentFolderId?: number | null;
   deletionTrigger: "folderChild" | "nodeHeader";
 }

@@ -12,13 +12,21 @@ export function DeleteNodeProvider(props: FlowProps) {
     nodeType: null,
     modalText: null,
     deletionTrigger: null,
+    parentFolderId: null,
   });
-  const openModal: OpenModalType = (id, type, text, deletionTrigger) => {
+  const openModal: OpenModalType = (
+    id,
+    type,
+    text,
+    deletionTrigger,
+    parentFolderId,
+  ) => {
     setStore({
       nodeId: id,
       nodeType: type,
       modalText: text,
       deletionTrigger,
+      parentFolderId,
     });
     const dialog = document.getElementById(
       "delete-dialog",
@@ -47,12 +55,14 @@ type DeleteNodeStore =
       nodeType: "feed" | "folder";
       modalText: string;
       deletionTrigger: "folderChild" | "nodeHeader";
+      parentFolderId: number | null;
     }
   | {
       nodeId: null;
       nodeType: null;
       modalText: null;
       deletionTrigger: null;
+      parentFolderId: null;
     };
 
 type OpenModalType = (
@@ -60,4 +70,5 @@ type OpenModalType = (
   nodeType: "feed" | "folder",
   modalText: string,
   deletionTrigger: "folderChild" | "nodeHeader",
+  parentFolderId: number | null,
 ) => void;

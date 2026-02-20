@@ -28,6 +28,7 @@ export default function PageTitleButton(props: PageTitleButtonProps) {
             <NodeHeaderFeedActions
               feedId={props.nodeId}
               feedName={props.nodeName}
+              parentFolderId={props.parentFolderId}
             />
           }
         >
@@ -35,6 +36,7 @@ export default function PageTitleButton(props: PageTitleButtonProps) {
             isRoot={props.isRoot}
             folderId={props.nodeId}
             folderName={props.nodeName}
+            parentFolderId={props.parentFolderId}
           />
         </Show>
       </Menu>
@@ -48,5 +50,6 @@ interface PageTitleButtonProps {
   nodeType: "folder" | "feed";
   nodeId: number;
   nodeName: string;
+  parentFolderId: number | null;
   feedUpdatesOff?: boolean;
 }

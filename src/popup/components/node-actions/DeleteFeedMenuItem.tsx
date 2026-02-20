@@ -12,7 +12,13 @@ export default function DeleteFeedMenuItem(props: DeleteFeedProps) {
       onClick={(event) => {
         event.preventDefault();
         const text = `Are you sure you want to delete the feed '${props.feedName}'?`;
-        openModal(props.feedId, "feed", text, props.deletionTrigger);
+        openModal(
+          props.feedId,
+          "feed",
+          text,
+          props.deletionTrigger,
+          props.parentFolderId ?? null,
+        );
       }}
     >
       Delete
@@ -23,5 +29,6 @@ export default function DeleteFeedMenuItem(props: DeleteFeedProps) {
 interface DeleteFeedProps {
   feedId: number;
   feedName: string;
+  parentFolderId?: number | null;
   deletionTrigger: "folderChild" | "nodeHeader";
 }

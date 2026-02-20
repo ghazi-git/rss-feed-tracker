@@ -2,8 +2,6 @@ import { useSearchParams } from "@solidjs/router";
 import { batch, Show } from "solid-js";
 
 import { TreeNode } from "@/db-setup";
-import { DeleteNodeProvider } from "@/popup/components/delete-node-dialog/context";
-import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDialog";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
@@ -66,17 +64,15 @@ export default function NodeHeader(props: NodeHeaderProps) {
   return (
     <PageHeaderWrapper sticky={true}>
       <BackLink url={previousUrl()} class={styles["previous-url"]} />
-      <DeleteNodeProvider>
-        <PageTitleButton
-          title={props.node.name}
-          nodeType={props.node.type}
-          nodeId={props.node.id}
-          nodeName={props.node.name}
-          isRoot={props.node.parentId === null}
-          feedUpdatesOff={updatesOff()}
-        />
-        <DeleteNodeDialog />
-      </DeleteNodeProvider>
+      <PageTitleButton
+        title={props.node.name}
+        nodeType={props.node.type}
+        nodeId={props.node.id}
+        nodeName={props.node.name}
+        isRoot={props.node.parentId === null}
+        parentFolderId={props.node.parentId}
+        feedUpdatesOff={updatesOff()}
+      />
       <Show when={updatesOff()}>
         <div class={styles["updates-off"]} title="Feed updates are turned off">
           <DisabledIcon />
