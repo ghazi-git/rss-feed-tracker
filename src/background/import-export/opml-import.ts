@@ -1,13 +1,13 @@
 import { parseOpml } from "feedsmith";
 import type { Opml } from "feedsmith/types";
 
-import { getChunks } from "@/background/utils/chunks";
 import { NotFoundError, OPMLParseError } from "@/background/utils/errors";
 import { savePosts } from "@/background/utils/feed-polling";
 import { saveFailureMetadata } from "@/background/utils/feedmetadata";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { createFeed, saveFolder } from "@/background/utils/nodes";
 import { Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
+import { getChunks } from "@/utils/chunks";
 import { loadPreferences } from "@/utils/extension-storage";
 import { getObject, saveObject, txDone } from "@/utils/idb-helpers";
 import { getLogger } from "@/utils/logging";

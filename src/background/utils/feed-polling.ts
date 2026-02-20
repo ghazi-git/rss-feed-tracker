@@ -1,4 +1,3 @@
-import { getChunks } from "@/background/utils/chunks";
 import {
   saveFailureMetadata,
   saveSuccessMetadata,
@@ -16,6 +15,7 @@ import {
 } from "@/background/utils/search";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
+import { getChunks } from "@/utils/chunks";
 import { loadPreferences } from "@/utils/extension-storage";
 import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";

@@ -1,11 +1,11 @@
 import { createMemo, For, Show } from "solid-js";
 
-import { getChunks } from "@/background/utils/chunks";
 import { FeedPost } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
 import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import Post from "@/popup/pages/node-posts/Post";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
+import { getChunks } from "@/utils/chunks";
 import { PAGE_SIZE } from "@/utils/settings";
 
 import styles from "./Posts.module.css";
