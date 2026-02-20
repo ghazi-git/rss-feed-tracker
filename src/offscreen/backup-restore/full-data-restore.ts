@@ -2,7 +2,6 @@ import { strFromU8, unzipSync } from "fflate";
 import * as v from "valibot";
 
 import { getChunks } from "@/background/utils/chunks";
-import { retry } from "@/background/utils/retry-on-error";
 import { DB_NAME, ExtensionDB, getDBConnection } from "@/db-setup";
 import { PreferencesData } from "@/messaging-wrapper";
 import {
@@ -19,6 +18,7 @@ import { RestoreError } from "@/offscreen/errors";
 import { txDone } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
 import { getLogger, glogger } from "@/utils/logging";
+import { retry } from "@/utils/retry-on-error";
 
 export async function restoreExtension(
   fileURL: string,

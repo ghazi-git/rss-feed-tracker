@@ -2,9 +2,9 @@ import { parseFeed } from "feedsmith";
 import type { Atom, Json, Rss } from "feedsmith/types";
 
 import { FeedParseError, HttpError } from "@/background/utils/errors";
-import { retry } from "@/background/utils/retry-on-error";
 import { Post } from "@/db-setup";
 import { getLogger, glogger, Logger } from "@/utils/logging";
+import { retry } from "@/utils/retry-on-error";
 
 export async function fetchAndParseFeed(
   url: string,

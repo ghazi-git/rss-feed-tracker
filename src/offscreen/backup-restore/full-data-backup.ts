@@ -1,6 +1,5 @@
 import { AsyncZipDeflate, strToU8, Zip } from "fflate";
 
-import { retry } from "@/background/utils/retry-on-error";
 import { ExtensionDB, getDBConnection } from "@/db-setup";
 import { PreferencesData } from "@/messaging-wrapper";
 import {
@@ -13,6 +12,7 @@ import { BackupError } from "@/offscreen/errors";
 import { triggerFileDownload } from "@/offscreen/utils";
 import { getAll } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
+import { retry } from "@/utils/retry-on-error";
 
 import pkg from "../../../package.json";
 
