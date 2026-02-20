@@ -118,7 +118,9 @@ export default function ManageExtensionData() {
           }
         }}
       >
-        Rebuild Search Index
+        {searchMutation.isLoading || reindex.latest
+          ? "Rebuilding Search Index"
+          : "Rebuild Search Index"}
       </ManageDataButton>
       <ManageDataButton
         loading={exportMutation.isLoading}
@@ -162,6 +164,7 @@ export default function ManageExtensionData() {
             const fileURL = URL.createObjectURL(file);
             await restoreData({ fileURL });
             if (restoreMutation.isSuccess) {
+              mutateReindex(true);
               notifySuccess("Backup restored successfully.");
               const { uiTheme, ...prefs } = restoreMutation.data;
               setAndEnableTheme(uiTheme);
