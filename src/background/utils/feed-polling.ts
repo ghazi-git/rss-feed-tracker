@@ -149,7 +149,7 @@ export async function savePosts(
   const posts = getPostObjects(parsedPosts, node.id, fetchTime, markNewPostsUnread);
   const results = await bulkAddPosts(tx, posts);
   const insertedPosts = results.filter((res) => res.success);
-  logger.debug(`inserted ${insertedPosts} new post(s) in indexedDB`);
+  logger.debug(`inserted ${insertedPosts.length} new post(s) in indexedDB`);
   if (insertedPosts.length && markNewPostsUnread) {
     logger.debug("updating unread counts");
     await updateFeedUnreadCount(tx, node.id, insertedPosts.length);
@@ -169,7 +169,7 @@ export async function savePosts(
     node.id,
     node.feed.updateFrequency,
     fetchTime,
-    !!insertedPosts,
+    insertedPosts.length > 0,
     notes,
   );
   logger.debug(`done notes=${notes ?? "All parsed posts were inserted"}`);
