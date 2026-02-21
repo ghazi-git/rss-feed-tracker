@@ -1,5 +1,6 @@
 import Checkbox from "@/popup/components/forms/Checkbox";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
+import ExtensionVersion from "@/popup/pages/preferences/ExtensionVersion";
 import ManageExtensionData from "@/popup/pages/preferences/ManageExtensionData";
 import OrderPostsBySetting from "@/popup/pages/preferences/OrderPostsBySetting";
 import { ThemeSwitcher } from "@/popup/pages/preferences/ThemeSwitcher";
@@ -62,6 +63,7 @@ export default function Preferences() {
         }}
       />
       <ManageExtensionData />
+      <ExtensionVersion />
     </>
   );
 }

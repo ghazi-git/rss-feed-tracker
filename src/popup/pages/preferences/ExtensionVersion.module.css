@@ -1,0 +1,16 @@
+.version {
+  margin-block-start: var(--size-1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--size-1);
+
+  a {
+    font-size: var(--font-size-1);
+    color: var(--text-2);
+
+    &:hover {
+      text-decoration-color: var(--text-2);
+    }
+  }
+}
