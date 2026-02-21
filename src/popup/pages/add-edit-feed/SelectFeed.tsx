@@ -29,6 +29,7 @@ export default function SelectFeed() {
   }>();
   const [feedURL, setFeedURL] = createSignal(searchParams.feedURL ?? "");
   const [feeds, { refetch }] = createResource(
+    // eslint-disable-next-line solid/reactivity
     async () => {
       const response = await sendMessage("feeds/find", undefined);
       if (!response.success) throw new Error(response.errorMsg);

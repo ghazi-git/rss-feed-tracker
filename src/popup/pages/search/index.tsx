@@ -134,6 +134,7 @@ export default function SearchPage() {
         : null;
     setSearchInput({ ...formdata, before });
   };
+  // eslint-disable-next-line solid/reactivity
   const debouncedSearch = debounce(searchPosts, 200);
 
   return (
@@ -270,6 +271,7 @@ export default function SearchPage() {
 
 function createNodeOptionsResource() {
   return createResource(
+    // eslint-disable-next-line solid/reactivity
     async () => {
       const response = await sendMessage("nodes/get-options", undefined);
       if (!response.success) throw new Error(response.errorMsg);

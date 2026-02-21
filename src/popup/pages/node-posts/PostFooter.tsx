@@ -47,24 +47,30 @@ export default function PostFooter(props: { post: FeedPost }) {
         </Show>
         <BookmarkToggle
           bookmarked={!!props.post.bookmarked}
-          onToggleBookmarked={async (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            await toggleBookmarked(
-              props.post.feedId,
-              props.post.guid,
-              !props.post.bookmarked,
-            );
-          }}
+          onToggleBookmarked={
+            // eslint-disable-next-line solid/reactivity
+            async (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              await toggleBookmarked(
+                props.post.feedId,
+                props.post.guid,
+                !props.post.bookmarked,
+              );
+            }
+          }
         />
         <UnreadToggle
           unread={!!props.post.unread}
-          onToggleUnread={async (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const newUnread = !props.post.unread;
-            await toggleUnread(props.post.feedId, props.post.guid, newUnread);
-          }}
+          onToggleUnread={
+            // eslint-disable-next-line solid/reactivity
+            async (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const newUnread = !props.post.unread;
+              await toggleUnread(props.post.feedId, props.post.guid, newUnread);
+            }
+          }
         />
       </div>
     </div>

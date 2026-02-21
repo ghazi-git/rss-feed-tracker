@@ -54,6 +54,7 @@ export default function FolderChild(props: FolderChildProps) {
     if (mutation.isSuccess) {
       batch(() => {
         mutateUnreadCount({ delta: -props.node.unreadCount });
+        // eslint-disable-next-line solid/reactivity
         mutateNode((resp) => {
           const children = resp.children.map((c) => {
             return c.id === props.node.id ? { ...c, unreadCount: 0 } : c;

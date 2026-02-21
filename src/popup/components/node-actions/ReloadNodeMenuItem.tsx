@@ -14,11 +14,12 @@ export default function ReloadNodeMenuItem(props: { nodeId: number }) {
   return (
     <MenuItem
       class={mutation.isLoading ? styles.loading : ""}
-      onClick={async () => {
+      onClick={() => {
         if (!mutation.isLoading) {
-          await reloadFeeds(props.nodeId);
-          closeMenu();
-          focusTrigger();
+          reloadFeeds(props.nodeId).then(() => {
+            closeMenu();
+            focusTrigger();
+          });
         }
       }}
     >

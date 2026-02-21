@@ -30,7 +30,7 @@ export default function Post(props: { post: FeedPost }) {
       ref={ref}
       href={props.post.url}
       class={styles.post}
-      onClick={async (event) => {
+      onClick={(event) => {
         event.preventDefault();
         if (event.ctrlKey) {
           if (props.post.unread) {
@@ -44,7 +44,7 @@ export default function Post(props: { post: FeedPost }) {
           openWindow(props.post.url);
         } else {
           if (preferences.clickPostToToggleUnread) {
-            await toggleUnread(
+            toggleUnread(
               props.post.feedId,
               props.post.guid,
               !props.post.unread,

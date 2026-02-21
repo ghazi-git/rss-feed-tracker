@@ -80,27 +80,30 @@ export default function ManageExtensionData() {
       <legend>Manage Extension Data</legend>
       <ManageDataButton
         loading={clearingCache()}
-        onClick={async () => {
-          setClearingCache(true);
-          const deleted = await caches.delete(ICONS_CACHE);
-          setClearingCache(false);
-          if (deleted) {
-            notifySuccess("The cache was cleared.", { duration: 3000 });
-          } else {
-            notifyInfo("The cache has already been cleared.", {
-              duration: 3000,
-            });
+        onClick={
+          // eslint-disable-next-line solid/reactivity
+          async () => {
+            setClearingCache(true);
+            const deleted = await caches.delete(ICONS_CACHE);
+            setClearingCache(false);
+            if (deleted) {
+              notifySuccess("The cache was cleared.", { duration: 3000 });
+            } else {
+              notifyInfo("The cache has already been cleared.", {
+                duration: 3000,
+              });
+            }
           }
-        }}
+        }
       >
         Clear Feed Icons Cache
       </ManageDataButton>
       <ManageDataButton
-        onClick={async () => {
+        onClick={() => {
           // reset UI theme to system theme
           setAndEnableTheme(null);
           // reset preferences
-          await setPreferences(DEFAULT_PREFERENCES);
+          setPreferences(DEFAULT_PREFERENCES);
         }}
       >
         Reset Settings
@@ -108,14 +111,15 @@ export default function ManageExtensionData() {
       <ManageDataButton
         class={styles.search}
         loading={searchMutation.isLoading || reindex.latest}
-        onClick={async () => {
-          await rebuildIndex(undefined);
-          if (searchMutation.isSuccess) {
-            mutateReindex(true);
-            notifyInfo("Rebuilding the search index is now in progress");
-          } else if (searchMutation.isError) {
-            notifyError(searchMutation.errorMsg);
-          }
+        onClick={() => {
+          rebuildIndex(undefined).then(() => {
+            if (searchMutation.isSuccess) {
+              mutateReindex(true);
+              notifyInfo("Rebuilding the search index is now in progress");
+            } else if (searchMutation.isError) {
+              notifyError(searchMutation.errorMsg);
+            }
+          });
         }}
       >
         {searchMutation.isLoading || reindex.latest
@@ -124,17 +128,18 @@ export default function ManageExtensionData() {
       </ManageDataButton>
       <ManageDataButton
         loading={exportMutation.isLoading}
-        onClick={async () => {
-          await exportOPML(undefined);
-          if (exportMutation.isError) {
-            notifyError(exportMutation.errorMsg);
-          }
+        onClick={() => {
+          exportOPML(undefined).then(() => {
+            if (exportMutation.isError) {
+              notifyError(exportMutation.errorMsg);
+            }
+          });
         }}
       >
         Export Feeds
       </ManageDataButton>
       <ManageDataButton
-        onClick={async () => {
+        onClick={() => {
           navigate(`/library/feeds/import?${prevUrlSearchString()}`);
         }}
       >
@@ -143,43 +148,47 @@ export default function ManageExtensionData() {
 
       <ManageDataButton
         loading={backupMutation.isLoading}
-        onClick={async () => {
-          await backupData({ uiTheme: uiTheme(), ...preferences });
-          if (backupMutation.isError) {
-            notifyError(backupMutation.errorMsg);
-          }
+        onClick={() => {
+          backupData({ uiTheme: uiTheme(), ...preferences }).then(() => {
+            if (backupMutation.isError) {
+              notifyError(backupMutation.errorMsg);
+            }
+          });
         }}
       >
         Full Data Backup
       </ManageDataButton>
       <ManageDataButton
         loading={restoreMutation.isLoading}
-        onClick={async () => {
-          try {
-            const [fileHandle] = await window.showOpenFilePicker({
-              id: "data-restore",
-              types: [{ accept: { "application/zip": [".zip"] } }],
-            });
-            const file = await fileHandle.getFile();
-            const fileURL = URL.createObjectURL(file);
-            await restoreData({ fileURL });
-            if (restoreMutation.isSuccess) {
-              mutateReindex(true);
-              notifySuccess("Backup restored successfully.");
-              const { uiTheme, ...prefs } = restoreMutation.data;
-              setAndEnableTheme(uiTheme);
-              await setPreferences(prefs);
-            } else if (restoreMutation.isError) {
-              notifyError(restoreMutation.errorMsg);
-            }
-          } catch (e) {
-            if (e instanceof DOMException && e.name === "AbortError") {
-              // user didn't choose a file, do nothing
-            } else {
-              glogger.error("data restore failure", e);
+        onClick={
+          // eslint-disable-next-line solid/reactivity
+          async () => {
+            try {
+              const [fileHandle] = await window.showOpenFilePicker({
+                id: "data-restore",
+                types: [{ accept: { "application/zip": [".zip"] } }],
+              });
+              const file = await fileHandle.getFile();
+              const fileURL = URL.createObjectURL(file);
+              await restoreData({ fileURL });
+              if (restoreMutation.isSuccess) {
+                mutateReindex(true);
+                notifySuccess("Backup restored successfully.");
+                const { uiTheme, ...prefs } = restoreMutation.data;
+                setAndEnableTheme(uiTheme);
+                await setPreferences(prefs);
+              } else if (restoreMutation.isError) {
+                notifyError(restoreMutation.errorMsg);
+              }
+            } catch (e) {
+              if (e instanceof DOMException && e.name === "AbortError") {
+                // user didn't choose a file, do nothing
+              } else {
+                glogger.error("data restore failure", e);
+              }
             }
           }
-        }}
+        }
       >
         Full Data Restore...
       </ManageDataButton>

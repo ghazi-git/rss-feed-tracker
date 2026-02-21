@@ -50,12 +50,10 @@ export default function Bookmarks() {
     registerPostsCountCallback,
     removePostsCountCallback,
   } = useBodyContext();
-  onMount(() => {
-    registerPostsCountCallback(() => posts().length);
-  });
-  onCleanup(() => {
-    removePostsCountCallback();
-  });
+  // eslint-disable-next-line solid/reactivity
+  onMount(() => registerPostsCountCallback(() => posts().length));
+  onCleanup(() => removePostsCountCallback());
+
   const initialState = useInitialState();
   // page size for the first request when the last visited page is this one
   let initialPageSize = initialState?.postsCount ?? undefined;

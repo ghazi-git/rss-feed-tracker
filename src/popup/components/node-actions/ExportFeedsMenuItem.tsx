@@ -13,13 +13,14 @@ export default function ExportFeedsMenuItem(props: { folderId: number }) {
 
   return (
     <MenuItem
-      onClick={async () => {
+      onClick={() => {
         if (!mutation.isLoading) {
-          await triggerOPMLExport({ folder: props.folderId });
-          if (mutation.isError) {
-            notifyError(mutation.errorMsg);
-          }
-          closeMenu();
+          triggerOPMLExport({ folder: props.folderId }).then(() => {
+            if (mutation.isError) {
+              notifyError(mutation.errorMsg);
+            }
+            closeMenu();
+          });
         }
       }}
     >
