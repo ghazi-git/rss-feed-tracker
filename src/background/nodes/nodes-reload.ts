@@ -1,4 +1,3 @@
-import { getNodeTree } from "@/background/folders/folders-options";
 import { NotFoundError } from "@/background/utils/errors";
 import { loadFeeds, savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
@@ -7,6 +6,7 @@ import { NodeReloadResponse } from "@/messaging-wrapper";
 import { loadPreferences } from "@/utils/extension-storage";
 import { txDone } from "@/utils/idb-helpers";
 import { getLogger } from "@/utils/logging";
+import { getNodeTree } from "@/utils/nodes";
 
 export async function reloadNode(id: number): Promise<NodeReloadResponse> {
   using conn = await getDBConnection();

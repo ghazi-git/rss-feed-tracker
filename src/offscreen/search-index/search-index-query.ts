@@ -1,9 +1,9 @@
-import { getChildFeedIds } from "@/background/utils/nodes";
-import { addFeedData } from "@/background/utils/posts";
 import { ExtensionDB, getDBConnection } from "@/db-setup";
 import { SearchQueryParams, SearchResult } from "@/messaging-wrapper";
 import { SearchIndexError } from "@/offscreen/errors";
 import { OrderPostsBy } from "@/utils/extension-storage";
+import { getChildFeedIds } from "@/utils/nodes";
+import { addFeedData } from "@/utils/posts";
 import { getPostID, getSearchIndex } from "@/utils/search";
 import { SEARCH_RESULTS_LIMIT } from "@/utils/settings";
 

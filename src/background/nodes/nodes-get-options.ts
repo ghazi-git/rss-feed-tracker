@@ -1,6 +1,6 @@
-import { getNodeTree, getOptions } from "@/background/folders/folders-options";
 import { getDBConnection } from "@/db-setup";
 import { NodeOptionsResponse } from "@/messaging-wrapper";
+import { getNodeTree, getOptions } from "@/utils/nodes";
 
 export async function getNodeOptions(): Promise<NodeOptionsResponse> {
   using conn = await getDBConnection();

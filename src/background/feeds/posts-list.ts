@@ -1,12 +1,7 @@
 import { IndexNames } from "idb";
 
 import { NotFoundError } from "@/background/utils/errors";
-import { getChildFeedIds } from "@/background/utils/nodes";
-import {
-  addFeedData,
-  getNextPageCursor,
-  getPostsFromIndex,
-} from "@/background/utils/posts";
+import { getNextPageCursor, getPostsFromIndex } from "@/background/utils/posts";
 import { FeedTrackerDB, getDBConnection, Post, ReadTX } from "@/db-setup";
 import {
   FeedPost,
@@ -16,6 +11,8 @@ import {
 } from "@/messaging-wrapper";
 import { loadPreferences, OrderPostsBy } from "@/utils/extension-storage";
 import { getAllFromIndex } from "@/utils/idb-helpers";
+import { getChildFeedIds } from "@/utils/nodes";
+import { addFeedData } from "@/utils/posts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export async function listPosts(

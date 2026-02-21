@@ -1,12 +1,9 @@
-import {
-  addFeedData,
-  getNextPageCursor,
-  getPostsFromIndex,
-} from "@/background/utils/posts";
+import { getNextPageCursor, getPostsFromIndex } from "@/background/utils/posts";
 import { getDBConnection, Post, ReadTX } from "@/db-setup";
 import { PostsCursor, PostsResponse, PostsView } from "@/messaging-wrapper";
 import { loadPreferences } from "@/utils/extension-storage";
 import { getAllFromIndex } from "@/utils/idb-helpers";
+import { addFeedData } from "@/utils/posts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export async function getBookmarks(

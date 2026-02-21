@@ -1,7 +1,8 @@
 import { NotFoundError } from "@/background/utils/errors";
-import { getChildFeedIds, getNodeLastRunAt } from "@/background/utils/nodes";
+import { getNodeLastRunAt } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
 import { NodePostsResponse } from "@/messaging-wrapper";
+import { getChildFeedIds } from "@/utils/nodes";
 
 export async function getNodeForNodePostsPage(
   id: number,

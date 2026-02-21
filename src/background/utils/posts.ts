@@ -1,7 +1,7 @@
 import { IndexNames, unwrap } from "idb";
 
-import { Feed, FeedTrackerDB, Post, ReadTX, ReadWriteTX } from "@/db-setup";
-import { FeedPost, PostsCursor } from "@/messaging-wrapper";
+import { FeedTrackerDB, Post, ReadTX, ReadWriteTX } from "@/db-setup";
+import { PostsCursor } from "@/messaging-wrapper";
 import { OrderPostsBy } from "@/utils/extension-storage";
 import { getAllFromIndex } from "@/utils/idb-helpers";
 
@@ -15,17 +15,6 @@ export async function getPostsFromIndex(
     query,
     direction: "prev",
     count: pageSize,
-  });
-}
-
-export function addFeedData(feeds: Feed[], posts: Post[]): FeedPost[] {
-  const feedEntries = feeds.map((f) => [f.id, f] as const);
-  const feedMap = new Map(feedEntries);
-  return posts.map((post) => {
-    const f = feedMap.get(post.feedId);
-    const feedName = f ? f.name : "Deleted Feed";
-    const feedFavicon = f ? f.feed.favicon : null;
-    return { ...post, feedName, feedFavicon };
   });
 }
 

@@ -1,12 +1,9 @@
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { NotFoundError } from "@/background/utils/errors";
-import {
-  getAncestors,
-  getChildFeedIds,
-  getNodeMap,
-} from "@/background/utils/nodes";
+import { getAncestors, getNodeMap } from "@/background/utils/nodes";
 import { getDBConnection, Post } from "@/db-setup";
 import { txDone } from "@/utils/idb-helpers";
+import { getChildFeedIds } from "@/utils/nodes";
 
 export async function markAllPostsAsRead(
   nodeId: number,

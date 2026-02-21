@@ -1,4 +1,3 @@
-import { getNodeTree } from "@/background/folders/folders-options";
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
 import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
 import {
@@ -11,6 +10,7 @@ import {
   TreeNode,
 } from "@/db-setup";
 import { FeedFormData } from "@/messaging-wrapper";
+import { getChildFeedIds } from "@/utils/nodes";
 import { SORT_ORDER_STEP } from "@/utils/settings";
 
 export async function getHighestSortOrder(
@@ -44,12 +44,6 @@ export function getAncestors(nodeId: number, nodeMap: Map<number, TreeNode>) {
   }
 
   return ancestors;
-}
-
-export function getChildFeedIds(folder: Folder, nodes: TreeNode[]) {
-  const nodeTree = getNodeTree(folder, nodes);
-  const childFeeds = nodeTree.map(([n]) => n).filter((n) => n.type === "feed");
-  return new Set(childFeeds.map((f) => f.id));
 }
 
 export function getNodeLastRunAt(
