@@ -13,6 +13,8 @@ export class BackupError extends OffscreenError {}
 
 export class RestoreError extends OffscreenError {}
 
+export class SearchIndexError extends OffscreenError {}
+
 export function getErrorMsg(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: any,

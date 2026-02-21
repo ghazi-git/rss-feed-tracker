@@ -20,6 +20,9 @@ export default defineConfig([
       },
     },
   },
+  banImportsFromSiblings("popup"),
+  banImportsFromSiblings("background"),
+  banImportsFromSiblings("offscreen"),
   tseslint.configs.recommended,
   solid,
   {
@@ -36,3 +39,20 @@ export default defineConfig([
     },
   },
 ]);
+
+function banImportsFromSiblings(topFolder) {
+  const topFolders = ["popup", "background", "offscreen"];
+  return {
+    files: [`src/${topFolder}/**/*.{ts,tsx}`],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: topFolders
+            .filter((f) => f !== topFolder)
+            .map((f) => `@/${f}/*`),
+        },
+      ],
+    },
+  };
+}

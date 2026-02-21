@@ -1,8 +1,8 @@
-import { NotFoundError } from "@/background/utils/errors";
 import { getChildFeedIds } from "@/background/utils/nodes";
 import { addFeedData } from "@/background/utils/posts";
 import { ExtensionDB, getDBConnection } from "@/db-setup";
 import { SearchQueryParams, SearchResult } from "@/messaging-wrapper";
+import { SearchIndexError } from "@/offscreen/errors";
 import { OrderPostsBy } from "@/utils/extension-storage";
 import { getPostID, getSearchIndex } from "@/utils/search";
 import { SEARCH_RESULTS_LIMIT } from "@/utils/settings";
@@ -16,7 +16,7 @@ export async function querySearchIndex(
   const nodes = await conn.db.getAll("nodes");
   const node = nodes.find((n) => n.id === params.nodeId);
   if (!node) {
-    throw new NotFoundError(
+    throw new SearchIndexError(
       "Unable to find the feed/folder, it may have been deleted.",
       { cause: `search: failure to get the node id=${params.nodeId}` },
     );
