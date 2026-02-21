@@ -1,3 +1,5 @@
+import { onCleanup } from "solid-js";
+
 import CommentsIcon from "@/popup/components/svg-icons/CommentsIcon";
 import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";
 import { openTab, openWindow } from "@/popup/utils/urls";
@@ -16,6 +18,8 @@ export default function CommentsLink(props: { url: string }) {
       openTab(props.url, true);
     }
   };
+
+  onCleanup(() => hideLinkPreview(props.url));
 
   return (
     <div
@@ -49,7 +53,7 @@ export default function CommentsLink(props: { url: string }) {
       }}
       onMouseOut={(event) => {
         event.stopPropagation();
-        hideLinkPreview();
+        hideLinkPreview(props.url);
       }}
       onFocus={(event) => {
         event.stopPropagation();
@@ -57,7 +61,7 @@ export default function CommentsLink(props: { url: string }) {
       }}
       onBlur={(event) => {
         event.stopPropagation();
-        hideLinkPreview();
+        hideLinkPreview(props.url);
       }}
     >
       <CommentsIcon />

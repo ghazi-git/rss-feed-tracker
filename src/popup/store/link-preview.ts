@@ -13,8 +13,8 @@ function showLinkPreview(url: string) {
   setPreview({ url, show: true });
 }
 
-function hideLinkPreview() {
-  if (preview.show) {
+function hideLinkPreview(url: string) {
+  if (preview.show && preview.url === url) {
     hideTimerId = setTimeout(() => {
       setPreview("show", false);
     }, 300);
