@@ -1,0 +1,24 @@
+{
+  // config options found at: https://docs.renovatebot.com/configuration-options/
+  // file based on config:best-practices
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["replacements:all", "workarounds:all"],
+  ignorePaths: ["**/node_modules/**", "**/tests/**"],
+  dependencyDashboard: false,
+  schedule: "every 2 months on the first day of the month",
+  packageRules: [
+    {
+      groupName: "All NPM Dependencies",
+      matchManagers: ["npm"],
+      rangeStrategy: "pin",
+      minimumReleaseAge: "14 days",
+      abandonmentThreshold: "2 years",
+    },
+    {
+      groupName: "All Github Actions",
+      matchManagers: ["github-actions"],
+      minimumReleaseAge: "7 days",
+      abandonmentThreshold: "1 year",
+    },
+  ],
+}
