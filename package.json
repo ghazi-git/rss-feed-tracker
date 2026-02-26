@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "lint": "lefthook run pre-commit --all-files",
     "build": "vite build"
   },
   "dependencies": {
