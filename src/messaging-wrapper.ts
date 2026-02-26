@@ -196,7 +196,6 @@ interface OPMLImportParams {
 export interface PreferencesData {
   uiTheme: "light" | "dark" | null;
   defaultFeedUpdateFrequency: number | null;
-  markNewPostsUnread: boolean;
   clickPostToToggleUnread: boolean;
   orderPostsBy: OrderPostsBy;
   groupFolderPosts: boolean;

@@ -252,11 +252,10 @@ export function getPostObjects(
   parsedPosts: ParsedPost[],
   feedId: number,
   fetchTime: number,
-  markNewPostsUnread: boolean,
 ) {
   return parsedPosts.map((post) => ({
     ...post,
-    unread: markNewPostsUnread ? 1 : 0,
+    unread: 1,
     bookmarked: 0,
     feedId,
     receivedAt: fetchTime,

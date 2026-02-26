@@ -35,14 +35,6 @@ export default function Preferences() {
         }}
       />
       <Checkbox
-        name="trackUnread"
-        label="Mark new posts as unread"
-        checked={preferences.markNewPostsUnread}
-        onChange={(event) => {
-          setPreferences({ markNewPostsUnread: event.target.checked });
-        }}
-      />
-      <Checkbox
         name="clickPostToToggleUnread"
         label="Post click toggles unread"
         helpText="When unchecked, clicking on a post will open it in a new tab"

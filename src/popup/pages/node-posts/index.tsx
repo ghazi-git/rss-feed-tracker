@@ -35,7 +35,6 @@ import {
 } from "@/popup/utils/last-visited-page";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
-import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { createQuery } from "@/popup/utils/query";
 
 import styles from "./index.module.css";
@@ -129,7 +128,6 @@ export default function NodePosts() {
   const { node, mutateUnreadCount, mutateMarkAsReadUntil } =
     createNodeResource();
   const isFolderNode = () => node.latest?.type === "folder";
-  const { preferences } = usePreferencesContext();
   const [newPostsStore, setNewPostsStore] = createStore<NewPostsStore>({
     hasNewPosts: false,
     unreadCountDelta: null,
@@ -140,13 +138,8 @@ export default function NodePosts() {
     await reload({ id });
     if (mutation.isSuccess) {
       notifySuccess(getReloadSuccessMessage(mutation.data.newPostsCount));
-      // don't show the newPosts element when preferences.markNewPostsUnread
-      // is false and the user is in the Unread tab
       const hasNewPosts = !!mutation.data.newPostsCount;
-      if (
-        hasNewPosts &&
-        (postsView() === "all" || preferences.markNewPostsUnread)
-      ) {
+      if (hasNewPosts) {
         setNewPostsStore(({ unreadCountDelta }) => ({
           hasNewPosts: true,
           markAsReadUntil: mutation.data.markAsReadUntil,
@@ -186,10 +179,7 @@ export default function NodePosts() {
           if (response.success) {
             const currentCount = getCurrentCount();
             const newCount = response.data.unreadCount;
-            if (
-              newCount > currentCount &&
-              (postsView() === "all" || preferences.markNewPostsUnread)
-            ) {
+            if (newCount > currentCount) {
               setNewPostsStore(({ unreadCountDelta }) => ({
                 hasNewPosts: true,
                 unreadCountDelta:

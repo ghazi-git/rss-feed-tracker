@@ -16,7 +16,6 @@ import {
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
 import { getChunks } from "@/utils/chunks";
-import { loadPreferences } from "@/utils/extension-storage";
 import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
 import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
 import { getLogger, glogger, Logger } from "@/utils/logging";
@@ -86,9 +85,6 @@ export async function loadFeeds(
   feeds: Feed[],
   parentLogger: Logger,
 ) {
-  const preferences = await loadPreferences();
-  const markNewPostsUnread = preferences.markNewPostsUnread;
-
   let totalNewPosts = 0;
   // load feeds in parallel
   const chunks = getChunks(feeds, 5);
@@ -107,7 +103,6 @@ export async function loadFeeds(
             feed,
             parsedFeed.posts,
             Date.now(),
-            markNewPostsUnread,
             logger,
           );
           await txDone(tx);
@@ -132,7 +127,6 @@ export async function savePosts(
   node: Feed,
   parsedPosts: ParsedPost[],
   fetchTime: number,
-  markNewPostsUnread: boolean,
   logger: Logger | null = null,
 ) {
   logger = logger ?? getLogger({ action: "save-posts" });
@@ -146,15 +140,14 @@ export async function savePosts(
 
   logger.debug(`parsed ${parsedPosts.length} post(s)`);
   // prettier-ignore
-  const posts = getPostObjects(parsedPosts, node.id, fetchTime, markNewPostsUnread);
+  const posts = getPostObjects(parsedPosts, node.id, fetchTime);
   const results = await bulkAddPosts(tx, posts);
   const insertedPosts = results.filter((res) => res.success);
   logger.debug(`inserted ${insertedPosts.length} new post(s) in indexedDB`);
-  if (insertedPosts.length && markNewPostsUnread) {
+  if (insertedPosts.length) {
     logger.debug("updating unread counts");
     await updateFeedUnreadCount(tx, node.id, insertedPosts.length);
-  }
-  if (insertedPosts.length) {
+    // schedule indexing of the new posts
     const opStore = tx.objectStore("searchIndexOperations");
     insertedPosts.forEach((res) => {
       const operation = getAddOrUpdateOperation(res.item, "add");

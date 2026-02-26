@@ -3,14 +3,11 @@ import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { createFeed } from "@/background/utils/nodes";
 import { getDBConnection } from "@/db-setup";
 import { FeedFormData } from "@/messaging-wrapper";
-import { loadPreferences } from "@/utils/extension-storage";
 import { txDone } from "@/utils/idb-helpers";
 
 export async function loadAndCreateFeed(data: FeedFormData) {
   const parsedFeed = await fetchAndParseFeed(data.url);
 
-  const preferences = await loadPreferences();
-  const markNewPostsUnread = preferences.markNewPostsUnread;
   const fetchTime = Date.now();
   const favicon = parsedFeed.favicon;
   using conn = await getDBConnection();
@@ -21,7 +18,7 @@ export async function loadAndCreateFeed(data: FeedFormData) {
 
   const feed = await createFeed(tx, data, favicon, fetchTime);
 
-  await savePosts(tx, feed, parsedFeed.posts, fetchTime, markNewPostsUnread);
+  await savePosts(tx, feed, parsedFeed.posts, fetchTime);
 
   await txDone(tx);
 

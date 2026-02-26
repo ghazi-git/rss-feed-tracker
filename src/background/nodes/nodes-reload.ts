@@ -3,7 +3,6 @@ import { loadFeeds, savePosts } from "@/background/utils/feed-polling";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
 import { ExtensionDB, Feed, Folder, getDBConnection } from "@/db-setup";
 import { NodeReloadResponse } from "@/messaging-wrapper";
-import { loadPreferences } from "@/utils/extension-storage";
 import { txDone } from "@/utils/idb-helpers";
 import { getLogger } from "@/utils/logging";
 import { getNodeTree } from "@/utils/nodes";
@@ -34,8 +33,6 @@ export async function reloadNode(id: number): Promise<NodeReloadResponse> {
 }
 
 async function reloadFeed(db: ExtensionDB, node: Feed) {
-  const preferences = await loadPreferences();
-  const markNewPostsUnread = preferences.markNewPostsUnread;
   const logger = getLogger({
     action: "reload-feed",
     scheduledAt: new Date(),
@@ -52,7 +49,6 @@ async function reloadFeed(db: ExtensionDB, node: Feed) {
     node,
     parsedFeed.posts,
     Date.now(),
-    markNewPostsUnread,
     logger,
   );
   await txDone(tx);

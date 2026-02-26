@@ -41,7 +41,7 @@ export async function importOPML(fileContent: string, folder: number) {
   // in the background). If the service worker is killed by chrome for any
   // reason, then the feeds not fetched will be picked up in the next alarm
   // tick (in a minute)
-  loadPosts(feeds, preferences.markNewPostsUnread);
+  loadPosts(feeds);
 }
 
 function parseOPML(fileContent: string) {
@@ -102,7 +102,7 @@ async function createNodes(
   return feeds;
 }
 
-async function loadPosts(feeds: Feed[], markNewPostsUnread: boolean) {
+async function loadPosts(feeds: Feed[]) {
   using conn = await getDBConnection();
   const scheduledAt = new Date().toUTCString();
   // load feeds in parallel
@@ -128,7 +128,7 @@ async function loadPosts(feeds: Feed[], markNewPostsUnread: boolean) {
           }
           const posts = parsedFeed.posts;
           const now = Date.now();
-          await savePosts(tx, node, posts, now, markNewPostsUnread, logger);
+          await savePosts(tx, node, posts, now, logger);
           await txDone(tx);
         })
         .catch(async (e) => {

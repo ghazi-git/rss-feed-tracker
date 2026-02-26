@@ -29,7 +29,6 @@ export const BackupManifestSchema = v.object({
       "uiTheme must be either 'light', 'dark' or null",
     ),
     defaultFeedUpdateFrequency: FrequencySchema,
-    markNewPostsUnread: v.boolean("markNewPostsUnread must be a boolean"),
     clickPostToToggleUnread: v.boolean(
       "clickPostToToggleUnread must be a boolean",
     ),
