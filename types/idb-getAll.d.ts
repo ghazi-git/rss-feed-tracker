@@ -50,8 +50,9 @@ declare module "idb" {
     | "transaction"
     | "objectStoreNames"
   >;
-  interface IDBPDatabase<DBTypes extends DBSchema | unknown = unknown>
-    extends IDBPDatabaseExtends {
+  interface IDBPDatabase<
+    DBTypes extends DBSchema | unknown = unknown,
+  > extends IDBPDatabaseExtends {
     /**
      * Retrieves all values in a store that match the query.
      * Supported in chrome/edge 141 or newer.

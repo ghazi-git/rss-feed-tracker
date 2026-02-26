@@ -22,7 +22,6 @@ export default function ManageDataButton(props: ManageDataButtonProps) {
   );
 }
 
-interface ManageDataButtonProps
-  extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ManageDataButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
 }
