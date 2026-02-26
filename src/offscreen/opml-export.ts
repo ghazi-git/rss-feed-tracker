@@ -19,7 +19,7 @@ export async function exportOPML(folder: number) {
   const nodes = await getAll(tx, "nodes");
   const outlines = getOutlineTree(folder, nodes);
   if (!outlines.length) {
-    throw new OPMLExportError("There are no feeds to export in this folder.");
+    throw new OPMLExportError("There are no feeds to export.");
   }
 
   const fileContent = generateOpml({
