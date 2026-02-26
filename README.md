@@ -22,6 +22,7 @@ Chrome extension to manage RSS feeds.
   in the extension popup).
 - An icon with a link to the comments URL is added to the bottom of the post when a comments link is available. This
   is pretty handy for feeds like 'Hacker News'.
+- Posts are grouped by feed when viewing all posts under a folder (with a setting to disable posts grouping).
 - Automatically check for feeds in the current tab when adding a feed.
 - Turn off auto-updates for specific feeds.
 - Bookmark posts.

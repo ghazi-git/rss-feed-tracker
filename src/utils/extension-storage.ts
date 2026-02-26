@@ -17,7 +17,7 @@ export const DEFAULT_PREFERENCES: StoredPreferences = {
   defaultFeedUpdateFrequency: 2 * 60 * 60 * 1000,
   clickPostToToggleUnread: false,
   orderPostsBy: "publishedAt",
-  groupFolderPosts: false,
+  groupFolderPosts: true,
 };
 
 export interface StoredPreferences {
