@@ -33,8 +33,8 @@ export default function PostFooter(props: { post: FeedPost }) {
         class={styles.time}
         title={
           orderByReceivedAt()
-            ? `Fetched at: ${formatTimestamp(props.post.receivedAt)}`
-            : `Published at: ${formatTimestamp(props.post.publishedAt)}`
+            ? `Fetched: ${formatTimestamp(props.post.receivedAt)}`
+            : `Published: ${formatTimestamp(props.post.publishedAt)}`
         }
       >
         {orderByReceivedAt()
