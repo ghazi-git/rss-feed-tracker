@@ -1,0 +1,14 @@
+.restore {
+  button {
+    inline-size: 100%;
+  }
+
+  .warning {
+    color: var(--error-color);
+  }
+
+  p {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+}

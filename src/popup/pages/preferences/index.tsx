@@ -3,9 +3,15 @@ import { onMount } from "solid-js";
 import { useBodyContext } from "@/popup/components/Body";
 import Checkbox from "@/popup/components/forms/Checkbox";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
+import BackupButton from "@/popup/pages/preferences/BackupButton";
+import ExportFeedsButton from "@/popup/pages/preferences/ExportFeedsButton";
 import ExtensionVersion from "@/popup/pages/preferences/ExtensionVersion";
-import ManageExtensionData from "@/popup/pages/preferences/ManageExtensionData";
+import IconsCacheButton from "@/popup/pages/preferences/IconsCacheButton";
+import ImportFeedsButton from "@/popup/pages/preferences/ImportFeedsButton";
 import OrderPostsBySetting from "@/popup/pages/preferences/OrderPostsBySetting";
+import ResetSettingsButton from "@/popup/pages/preferences/ResetSettingsButton";
+import RestoreButton from "@/popup/pages/preferences/RestoreButton";
+import SearchIndexButton from "@/popup/pages/preferences/SearchIndexButton";
 import { ThemeSwitcher } from "@/popup/pages/preferences/ThemeSwitcher";
 import {
   useCurrentURL,
@@ -69,7 +75,16 @@ export default function Preferences() {
           setPreferences({ groupFolderPosts: event.target.checked });
         }}
       />
-      <ManageExtensionData />
+      <fieldset class={styles["manage-data"]}>
+        <legend>Manage Extension Data</legend>
+        <IconsCacheButton />
+        <ResetSettingsButton />
+        <SearchIndexButton class={styles.search} />
+        <ExportFeedsButton />
+        <ImportFeedsButton />
+        <BackupButton />
+        <RestoreButton />
+      </fieldset>
       <ExtensionVersion />
     </>
   );
