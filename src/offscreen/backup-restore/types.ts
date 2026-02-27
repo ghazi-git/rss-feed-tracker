@@ -115,7 +115,6 @@ export const FeedMetadataBackupSchema = v.object({
     v.literal("failure"),
     v.null(),
   ]),
-  lastRunNotes: v.union([v.string(), v.null()]),
   lastSuccessfulRunAt: v.union([PositiveIntegerSchema, v.null()]),
   lastUpdatedAt: v.union([PositiveIntegerSchema, v.null()]),
 });

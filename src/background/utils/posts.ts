@@ -63,7 +63,7 @@ export async function bulkAddPosts(tx: ReadWriteTX, posts: Post[]) {
 
 export function describeSaveResults(results: PostAddResult[]) {
   const failed = results.filter((res) => !res.success);
-  if (!failed.length) return null;
+  if (failed.length === 0) return "All parsed posts were inserted";
 
   const duplicateCount = failed.filter(
     (res) => res.errorName === "ConstraintError",

@@ -239,7 +239,6 @@ async function insertNodes(
           nextRunAt: null,
           lastRunAt: null,
           lastRunResult: null,
-          lastRunNotes: null,
           lastSuccessfulRunAt: null,
           lastUpdatedAt: null,
         }

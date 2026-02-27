@@ -7,7 +7,6 @@ export async function saveSuccessMetadata(
   feedFrequency: number | null,
   fetchTime: number,
   hasNewPosts: boolean = false,
-  notes: string | null = null,
 ) {
   const store = tx.objectStore("feedmetadata");
   let metadata = await store.get(feedId);
@@ -19,7 +18,6 @@ export async function saveSuccessMetadata(
     nextRunAt: feedFrequency ? fetchTime + feedFrequency : null,
     lastRunAt: fetchTime,
     lastRunResult: "success",
-    lastRunNotes: notes,
     lastSuccessfulRunAt: fetchTime,
   };
   if (hasNewPosts) {
@@ -34,17 +32,12 @@ export function getInitialFeedmetadata(feedId: number): FeedMetadata {
     nextRunAt: null,
     lastRunAt: null,
     lastRunResult: null,
-    lastRunNotes: null,
     lastSuccessfulRunAt: null,
     lastUpdatedAt: null,
   };
 }
 
-export async function saveFailureMetadata(
-  db: ExtensionDB,
-  feed: Feed,
-  failureReason: string,
-) {
+export async function saveFailureMetadata(db: ExtensionDB, feed: Feed) {
   const tx = db.transaction(["feedmetadata"], "readwrite");
   let metadata = await getObject(tx, "feedmetadata", feed.id);
   if (!metadata) {
@@ -57,7 +50,6 @@ export async function saveFailureMetadata(
       : null,
     lastRunAt: now,
     lastRunResult: "failure",
-    lastRunNotes: failureReason,
   };
   await saveObject(tx, "feedmetadata", { ...metadata, ...updates });
 

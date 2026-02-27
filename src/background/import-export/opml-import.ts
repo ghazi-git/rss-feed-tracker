@@ -133,8 +133,7 @@ async function loadPosts(feeds: Feed[]) {
         })
         .catch(async (e) => {
           logger.error("failure", e);
-          const msg = e instanceof Error ? e.message : "Unexpected error";
-          await saveFailureMetadata(conn.db, node, msg);
+          await saveFailureMetadata(conn.db, node);
         });
     });
     await Promise.all(promises);

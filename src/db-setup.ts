@@ -266,8 +266,6 @@ export interface FeedMetadata {
   nextRunAt: number | null; // helpful for filtering on due feeds
   lastRunAt: number | null; // last time we tried fetching posts whether it's successful or not
   lastRunResult: "success" | "failure" | null;
-  // lastRunNotes contains the failure reason or any notes/warnings during a successful run
-  lastRunNotes: string | null;
   lastSuccessfulRunAt: number | null; // last time we got a successful response from the rss feed
   lastUpdatedAt: number | null; // last time new posts were fetched
 }

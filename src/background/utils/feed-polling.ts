@@ -111,8 +111,7 @@ export async function loadFeeds(
         })
         .catch(async (e) => {
           logger.error("failure", e);
-          const msg = e instanceof Error ? e.message : "Unexpected error";
-          await saveFailureMetadata(db, feed, msg);
+          await saveFailureMetadata(db, feed);
           return 0;
         });
     });
@@ -132,8 +131,7 @@ export async function savePosts(
   logger = logger ?? getLogger({ action: "save-posts" });
   if (!parsedPosts.length) {
     const frequency = node.feed.updateFrequency;
-    const notes = "Feed has no posts.";
-    await saveSuccessMetadata(tx, node.id, frequency, fetchTime, false, notes);
+    await saveSuccessMetadata(tx, node.id, frequency, fetchTime, false);
     logger.debug("done (no posts)");
     return 0;
   }
@@ -156,16 +154,15 @@ export async function savePosts(
     // no 'await' to avoid the transaction being prematurely committed
     scheduleSearchIndexing();
   }
-  const notes = describeSaveResults(results);
   await saveSuccessMetadata(
     tx,
     node.id,
     node.feed.updateFrequency,
     fetchTime,
     insertedPosts.length > 0,
-    notes,
   );
-  logger.debug(`done notes=${notes ?? "All parsed posts were inserted"}`);
+  const notes = describeSaveResults(results);
+  logger.debug(`done notes=${notes}`);
 
   return insertedPosts.length;
 }
