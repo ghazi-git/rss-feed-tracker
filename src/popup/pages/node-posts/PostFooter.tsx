@@ -17,7 +17,7 @@ export default function PostFooter(props: { post: FeedPost }) {
   const { toggleUnread } = useToggleUnreadContext();
   const { toggleBookmarked } = useToggleBookmarkedContext();
   const { preferences } = usePreferencesContext();
-  const orderByReceivedAt = () => preferences.orderPostsBy === "receivedAt";
+  const orderByFetchedAt = () => preferences.orderPostsBy === "fetchedAt";
 
   return (
     <div class={styles.footer}>
@@ -32,13 +32,13 @@ export default function PostFooter(props: { post: FeedPost }) {
       <div
         class={styles.time}
         title={
-          orderByReceivedAt()
-            ? `Fetched: ${formatTimestamp(props.post.receivedAt)}`
+          orderByFetchedAt()
+            ? `Fetched: ${formatTimestamp(props.post.fetchedAt)}`
             : `Published: ${formatTimestamp(props.post.publishedAt)}`
         }
       >
-        {orderByReceivedAt()
-          ? humanizeTimestamp(props.post.receivedAt)
+        {orderByFetchedAt()
+          ? humanizeTimestamp(props.post.fetchedAt)
           : humanizeTimestamp(props.post.publishedAt)}
       </div>
       <div class={styles.actions}>

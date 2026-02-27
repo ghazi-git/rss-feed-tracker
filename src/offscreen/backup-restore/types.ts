@@ -33,8 +33,8 @@ export const BackupManifestSchema = v.object({
       "clickPostToToggleUnread must be a boolean",
     ),
     orderPostsBy: v.union(
-      [v.literal("publishedAt"), v.literal("receivedAt")],
-      "orderPostsBy must be either 'publishedAt' or 'receivedAt'",
+      [v.literal("publishedAt"), v.literal("fetchedAt")],
+      "orderPostsBy must be either 'publishedAt' or 'fetchedAt'",
     ),
     groupFolderPosts: v.boolean("groupFolderPosts must be a boolean"),
   }),
@@ -151,7 +151,7 @@ export const PostBackupSchema = v.object({
   commentsURL: v.union([URLSchema, v.null()]),
   unread: v.union([v.literal(0), v.literal(1)]),
   bookmarked: v.union([v.literal(0), v.literal(1)]),
-  receivedAt: PositiveIntegerSchema,
+  fetchedAt: PositiveIntegerSchema,
 });
 export type PostBackup = v.InferOutput<typeof PostBackupSchema>;
 

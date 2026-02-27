@@ -10,7 +10,7 @@ import styles from "./SortButton.module.css";
 export default function SortButton(props: SortButtonProps) {
   const { preferences } = usePreferencesContext();
   const timeField = () =>
-    preferences.orderPostsBy === "receivedAt" ? "Fetched" : "Published";
+    preferences.orderPostsBy === "fetchedAt" ? "Fetched" : "Published";
 
   return (
     <UnstyledButton class={styles.sort} onClick={(e) => props.onClick(e)}>

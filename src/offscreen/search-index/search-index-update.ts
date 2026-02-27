@@ -68,7 +68,7 @@ async function applyOperations(
         feedId: op.feedId,
         bookmarked: op.document.bookmarked,
         publishedAt: op.document.publishedAt,
-        receivedAt: op.document.receivedAt,
+        fetchedAt: op.document.fetchedAt,
       });
     } else {
       index.add({
@@ -77,7 +77,7 @@ async function applyOperations(
         feedId: op.feedId,
         bookmarked: op.document.bookmarked,
         publishedAt: op.document.publishedAt,
-        receivedAt: op.document.receivedAt,
+        fetchedAt: op.document.fetchedAt,
       });
     }
   });

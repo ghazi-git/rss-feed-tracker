@@ -15,8 +15,8 @@ export default function Posts(props: PostsProps) {
   const groupPosts = () => props.isFolder && preferences.groupFolderPosts;
   const groupedPosts = createMemo(() => {
     if (groupPosts()) {
-      const orderByReceivedAt = preferences.orderPostsBy === "receivedAt";
-      return getGroupedPosts(props.posts, orderByReceivedAt);
+      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
+      return getGroupedPosts(props.posts, orderByFetchedAt);
     } else {
       return props.posts;
     }
@@ -45,7 +45,7 @@ export default function Posts(props: PostsProps) {
   );
 }
 
-function getGroupedPosts(posts: FeedPost[], orderByReceivedAt: boolean) {
+function getGroupedPosts(posts: FeedPost[], orderByFetchedAt: boolean) {
   const chunks = getChunks(posts, PAGE_SIZE);
   const collator = new Intl.Collator(undefined, { sensitivity: "base" });
   const result: FeedPost[] = [];
@@ -54,8 +54,8 @@ function getGroupedPosts(posts: FeedPost[], orderByReceivedAt: boolean) {
       const res = collator.compare(p1.feedName, p2.feedName);
       if (res !== 0) return res;
 
-      return orderByReceivedAt
-        ? p2.receivedAt - p1.receivedAt
+      return orderByFetchedAt
+        ? p2.fetchedAt - p1.fetchedAt
         : p2.publishedAt - p1.publishedAt;
     });
     result.push(...chunk);

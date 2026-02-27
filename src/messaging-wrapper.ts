@@ -212,7 +212,7 @@ export interface SearchIndexProgressParams {
   initialCursor: SearchIndexProgressCursor;
 }
 export interface SearchIndexProgressCursor {
-  receivedAt: number;
+  fetchedAt: number;
   feedId: number;
   guid: string;
 }

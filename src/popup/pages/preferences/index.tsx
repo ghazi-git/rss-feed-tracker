@@ -51,7 +51,7 @@ export default function Preferences() {
         value={preferences.orderPostsBy}
         onChange={(e) => {
           const val =
-            e.target.value === "receivedAt" ? "receivedAt" : "publishedAt";
+            e.target.value === "fetchedAt" ? "fetchedAt" : "publishedAt";
           setPreferences({ orderPostsBy: val });
         }}
       />

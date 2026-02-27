@@ -121,7 +121,7 @@ interface IndexSearchResult {
   doc: {
     feedId: number;
     bookmarked: 0 | 1;
-    receivedAt: number;
+    fetchedAt: number;
     publishedAt: number;
   };
 }

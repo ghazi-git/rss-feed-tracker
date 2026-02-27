@@ -5,7 +5,7 @@ import RadioGroup, {
 export default function OrderPostsBySetting(props: Partial<RadioGroupProps>) {
   const orderByOptions = [
     { label: "Published", value: "publishedAt" },
-    { label: "Fetched by the extension", value: "receivedAt" },
+    { label: "Fetched by the extension", value: "fetchedAt" },
   ];
 
   return (

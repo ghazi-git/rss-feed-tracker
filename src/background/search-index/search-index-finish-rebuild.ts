@@ -45,11 +45,11 @@ async function getNewPostsSinceRebuildStart(
   initialCursor: SearchIndexProgressCursor,
 ) {
   const query = IDBKeyRange.lowerBound([
-    initialCursor.receivedAt,
+    initialCursor.fetchedAt,
     initialCursor.feedId,
     initialCursor.guid,
   ]);
-  return await getAllFromIndex(tx, "posts", "by_received_at_feed_id_guid", {
+  return await getAllFromIndex(tx, "posts", "by_fetched_at_feed_id_guid", {
     query,
   });
 }

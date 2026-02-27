@@ -27,4 +27,4 @@ export interface StoredPreferences {
   groupFolderPosts: boolean;
 }
 
-export type OrderPostsBy = "publishedAt" | "receivedAt";
+export type OrderPostsBy = "publishedAt" | "fetchedAt";

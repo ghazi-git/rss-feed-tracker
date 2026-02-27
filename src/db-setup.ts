@@ -66,38 +66,38 @@ export async function getDBConnection(dbVersion: number | null = null) {
           "feedId",
           "guid",
         ]);
-        store.createIndex("by_unread_received_at_feed_id_guid", [
+        store.createIndex("by_unread_fetched_at_feed_id_guid", [
           "unread",
-          "receivedAt",
+          "fetchedAt",
           "feedId",
           "guid",
         ]);
-        store.createIndex("by_unread_feed_id_received_at_guid", [
+        store.createIndex("by_unread_feed_id_fetched_at_guid", [
           "unread",
           "feedId",
-          "receivedAt",
+          "fetchedAt",
           "guid",
         ]);
-        store.createIndex("by_received_at_feed_id_guid", [
-          "receivedAt",
+        store.createIndex("by_fetched_at_feed_id_guid", [
+          "fetchedAt",
           "feedId",
           "guid",
         ]);
-        store.createIndex("by_feed_id_received_at_guid", [
+        store.createIndex("by_feed_id_fetched_at_guid", [
           "feedId",
-          "receivedAt",
+          "fetchedAt",
           "guid",
         ]);
-        store.createIndex("by_bookmarked_received_at_feed_id_guid", [
+        store.createIndex("by_bookmarked_fetched_at_feed_id_guid", [
           "bookmarked",
-          "receivedAt",
+          "fetchedAt",
           "feedId",
           "guid",
         ]);
-        store.createIndex("by_bookmarked_unread_received_at_feed_id_guid", [
+        store.createIndex("by_bookmarked_unread_fetched_at_feed_id_guid", [
           "bookmarked",
           "unread",
-          "receivedAt",
+          "fetchedAt",
           "feedId",
           "guid",
         ]);
@@ -179,16 +179,16 @@ export interface FeedTrackerDB extends DBSchema {
         number,
         string,
       ];
-      // indexes for displaying posts ordered by receivedAt
-      by_received_at_feed_id_guid: [number, number, string];
-      by_feed_id_received_at_guid: [number, number, string];
-      by_bookmarked_received_at_feed_id_guid: [
+      // indexes for displaying posts ordered by fetchedAt
+      by_fetched_at_feed_id_guid: [number, number, string];
+      by_feed_id_fetched_at_guid: [number, number, string];
+      by_bookmarked_fetched_at_feed_id_guid: [
         BooleanFlag,
         number,
         number,
         string,
       ];
-      by_bookmarked_unread_received_at_feed_id_guid: [
+      by_bookmarked_unread_fetched_at_feed_id_guid: [
         BooleanFlag,
         BooleanFlag,
         number,
@@ -197,10 +197,10 @@ export interface FeedTrackerDB extends DBSchema {
       ];
       // for marking all posts inside a folder as read even if new posts are
       // coming in at the same time
-      by_unread_received_at_feed_id_guid: [BooleanFlag, number, number, string];
+      by_unread_fetched_at_feed_id_guid: [BooleanFlag, number, number, string];
       // for marking all posts inside a feed as read even if new posts are
       // coming in at the same time
-      by_unread_feed_id_received_at_guid: [BooleanFlag, number, number, string];
+      by_unread_feed_id_fetched_at_guid: [BooleanFlag, number, number, string];
     };
   };
   locks: {
@@ -286,9 +286,9 @@ export interface Post {
   // can't use booleans since they can't be indexed
   unread: BooleanFlag;
   bookmarked: BooleanFlag;
-  // receivedAt might help with marking all read especially that new posts can
-  // arrive while the user is viewing at the unread files
-  receivedAt: number;
+  // fetchedAt helps with marking all posts as read, especially that new posts
+  // can arrive while the user is in the unread posts page
+  fetchedAt: number;
 }
 
 export interface Lock {
@@ -314,7 +314,7 @@ interface PostDocument {
   title: string;
   bookmarked: BooleanFlag;
   publishedAt: number;
-  receivedAt: number;
+  fetchedAt: number;
 }
 export interface SearchIndexAdd extends BaseSearchIndexOperation {
   operation: "add";

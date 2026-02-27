@@ -34,7 +34,7 @@ export async function getSearchIndexRebuildingProgress() {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isProgressCursor(obj: any): obj is SearchIndexProgressCursor {
   return (
-    typeof obj.receivedAt === "number" &&
+    typeof obj.fetchedAt === "number" &&
     typeof obj.feedId === "number" &&
     typeof obj.guid === "string"
   );
@@ -71,7 +71,7 @@ export function getAddOrUpdateOperation(
       title: post.title,
       bookmarked: post.bookmarked,
       publishedAt: post.publishedAt,
-      receivedAt: post.receivedAt,
+      fetchedAt: post.fetchedAt,
     },
   } as SearchIndexOperation;
 }

@@ -95,8 +95,8 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_unread_feed_id_received_at_guid"
+      orderBy === "fetchedAt"
+        ? "by_unread_feed_id_fetched_at_guid"
         : "by_unread_feed_id_published_at_guid",
       query,
       pageSize,
@@ -105,8 +105,8 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound([1, feedId], [1, feedId + 1], false, true);
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_unread_feed_id_received_at_guid"
+      orderBy === "fetchedAt"
+        ? "by_unread_feed_id_fetched_at_guid"
         : "by_unread_feed_id_published_at_guid",
       query,
       pageSize,
@@ -117,8 +117,8 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_feed_id_received_at_guid"
+      orderBy === "fetchedAt"
+        ? "by_feed_id_fetched_at_guid"
         : "by_feed_id_published_at_guid",
       query,
       pageSize,
@@ -127,8 +127,8 @@ async function getFeedPosts(
     const query = IDBKeyRange.bound([feedId], [feedId + 1], false, true);
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_feed_id_received_at_guid"
+      orderBy === "fetchedAt"
+        ? "by_feed_id_fetched_at_guid"
         : "by_feed_id_published_at_guid",
       query,
       pageSize,
@@ -149,8 +149,8 @@ async function getRootFolderPosts(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_unread_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_unread_fetched_at_feed_id_guid"
         : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
@@ -159,8 +159,8 @@ async function getRootFolderPosts(
     const query = IDBKeyRange.lowerBound([1]);
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_unread_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_unread_fetched_at_feed_id_guid"
         : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
@@ -170,8 +170,8 @@ async function getRootFolderPosts(
     const query = IDBKeyRange.upperBound(upper, true);
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_fetched_at_feed_id_guid"
         : "by_published_at_feed_id_guid",
       query,
       pageSize,
@@ -179,8 +179,8 @@ async function getRootFolderPosts(
   } else {
     return await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_fetched_at_feed_id_guid"
         : "by_published_at_feed_id_guid",
       null,
       pageSize,
@@ -210,8 +210,8 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      orderBy === "receivedAt"
-        ? "by_unread_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_unread_fetched_at_feed_id_guid"
         : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
@@ -221,8 +221,8 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      orderBy === "receivedAt"
-        ? "by_unread_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_unread_fetched_at_feed_id_guid"
         : "by_unread_published_at_feed_id_guid",
       query,
       pageSize,
@@ -233,8 +233,8 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      orderBy === "receivedAt"
-        ? "by_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_fetched_at_feed_id_guid"
         : "by_published_at_feed_id_guid",
       query,
       pageSize,
@@ -243,8 +243,8 @@ async function getFolderPosts(
     return await getPostsUsingIndexCursor(
       feedIds,
       tx,
-      orderBy === "receivedAt"
-        ? "by_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_fetched_at_feed_id_guid"
         : "by_published_at_feed_id_guid",
       null,
       pageSize,

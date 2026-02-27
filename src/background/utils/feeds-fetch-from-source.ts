@@ -258,7 +258,7 @@ export function getPostObjects(
     unread: 1,
     bookmarked: 0,
     feedId,
-    receivedAt: fetchTime,
+    fetchedAt: fetchTime,
   })) as Post[];
 }
 

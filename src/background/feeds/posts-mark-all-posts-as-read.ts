@@ -25,19 +25,19 @@ export async function markAllPostsAsRead(
   let posts: Post[] = [];
   const postStore = tx.objectStore("posts");
   if (node.type === "feed") {
-    const index = postStore.index("by_unread_feed_id_received_at_guid");
+    const index = postStore.index("by_unread_feed_id_fetched_at_guid");
     posts = await index.getAll(
       IDBKeyRange.bound([1, nodeId, 0], [1, nodeId, markAsReadUntil + 1]),
     );
   } else if (!node.parentId) {
     // root folder: mark all unread as read
-    const index = postStore.index("by_unread_received_at_feed_id_guid");
+    const index = postStore.index("by_unread_fetched_at_feed_id_guid");
     posts = await index.getAll(
       IDBKeyRange.bound([1, 0], [1, markAsReadUntil + 1], false, true),
     );
   } else {
     // non-root folder: determine feeds under this folder and identify the posts
-    const index = postStore.index("by_unread_received_at_feed_id_guid");
+    const index = postStore.index("by_unread_fetched_at_feed_id_guid");
     const feedIds = getChildFeedIds(node, allNodes);
     const query = IDBKeyRange.bound([1, 0], [1, markAsReadUntil + 1]);
     let cursor = await index.openCursor(query);

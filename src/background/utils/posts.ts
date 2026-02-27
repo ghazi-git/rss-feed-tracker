@@ -27,9 +27,9 @@ export function getNextPageCursor(
     return null;
   } else {
     const lastPost = posts.at(-1) as Post;
-    const { publishedAt, receivedAt, feedId, guid } = lastPost;
+    const { publishedAt, fetchedAt, feedId, guid } = lastPost;
     return {
-      time: orderBy === "receivedAt" ? receivedAt : publishedAt,
+      time: orderBy === "fetchedAt" ? fetchedAt : publishedAt,
       feedId,
       guid,
     };

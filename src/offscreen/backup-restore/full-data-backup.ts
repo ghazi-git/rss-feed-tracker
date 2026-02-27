@@ -20,7 +20,7 @@ export async function backupExtension(params: PreferencesData) {
   using conn = await getDBConnection();
   // acquire a lock to avoid data "inconsistency" due to receiving posts while
   // doing the backup (for example, a feed lastRunAt that is not in line with
-  // the latest post receivedAt)
+  // the latest post fetchedAt)
   const lockId = "feed-polling";
   const getLock = async () => acquireLock(conn.db, lockId);
   await using disposer = new AsyncDisposableStack();

@@ -25,8 +25,8 @@ export async function getBookmarks(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     posts = await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_bookmarked_unread_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_bookmarked_unread_fetched_at_feed_id_guid"
         : "by_bookmarked_unread_published_at_feed_id_guid",
       query,
       pageSize,
@@ -35,8 +35,8 @@ export async function getBookmarks(
     const query = IDBKeyRange.lowerBound([1, 1]);
     posts = await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_bookmarked_unread_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_bookmarked_unread_fetched_at_feed_id_guid"
         : "by_bookmarked_unread_published_at_feed_id_guid",
       query,
       pageSize,
@@ -47,8 +47,8 @@ export async function getBookmarks(
     const query = IDBKeyRange.bound(lower, upper, false, true);
     posts = await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_bookmarked_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_bookmarked_fetched_at_feed_id_guid"
         : "by_bookmarked_published_at_feed_id_guid",
       query,
       pageSize,
@@ -57,8 +57,8 @@ export async function getBookmarks(
     const query = IDBKeyRange.lowerBound([1]);
     posts = await getPostsFromIndex(
       tx,
-      orderBy === "receivedAt"
-        ? "by_bookmarked_received_at_feed_id_guid"
+      orderBy === "fetchedAt"
+        ? "by_bookmarked_fetched_at_feed_id_guid"
         : "by_bookmarked_published_at_feed_id_guid",
       query,
       pageSize,

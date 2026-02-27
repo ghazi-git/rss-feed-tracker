@@ -41,8 +41,8 @@ export async function rebuildSearchIndex() {
 
         const indexName = `search-index-${Date.now()}`;
         const startTime = Date.now();
-        const { receivedAt, feedId, guid } = latestPost;
-        const initialCursor = { receivedAt, feedId, guid };
+        const { fetchedAt, feedId, guid } = latestPost;
+        const initialCursor = { fetchedAt, feedId, guid };
         const currentCursor = initialCursor;
         const params = { indexName, startTime, initialCursor, currentCursor };
         await saveRebuildingProgress(params);
@@ -65,7 +65,7 @@ export async function rebuildSearchIndex() {
 async function getLatestPost(db: ExtensionDB) {
   const posts = await db.getAllFromIndex(
     "posts",
-    "by_received_at_feed_id_guid",
+    "by_fetched_at_feed_id_guid",
     { count: 1, direction: "prev" },
   );
   return posts.length ? posts[0] : null;
@@ -93,8 +93,8 @@ export async function buildSearchIndex(
     logger.debug("indexed posts", { indexedSoFar });
 
     if (posts.length < batchSize) break;
-    const { receivedAt, feedId, guid } = posts[posts.length - 1];
-    currentCursor = { receivedAt, feedId, guid };
+    const { fetchedAt, feedId, guid } = posts[posts.length - 1];
+    currentCursor = { fetchedAt, feedId, guid };
     await saveRebuildingProgress({ ...params, currentCursor });
     loop++;
   }
@@ -106,13 +106,13 @@ async function getPostsBatch(
   batchSize: number,
 ) {
   const query = IDBKeyRange.upperBound(
-    [cursor.receivedAt, cursor.feedId, cursor.guid],
+    [cursor.fetchedAt, cursor.feedId, cursor.guid],
     true,
   );
   // get data based on an index to minimize the chance of processing the same
   // posts more than once when rebuilding the index happens at the same time
   // as fetching new posts in the background
-  return await db.getAllFromIndex("posts", "by_received_at_feed_id_guid", {
+  return await db.getAllFromIndex("posts", "by_fetched_at_feed_id_guid", {
     query,
     direction: "prev",
     count: batchSize,
@@ -124,9 +124,9 @@ async function indexPosts(
   posts: Post[],
 ) {
   for (const post of posts) {
-    const { feedId, guid, receivedAt, bookmarked, title, publishedAt } = post;
+    const { feedId, guid, fetchedAt, bookmarked, title, publishedAt } = post;
     const id = getIndexedPostID(feedId, guid);
-    index.add({ id, feedId, title, bookmarked, publishedAt, receivedAt });
+    index.add({ id, feedId, title, bookmarked, publishedAt, fetchedAt });
   }
   await index.commit();
 }
