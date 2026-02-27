@@ -20,7 +20,7 @@ export default function EditFolder() {
     parentFolderId?: string;
     previousUrl?: string;
   }>();
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const [formdata, setFormdata] = createStore<FolderFormdata>({
     name: "",
     parent: null,

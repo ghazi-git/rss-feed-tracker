@@ -25,7 +25,7 @@ export default function EditFeed() {
     iconURL: "",
   });
   const [searchParams] = useSearchParams<{ previousUrl?: string }>();
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const [folderOptions, setFolderOptions] = createSignal<SelectOption[]>([]);
   onMount(async () => {
     const id = parseInt(params.id);

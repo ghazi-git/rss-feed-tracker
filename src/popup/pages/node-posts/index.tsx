@@ -44,7 +44,7 @@ export default function NodePosts() {
   const [searchParams] = useSearchParams();
   const unread = () => searchParams.unread === "true";
   const postsView = () => (unread() ? "unread" : "all");
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const nodeId = () => parseInt(params.id);
 
   const [paginationCursor, setPaginationCursor] =
@@ -245,7 +245,7 @@ export default function NodePosts() {
 }
 
 function createNodeResource() {
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const [node, { mutate }] = createResource(
     () => parseInt(params.id),
     async (id) => {

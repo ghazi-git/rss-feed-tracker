@@ -15,10 +15,10 @@ export async function removeSearchIndexRebuildingProgress() {
   await chrome.storage.local.remove("searchIndexProgress");
 }
 
-export async function getSearchIndexRebuildingProgress(): Promise<SearchIndexProgressParams | null> {
-  const { searchIndexProgress } = await chrome.storage.local.get(
-    "searchIndexProgress",
-  );
+export async function getSearchIndexRebuildingProgress() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { searchIndexProgress }: { searchIndexProgress: any } =
+    await chrome.storage.local.get("searchIndexProgress");
   if (
     searchIndexProgress &&
     typeof searchIndexProgress.indexName === "string" &&
@@ -26,7 +26,7 @@ export async function getSearchIndexRebuildingProgress(): Promise<SearchIndexPro
     isProgressCursor(searchIndexProgress.currentCursor) &&
     isProgressCursor(searchIndexProgress.initialCursor)
   ) {
-    return searchIndexProgress;
+    return searchIndexProgress as SearchIndexProgressParams;
   }
   return null;
 }

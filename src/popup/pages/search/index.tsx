@@ -79,7 +79,7 @@ export default function SearchPage() {
       { replace: true },
     );
   });
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const nodeId = () => parseInt(params.id);
   const [formdata, setFormdata] = createStore<SearchQueryParams>({
     query: searchParams.query || "",
