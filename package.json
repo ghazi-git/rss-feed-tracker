@@ -13,6 +13,7 @@
     "@atlaskit/pragmatic-drag-and-drop-auto-scroll": "2.1.5",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "1.1.0",
     "@floating-ui/dom": "1.7.5",
+    "@release-it/keep-a-changelog": "7.0.1",
     "@solidjs/router": "0.15.4",
     "feedscout": "1.5.0",
     "feedsmith": "2.9.0",
@@ -20,6 +21,7 @@
     "flexsearch": "0.8.212",
     "idb": "8.0.3",
     "open-props": "1.7.23",
+    "release-it": "19.2.4",
     "solid-js": "1.9.11",
     "solid-notifications": "1.2.0",
     "valibot": "1.2.0"

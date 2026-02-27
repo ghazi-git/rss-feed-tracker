@@ -9,7 +9,7 @@ Chrome extension to manage RSS feeds.
 - Export and import feeds as OPML.
 - Organize feeds into folders with drag and drop support.
 - Search for posts already fetched by the extension.
-- Supports RSS, Atom and JSON feeds.
+- Support RSS, Atom and JSON feeds.
 - Light and dark themes.
 
 ### Nice Extras
