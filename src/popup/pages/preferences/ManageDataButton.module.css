@@ -5,6 +5,11 @@
   align-items: center;
   gap: var(--size-2);
 
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
   svg {
     inline-size: var(--size-3);
     block-size: auto;
