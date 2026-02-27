@@ -1,15 +1,30 @@
+import { onMount } from "solid-js";
+
+import { useBodyContext } from "@/popup/components/Body";
 import Checkbox from "@/popup/components/forms/Checkbox";
 import FrequencyField from "@/popup/pages/add-edit-feed/FrequencyField";
 import ExtensionVersion from "@/popup/pages/preferences/ExtensionVersion";
 import ManageExtensionData from "@/popup/pages/preferences/ManageExtensionData";
 import OrderPostsBySetting from "@/popup/pages/preferences/OrderPostsBySetting";
 import { ThemeSwitcher } from "@/popup/pages/preferences/ThemeSwitcher";
+import {
+  useCurrentURL,
+  useInitialState,
+} from "@/popup/utils/last-visited-page";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 
 import styles from "./index.module.css";
 
 export default function Preferences() {
   const { preferences, setPreferences } = usePreferencesContext();
+  const initialState = useInitialState();
+  const currentURL = useCurrentURL();
+  const { setScrollPosition } = useBodyContext();
+  onMount(() => {
+    if (initialState?.url === currentURL()) {
+      setScrollPosition(initialState.scrollPosition);
+    }
+  });
 
   return (
     <>

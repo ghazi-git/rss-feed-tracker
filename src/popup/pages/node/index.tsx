@@ -33,7 +33,7 @@ import { NodeContext } from "./node-context";
  * If the node is a feed, redirect to the feed posts page (NodePosts component)
  */
 export default function Node() {
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const nodeId = () => parseInt(params.id);
   const {
     query,
