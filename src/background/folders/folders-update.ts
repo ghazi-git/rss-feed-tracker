@@ -14,7 +14,7 @@ export async function updateFolder(
 ) {
   using conn = await getDBConnection();
 
-  const tx = conn.db.transaction(["nodes", "feedmetadata"], "readwrite");
+  const tx = conn.db.transaction(["nodes"], "readwrite");
   const nodeStore = tx.objectStore("nodes");
   const old = await nodeStore.get(id);
   if (!old || old.type !== "folder") {
