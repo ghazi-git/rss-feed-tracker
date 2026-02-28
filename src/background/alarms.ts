@@ -1,5 +1,6 @@
 import { runFeedPollingAlarmHandler } from "@/background/utils/feed-polling";
-import { glogger } from "@/utils/logging";
+import { getLogger, glogger } from "@/utils/logging";
+import { FEED_POLLING_LOCK } from "@/utils/settings";
 
 const FEED_POLLING_ALARM = "feed-polling";
 
@@ -14,7 +15,24 @@ chrome.runtime.onStartup.addListener(async () => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === FEED_POLLING_ALARM) {
     const scheduledAt = new Date(alarm.scheduledTime).toISOString();
-    await runFeedPollingAlarmHandler(scheduledAt);
+    const logger = getLogger({ action: "feed-polling", scheduledAt });
+    logger.debug("start");
+
+    try {
+      await navigator.locks.request(
+        FEED_POLLING_LOCK,
+        { signal: AbortSignal.timeout(2000) },
+        async () => {
+          await runFeedPollingAlarmHandler(logger);
+        },
+      );
+    } catch (e) {
+      if (e instanceof Error && e.name === "TimeoutError") {
+        logger.debug("aborted (cannot acquire a lock)");
+      } else {
+        logger.error("failure", e);
+      }
+    }
   }
 });
 

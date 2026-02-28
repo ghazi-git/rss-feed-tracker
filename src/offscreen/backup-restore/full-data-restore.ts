@@ -16,9 +16,8 @@ import {
 import { RestoreError } from "@/offscreen/errors";
 import { getChunks } from "@/utils/chunks";
 import { txDone } from "@/utils/idb-helpers";
-import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
-import { getLogger, glogger } from "@/utils/logging";
-import { retry } from "@/utils/retry-on-error";
+import { getLogger, Logger } from "@/utils/logging";
+import { FEED_POLLING_LOCK } from "@/utils/settings";
 
 export async function restoreExtension(
   fileURL: string,
@@ -38,36 +37,39 @@ export async function restoreExtension(
   const nodesContent = extractFile(zipFile, nodesFilename);
   const { nodes, feedmetadata } = validateNodesFile(nodesContent);
 
-  logger.debug("clearing existing data...");
-  // deleting the DB is way faster than clearing the stores one by one.
-  await deleteDB();
-  // Now we can start the restore since we did find nodes to import in the backup
-  // Opening the db will create it again
-  using conn = await getDBConnection();
-  // prevent the background fetch from inserting data while the restore is in progress
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  await using _ = await getLock(conn.db);
+  logger.debug("acquiring lock....");
+  try {
+    await navigator.locks.request(
+      FEED_POLLING_LOCK,
+      { signal: AbortSignal.timeout(2000) },
+      async () => {
+        logger.debug("clearing existing data...");
+        // deleting the DB is way faster than clearing the stores one by one.
+        await deleteDB();
+        // Now we can start the restore since we did find nodes to import in the backup
+        // Opening the db will create it again
+        using conn = await getDBConnection();
+        const db = conn.db;
 
-  logger.debug(`inserting nodes...`, { count: nodes.length });
-  await insertNodes(conn.db, nodes, feedmetadata);
+        logger.debug(`inserting nodes...`, { count: nodes.length });
+        await insertNodes(db, nodes, feedmetadata);
 
-  // best-effort restore: restore posts that correspond to the nodes already
-  // inserted and skip invalid posts or files with bad data.
-  const nodeIds = new Set(nodes.map((n) => n.id));
-  for (const filename of manifest.backupFiles.posts) {
-    const postLogger = logger.child({ filename });
-    try {
-      postLogger.debug("extracting posts file...");
-      const fileContents = extractFile(zipFile, filename);
-      postLogger.debug("validating posts file...");
-      const posts = getValidPosts(fileContents);
-      const nodePosts = posts.filter((p) => nodeIds.has(p.feedId));
-      if (nodePosts.length) {
-        postLogger.debug(`inserting posts...`, { count: nodePosts.length });
-        await insertPosts(conn.db, nodePosts);
-      }
-    } catch (e) {
-      postLogger.error("failure", e);
+        // best-effort restore: restore posts that correspond to the nodes already
+        // inserted and skip invalid posts or files with bad data.
+        const files = manifest.backupFiles.posts;
+        const nodeIds = new Set(nodes.map((n) => n.id));
+        await insertPostsFromFiles(db, zipFile, files, nodeIds, logger);
+      },
+    );
+  } catch (e) {
+    if (e instanceof Error && e.name === "TimeoutError") {
+      logger.debug("aborted (cannot acquire a lock)");
+      throw new RestoreError(
+        "The feeds are being updated in the background, please try again once that is done.",
+        { cause: e },
+      );
+    } else {
+      throw e;
     }
   }
 
@@ -75,26 +77,6 @@ export async function restoreExtension(
   logger.debug("done", { restoreDuration: `${res.duration.toFixed(1)} ms` });
 
   return manifest.preferences;
-}
-
-async function getLock(db: ExtensionDB) {
-  const action = "restore-extension";
-  glogger.debug("acquiring lock....", { action });
-  const lockId = "feed-polling";
-  try {
-    return await retry(() => acquireLock(db, lockId));
-  } catch {
-    // lock in use
-    const expired = await hasLockExpired(db, lockId);
-    if (expired) {
-      glogger.debug("force-releasing expired lock ...", { action });
-      await releaseLock(db, lockId);
-    }
-    glogger.debug("aborted (cannot acquire a lock)", { action });
-    throw new RestoreError(
-      "The feeds are being updated in the background, please try again once that is done.",
-    );
-  }
 }
 
 async function getZipFile(url: string) {
@@ -200,13 +182,32 @@ function getTreeElements<T extends TreeElement>(rootNode: T, nodes: T[]) {
   return result;
 }
 
-async function deleteDB() {
-  // get a lock to avoid background feed fetching from inserting data while
-  // we're deleting the DB here
-  const conn = await getDBConnection();
-  await getLock(conn.db);
-  conn.db.close();
+async function insertPostsFromFiles(
+  db: ExtensionDB,
+  zipFile: Uint8Array<ArrayBuffer>,
+  postFilenames: string[],
+  nodeIds: Set<number>,
+  logger: Logger,
+) {
+  for (const filename of postFilenames) {
+    const postLogger = logger.child({ filename });
+    try {
+      postLogger.debug("extracting posts file...");
+      const fileContents = extractFile(zipFile, filename);
+      postLogger.debug("validating posts file...");
+      const posts = getValidPosts(fileContents);
+      const nodePosts = posts.filter((p) => nodeIds.has(p.feedId));
+      if (nodePosts.length) {
+        postLogger.debug(`inserting posts...`, { count: nodePosts.length });
+        await insertPosts(db, nodePosts);
+      }
+    } catch (e) {
+      postLogger.error("failure", e);
+    }
+  }
+}
 
+async function deleteDB() {
   return await new Promise<void>((resolve, reject) => {
     const request = indexedDB.deleteDatabase(DB_NAME);
     request.onsuccess = () => resolve();
@@ -217,9 +218,6 @@ async function deleteDB() {
           { cause: request.error },
         ),
       );
-      // we also need to remove the lock
-      using conn = await getDBConnection();
-      await releaseLock(conn.db, "feed-polling");
     };
   });
 }

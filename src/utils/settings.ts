@@ -6,3 +6,4 @@ export const SEARCH_INDEX_DEFAULT_STORE = "search-index";
 export const SEARCH_INDEX_REBUILDING_LOCK = "rebuild-search-index";
 export const SEARCH_INDEXING_ALARM = "search-indexing";
 export const SEARCH_INDEXING_LOCK = "search-indexing";
+export const FEED_POLLING_LOCK = "feed-polling";

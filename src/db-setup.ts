@@ -5,7 +5,6 @@ import {
   IndexNames,
   openDB,
   StoreNames,
-  StoreValue,
 } from "idb";
 
 export const DB_NAME = "FeedTracker";
@@ -101,9 +100,6 @@ export async function getDBConnection(dbVersion: number | null = null) {
           "feedId",
           "guid",
         ]);
-      }
-      if (!db.objectStoreNames.contains("locks")) {
-        db.createObjectStore("locks", { keyPath: "id" });
       }
       if (!db.objectStoreNames.contains("searchIndexOperations")) {
         db.createObjectStore("searchIndexOperations", {
@@ -203,10 +199,6 @@ export interface FeedTrackerDB extends DBSchema {
       by_unread_feed_id_fetched_at_guid: [BooleanFlag, number, number, string];
     };
   };
-  locks: {
-    key: string;
-    value: Lock;
-  };
   searchIndexOperations: {
     key: number;
     value: SearchIndexOperation;
@@ -227,11 +219,6 @@ export type ReadWriteTX = IDBPTransaction<
   ExtStoreName[],
   "readwrite"
 >;
-export type ExtStoreValue<Name extends ExtStoreName> = StoreValue<
-  FeedTrackerDB,
-  Name
->;
-export type PrimaryKey<Name extends ExtStoreName> = FeedTrackerDB[Name]["key"];
 
 // a node is a feed or a folder, having them stored together makes it easier
 // to update their ordering and later display them sorted within a folder.
@@ -287,15 +274,6 @@ export interface Post {
   // fetchedAt helps with marking all posts as read, especially that new posts
   // can arrive while the user is in the unread posts page
   fetchedAt: number;
-}
-
-export interface Lock {
-  // we can acquire a lock by creating a new object with a specific id
-  // using `store.add()`, if the creation fails with a ConstraintError,
-  // then the lock has already been acquired. If a lock is too old (based
-  // on createdAt), it can be forcibly released by deleting the entry.
-  id: string;
-  createdAt: number;
 }
 
 // searchIndexOperations acts similar to a Write-Ahead Log, that will be used to

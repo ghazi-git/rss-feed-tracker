@@ -11,33 +11,33 @@ import {
 import { BackupError } from "@/offscreen/errors";
 import { triggerFileDownload } from "@/offscreen/utils";
 import { getAll } from "@/utils/idb-helpers";
-import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
-import { retry } from "@/utils/retry-on-error";
+import { FEED_POLLING_LOCK } from "@/utils/settings";
 
 import pkg from "../../../package.json";
 
 export async function backupExtension(params: PreferencesData) {
-  using conn = await getDBConnection();
   // acquire a lock to avoid data "inconsistency" due to receiving posts while
   // doing the backup (for example, a feed lastRunAt that is not in line with
   // the latest post fetchedAt)
-  const lockId = "feed-polling";
-  const getLock = async () => acquireLock(conn.db, lockId);
-  await using disposer = new AsyncDisposableStack();
   try {
-    disposer.use(await retry(getLock));
-  } catch {
-    // lock in use
-    const expired = await hasLockExpired(conn.db, lockId);
-    if (expired) {
-      await releaseLock(conn.db, lockId);
-    }
-    throw new BackupError(
-      "The feeds are being updated in the background, please try again in few moments.",
+    await navigator.locks.request(
+      FEED_POLLING_LOCK,
+      { signal: AbortSignal.timeout(2000) },
+      async () => {
+        using conn = await getDBConnection();
+        await generateBackup(conn.db, params);
+      },
     );
+  } catch (e) {
+    if (e instanceof Error && e.name === "TimeoutError") {
+      throw new BackupError(
+        "The feeds are being updated in the background, please try again in few moments.",
+        { cause: e },
+      );
+    } else {
+      throw e;
+    }
   }
-
-  await generateBackup(conn.db, params);
 }
 
 async function generateBackup(db: ExtensionDB, preferences: PreferencesData) {

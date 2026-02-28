@@ -17,32 +17,11 @@ import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
 import { getChunks } from "@/utils/chunks";
 import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
-import { acquireLock, hasLockExpired, releaseLock } from "@/utils/locks";
 import { getLogger, glogger, Logger } from "@/utils/logging";
 
-export async function runFeedPollingAlarmHandler(scheduledAt: string) {
-  const logger = getLogger({ action: "feed-polling", scheduledAt });
-  logger.debug("start");
+export async function runFeedPollingAlarmHandler(logger: Logger) {
   const start = performance.now();
   using conn = await getDBConnection();
-
-  // acquire a lock to avoid cases where feeds' loading exceeds the interval
-  // between 2 consecutive alarm runs.
-  const lockId = "feed-polling";
-  await using disposer = new AsyncDisposableStack();
-  try {
-    disposer.use(await acquireLock(conn.db, lockId));
-  } catch {
-    // lock in use
-    const expired = await hasLockExpired(conn.db, lockId);
-    if (expired) {
-      await releaseLock(conn.db, lockId);
-      const msg = `lock=${lockId} released forcibly so it can be used in the next run`;
-      logger.debug(msg);
-    }
-    logger.debug("aborted (cannot acquire a lock)");
-    return;
-  }
 
   logger.debug("determining due feeds...");
   const dueFeeds = await getDueFeeds(conn.db);
