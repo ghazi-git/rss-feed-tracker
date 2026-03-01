@@ -7,3 +7,4 @@ export const SEARCH_INDEX_REBUILDING_LOCK = "rebuild-search-index";
 export const SEARCH_INDEXING_ALARM = "search-indexing";
 export const SEARCH_INDEXING_LOCK = "search-indexing";
 export const FEED_POLLING_LOCK = "feed-polling";
+export const POPUP_STATE_PORT = "popup-state-monitor";

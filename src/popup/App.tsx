@@ -30,6 +30,7 @@ import {
   enableTheme,
   uiTheme,
 } from "@/popup/utils/ui-theme";
+import { POPUP_STATE_PORT } from "@/utils/settings";
 
 function App() {
   // get last visited page on app start to avoid losing on navigation
@@ -37,6 +38,7 @@ function App() {
   const theme = uiTheme() ?? detectSystemTheme();
   enableTheme(theme);
   onMount(() => {
+    chrome.runtime.connect({ name: POPUP_STATE_PORT });
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", ({ matches: isDark }) => {

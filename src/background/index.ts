@@ -7,3 +7,4 @@ import "./search-index/event-handlers";
 import "./alarms";
 import "./extension-badge";
 import "./image-caching";
+import "./popup-state";
