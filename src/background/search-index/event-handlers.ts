@@ -51,15 +51,6 @@ async function triggerIndexing() {
   const indexName = await getSearchIndexName();
   if (indexName) {
     sendMessage("search-index/update", { indexName });
-  } else {
-    // sth is wrong with the search index since we're unable to find it in the
-    // extension storage. So, use the default search index name and trigger the
-    // rebuilding of a new index
-    await saveSearchIndexName(SEARCH_INDEX_DEFAULT_STORE);
-    sendMessage("search-index/update", {
-      indexName: SEARCH_INDEX_DEFAULT_STORE,
-    });
-    sendMessage("search-index/rebuild", undefined);
   }
 }
 

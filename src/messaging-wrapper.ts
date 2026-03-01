@@ -76,10 +76,9 @@ interface MessageMap {
   "full-data/restore-trigger"(data: { fileURL: string }): PreferencesData;
   "full-data/restore"(data: { fileURL: string }): PreferencesData;
   "search-index/trigger-rebuild"(): void;
-  "search-index/rebuild"(): void;
+  "search-index/resume-rebuild"(data: SearchIndexProgressParams): void;
   "search-index/store-rebuild-progress"(data: SearchIndexProgressParams): void;
   "search-index/finish-rebuild"(data: SearchIndexRebuildingDone): string | null;
-  "search-index/resume-rebuild"(data: SearchIndexProgressParams): void;
   "search-index/rebuild-progress-msg"(): string | null;
   "search-index/update"(data: { indexName: string }): void;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];

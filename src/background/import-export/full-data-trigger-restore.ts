@@ -13,7 +13,7 @@ export async function triggerRestore(fileURL: string) {
   const response = await sendMessage("full-data/restore", { fileURL });
   if (response.success) {
     // now that we loaded the new backup, rebuild the search index
-    sendMessage("search-index/rebuild", undefined);
+    // todo rebuild the search index
     // update the unread count on the extension badge
     using conn = await getDBConnection();
     const tx = conn.db.transaction(["nodes"]);
