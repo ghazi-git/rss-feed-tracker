@@ -1,6 +1,7 @@
 import type { Document, IndexedDB } from "flexsearch";
 
 import { ExtensionDB, getDBConnection, SearchIndexOperation } from "@/db-setup";
+import { isPopupOpen } from "@/offscreen/utils";
 import { getLogger } from "@/utils/logging";
 import { getIndexedPostID, getSearchIndex, IndexedPost } from "@/utils/search";
 import { SEARCH_INDEXING_LOCK } from "@/utils/settings";
@@ -23,6 +24,9 @@ export async function updateSearchIndex(indexName: string) {
         let loop = 0;
         let lastID: number | null = null;
         while (true) {
+          const isOpen = await isPopupOpen();
+          if (isOpen) break;
+
           const operations = await getOperations(conn.db, lastID, batchSize);
           if (operations.length) {
             await applyOperations(index, operations);

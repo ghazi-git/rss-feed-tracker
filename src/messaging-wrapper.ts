@@ -86,6 +86,7 @@ interface MessageMap {
   "search-index/query"(
     data: SearchQueryParams & { timeField: OrderPostsBy; indexName: string },
   ): SearchResult[];
+  "search-index/is-popup-open"(): boolean;
 }
 
 export interface FeedPreviewResponse {

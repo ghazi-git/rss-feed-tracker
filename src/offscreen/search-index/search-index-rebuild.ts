@@ -6,6 +6,7 @@ import {
   SearchIndexProgressParams,
   sendMessage,
 } from "@/messaging-wrapper";
+import { isPopupOpen } from "@/offscreen/utils";
 import { getLogger, Logger } from "@/utils/logging";
 import { getIndexedPostID, getSearchIndex, IndexedPost } from "@/utils/search";
 import { SEARCH_INDEX_REBUILDING_LOCK } from "@/utils/settings";
@@ -83,10 +84,13 @@ export async function buildSearchIndex(
   logger: Logger,
 ) {
   const index = await getSearchIndex(params.indexName);
-  const batchSize = 1_000;
+  const batchSize = 100;
   let loop = 0;
   let currentCursor = params.currentCursor;
   while (true) {
+    const isOpen = await isPopupOpen();
+    if (isOpen) break;
+
     const posts = await getPostsBatch(db, currentCursor, batchSize);
     await indexPosts(index, posts);
     const indexedSoFar = loop * batchSize + posts.length;

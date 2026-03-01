@@ -1,4 +1,5 @@
 import { finishRebuildingSearchIndex } from "@/background/search-index/search-index-finish-rebuild";
+import { isExtensionPopupOpen } from "@/background/search-index/search-index-is-popup-open";
 import { isRebuildingSearchIndex } from "@/background/search-index/search-index-is-rebuild-in-progress";
 import { storeRebuildingProgress } from "@/background/search-index/search-index-store-rebuild-progress";
 import { triggerSearchQuery } from "@/background/search-index/search-index-trigger-query";
@@ -76,6 +77,20 @@ onMessage("search-index/trigger-query", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while performing the search.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("search-index/is-popup-open", (payload, sender, sendResponse) => {
+  isExtensionPopupOpen()
+    .then((isOpen) => {
+      sendResponse({ success: true, data: isOpen, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while checking if the extension popup is open.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
