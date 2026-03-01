@@ -36,18 +36,21 @@ export async function resumeRebuildingSearchIndex(
       async () => {
         performance.mark("resume-reindexing");
         using conn = await getDBConnection();
-        await buildSearchIndex(conn.db, params, logger);
+        const isDone = await buildSearchIndex(conn.db, params, logger);
+        if (isDone) {
+          await sendMessage("search-index/finish-rebuild", {
+            indexName: params.indexName,
+            initialCursor: params.initialCursor,
+          });
+          await finishRebuilding(params.indexName, params.initialCursor);
+        }
 
-        await sendMessage("search-index/finish-rebuild", {
-          indexName: params.indexName,
-          initialCursor: params.initialCursor,
-        });
-        await finishRebuilding(params.indexName, params.initialCursor);
         const res = performance.measure(
           "reindexing-duration",
           "resume-reindexing",
         );
-        logger.debug("done", { duration: `${res.duration.toFixed(1)} ms` });
+        const msg = isDone ? "done" : "indexing paused";
+        logger.debug(msg, { duration: `${res.duration.toFixed(1)} ms` });
       },
     );
   } catch (e) {
@@ -69,6 +72,9 @@ export async function buildSearchIndex(
   const total = params.totalPostsToBeIndexed;
   let indexedSoFar = params.postsIndexedSoFar;
   let currentCursor = params.currentCursor;
+  // signal if the indexing is actually done or if we're pausing the indexing
+  // because the popup was opened
+  let isDone = false;
   while (true) {
     const isOpen = await isPopupOpen();
     if (isOpen) break;
@@ -78,7 +84,10 @@ export async function buildSearchIndex(
     indexedSoFar += posts.length;
     logger.debug("indexed posts", { indexedSoFar, total });
 
-    if (posts.length < batchSize) break;
+    if (posts.length < batchSize) {
+      isDone = true;
+      break;
+    }
     const { fetchedAt, feedId, guid } = posts[posts.length - 1];
     currentCursor = { fetchedAt, feedId, guid };
     await saveRebuildingProgress({
@@ -87,6 +96,8 @@ export async function buildSearchIndex(
       postsIndexedSoFar: indexedSoFar,
     });
   }
+
+  return isDone;
 }
 
 async function getPostsBatch(
