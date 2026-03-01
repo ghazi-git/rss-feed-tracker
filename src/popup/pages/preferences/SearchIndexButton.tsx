@@ -10,6 +10,7 @@ import styles from "./SearchIndexButton.module.css";
 export default function SearchIndexButton(props: SearchIndexButtonProps) {
   const { mutation, sendMsg } = createMutation("search-index/trigger-rebuild");
   const [rebuilding, { refetch }] = createResource(
+    // eslint-disable-next-line solid/reactivity
     async () => {
       const response = await sendMessage(
         "search-index/rebuild-progress-msg",
@@ -25,7 +26,7 @@ export default function SearchIndexButton(props: SearchIndexButtonProps) {
   return (
     <div class={`${styles["search-index"]} ${props.class}`}>
       <ManageDataButton
-        disabled={props.disabled}
+        disabled={props.disabled || !!rebuilding.latest}
         loading={mutation.isLoading}
         onClick={() => {
           // eslint-disable-next-line solid/reactivity
