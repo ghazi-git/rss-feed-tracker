@@ -36,11 +36,6 @@ export async function getSearchIndexRebuildingProgress() {
   return null;
 }
 
-export async function isRebuildingAlreadyScheduled() {
-  const progress = await getSearchIndexRebuildingProgress();
-  return !!progress;
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isProgressCursor(obj: any): obj is SearchIndexProgressCursor {
   return (

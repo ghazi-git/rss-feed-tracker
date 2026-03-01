@@ -1,3 +1,5 @@
+import { Setter } from "solid-js";
+
 import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
@@ -7,7 +9,7 @@ import { glogger } from "@/utils/logging";
 
 import styles from "./RestoreButton.module.css";
 
-export default function RestoreButton() {
+export default function RestoreButton(props: RestoreButtonProps) {
   const { setPreferences } = usePreferencesContext();
   const { mutation, sendMsg } = createMutation("full-data/restore-trigger");
 
@@ -27,7 +29,7 @@ export default function RestoreButton() {
               const fileURL = URL.createObjectURL(file);
               await sendMsg({ fileURL });
               if (mutation.isSuccess) {
-                // todo indicate that search rebuilding was scheduled
+                props.setIndexRebuildingDisabled(true);
                 notifySuccess("Backup restored successfully.");
                 const { uiTheme, ...prefs } = mutation.data;
                 setAndEnableTheme(uiTheme);
@@ -53,4 +55,8 @@ export default function RestoreButton() {
       </p>
     </div>
   );
+}
+
+interface RestoreButtonProps {
+  setIndexRebuildingDisabled: Setter<boolean>;
 }

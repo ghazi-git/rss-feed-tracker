@@ -89,7 +89,9 @@ export default function Preferences() {
         <ExportFeedsButton />
         <ImportFeedsButton />
         <BackupButton />
-        <RestoreButton />
+        <RestoreButton
+          setIndexRebuildingDisabled={setIndexRebuildingDisabled}
+        />
       </fieldset>
       <ExtensionVersion />
     </>
