@@ -12,7 +12,7 @@ export async function updateSearchIndex(indexName: string) {
   // the lock guarantees that one process is indexing to avoid applying
   // operations out of order
   try {
-    navigator.locks.request(
+    await navigator.locks.request(
       SEARCH_INDEXING_LOCK,
       { signal: AbortSignal.timeout(2000) },
       async () => {
@@ -44,7 +44,11 @@ export async function updateSearchIndex(indexName: string) {
       },
     );
   } catch (e) {
-    logger.error("failure", e);
+    if (e instanceof Error && e.name === "TimeoutError") {
+      logger.debug("aborted (cannot acquire a lock)");
+    } else {
+      logger.error("failure", e);
+    }
   }
 }
 
