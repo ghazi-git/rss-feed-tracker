@@ -16,18 +16,22 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === "install") {
     await saveSearchIndexName(SEARCH_INDEX_DEFAULT_STORE);
   } else if (reason === "update") {
-    if (await hasIndexingOperations()) {
-      await triggerIndexing();
-    }
+    await triggerIndexing();
     await resumeSearchIndexRebuilding();
   }
 });
 
 chrome.runtime.onStartup.addListener(async () => {
-  if (await hasIndexingOperations()) {
-    await triggerIndexing();
-  }
+  await triggerIndexing();
   await resumeSearchIndexRebuilding();
+});
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === SEARCH_INDEXING_ALARM) {
+    await triggerIndexing();
+  } else if (alarm.name === SEARCH_INDEX_REBUILDING_ALARM) {
+    await resumeSearchIndexRebuilding();
+  }
 });
 
 async function resumeSearchIndexRebuilding() {
@@ -38,19 +42,13 @@ async function resumeSearchIndexRebuilding() {
   }
 }
 
-chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name === SEARCH_INDEXING_ALARM) {
-    await triggerIndexing();
-  } else if (alarm.name === SEARCH_INDEX_REBUILDING_ALARM) {
-    await resumeSearchIndexRebuilding();
-  }
-});
-
 async function triggerIndexing() {
-  await setupOffscreenDocument("Add documents to the search index");
-  const indexName = await getSearchIndexName();
-  if (indexName) {
-    sendMessage("search-index/update", { indexName });
+  if (await hasIndexingOperations()) {
+    await setupOffscreenDocument("Add documents to the search index");
+    const indexName = await getSearchIndexName();
+    if (indexName) {
+      sendMessage("search-index/update", { indexName });
+    }
   }
 }
 
