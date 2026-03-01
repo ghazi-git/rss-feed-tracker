@@ -1,11 +1,19 @@
+import {
+  removeSearchIndexAlarms,
+  scheduleSearchIndexing,
+  scheduleSearchIndexRebuilding,
+} from "@/background/utils/search";
 import { POPUP_STATE_PORT } from "@/utils/settings";
 
 chrome.runtime.onConnect.addListener(async (port) => {
   if (port.name !== POPUP_STATE_PORT) return;
 
   await savePopupState("open");
+  await removeSearchIndexAlarms();
   port.onDisconnect.addListener(async () => {
     await savePopupState("closed");
+    await scheduleSearchIndexing();
+    await scheduleSearchIndexRebuilding();
   });
 });
 

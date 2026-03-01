@@ -8,6 +8,7 @@ import { getDBConnection } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
 import {
   SEARCH_INDEX_DEFAULT_STORE,
+  SEARCH_INDEX_REBUILDING_ALARM,
   SEARCH_INDEXING_ALARM,
 } from "@/utils/settings";
 
@@ -40,6 +41,8 @@ async function resumeSearchIndexRebuilding() {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === SEARCH_INDEXING_ALARM) {
     await triggerIndexing();
+  } else if (alarm.name === SEARCH_INDEX_REBUILDING_ALARM) {
+    await resumeSearchIndexRebuilding();
   }
 });
 
