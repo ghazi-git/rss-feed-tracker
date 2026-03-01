@@ -26,6 +26,7 @@ export default function SearchIndexButton(props: SearchIndexButtonProps) {
     <div class={`${styles["search-index"]} ${props.class}`}>
       <ManageDataButton
         disabled={props.disabled}
+        loading={mutation.isLoading}
         onClick={() => {
           // eslint-disable-next-line solid/reactivity
           sendMsg(undefined).then(() => {
