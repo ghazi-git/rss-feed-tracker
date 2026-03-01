@@ -66,7 +66,8 @@ export async function buildSearchIndex(
 ) {
   const index = await getSearchIndex(params.indexName);
   const batchSize = 100;
-  let loop = 0;
+  const total = params.totalPostsToBeIndexed;
+  let indexedSoFar = params.postsIndexedSoFar;
   let currentCursor = params.currentCursor;
   while (true) {
     const isOpen = await isPopupOpen();
@@ -74,14 +75,17 @@ export async function buildSearchIndex(
 
     const posts = await getPostsBatch(db, currentCursor, batchSize);
     await indexPosts(index, posts);
-    const indexedSoFar = loop * batchSize + posts.length;
-    logger.debug("indexed posts", { indexedSoFar });
+    indexedSoFar += posts.length;
+    logger.debug("indexed posts", { indexedSoFar, total });
 
     if (posts.length < batchSize) break;
     const { fetchedAt, feedId, guid } = posts[posts.length - 1];
     currentCursor = { fetchedAt, feedId, guid };
-    await saveRebuildingProgress({ ...params, currentCursor });
-    loop++;
+    await saveRebuildingProgress({
+      ...params,
+      currentCursor,
+      postsIndexedSoFar: indexedSoFar,
+    });
   }
 }
 
