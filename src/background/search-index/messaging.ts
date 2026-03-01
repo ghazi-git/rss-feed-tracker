@@ -1,6 +1,6 @@
 import { finishRebuildingSearchIndex } from "@/background/search-index/search-index-finish-rebuild";
 import { isExtensionPopupOpen } from "@/background/search-index/search-index-is-popup-open";
-import { isRebuildingSearchIndex } from "@/background/search-index/search-index-is-rebuild-in-progress";
+import { getRebuildingProgressMsg } from "@/background/search-index/search-index-rebuild-progress-msg";
 import { storeRebuildingProgress } from "@/background/search-index/search-index-store-rebuild-progress";
 import { triggerSearchQuery } from "@/background/search-index/search-index-trigger-query";
 import { triggerRebuildSearchIndex } from "@/background/search-index/search-index-trigger-rebuild";
@@ -22,11 +22,11 @@ onMessage("search-index/trigger-rebuild", (payload, sender, sendResponse) => {
 });
 
 onMessage(
-  "search-index/is-rebuild-in-progress",
+  "search-index/rebuild-progress-msg",
   (payload, sender, sendResponse) => {
-    isRebuildingSearchIndex()
-      .then((inProgress) => {
-        sendResponse({ success: true, data: inProgress, errorMsg: null });
+    getRebuildingProgressMsg()
+      .then((msg) => {
+        sendResponse({ success: true, data: msg, errorMsg: null });
       })
       .catch((err) => {
         const defaultMsg =

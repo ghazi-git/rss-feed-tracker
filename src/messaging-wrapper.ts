@@ -80,7 +80,7 @@ interface MessageMap {
   "search-index/store-rebuild-progress"(data: SearchIndexProgressParams): void;
   "search-index/finish-rebuild"(data: SearchIndexRebuildingDone): string | null;
   "search-index/resume-rebuild"(data: SearchIndexProgressParams): void;
-  "search-index/is-rebuild-in-progress"(): boolean;
+  "search-index/rebuild-progress-msg"(): string | null;
   "search-index/update"(data: { indexName: string }): void;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
@@ -204,6 +204,8 @@ export interface PreferencesData {
 export interface SearchIndexProgressParams {
   indexName: string;
   startTime: number;
+  postsIndexedSoFar: number;
+  totalPostsToBeIndexed: number;
   // if the rebuilding process is interrupted midway (due to closing the
   // browser, for example), we can pick up the work on the next extension startup
   currentCursor: SearchIndexProgressCursor;

@@ -1,4 +1,4 @@
-import { onMount } from "solid-js";
+import { createSignal, onMount } from "solid-js";
 
 import { useBodyContext } from "@/popup/components/Body";
 import Checkbox from "@/popup/components/forms/Checkbox";
@@ -22,6 +22,8 @@ import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import styles from "./index.module.css";
 
 export default function Preferences() {
+  const [indexRebuildingDisabled, setIndexRebuildingDisabled] =
+    createSignal(false);
   const { preferences, setPreferences } = usePreferencesContext();
   const initialState = useInitialState();
   const currentURL = useCurrentURL();
@@ -79,7 +81,11 @@ export default function Preferences() {
         <legend>Manage Extension Data</legend>
         <IconsCacheButton />
         <ResetSettingsButton />
-        <SearchIndexButton class={styles.search} />
+        <SearchIndexButton
+          class={styles.search}
+          disabled={indexRebuildingDisabled()}
+          setDisabled={setIndexRebuildingDisabled}
+        />
         <ExportFeedsButton />
         <ImportFeedsButton />
         <BackupButton />

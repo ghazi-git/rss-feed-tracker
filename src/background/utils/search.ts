@@ -26,12 +26,19 @@ export async function getSearchIndexRebuildingProgress() {
     searchIndexProgress &&
     typeof searchIndexProgress.indexName === "string" &&
     typeof searchIndexProgress.startTime === "number" &&
+    typeof searchIndexProgress.postsIndexedSoFar === "number" &&
+    typeof searchIndexProgress.totalPostsToBeIndexed === "number" &&
     isProgressCursor(searchIndexProgress.currentCursor) &&
     isProgressCursor(searchIndexProgress.initialCursor)
   ) {
     return searchIndexProgress as SearchIndexProgressParams;
   }
   return null;
+}
+
+export async function isRebuildingAlreadyScheduled() {
+  const progress = await getSearchIndexRebuildingProgress();
+  return !!progress;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

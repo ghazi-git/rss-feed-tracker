@@ -1,65 +1,52 @@
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  onCleanup,
-} from "solid-js";
+import { createResource, Setter, Show } from "solid-js";
 
 import { sendMessage } from "@/messaging-wrapper";
 import ManageDataButton from "@/popup/pages/preferences/ManageDataButton";
 import { createMutation } from "@/popup/utils/mutation";
-import { notifyError, notifyInfo } from "@/popup/utils/notifications";
+import { notifyError } from "@/popup/utils/notifications";
 
-export default function SearchIndexButton(props: { class: string }) {
+import styles from "./SearchIndexButton.module.css";
+
+export default function SearchIndexButton(props: SearchIndexButtonProps) {
   const { mutation, sendMsg } = createMutation("search-index/trigger-rebuild");
-  const [trigger, setTrigger] = createSignal(0);
-  const [reindex, { mutate: mutateReindex }] = createResource(
-    trigger,
+  const [rebuilding, { refetch }] = createResource(
     async () => {
       const response = await sendMessage(
-        "search-index/is-rebuild-in-progress",
+        "search-index/rebuild-progress-msg",
         undefined,
       );
       if (!response.success) throw new Error(response.errorMsg);
 
       return response.data;
     },
-    { initialValue: false },
+    { initialValue: null },
   );
-
-  let timerID: number;
-  createEffect(() => {
-    const reindexingInProgress = reindex.latest;
-    if (reindexingInProgress) {
-      // poll to see if the reindexing finished
-      timerID = setInterval(() => setTrigger(Date.now()), 2000);
-    } else {
-      // when reindexing finishes, stop polling
-      if (timerID) clearInterval(timerID);
-    }
-  });
-  onCleanup(() => {
-    if (timerID) clearInterval(timerID);
-  });
 
   return (
-    <ManageDataButton
-      class={props.class}
-      loading={mutation.isLoading || reindex.latest}
-      onClick={() => {
-        sendMsg(undefined).then(() => {
-          if (mutation.isSuccess) {
-            mutateReindex(true);
-            notifyInfo("Rebuilding the search index is now in progress");
-          } else if (mutation.isError) {
-            notifyError(mutation.errorMsg);
-          }
-        });
-      }}
-    >
-      {mutation.isLoading || reindex.latest
-        ? "Rebuilding Search Index"
-        : "Rebuild Search Index"}
-    </ManageDataButton>
+    <div class={`${styles["search-index"]} ${props.class}`}>
+      <ManageDataButton
+        disabled={props.disabled}
+        onClick={() => {
+          // eslint-disable-next-line solid/reactivity
+          sendMsg(undefined).then(() => {
+            if (mutation.isSuccess) {
+              refetch();
+              props.setDisabled(true);
+            } else if (mutation.isError) {
+              notifyError(mutation.errorMsg);
+            }
+          });
+        }}
+      >
+        {props.disabled ? "Rebuilding Search Index..." : "Rebuild Search Index"}
+      </ManageDataButton>
+      <Show when={rebuilding.latest}>{(msg) => <p>{msg()}</p>}</Show>
+    </div>
   );
+}
+
+interface SearchIndexButtonProps {
+  class: string;
+  disabled: boolean;
+  setDisabled: Setter<boolean>;
 }
