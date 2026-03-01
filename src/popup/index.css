@@ -100,6 +100,10 @@ h6 {
   font-size: var(--font-size-2);
 }
 
+p {
+  max-inline-size: unset;
+}
+
 @media (prefers-reduced-motion) {
   ::view-transition-group(*),
   ::view-transition-old(*),
