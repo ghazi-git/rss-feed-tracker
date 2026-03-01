@@ -23,6 +23,15 @@ chrome.runtime.onStartup.addListener(async () => {
   await savePopupState("closed");
 });
 
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (import.meta.env.DEV && reason === "update") {
+    // in local dev, when a code change is made while the popup is open, the dev
+    // server reloads everything, but the popup state remains open in storage.
+    // So, we force it here to closed
+    await savePopupState("closed");
+  }
+});
+
 async function savePopupState(popupState: "open" | "closed") {
   await chrome.storage.local.set({ popupState });
 }
