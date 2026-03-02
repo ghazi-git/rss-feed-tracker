@@ -29,11 +29,10 @@ export async function deleteFolder(id: number) {
     .filter((n) => n.type === "folder");
 
   const tx = conn.db.transaction(
-    ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
+    ["posts", "nodes", "searchIndexOperations"],
     "readwrite",
   );
   const postStore = tx.objectStore("posts");
-  const feedmetadataStore = tx.objectStore("feedmetadata");
   const nodeStore = tx.objectStore("nodes");
   const opStore = tx.objectStore("searchIndexOperations");
 
@@ -44,11 +43,7 @@ export async function deleteFolder(id: number) {
     const toDelete = await postStore.getAllKeys(postsQuery);
     postsToDelete.push(...toDelete);
 
-    promises.push(
-      postStore.delete(postsQuery),
-      feedmetadataStore.delete(feed.id),
-      nodeStore.delete(feed.id),
-    );
+    promises.push(postStore.delete(postsQuery), nodeStore.delete(feed.id));
   }
   promises.push(...foldersToDelete.map((f) => nodeStore.delete(f.id)));
   await Promise.all(promises);
