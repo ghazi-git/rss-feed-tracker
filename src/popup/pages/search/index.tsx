@@ -22,6 +22,7 @@ import InputField, { Input } from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
+import InfoIcon from "@/popup/components/svg-icons/InfoIcon";
 import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
 import FiltersButton from "@/popup/pages/search/FiltersButton";
 import FiltersPopover from "@/popup/pages/search/FiltersPopover";
@@ -137,6 +138,20 @@ export default function SearchPage() {
   // eslint-disable-next-line solid/reactivity
   const debouncedSearch = debounce(searchPosts, 200);
 
+  const [hasOperations] = createResource(
+    // eslint-disable-next-line solid/reactivity
+    async () => {
+      const resp = await sendMessage(
+        "search-index/has-unapplied-operations",
+        undefined,
+      );
+      if (!resp.success) throw new Error(resp.errorMsg);
+
+      return resp.data;
+    },
+    { initialValue: false },
+  );
+
   return (
     <>
       <PageHeaderWrapper sticky={true}>
@@ -155,9 +170,23 @@ export default function SearchPage() {
               debouncedSearch();
             }}
           />
-          <Show when={search.loading}>
-            <LoadingIcon />
-          </Show>
+          <Switch>
+            <Match when={search.loading}>
+              <LoadingIcon class={styles.icon} />
+            </Match>
+            <Match when={!search.loading && hasOperations.latest}>
+              <div
+                class={styles.icon}
+                title={
+                  "A few posts have not been indexed yet, so they will not show up in the search results.\n" +
+                  "Since indexing can be resource-heavy depending on the number of posts stored, it will \n" +
+                  "run only after the extension popup is closed."
+                }
+              >
+                <InfoIcon />
+              </div>
+            </Match>
+          </Switch>
         </div>
       </PageHeaderWrapper>
       <div class={styles.filters}>

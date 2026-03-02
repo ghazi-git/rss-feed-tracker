@@ -81,6 +81,7 @@ interface MessageMap {
   "search-index/finish-rebuild"(data: SearchIndexRebuildingDone): string | null;
   "search-index/rebuild-progress-msg"(): string | null;
   "search-index/update"(data: { indexName: string }): void;
+  "search-index/has-unapplied-operations"(): boolean;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
     data: SearchQueryParams & { timeField: OrderPostsBy; indexName: string },

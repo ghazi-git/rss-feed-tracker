@@ -1,4 +1,5 @@
 import { finishRebuildingSearchIndex } from "@/background/search-index/search-index-finish-rebuild";
+import { hasUnappliedOperations } from "@/background/search-index/search-index-has-unapplied-operations";
 import { isExtensionPopupOpen } from "@/background/search-index/search-index-is-popup-open";
 import { getRebuildingProgressMsg } from "@/background/search-index/search-index-rebuild-progress-msg";
 import { storeRebuildingProgress } from "@/background/search-index/search-index-store-rebuild-progress";
@@ -96,3 +97,20 @@ onMessage("search-index/is-popup-open", (payload, sender, sendResponse) => {
     });
   return true;
 });
+
+onMessage(
+  "search-index/has-unapplied-operations",
+  (payload, sender, sendResponse) => {
+    hasUnappliedOperations()
+      .then((hasOperations) => {
+        sendResponse({ success: true, data: hasOperations, errorMsg: null });
+      })
+      .catch((err) => {
+        const defaultMsg =
+          "An unexpected error occurred while checking if there are search indexing operations to apply.";
+        const errorMsg = getErrorMsg(err, defaultMsg);
+        sendResponse({ success: false, data: null, errorMsg });
+      });
+    return true;
+  },
+);
