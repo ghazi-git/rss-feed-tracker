@@ -114,14 +114,13 @@ function addFileToZIP(zipFile: Zip, filename: JSONFilename, jsonData: any) {
 }
 
 async function getNodesData(db: ExtensionDB): Promise<NodesBackupFile> {
-  const tx = db.transaction(["nodes", "feedmetadata"]);
+  const tx = db.transaction(["nodes"]);
   const nodes = await getAll(tx, "nodes");
   if (!nodes.length) {
     throw new BackupError("There are no feeds or folders to back up.");
   }
 
-  const metadata = await getAll(tx, "feedmetadata");
-  return { nodes, feedmetadata: metadata };
+  return nodes;
 }
 
 async function getPostsData(

@@ -92,6 +92,8 @@ export const FeedBackupSchema = v.object({
     favicon: v.union([URLSchema, v.null()]),
     url: URLSchema,
     updateFrequency: FrequencySchema,
+    nextRunAt: v.union([PositiveIntegerSchema, v.null()]),
+    lastRunAt: v.union([PositiveIntegerSchema, v.null()]),
   }),
 });
 
@@ -136,10 +138,7 @@ export const NodesBackupFileSchema = v.object(
   },
   "The data in the feeds and folders file must be a json object with 2 keys 'nodes' and 'feedmetadata'",
 );
-export interface NodesBackupFile {
-  nodes: NodeBackup[];
-  feedmetadata: FeedMetadataBackup[];
-}
+export type NodesBackupFile = NodeBackup[];
 
 export const PostBackupSchema = v.object({
   feedId: IDSchema,
