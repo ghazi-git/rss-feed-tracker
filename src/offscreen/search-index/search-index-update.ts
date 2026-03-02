@@ -21,8 +21,9 @@ export async function updateSearchIndex(indexName: string) {
         const index = await getSearchIndex(indexName);
 
         const batchSize = 100;
-        let loop = 0;
+        let appliedSoFar = 0;
         let lastID: number | null = null;
+        let isDone = false;
         while (true) {
           const isOpen = await isPopupOpen();
           if (isOpen) break;
@@ -32,15 +33,18 @@ export async function updateSearchIndex(indexName: string) {
             await applyOperations(index, operations);
             lastID = operations[operations.length - 1].id;
             await markOperationsApplied(conn.db, lastID);
-            const appliedSoFar = loop * batchSize + operations.length;
+            appliedSoFar += operations.length;
             logger.debug("applied operations", { appliedSoFar });
           }
 
-          if (operations.length < batchSize) break;
-          loop++;
+          if (operations.length < batchSize) {
+            isDone = true;
+            break;
+          }
         }
         const res = performance.measure("indexing-duration", "indexing");
-        logger.debug("done", { duration: `${res.duration.toFixed(1)} ms` });
+        const msg = isDone ? "done" : "indexing paused";
+        logger.debug(msg, { duration: `${res.duration.toFixed(1)} ms` });
       },
     );
   } catch (e) {
