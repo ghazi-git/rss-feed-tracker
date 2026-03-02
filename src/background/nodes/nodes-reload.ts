@@ -41,7 +41,7 @@ async function reloadFeed(db: ExtensionDB, node: Feed) {
   const parsedFeed = await fetchAndParseFeed(node.feed.url, logger);
 
   const tx = db.transaction(
-    ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
+    ["posts", "nodes", "searchIndexOperations"],
     "readwrite",
   );
   const insertedPosts = await savePosts(
