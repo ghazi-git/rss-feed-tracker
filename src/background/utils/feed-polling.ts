@@ -1,4 +1,3 @@
-import { saveFailureMetadata } from "@/background/utils/feedmetadata";
 import {
   fetchAndParseFeed,
   getPostObjects,
@@ -17,7 +16,7 @@ import { txDone } from "@/utils/idb-helpers";
 import { getLogger, glogger, Logger } from "@/utils/logging";
 
 export async function runFeedPollingAlarmHandler(logger: Logger) {
-  const start = performance.now();
+  performance.mark("polling_start");
   using conn = await getDBConnection();
 
   logger.debug("determining due feeds...");
@@ -34,26 +33,15 @@ export async function runFeedPollingAlarmHandler(logger: Logger) {
     await notifyOfNewPosts();
   }
 
-  const end = performance.now();
-  const took = (end - start) / 1000;
-  logger.debug(`done took=${took.toFixed(3)} seconds`);
+  const res = performance.measure("polling_duration", "polling_start");
+  logger.debug("done", { pollingDuration: `${res.duration.toFixed(1)} ms` });
 }
 
 async function getDueFeeds(db: ExtensionDB) {
-  const tx = db.transaction(["feedmetadata", "nodes"]);
-
-  const metadata = await getAllFromIndex(tx, "feedmetadata", "by_next_run_at", {
+  const nodes = await db.getAllFromIndex("nodes", "by_next_run_at", {
     query: IDBKeyRange.upperBound(Date.now()),
   });
-  const feedIds = new Set(metadata.map((m) => m.feedId));
-  if (!feedIds.size) return [];
-
-  const nodes = await getAllFromIndex(tx, "nodes", "by_type", {
-    query: "feed",
-  });
-  return nodes
-    .filter((n) => n.type === "feed")
-    .filter((f) => feedIds.has(f.id));
+  return nodes.filter((n) => n.type === "feed");
 }
 
 export async function loadFeeds(
@@ -71,7 +59,7 @@ export async function loadFeeds(
       return fetchAndParseFeed(feed.feed.url, logger)
         .then(async (parsedFeed) => {
           const tx = db.transaction(
-            ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
+            ["posts", "nodes", "searchIndexOperations"],
             "readwrite",
           );
           const insertedPosts = await savePosts(
@@ -87,7 +75,9 @@ export async function loadFeeds(
         })
         .catch(async (e) => {
           logger.error("failure", e);
-          await saveFailureMetadata(db, feed);
+          const tx = db.transaction(["nodes"], "readwrite");
+          await updateFeedRunTimes(tx, feed, Date.now());
+          await txDone(tx);
           return 0;
         });
     });
