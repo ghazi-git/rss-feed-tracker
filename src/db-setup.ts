@@ -19,12 +19,7 @@ export async function getDBConnection(dbVersion: number | null = null) {
         });
         store.createIndex("by_type", "type");
         store.createIndex("by_parent_id_sort_order", ["parentId", "sortOrder"]);
-      }
-      if (!db.objectStoreNames.contains("feedmetadata")) {
-        const store = db.createObjectStore("feedmetadata", {
-          keyPath: "feedId",
-        });
-        store.createIndex("by_next_run_at", "nextRunAt");
+        store.createIndex("by_next_run_at", "feed.nextRunAt");
       }
       if (!db.objectStoreNames.contains("posts")) {
         const store = db.createObjectStore("posts", {
@@ -127,12 +122,6 @@ export interface FeedTrackerDB extends DBSchema {
       by_type: "folder" | "feed";
       // to display feeds/folders sorted inside the parent folder
       by_parent_id_sort_order: [number, number];
-    };
-  };
-  feedmetadata: {
-    key: number;
-    value: FeedMetadata;
-    indexes: {
       // for identifying feeds that are due-fetching
       by_next_run_at: number;
     };
@@ -243,19 +232,12 @@ export interface Feed extends BaseNode {
     favicon: string | null; // favicon url
     url: string;
     updateFrequency: number | null; // in ms since js unix timestamps are in ms
+    nextRunAt: number | null; // helpful for filtering on due feeds
+    lastRunAt: number | null; // last time we tried fetching posts whether it's successful or not
   };
 }
 
 export type TreeNode = Feed | Folder;
-
-export interface FeedMetadata {
-  feedId: number; // primary key to guarantee one entry per feed
-  nextRunAt: number | null; // helpful for filtering on due feeds
-  lastRunAt: number | null; // last time we tried fetching posts whether it's successful or not
-  lastRunResult: "success" | "failure" | null;
-  lastSuccessfulRunAt: number | null; // last time we got a successful response from the rss feed
-  lastUpdatedAt: number | null; // last time new posts were fetched
-}
 
 export interface Post {
   // feedId+guid are the primary key. The idea is to offload figuring out new posts
