@@ -3,9 +3,12 @@ import type { Opml } from "feedsmith/types";
 
 import { NotFoundError, OPMLParseError } from "@/background/utils/errors";
 import { savePosts } from "@/background/utils/feed-polling";
-import { saveFailureMetadata } from "@/background/utils/feedmetadata";
 import { fetchAndParseFeed } from "@/background/utils/feeds-fetch-from-source";
-import { createFeed, saveFolder } from "@/background/utils/nodes";
+import {
+  createFeed,
+  saveFolder,
+  updateFeedRunTimes,
+} from "@/background/utils/nodes";
 import { Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { getChunks } from "@/utils/chunks";
 import { loadPreferences } from "@/utils/extension-storage";
@@ -25,7 +28,7 @@ export async function importOPML(fileContent: string, folder: number) {
 
   const preferences = await loadPreferences();
   using conn = await getDBConnection();
-  const tx = conn.db.transaction(["nodes", "feedmetadata"], "readwrite");
+  const tx = conn.db.transaction(["nodes"], "readwrite");
   const parentFolder = await getObject(tx, "nodes", folder);
   if (!parentFolder || parentFolder.type !== "folder") {
     throw new NotFoundError(
@@ -117,7 +120,7 @@ async function loadPosts(feeds: Feed[]) {
       return fetchAndParseFeed(node.feed.url, logger)
         .then(async (parsedFeed) => {
           const tx = conn.db.transaction(
-            ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
+            ["posts", "nodes", "searchIndexOperations"],
             "readwrite",
           );
           if (parsedFeed.favicon) {
@@ -133,7 +136,9 @@ async function loadPosts(feeds: Feed[]) {
         })
         .catch(async (e) => {
           logger.error("failure", e);
-          await saveFailureMetadata(conn.db, node);
+          const tx = conn.db.transaction(["nodes"], "readwrite");
+          await updateFeedRunTimes(tx, node, Date.now());
+          await txDone(tx);
         });
     });
     await Promise.all(promises);
