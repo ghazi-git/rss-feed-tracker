@@ -5,7 +5,7 @@ import { getDBConnection } from "@/db-setup";
 import { txDone } from "@/utils/idb-helpers";
 
 /**
- * Delete the feed, its metadata and posts in the same transaction, then
+ * Delete the feed and posts in the same transaction, then
  * update the unread count of parent folders if necessary (everything either
  * succeeds or fails together)
  * @raises DeletionError
@@ -13,11 +13,10 @@ import { txDone } from "@/utils/idb-helpers";
 export async function deleteFeed(id: number) {
   using conn = await getDBConnection();
   const tx = conn.db.transaction(
-    ["posts", "feedmetadata", "nodes", "searchIndexOperations"],
+    ["posts", "nodes", "searchIndexOperations"],
     "readwrite",
   );
   const postStore = tx.objectStore("posts");
-  const feedmetadataStore = tx.objectStore("feedmetadata");
   const nodeStore = tx.objectStore("nodes");
   const opStore = tx.objectStore("searchIndexOperations");
 
@@ -31,11 +30,7 @@ export async function deleteFeed(id: number) {
   const postsQuery = IDBKeyRange.bound([id], [id + 1], false, true);
   const postsToDelete = await postStore.getAllKeys(postsQuery);
 
-  await Promise.all([
-    postStore.delete(postsQuery),
-    feedmetadataStore.delete(id),
-    nodeStore.delete(id),
-  ]);
+  await Promise.all([postStore.delete(postsQuery), nodeStore.delete(id)]);
 
   if (feed.unreadCount) {
     await updateFeedUnreadCount(tx, feed.parentId, -feed.unreadCount);
