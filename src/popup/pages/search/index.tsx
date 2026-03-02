@@ -178,7 +178,7 @@ export default function SearchPage() {
               <div
                 class={styles.icon}
                 title={
-                  "A few posts have not been indexed yet, so they will not show up in the search results.\n" +
+                  "The search index is not completely up-to-date, so search results might not be accurate.\n" +
                   "Since indexing can be resource-heavy depending on the number of posts stored, it will \n" +
                   "run only after the extension popup is closed."
                 }
