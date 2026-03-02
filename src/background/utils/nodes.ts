@@ -1,9 +1,7 @@
 import { setUnreadCountOnExtensionBadge } from "@/background/utils/badge-unread-count";
-import { getInitialFeedmetadata } from "@/background/utils/feedmetadata";
 import {
   ExtensionDB,
   Feed,
-  FeedMetadata,
   Folder,
   ReadTX,
   ReadWriteTX,
@@ -106,14 +104,12 @@ export async function createFeed(
       favicon,
       url: data.url,
       updateFrequency: data.frequency,
+      nextRunAt: null,
+      lastRunAt: null,
     },
   } as Feed;
   const nodes = tx.objectStore("nodes");
   const feedId = await nodes.add(feed);
-
-  const metadata = getInitialFeedmetadata(feedId);
-  const feedmatadata = tx.objectStore("feedmetadata");
-  await feedmatadata.add(metadata);
 
   return { ...feed, id: feedId } as Feed;
 }
@@ -158,4 +154,17 @@ function getRootFolderData() {
     sortOrder: SORT_ORDER_STEP,
     feed: null,
   } as Folder;
+}
+
+export async function updateFeedRunTimes(
+  tx: ReadWriteTX,
+  node: Feed,
+  fetchTime: number,
+) {
+  const store = tx.objectStore("nodes");
+
+  const feedFrequency = node.feed.updateFrequency;
+  node.feed.nextRunAt = feedFrequency ? fetchTime + feedFrequency : null;
+  node.feed.lastRunAt = fetchTime;
+  await store.put(node);
 }

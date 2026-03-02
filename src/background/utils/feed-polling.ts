@@ -1,19 +1,19 @@
-import {
-  saveFailureMetadata,
-  saveSuccessMetadata,
-} from "@/background/utils/feedmetadata";
+import { saveFailureMetadata } from "@/background/utils/feedmetadata";
 import {
   fetchAndParseFeed,
   getPostObjects,
   ParsedPost,
 } from "@/background/utils/feeds-fetch-from-source";
-import { updateFeedUnreadCount } from "@/background/utils/nodes";
+import {
+  updateFeedRunTimes,
+  updateFeedUnreadCount,
+} from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
 import { getAddOrUpdateOperation } from "@/background/utils/search";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
 import { getChunks } from "@/utils/chunks";
-import { getAllFromIndex, txDone } from "@/utils/idb-helpers";
+import { txDone } from "@/utils/idb-helpers";
 import { getLogger, glogger, Logger } from "@/utils/logging";
 
 export async function runFeedPollingAlarmHandler(logger: Logger) {
@@ -106,8 +106,7 @@ export async function savePosts(
 ) {
   logger = logger ?? getLogger({ action: "save-posts" });
   if (!parsedPosts.length) {
-    const frequency = node.feed.updateFrequency;
-    await saveSuccessMetadata(tx, node.id, frequency, fetchTime, false);
+    await updateFeedRunTimes(tx, node, fetchTime);
     logger.debug("done (no posts)");
     return 0;
   }
@@ -128,13 +127,7 @@ export async function savePosts(
       opStore.add(operation);
     });
   }
-  await saveSuccessMetadata(
-    tx,
-    node.id,
-    node.feed.updateFrequency,
-    fetchTime,
-    insertedPosts.length > 0,
-  );
+  await updateFeedRunTimes(tx, node, fetchTime);
   const notes = describeSaveResults(results);
   logger.debug(`done notes=${notes}`);
 
