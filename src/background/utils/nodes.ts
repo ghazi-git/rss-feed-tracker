@@ -47,18 +47,17 @@ export function getAncestors(nodeId: number, nodeMap: Map<number, TreeNode>) {
 export function getNodeLastRunAt(
   node: TreeNode,
   allNodes: TreeNode[],
-  metadata: FeedMetadata[],
   defaultTime: number,
 ) {
   if (node.type === "feed") {
-    const feedMetadata = metadata.find((m) => m.feedId === node.id);
-    return feedMetadata?.lastRunAt ?? defaultTime;
+    return node.feed.lastRunAt ?? defaultTime;
   } else {
     // the folder's lastRunAt is the max lastRunAt of feeds inside it
     const childFeedIds = getChildFeedIds(node, allNodes);
-    const lastRunAts = metadata
-      .filter((m) => childFeedIds.has(m.feedId))
-      .map((m) => m.lastRunAt)
+    const lastRunAts = allNodes
+      .filter((n) => childFeedIds.has(n.id))
+      .filter((n) => n.type === "feed")
+      .map((n) => n.feed.lastRunAt)
       .filter((runAt) => runAt !== null)
       .toSorted();
     return lastRunAts.at(-1) ?? defaultTime;
