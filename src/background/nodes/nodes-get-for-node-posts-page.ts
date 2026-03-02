@@ -8,9 +8,8 @@ export async function getNodeForNodePostsPage(
   id: number,
 ): Promise<NodePostsResponse> {
   using conn = await getDBConnection();
-  const tx = conn.db.transaction(["nodes", "feedmetadata", "posts"]);
+  const tx = conn.db.transaction(["nodes", "posts"]);
   const nodeStore = tx.objectStore("nodes");
-  const metadataStore = tx.objectStore("feedmetadata");
   const postStore = tx.objectStore("posts");
 
   const node = await nodeStore.get(id);
@@ -21,8 +20,7 @@ export async function getNodeForNodePostsPage(
 
   const now = Date.now();
   if (node.type === "feed") {
-    const metadata = await metadataStore.get(id);
-    const lastRunAt = metadata?.lastRunAt ?? now;
+    const lastRunAt = node.feed.lastRunAt ?? now;
     const post = await postStore.get(
       IDBKeyRange.bound([id], [id + 1], false, true),
     );
@@ -30,8 +28,7 @@ export async function getNodeForNodePostsPage(
   }
 
   const allNodes = await nodeStore.getAll();
-  const metadata = await metadataStore.getAll();
-  const folderLastRunAt = getNodeLastRunAt(node, allNodes, metadata, now);
+  const folderLastRunAt = getNodeLastRunAt(node, allNodes, now);
 
   let hasPosts = false;
   if (!node.parentId) {
