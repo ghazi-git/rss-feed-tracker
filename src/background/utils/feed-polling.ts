@@ -107,6 +107,7 @@ export async function savePosts(
   const results = await bulkAddPosts(tx, posts);
   const insertedPosts = results.filter((res) => res.success);
   logger.debug(`inserted ${insertedPosts.length} new post(s) in indexedDB`);
+  await updateFeedRunTimes(tx, node, fetchTime);
   if (insertedPosts.length) {
     logger.debug("updating unread counts");
     await updateFeedUnreadCount(tx, node.id, insertedPosts.length);
@@ -117,7 +118,6 @@ export async function savePosts(
       opStore.add(operation);
     });
   }
-  await updateFeedRunTimes(tx, node, fetchTime);
   const notes = describeSaveResults(results);
   logger.debug(`done notes=${notes}`);
 
