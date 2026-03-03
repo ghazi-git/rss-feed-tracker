@@ -41,6 +41,59 @@ I used Feeder's Chrome extension for years. I was mostly happy with it, especial
 But, there were some small issues that kept nagging at me and minor improvements that I wanted to add. So, I thought:
 why not create my own extension. And, this is the extension I'm using instead.
 
+## Backup format
+
+The backup is a zip file containing the following JSON files:
+
+- `manifest.json` contains the backup metadata:
+  - `backupVersion` set to `1`. Will be incremented only when there is a breaking change.
+  - `extensionName`
+  - `extensionVersion` the extension version when the backup was generated.
+  - `createdAt` when was the backup generated.
+  - `preferences` the user preferences
+    - `uiTheme` `"light"` or `"dark"` or `null` (i.e. follow system theme).
+    - `defaultFeedUpdateFrequency` the default value in milliseconds for the 'Update Frequency' field when creating
+      a new feed.
+    - `clickPostToToggleUnread` when set to `true`, clicking a post marks it as unread. When set to `false`, clicking
+      a post opens the post in a new tab.
+    - `orderPostsBy` posts in a feed, under a folder, under bookmarks or in search, can be ordered by `publishedAt`
+      or `fetchedAt`. `publishedAt` is the time when the post was published according to the feed. `fetchedAt` is when
+      the post was fetched by the extension from the feed.
+    - `groupFolderPosts` can be `true` or `false`. If `true` and when displaying posts inside a folder, posts for
+      feed X will be shown first, then posts for feed Y, ... This grouping will be done for each page of posts.
+  - `backupFiles`
+    - `feeds_folders` the filename containing the feeds and folders data.
+    - `posts` an array of filenames (0 or more) containing the feed posts. Each file contains at most 20K posts.
+
+- `nodes.json` contains an array of feeds and folders. Each object has the following properties
+  - `id` auto-incremented integer.
+  - `type` can be `"feed"` or `"folder"`.
+  - `name` name of the feed or folder.
+  - `unreadCount` the number of unread posts inside the feed or folder.
+  - `parentId` ID of the parent folder containing this feed or folder. Can be `null` only for the root folder.
+  - `sortOrder` a number that allows sorting feeds and folders within the same parent folder
+  - `createdAt` when was the feed or folder created.
+  - `feed` set to `null` for folders. Contains the following properties when `type="feed"`
+    - `url` feed URL
+    - `favicon` URL of the feed icon. can be `null`.
+    - `updateFrequency`frequency of feed updates in milliseconds. Can be `null` meaning that the feed will not be
+      updated automatically (user can still do that manually).
+    - `lastRunAt` last time the feed has run. Represented as an integer (milliseconds since epoch). Can be `null`.
+    - `nextRunAt` next time the feed will run. Equal to `lastRunAt + updateFrequency`. Represented as an integer
+      (milliseconds since epoch). Equals to `null` when `updateFrequency` is `null`.
+
+- `posts_xxxx.json` contains an array of feed posts. Each post has the following properties
+  - `feedId` feed ID
+  - `guid` string representing the unique identifier for the post. Provided by the feed.
+  - `title` title of the post
+  - `url` URL of the post
+  - `commentsURL` URL pointing to the comments of the post. Only RSS feeds can provide a comments URL (Atom and
+    JSON feeds do not).
+  - `unread` can be `1` (unread) or `0` (read)
+  - `bookmarked` can be `1` (bookmarked) or `0` (not bookmarked)
+  - `publishedAt` time the post was published according to the feed. Represented as an integer (milliseconds since epoch).
+  - `fetchedAt` time the post was fetched by the extension. Represented as an integer (milliseconds since epoch).
+
 ## Running the project locally
 
 1. Install dependencies:

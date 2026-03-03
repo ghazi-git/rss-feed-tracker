@@ -71,7 +71,7 @@ export default function Preferences() {
         label="Group folder posts by feed"
         helpText="When displaying posts inside a folder, posts for feed X will
         be shown first, then posts for feed Y, ... This grouping will be done
-        for each page pf posts."
+        for each page of posts."
         checked={preferences.groupFolderPosts}
         onChange={(event) => {
           setPreferences({ groupFolderPosts: event.target.checked });
