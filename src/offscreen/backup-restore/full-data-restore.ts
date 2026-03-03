@@ -62,7 +62,8 @@ export async function restoreExtension(
     if (e instanceof Error && e.name === "TimeoutError") {
       logger.debug("aborted (cannot acquire a lock)");
       throw new RestoreError(
-        "The feeds are being updated in the background, please try again once that is done.",
+        "The feeds are being updated in the background or a previous restore " +
+          "operation did not finish yet. Please try again once that is done.",
         { cause: e },
       );
     } else {
