@@ -5,11 +5,8 @@ import { DB_NAME, ExtensionDB, getDBConnection } from "@/db-setup";
 import { PreferencesData } from "@/messaging-wrapper";
 import {
   BackupManifestSchema,
-  FeedMetadataBackup,
-  FeedMetadataBackupSchema,
   NodeBackup,
   NodeBackupSchema,
-  NodesBackupFileSchema,
   PostBackup,
   PostBackupSchema,
 } from "@/offscreen/backup-restore/types";
@@ -35,7 +32,7 @@ export async function restoreExtension(
   const manifest = validateManifest(manifestContents);
   const nodesFilename = manifest.backupFiles.feeds_folders;
   const nodesContent = extractFile(zipFile, nodesFilename);
-  const { nodes, feedmetadata } = validateNodesFile(nodesContent);
+  const nodes = validateNodesFile(nodesContent);
 
   logger.debug("acquiring lock....");
   try {
@@ -52,7 +49,7 @@ export async function restoreExtension(
         const db = conn.db;
 
         logger.debug(`inserting nodes...`, { count: nodes.length });
-        await insertNodes(db, nodes, feedmetadata);
+        await insertNodes(db, nodes);
 
         // best-effort restore: restore posts that correspond to the nodes already
         // inserted and skip invalid posts or files with bad data.
@@ -121,27 +118,20 @@ function validateManifest(contents: string) {
   }
 }
 
-function validateNodesFile(contents: string): {
-  nodes: NodeBackup[];
-  feedmetadata: FeedMetadataBackup[];
-} {
-  // validate that there are 2 keys nodes and feedmetadata and that each
-  // contains a list of objects. Then, we will collect valid objects (invalid
-  // ones will be ignored) and check that we have a valid root node
-  type Obj = Record<string, unknown>;
-  let fileData: { nodes: Obj[]; feedmetadata: Obj[] };
+function validateNodesFile(contents: string): NodeBackup[] {
+  // validate that the contents is an array
+  const errorMsg =
+    "The backup file is corrupt. The feeds and folders data is invalid.";
+  let parsedNodes: unknown;
   try {
-    fileData = v.parse(NodesBackupFileSchema, JSON.parse(contents));
+    parsedNodes = JSON.parse(contents);
   } catch (e) {
-    const msg =
-      e instanceof v.ValiError
-        ? `The backup file is corrupt. The feeds and folders data is invalid (${e.message}).`
-        : "The backup file is corrupt. The feeds and folders data is invalid.";
-    throw new RestoreError(msg, { cause: e });
+    throw new RestoreError(errorMsg, { cause: e });
   }
+  if (!Array.isArray(parsedNodes)) throw new RestoreError(errorMsg);
 
   const nodes: NodeBackup[] = [];
-  fileData.nodes.forEach((node) => {
+  parsedNodes.forEach((node) => {
     const res = v.safeParse(NodeBackupSchema, node);
     if (res.success) {
       nodes.push(res.output);
@@ -155,16 +145,7 @@ function validateNodesFile(contents: string): {
   }
 
   // now we will keep nodes based on that root folder
-  const validNodes = getTreeElements(rootFolder, nodes);
-  const metadata: FeedMetadataBackup[] = [];
-  fileData.feedmetadata.forEach((m) => {
-    const res = v.safeParse(FeedMetadataBackupSchema, m);
-    if (res.success) {
-      metadata.push(res.output);
-    }
-  });
-
-  return { nodes: validNodes, feedmetadata: metadata };
+  return getTreeElements(rootFolder, nodes);
 }
 
 type TreeElement = { id: number; parentId: number | null };
@@ -222,34 +203,12 @@ async function deleteDB() {
   });
 }
 
-async function insertNodes(
-  db: ExtensionDB,
-  nodes: NodeBackup[],
-  metadata: FeedMetadataBackup[],
-) {
-  const metadataMap = new Map(metadata.map((m) => [m.feedId, m]));
-  const metadataToInsert = nodes
-    .filter((n) => n.type === "feed")
-    .map((feed) => {
-      return (
-        metadataMap.get(feed.id) ?? {
-          feedId: feed.id,
-          nextRunAt: null,
-          lastRunAt: null,
-          lastRunResult: null,
-          lastSuccessfulRunAt: null,
-          lastUpdatedAt: null,
-        }
-      );
-    });
-
-  const tx = db.transaction(["nodes", "feedmetadata"], "readwrite");
+async function insertNodes(db: ExtensionDB, nodes: NodeBackup[]) {
+  const tx = db.transaction(["nodes"], "readwrite");
   const nodeStore = tx.objectStore("nodes");
-  const metadataStore = tx.objectStore("feedmetadata");
 
   const nodePromises = nodes.map((node) => nodeStore.put(node));
-  const metadataPromises = metadataToInsert.map((m) => metadataStore.put(m));
-  await Promise.all([...nodePromises, ...metadataPromises]);
+  await Promise.all(nodePromises);
 
   await txDone(tx);
 }

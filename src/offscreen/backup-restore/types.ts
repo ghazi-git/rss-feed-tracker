@@ -40,7 +40,7 @@ export const BackupManifestSchema = v.object({
   }),
   backupFiles: v.object(
     {
-      // contains data from the nodes and feedmetadata stores
+      // contains data from the nodes store
       feeds_folders: v.message(
         JSONFilenameSchema,
         "feeds_folders must be a filename that ends with '.json'",
@@ -107,37 +107,6 @@ export type FeedBackup = Omit<InferredFeedBackup, "feed"> & {
 
 export const NodeBackupSchema = v.union([FeedBackupSchema, FolderBackupSchema]);
 export type NodeBackup = FolderBackup | FeedBackup;
-
-export const FeedMetadataBackupSchema = v.object({
-  feedId: IDSchema,
-  nextRunAt: v.union([PositiveIntegerSchema, v.null()]),
-  lastRunAt: v.union([PositiveIntegerSchema, v.null()]),
-  lastRunResult: v.union([
-    v.literal("success"),
-    v.literal("failure"),
-    v.null(),
-  ]),
-  lastSuccessfulRunAt: v.union([PositiveIntegerSchema, v.null()]),
-  lastUpdatedAt: v.union([PositiveIntegerSchema, v.null()]),
-});
-export type FeedMetadataBackup = v.InferOutput<typeof FeedMetadataBackupSchema>;
-
-// we just validate the shape of file contents without requiring every object
-// to have the correct schema. Later, we will validate each object and
-// import only the ones that respect the expected schema
-export const NodesBackupFileSchema = v.object(
-  {
-    nodes: v.array(
-      v.record(v.string(), v.unknown()),
-      "nodes must be an array of objects representing the feeds and folders",
-    ),
-    feedmetadata: v.array(
-      v.record(v.string(), v.unknown()),
-      "feedmetadata must be an array of objects representing the feeds metadata",
-    ),
-  },
-  "The data in the feeds and folders file must be a json object with 2 keys 'nodes' and 'feedmetadata'",
-);
 export type NodesBackupFile = NodeBackup[];
 
 export const PostBackupSchema = v.object({
