@@ -1,5 +1,8 @@
 import { NotFoundError } from "@/background/utils/errors";
-import { getAddOrUpdateOperation } from "@/background/utils/search";
+import {
+  getAddOrUpdateOperation,
+  scheduleSearchIndexing,
+} from "@/background/utils/search";
 import { getDBConnection } from "@/db-setup";
 import { getObject, saveObject, txDone } from "@/utils/idb-helpers";
 
@@ -28,4 +31,6 @@ export async function toggleBookmarkedPost(
   opStore.add(operation);
 
   await txDone(tx);
+
+  await scheduleSearchIndexing();
 }

@@ -8,7 +8,10 @@ import {
   updateFeedUnreadCount,
 } from "@/background/utils/nodes";
 import { bulkAddPosts, describeSaveResults } from "@/background/utils/posts";
-import { getAddOrUpdateOperation } from "@/background/utils/search";
+import {
+  getAddOrUpdateOperation,
+  scheduleSearchIndexing,
+} from "@/background/utils/search";
 import { ExtensionDB, Feed, getDBConnection, ReadWriteTX } from "@/db-setup";
 import { sendMessage } from "@/messaging-wrapper";
 import { getChunks } from "@/utils/chunks";
@@ -117,6 +120,8 @@ export async function savePosts(
       const operation = getAddOrUpdateOperation(res.item, "add");
       opStore.add(operation);
     });
+    // no 'await' to avoid the transaction being prematurely committed
+    scheduleSearchIndexing();
   }
   const notes = describeSaveResults(results);
   logger.debug(`done notes=${notes}`);

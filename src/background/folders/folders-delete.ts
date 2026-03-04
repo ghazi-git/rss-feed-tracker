@@ -1,6 +1,9 @@
 import { DeletionError, NotFoundError } from "@/background/utils/errors";
 import { updateFeedUnreadCount } from "@/background/utils/nodes";
-import { getRemoveOperation } from "@/background/utils/search";
+import {
+  getRemoveOperation,
+  scheduleSearchIndexing,
+} from "@/background/utils/search";
 import { getDBConnection } from "@/db-setup";
 import { txDone } from "@/utils/idb-helpers";
 import { getNodeTree } from "@/utils/nodes";
@@ -64,4 +67,6 @@ export async function deleteFolder(id: number) {
       "Unable to delete the folder and its contents, please try again.";
     throw new DeletionError(msg, { cause: e });
   }
+
+  await scheduleSearchIndexing();
 }
