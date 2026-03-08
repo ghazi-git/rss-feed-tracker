@@ -1,5 +1,3 @@
-import { IndexNames } from "idb";
-
 import { NotFoundError } from "@/background/utils/errors";
 import { getNextPageCursor, getPostsFromIndex } from "@/background/utils/posts";
 import { FeedTrackerDB, getDBConnection, Post, ReadTX } from "@/db-setup";
@@ -204,72 +202,86 @@ async function getFolderPosts(
   orderBy: OrderPostsBy,
 ) {
   if (postsView === "unread" && cursor) {
-    const lower = [1];
-    const upper = [1, cursor.time, cursor.feedId, cursor.guid];
-    const query = IDBKeyRange.bound(lower, upper, false, true);
-    return await getPostsUsingIndexCursor(
-      feedIds,
-      tx,
-      orderBy === "fetchedAt"
-        ? "by_unread_fetched_at_feed_id_guid"
-        : "by_unread_published_at_feed_id_guid",
-      query,
-      pageSize,
-    );
+    const upper: UnreadIndexKey = [1, cursor.time, cursor.feedId, cursor.guid];
+    return await getUnreadPostsInFolder(tx, feedIds, upper, orderBy, pageSize);
   } else if (postsView === "unread") {
-    const query = IDBKeyRange.lowerBound([1]);
-    return await getPostsUsingIndexCursor(
-      feedIds,
-      tx,
-      orderBy === "fetchedAt"
-        ? "by_unread_fetched_at_feed_id_guid"
-        : "by_unread_published_at_feed_id_guid",
-      query,
-      pageSize,
-    );
+    return await getUnreadPostsInFolder(tx, feedIds, null, orderBy, pageSize);
   } else if (cursor) {
     const upper = [cursor.time, cursor.feedId, cursor.guid];
     const query = IDBKeyRange.upperBound(upper, true);
-    return await getPostsUsingIndexCursor(
-      feedIds,
-      tx,
-      orderBy === "fetchedAt"
-        ? "by_fetched_at_feed_id_guid"
-        : "by_published_at_feed_id_guid",
-      query,
-      pageSize,
-    );
+    return await getAllPostsInFolder(tx, feedIds, query, orderBy, pageSize);
   } else {
-    return await getPostsUsingIndexCursor(
-      feedIds,
-      tx,
-      orderBy === "fetchedAt"
-        ? "by_fetched_at_feed_id_guid"
-        : "by_published_at_feed_id_guid",
-      null,
-      pageSize,
-    );
+    return await getAllPostsInFolder(tx, feedIds, null, orderBy, pageSize);
   }
 }
 
-async function getPostsUsingIndexCursor(
-  feedIds: Set<number>,
+async function getUnreadPostsInFolder(
   tx: ReadTX,
-  indexName: IndexNames<FeedTrackerDB, "posts">,
-  query: IDBKeyRange | null,
+  feedIds: Set<number>,
+  initialUpperBound: UnreadIndexKey | null,
+  orderBy: OrderPostsBy,
   pageSize: number,
 ) {
+  // getting 1k batches of posts, then filtering is ~1.5 times faster than
+  // using openCursor
   const posts: Post[] = [];
-  const store = tx.objectStore("posts");
-  const index = store.index(indexName);
-  let cursor = await index.openCursor(query, "prev");
-  while (cursor && posts.length < pageSize) {
-    const post = cursor.value;
-    if (feedIds.has(post.feedId)) {
-      posts.push(post);
-    }
-    cursor = await cursor.continue();
+  const batchSize = 1000;
+  const idx =
+    orderBy === "fetchedAt"
+      ? "by_unread_fetched_at_feed_id_guid"
+      : "by_unread_published_at_feed_id_guid";
+  let upper: UnreadIndexKey | null = initialUpperBound;
+  while (true) {
+    const query = upper
+      ? IDBKeyRange.bound([1], upper, false, true)
+      : IDBKeyRange.lowerBound([1]);
+    const postsBatch = await getPostsFromIndex(tx, idx, query, batchSize);
+    if (postsBatch.length === 0) break;
+
+    posts.push(...postsBatch.filter((p) => feedIds.has(p.feedId)));
+
+    if (posts.length >= pageSize || postsBatch.length < batchSize) break;
+
+    const last = postsBatch[postsBatch.length - 1];
+    const time = orderBy === "fetchedAt" ? last.fetchedAt : last.publishedAt;
+    upper = [1, time, last.feedId, last.guid];
   }
 
-  return posts;
+  return posts.slice(0, pageSize);
 }
+
+async function getAllPostsInFolder(
+  tx: ReadTX,
+  feedIds: Set<number>,
+  initialCursor: IDBKeyRange | null,
+  orderBy: OrderPostsBy,
+  pageSize: number,
+) {
+  // getting 1k batches of posts, then filtering is 1.5~2 times faster than
+  // using openCursor
+  const posts: Post[] = [];
+  const batchSize = 1000;
+  const idx =
+    orderBy === "fetchedAt"
+      ? "by_fetched_at_feed_id_guid"
+      : "by_published_at_feed_id_guid";
+  let cursor: IDBKeyRange | null = initialCursor;
+  while (true) {
+    const postsBatch = await getPostsFromIndex(tx, idx, cursor, batchSize);
+    if (postsBatch.length === 0) break;
+
+    posts.push(...postsBatch.filter((p) => feedIds.has(p.feedId)));
+
+    if (posts.length >= pageSize || postsBatch.length < batchSize) break;
+
+    const last = postsBatch[postsBatch.length - 1];
+    const time = orderBy === "fetchedAt" ? last.fetchedAt : last.publishedAt;
+    cursor = IDBKeyRange.upperBound([time, last.feedId, last.guid], true);
+  }
+
+  return posts.slice(0, pageSize);
+}
+
+type UnreadIndexKey =
+  | FeedTrackerDB["posts"]["indexes"]["by_unread_fetched_at_feed_id_guid"]
+  | FeedTrackerDB["posts"]["indexes"]["by_unread_published_at_feed_id_guid"];
