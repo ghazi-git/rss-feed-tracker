@@ -4,6 +4,8 @@ import { findFeeds } from "@/background/feeds/feeds-find";
 import { getFeed } from "@/background/feeds/feeds-get";
 import { previewFeed } from "@/background/feeds/feeds-preview";
 import { updateFeed } from "@/background/feeds/feeds-update";
+import { filterNodePosts } from "@/background/feeds/posts-filter";
+import { filterBookmarks } from "@/background/feeds/posts-filter-bookmarks";
 import { getBookmarks } from "@/background/feeds/posts-get-bookmarks";
 import { getUnreadBookmarksCount } from "@/background/feeds/posts-get-unread-bookmarks-count";
 import { listPosts } from "@/background/feeds/posts-list";
@@ -201,6 +203,34 @@ onMessage("posts/mark-all-posts-as-read", (payload, sender, sendResponse) => {
     .catch((err) => {
       const defaultMsg =
         "An unexpected error occurred while marking the posts as read.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("posts/filter-bookmarks", (payload, sender, sendResponse) => {
+  filterBookmarks(payload.query)
+    .then((posts) => {
+      sendResponse({ success: true, data: posts, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while filtering the bookmarks.";
+      const errorMsg = getErrorMsg(err, defaultMsg);
+      sendResponse({ success: false, data: null, errorMsg });
+    });
+  return true;
+});
+
+onMessage("posts/filter", (payload, sender, sendResponse) => {
+  filterNodePosts(payload.nodeId, payload.query)
+    .then((posts) => {
+      sendResponse({ success: true, data: posts, errorMsg: null });
+    })
+    .catch((err) => {
+      const defaultMsg =
+        "An unexpected error occurred while filtering the posts.";
       const errorMsg = getErrorMsg(err, defaultMsg);
       sendResponse({ success: false, data: null, errorMsg });
     });
