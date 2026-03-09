@@ -5,6 +5,7 @@ import { Input } from "@/popup/components/forms/Input";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
+import { handleFilterShortcut } from "@/popup/utils/filter";
 
 import styles from "./FilterPageHeader.module.css";
 
@@ -12,6 +13,7 @@ export default function FilterPageHeader(props: FilterPageHeaderProps) {
   const [searchParams] = useSearchParams<{ previousUrl?: string }>();
   let filterRef!: HTMLInputElement;
   onMount(() => filterRef.focus());
+  handleFilterShortcut(() => filterRef.focus());
 
   return (
     <PageHeaderWrapper sticky={true}>

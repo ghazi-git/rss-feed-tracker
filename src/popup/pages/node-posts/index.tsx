@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "@solidjs/router";
+import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import {
   batch,
   createEffect,
@@ -29,6 +29,7 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
+import { handleFilterShortcut } from "@/popup/utils/filter";
 import {
   useCurrentURL,
   useInitialState,
@@ -36,6 +37,7 @@ import {
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
+import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./index.module.css";
 import { PostsContext } from "./posts-context";
@@ -202,6 +204,15 @@ export default function NodePosts() {
   });
   onCleanup(() => {
     notifCleanup?.();
+  });
+
+  const navigate = useNavigate();
+  handleFilterShortcut(() => {
+    const searchString = getSearchString({
+      previousUrl: currentURL(),
+      nodeName: node.latest?.name ?? "",
+    });
+    navigate(`/library/nodes/${nodeId()}/filter?${searchString}`);
   });
 
   return (

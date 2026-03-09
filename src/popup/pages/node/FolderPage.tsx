@@ -1,3 +1,4 @@
+import { useNavigate } from "@solidjs/router";
 import { Show } from "solid-js";
 
 import { Folder, TreeNode } from "@/db-setup";
@@ -11,6 +12,9 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
+import { handleFilterShortcut } from "@/popup/utils/filter";
+import { useCurrentURL } from "@/popup/utils/last-visited-page";
+import { getSearchString } from "@/popup/utils/urls";
 
 export function FolderPage(props: FolderPageProps) {
   const { mutateNode } = useNodeContext();
@@ -24,6 +28,17 @@ export function FolderPage(props: FolderPageProps) {
       mutateNode((resp) => ({ ...resp, unreadCount: value }));
     }
   };
+
+  const navigate = useNavigate();
+  const currentURL = useCurrentURL();
+  // eslint-disable-next-line solid/reactivity
+  handleFilterShortcut(() => {
+    const searchString = getSearchString({
+      previousUrl: currentURL(),
+      nodeName: props.folder.name,
+    });
+    navigate(`/library/nodes/${props.folder.id}/filter?${searchString}`);
+  });
 
   return (
     <UnreadCountContext.Provider value={{ mutateUnreadCount }}>
