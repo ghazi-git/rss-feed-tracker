@@ -26,12 +26,15 @@ export function validateTimeFilters(
   return { isValid: true, error: null };
 }
 
-export function debounce(callback: () => void, delay = 200) {
+export function debounce<T extends unknown[]>(
+  callback: (...args: T) => void,
+  delay = 200,
+) {
   let timer: number;
 
-  return () => {
+  return (...args: T) => {
     if (timer) clearTimeout(timer);
-    timer = setTimeout(callback, delay);
+    timer = setTimeout(() => callback(...args), delay);
   };
 }
 
