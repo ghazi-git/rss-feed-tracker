@@ -9,6 +9,9 @@
  * to load the exact number of posts the user has previously loaded
  */
 import { useLocation } from "@solidjs/router";
+import { createEffect, Resource } from "solid-js";
+
+import { useBodyContext } from "@/popup/components/Body";
 
 export function saveLastVisitedPage(
   url: string,
@@ -75,4 +78,25 @@ interface LastVisitedPage {
   url: string;
   scrollPosition: number | null;
   postsCount: number | null;
+}
+
+/**
+ * restore the scroll position when this is the last visited page. The scroll
+ * restoration has to be done only once after we fetch the data.
+ */
+export function restoreScrollPositionAfterInitialFetch<T>(
+  resource: Resource<T>,
+) {
+  const { setScrollPosition } = useBodyContext();
+  const currentURL = useCurrentURL();
+  const initialState = useInitialState();
+  let isInitialFetch = true;
+  createEffect(() => {
+    if (initialState && isInitialFetch && resource.state === "ready") {
+      isInitialFetch = false;
+      if (initialState.url === currentURL()) {
+        setScrollPosition(initialState.scrollPosition);
+      }
+    }
+  });
 }

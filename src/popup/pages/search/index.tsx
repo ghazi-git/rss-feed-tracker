@@ -6,18 +6,12 @@ import {
   ErrorBoundary,
   Match,
   onMount,
-  Resource,
   Show,
   Switch,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import {
-  SearchQueryParams,
-  SearchResult,
-  sendMessage,
-} from "@/messaging-wrapper";
-import { useBodyContext } from "@/popup/components/Body";
+import { SearchQueryParams, sendMessage } from "@/messaging-wrapper";
 import InputField, { Input } from "@/popup/components/forms/Input";
 import SelectField from "@/popup/components/forms/Select";
 import BackLink from "@/popup/components/page-header/BackLink";
@@ -28,10 +22,7 @@ import FiltersButton from "@/popup/pages/search/FiltersButton";
 import FiltersPopover from "@/popup/pages/search/FiltersPopover";
 import SearchResults from "@/popup/pages/search/SearchResults";
 import SortButton from "@/popup/pages/search/SortButton";
-import {
-  useCurrentURL,
-  useInitialState,
-} from "@/popup/utils/last-visited-page";
+import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import { notifyError } from "@/popup/utils/notifications";
 import {
   createSortSignal,
@@ -113,7 +104,7 @@ export default function SearchPage() {
       return resp.data;
     },
   );
-  restoreScrollPosition(search);
+  restoreScrollPositionAfterInitialFetch(search);
   createEffect(() => {
     if (!hasSearchTerm()) mutate([]);
   });
@@ -334,23 +325,4 @@ function getInitialBookmarked(bookmarked?: string) {
 function getIntegerValue(date?: string) {
   const value = parseInt(date ?? "");
   return !isNaN(value) && value >= 0 ? value : null;
-}
-
-/**
- * restore the scroll position when this is the last visited page. The scroll
- * restoration has to be done only once after the search results have been loaded
- */
-function restoreScrollPosition(search: Resource<SearchResult[]>) {
-  const { setScrollPosition } = useBodyContext();
-  const currentURL = useCurrentURL();
-  const initialState = useInitialState();
-  let isInitialFetch = true;
-  createEffect(() => {
-    if (initialState && isInitialFetch && search.state === "ready") {
-      isInitialFetch = false;
-      if (initialState.url === currentURL()) {
-        setScrollPosition(initialState.scrollPosition);
-      }
-    }
-  });
 }
