@@ -21,7 +21,7 @@ export default function PostsFilteringPage() {
   };
   const filterPosts = debounce(
     (query: string) => setSearchParams({ query }, { replace: true }),
-    200,
+    100,
   );
 
   return (
