@@ -6,12 +6,14 @@ import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBounda
 import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
 import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
+import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import { debounce } from "@/popup/utils/search";
 
 export default function PostsFilteringPage() {
   const [posts, { mutate }] = createFilterResource();
   restoreScrollPositionAfterInitialFetch(posts);
+  handleExitFilterShortcut();
 
   const [searchParams, setSearchParams] = useSearchParams<FilterPageParams>();
   const placeholder = () => {
