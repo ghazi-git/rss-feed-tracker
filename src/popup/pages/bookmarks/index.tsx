@@ -1,4 +1,4 @@
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import {
   batch,
   createEffect,
@@ -17,12 +17,14 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
+import { handleFilterShortcut } from "@/popup/utils/filter";
 import {
   useCurrentURL,
   useInitialState,
 } from "@/popup/utils/last-visited-page";
 import { notifyError } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
+import { getSearchString } from "@/popup/utils/urls";
 
 export default function Bookmarks() {
   const [unreadCount, mutateUnreadCount] = createUnreadCountSignal();
@@ -92,6 +94,12 @@ export default function Bookmarks() {
         }
       });
     }
+  });
+
+  const navigate = useNavigate();
+  handleFilterShortcut(() => {
+    const searchString = getSearchString({ previousUrl: currentURL() });
+    navigate(`/bookmarks/filter?${searchString}`);
   });
 
   return (

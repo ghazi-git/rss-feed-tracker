@@ -11,6 +11,7 @@ import SelectFeed from "@/popup/pages/add-edit-feed/SelectFeed";
 import AddFolder from "@/popup/pages/add-edit-folder/AddFolder";
 import EditFolder from "@/popup/pages/add-edit-folder/EditFolder";
 import Bookmarks from "@/popup/pages/bookmarks";
+import FilterBookmarksPage from "@/popup/pages/bookmarks-filter";
 import ImportFeeds from "@/popup/pages/import-feeds";
 import Library from "@/popup/pages/Library";
 import NoFeedsYet from "@/popup/pages/no-feeds-yet";
@@ -78,6 +79,7 @@ function App() {
           <Route path="/library/folders/:id/edit" component={EditFolder} />
           <Route path="/library/not-found" component={NotFound} />
           <Route path="/bookmarks" component={Bookmarks} />
+          <Route path="/bookmarks/filter" component={FilterBookmarksPage} />
           <Route path="/preferences" component={Preferences} />
           <Route
             path="*"
