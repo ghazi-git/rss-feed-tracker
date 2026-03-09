@@ -1,14 +1,14 @@
-import { useLocation, useNavigate } from "@solidjs/router";
+import { useNavigate } from "@solidjs/router";
 
 import MenuItem from "@/popup/components/dropdown/MenuItem";
+import { useCurrentURL } from "@/popup/utils/last-visited-page";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFeedMenuItem(props: { feedId: number }) {
   const navigate = useNavigate();
-  const location = useLocation();
+  const currentURL = useCurrentURL();
   const editUrl = () => {
-    const currentUrl = `${location.pathname}${location.search}`;
-    const searchString = getSearchString({ previousUrl: currentUrl });
+    const searchString = getSearchString({ previousUrl: currentURL() });
     return `/library/feeds/${props.feedId}/edit?${searchString}`;
   };
 

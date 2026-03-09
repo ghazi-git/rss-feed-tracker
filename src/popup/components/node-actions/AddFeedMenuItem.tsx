@@ -1,16 +1,16 @@
-import { useLocation, useNavigate } from "@solidjs/router";
+import { useNavigate } from "@solidjs/router";
 import { createMemo } from "solid-js";
 
 import MenuItem from "@/popup/components/dropdown/MenuItem";
+import { useCurrentURL } from "@/popup/utils/last-visited-page";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function AddFeedMenuItem(props: { folderId: number }) {
   const navigate = useNavigate();
-  const location = useLocation();
+  const currentURL = useCurrentURL();
   const addFeedUrl = createMemo(() => {
-    const currentUrl = `${location.pathname}${location.search}`;
     const searchString = getSearchString({
-      previousUrl: currentUrl,
+      previousUrl: currentURL(),
       parentFolderId: `${props.folderId}`,
     });
     return `/library/feeds/select?${searchString}`;
