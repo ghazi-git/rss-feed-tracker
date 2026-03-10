@@ -10,4 +10,8 @@
     border-radius: var(--radius-1);
     padding-inline: 0;
   }
+
+  &.loading {
+    opacity: 0.6;
+  }
 }

@@ -69,7 +69,9 @@ export default function FilterResults(props: FilterResultsProps) {
       <PostContextMenu />
       <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
         <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-          <div class={styles["filter-results"]}>
+          <div
+            class={`${styles["filter-results"]} ${props.isLoading ? styles.loading : ""}`}
+          >
             <For each={props.posts}>
               {(post) => (
                 <Post post={post}>
@@ -104,5 +106,6 @@ function highlightText(
 
 interface FilterResultsProps {
   posts: FilterResult[];
+  isLoading: boolean;
   mutateFilterResults: Setter<FilterResult[] | undefined>;
 }

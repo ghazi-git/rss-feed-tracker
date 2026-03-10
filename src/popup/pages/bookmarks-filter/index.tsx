@@ -33,12 +33,16 @@ export default function FilterBookmarksPage() {
       />
       <FilterErrorBoundary>
         <Show when={posts.latest}>
-          {(posts) => (
+          {(results) => (
             <>
-              <Show when={posts().length === 0}>
+              <Show when={results().length === 0}>
                 <NoFilterResults />
               </Show>
-              <FilterResults posts={posts()} mutateFilterResults={mutate} />
+              <FilterResults
+                posts={results()}
+                isLoading={posts.loading}
+                mutateFilterResults={mutate}
+              />
             </>
           )}
         </Show>
