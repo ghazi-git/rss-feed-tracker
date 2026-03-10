@@ -89,8 +89,6 @@ export function getAddOrUpdateOperation(
     document: {
       title: post.title,
       bookmarked: post.bookmarked,
-      publishedAt: post.publishedAt,
-      fetchedAt: post.fetchedAt,
     },
   } as SearchIndexOperation;
 }

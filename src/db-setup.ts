@@ -271,8 +271,6 @@ interface BaseSearchIndexOperation {
 interface PostDocument {
   title: string;
   bookmarked: BooleanFlag;
-  publishedAt: number;
-  fetchedAt: number;
 }
 export interface SearchIndexAdd extends BaseSearchIndexOperation {
   operation: "add";

@@ -36,7 +36,7 @@ export async function getSearchIndex(indexName: string) {
     commit: false,
     document: {
       id: "id",
-      store: ["feedId", "bookmarked", "fetchedAt", "publishedAt"],
+      store: ["feedId", "bookmarked"],
       index: [{ field: "title", encoder: encoder, tokenize: "full" }],
     },
   });
@@ -54,6 +54,4 @@ export type IndexedPost = {
   // used for filtering after the search is done
   feedId: number;
   bookmarked: 0 | 1;
-  publishedAt: number;
-  fetchedAt: number;
 };

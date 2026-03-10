@@ -79,8 +79,8 @@ onMessage("search-index/update", (payload, sender, sendResponse) => {
 
 onMessage(
   "search-index/query",
-  ({ timeField, indexName, ...params }, sender, sendResponse) => {
-    querySearchIndex(params, timeField, indexName)
+  ({ indexName, ...params }, sender, sendResponse) => {
+    querySearchIndex(params, indexName)
       .then((results) => {
         sendResponse({ success: true, data: results, errorMsg: null });
       })

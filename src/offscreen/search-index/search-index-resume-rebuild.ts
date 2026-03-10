@@ -124,9 +124,9 @@ async function indexPosts(
   posts: Post[],
 ) {
   for (const post of posts) {
-    const { feedId, guid, fetchedAt, bookmarked, title, publishedAt } = post;
+    const { feedId, guid, bookmarked, title } = post;
     const id = getIndexedPostID(feedId, guid);
-    index.add({ id, feedId, title, bookmarked, publishedAt, fetchedAt });
+    index.add({ id, feedId, title, bookmarked });
   }
   await index.commit();
 }

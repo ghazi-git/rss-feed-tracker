@@ -86,7 +86,7 @@ interface MessageMap {
   "search-index/has-unapplied-operations"(): boolean;
   "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
-    data: SearchQueryParams & { timeField: OrderPostsBy; indexName: string },
+    data: SearchQueryParams & { indexName: string },
   ): SearchResult[];
   "search-index/is-popup-open"(): boolean;
 }
@@ -234,13 +234,12 @@ interface SearchIndexRebuildingDone {
 }
 export interface SearchQueryParams {
   query: string;
-  nodeId: number;
+  nodeId: number | null;
   bookmarked: 0 | 1 | null;
-  startDate: number | null;
-  endDate: number | null;
 }
 export interface SearchResult extends FeedPost {
-  relevanceScore: number;
+  // todo make required once highlighting is added
+  highlightedTitle?: string;
 }
 
 export type MessageType = keyof MessageMap;
