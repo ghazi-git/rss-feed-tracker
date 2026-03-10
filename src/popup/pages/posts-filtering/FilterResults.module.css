@@ -4,4 +4,10 @@
   justify-content: flex-start;
   align-items: stretch;
   gap: var(--size-2);
+
+  mark {
+    background-color: #f59732;
+    border-radius: var(--radius-1);
+    padding-inline: 0;
+  }
 }

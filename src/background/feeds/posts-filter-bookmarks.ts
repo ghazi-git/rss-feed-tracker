@@ -5,7 +5,7 @@ import { RECENT_POSTS_LIMIT, SEARCH_RESULTS_LIMIT } from "@/utils/settings";
 export async function filterBookmarks(query: string) {
   if (!query) {
     const resp = await getBookmarks("all", null, SEARCH_RESULTS_LIMIT);
-    return resp.posts;
+    return resp.posts.map((p) => ({ ...p, termPosition: null }));
   }
 
   // fetch the latest 1k posts (i.e. recent), then filter them

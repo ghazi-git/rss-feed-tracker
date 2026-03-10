@@ -18,5 +18,8 @@ export async function filterPosts(
   }
   postsWithIndexes.sort(([a], [b]) => a - b);
 
-  return postsWithIndexes.map(([, post]) => post);
+  return postsWithIndexes.map(([idx, post]) => ({
+    ...post,
+    termPosition: { start: idx, end: idx + term.length },
+  }));
 }

@@ -1,5 +1,5 @@
 import { computePosition, flip } from "@floating-ui/dom";
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, ParentProps } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
 import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-context";
@@ -11,7 +11,7 @@ import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./Post.module.css";
 
-export default function Post(props: { post: FeedPost }) {
+export default function Post(props: PostProps) {
   const { store: ctxMenu, showMenu } = usePostMenuContext();
   let ref!: HTMLAnchorElement;
 
@@ -96,7 +96,7 @@ export default function Post(props: { post: FeedPost }) {
         class={styles.title}
         dir="auto"
       >
-        {props.post.title}
+        {props.children ?? props.post.title}
       </div>
       <PostFooter post={props.post} />
     </PostLink>
@@ -118,4 +118,8 @@ function getVirtualElement(clientX: number, clientY: number) {
       };
     },
   };
+}
+
+interface PostProps extends ParentProps {
+  post: FeedPost;
 }

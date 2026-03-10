@@ -1,6 +1,6 @@
 import { For, Setter } from "solid-js";
 
-import { FeedPost, sendMessage } from "@/messaging-wrapper";
+import { FilterResult, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
 import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import Post from "@/popup/pages/node-posts/Post";
@@ -70,7 +70,13 @@ export default function FilterResults(props: FilterResultsProps) {
       <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
         <ToggleUnreadContext.Provider value={{ toggleUnread }}>
           <div class={styles["filter-results"]}>
-            <For each={props.posts}>{(post) => <Post post={post} />}</For>
+            <For each={props.posts}>
+              {(post) => (
+                <Post post={post}>
+                  {highlightText(post.title, post.termPosition)}
+                </Post>
+              )}
+            </For>
           </div>
         </ToggleUnreadContext.Provider>
       </ToggleBookmarkedContext.Provider>
@@ -78,7 +84,25 @@ export default function FilterResults(props: FilterResultsProps) {
   );
 }
 
+function highlightText(
+  text: string,
+  position: { start: number; end: number } | null,
+) {
+  if (!position) return text;
+
+  const before = text.substring(0, position.start);
+  const term = text.substring(position.start, position.end);
+  const after = text.substring(position.end);
+  return (
+    <>
+      {before}
+      <mark>{term}</mark>
+      {after}
+    </>
+  );
+}
+
 interface FilterResultsProps {
-  posts: FeedPost[];
-  mutateFilterResults: Setter<FeedPost[] | undefined>;
+  posts: FilterResult[];
+  mutateFilterResults: Setter<FilterResult[] | undefined>;
 }
