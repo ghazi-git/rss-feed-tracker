@@ -38,11 +38,11 @@ export async function resumeRebuildingSearchIndex(
         using conn = await getDBConnection();
         const isDone = await buildSearchIndex(conn.db, params, logger);
         if (isDone) {
-          await sendMessage("search-index/finish-rebuild", {
-            indexName: params.indexName,
-            initialCursor: params.initialCursor,
-          });
-          await finishRebuilding(params.indexName, params.initialCursor);
+          await finishRebuilding(
+            params.indexName,
+            params.initialCursor,
+            logger,
+          );
         }
 
         const res = performance.measure(
@@ -140,7 +140,9 @@ async function saveRebuildingProgress(params: SearchIndexProgressParams) {
 async function finishRebuilding(
   indexName: string,
   initialCursor: SearchIndexProgressCursor,
+  logger: Logger,
 ) {
+  logger.debug("indexing new posts since rebuilding start ...");
   // notify the service worker to finish the rebuilding process:
   // - schedule for indexing any new posts since rebuilding start
   // - swap the old and new indexes
@@ -153,6 +155,7 @@ async function finishRebuilding(
   if (resp.success) {
     const oldIndexName = resp.data;
     if (oldIndexName) {
+      logger.debug("deleting old index", { oldIndexName });
       const index = await getSearchIndex(oldIndexName);
       await index.destroy();
     }
