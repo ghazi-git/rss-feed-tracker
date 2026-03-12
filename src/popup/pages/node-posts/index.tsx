@@ -37,6 +37,7 @@ import {
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
+import { useSearchIndexState } from "@/popup/utils/search";
 import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./index.module.css";
@@ -206,13 +207,18 @@ export default function NodePosts() {
     notifCleanup?.();
   });
 
+  const isSearchIndexReady = useSearchIndexState();
   const navigate = useNavigate();
   handleFilterShortcut(() => {
     const searchString = getSearchString({
       previousUrl: currentURL(),
       nodeName: node.latest?.name ?? "",
     });
-    navigate(`/library/nodes/${nodeId()}/filter?${searchString}`);
+    if (isSearchIndexReady()) {
+      navigate(`/library/nodes/${nodeId()}/search?${searchString}`);
+    } else {
+      navigate(`/library/nodes/${nodeId()}/filter?${searchString}`);
+    }
   });
 
   return (
