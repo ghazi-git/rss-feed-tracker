@@ -68,7 +68,11 @@ export async function buildSearchIndex(
   logger: Logger,
 ) {
   const index = await getSearchIndex(params.indexName);
-  const batchSize = 100;
+  // the indexing of the initial posts batch is very fast compared to later
+  // ones (20k in 40s, then 100 in 6s).
+  // So we're taking advantage of that by making the first iteration index 20K
+  // posts, and then decreasing that value.
+  let batchSize = 20_000;
   const total = params.totalPostsToBeIndexed;
   let indexedSoFar = params.postsIndexedSoFar;
   let currentCursor = params.currentCursor;
@@ -95,6 +99,8 @@ export async function buildSearchIndex(
       currentCursor,
       postsIndexedSoFar: indexedSoFar,
     });
+    // decrease the value so that it's faster to pause indexing later
+    batchSize = 100;
   }
 
   return isDone;
