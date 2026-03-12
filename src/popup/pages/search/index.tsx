@@ -1,102 +1,76 @@
 import { useParams, useSearchParams } from "@solidjs/router";
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  ErrorBoundary,
-  Match,
-  onMount,
-  Show,
-  Switch,
-} from "solid-js";
-import { createStore } from "solid-js/store";
+import { createResource, Setter, Show } from "solid-js";
 
-import { SearchQueryParams, sendMessage } from "@/messaging-wrapper";
-import InputField, { Input } from "@/popup/components/forms/Input";
-import SelectField from "@/popup/components/forms/Select";
-import BackLink from "@/popup/components/page-header/BackLink";
-import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
-import InfoIcon from "@/popup/components/svg-icons/InfoIcon";
-import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
-import FiltersButton from "@/popup/pages/search/FiltersButton";
-import FiltersPopover from "@/popup/pages/search/FiltersPopover";
+import { FeedPost, sendMessage } from "@/messaging-wrapper";
+import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
+import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
+import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
+import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
 import SearchResults from "@/popup/pages/search/SearchResults";
-import SortButton from "@/popup/pages/search/SortButton";
+import { debounce } from "@/popup/utils/debounce";
+import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
-import { notifyError } from "@/popup/utils/notifications";
-import {
-  createSortSignal,
-  debounce,
-  validateTimeFilters,
-} from "@/popup/utils/search";
-import { SEARCH_RESULTS_LIMIT } from "@/utils/settings";
-
-import styles from "./index.module.css";
 
 export default function SearchPage() {
-  let searchRef!: HTMLInputElement;
-  onMount(() => searchRef.focus());
-  const [nodeOptions] = createNodeOptionsResource();
-  const hasFilters = () => {
-    const hasNodeFilter =
-      nodeOptions.latest.length > 0 &&
-      nodeOptions.latest[0].value !== formdata.nodeId;
-    return (
-      hasNodeFilter ||
-      formdata.bookmarked !== null ||
-      formdata.startDate !== null ||
-      formdata.endDate !== null
-    );
+  const [posts, { mutate }] = createSearchResource();
+  restoreScrollPositionAfterInitialFetch(posts);
+  handleExitFilterShortcut();
+
+  const [searchParams, setSearchParams] = useSearchParams<SearchPageParams>();
+  const nodeId = useNodeId();
+  const placeholder = () => {
+    if (inBookmarksPage(nodeId())) return "Search bookmarks";
+
+    return searchParams.nodeName
+      ? `Search posts in '${searchParams.nodeName}'`
+      : "Search posts";
   };
-
-  const [searchParams, setSearchParams] = useSearchParams<{
-    previousUrl?: string;
-    query?: string;
-    nodeId?: string;
-    bookmarked?: string;
-    startDate?: string;
-    endDate?: string;
-    sortBy?: string;
-  }>();
-  createEffect(() => {
-    setSearchParams(
-      {
-        query: formdata.query,
-        nodeId: formdata.nodeId,
-        bookmarked: formdata.bookmarked,
-        startDate: formdata.startDate,
-        endDate: formdata.endDate,
-        sortBy: sort(),
-      },
-      { replace: true },
-    );
-  });
-  const params = useParams<{ id: string }>();
-  const nodeId = () => parseInt(params.id);
-  const [formdata, setFormdata] = createStore<SearchQueryParams>({
-    query: searchParams.query || "",
-    nodeId: getIntegerValue(searchParams.nodeId) ?? nodeId(),
-    bookmarked: getInitialBookmarked(searchParams.bookmarked),
-    startDate: getIntegerValue(searchParams.startDate),
-    endDate: getIntegerValue(searchParams.endDate),
-  });
-  const [sort, setNextSort] = createSortSignal(searchParams.sortBy);
-  const [searchInput, setSearchInput] = createSignal<SearchQueryParams | null>(
-    searchParams.query ||
-      searchParams.nodeId ||
-      searchParams.bookmarked ||
-      searchParams.startDate ||
-      searchParams.endDate
-      ? { ...formdata }
-      : null,
+  const searchPosts = debounce(
+    (query: string) => setSearchParams({ query }, { replace: true }),
+    100,
   );
-  const hasSearchTerm = () => !!searchInput()?.query.trim();
-  const [search, { mutate }] = createResource(
-    () => {
-      if (!hasSearchTerm()) return null;
 
-      return searchInput();
-    },
+  return (
+    <>
+      <FilterPageHeader
+        inputValue={searchParams.query || ""}
+        onInput={(e) => {
+          searchPosts(e.target.value.trim());
+        }}
+        isLoading={posts.loading}
+        placeholder={placeholder()}
+      />
+      <FilterErrorBoundary>
+        <Show when={posts.latest}>
+          {(results) => (
+            <>
+              <Show when={results().length === 0}>
+                <NoFilterResults />
+              </Show>
+              <FilterResultsWrapper
+                isLoading={posts.loading}
+                mutateResults={mutate as Setter<FeedPost[] | undefined>}
+              >
+                <SearchResults posts={results()} />
+              </FilterResultsWrapper>
+            </>
+          )}
+        </Show>
+      </FilterErrorBoundary>
+    </>
+  );
+}
+
+function createSearchResource() {
+  const [searchParams] = useSearchParams<SearchPageParams>();
+  const nodeId = useNodeId();
+
+  return createResource(
+    () => ({
+      query: searchParams.query || "",
+      nodeId: nodeId(),
+      bookmarked: (inBookmarksPage(nodeId()) ? 1 : null) as 1 | null,
+    }),
     async (input) => {
       const resp = await sendMessage("search-index/trigger-query", input);
       if (!resp.success) throw new Error(resp.errorMsg);
@@ -104,225 +78,19 @@ export default function SearchPage() {
       return resp.data;
     },
   );
-  restoreScrollPositionAfterInitialFetch(search);
-  createEffect(() => {
-    if (!hasSearchTerm()) mutate([]);
-  });
-
-  const searchPosts = () => {
-    const { isValid, error } = validateTimeFilters(
-      formdata.startDate,
-      formdata.endDate,
-    );
-    if (!isValid) {
-      notifyError(error, { duration: 5000 });
-      return;
-    }
-
-    // ensure posts on the chosen day will be included in the search results
-    const before =
-      formdata.endDate !== null
-        ? formdata.endDate + 24 * 60 * 60 * 1000 - 1
-        : null;
-    setSearchInput({ ...formdata, before });
-  };
-  // eslint-disable-next-line solid/reactivity
-  const debouncedSearch = debounce(searchPosts, 200);
-
-  const [hasOperations] = createResource(
-    // eslint-disable-next-line solid/reactivity
-    async () => {
-      const resp = await sendMessage(
-        "search-index/has-unapplied-operations",
-        undefined,
-      );
-      if (!resp.success) throw new Error(resp.errorMsg);
-
-      return resp.data;
-    },
-    { initialValue: false },
-  );
-
-  return (
-    <>
-      <PageHeaderWrapper sticky={true}>
-        <BackLink url={searchParams.previousUrl ?? "/library"} />
-        <div class={styles.search}>
-          <Input
-            ref={searchRef}
-            type="text"
-            name="query"
-            placeholder="Search for posts"
-            aria-label="Search for posts"
-            dir="auto"
-            value={formdata.query}
-            onInput={(e) => {
-              setFormdata("query", e.target.value);
-              debouncedSearch();
-            }}
-          />
-          <Switch>
-            <Match when={search.loading}>
-              <LoadingIcon class={styles.icon} />
-            </Match>
-            <Match when={!search.loading && hasOperations.latest}>
-              <div
-                class={styles.icon}
-                title={
-                  "The search index is not completely up-to-date, so search results might not be accurate.\n" +
-                  "Since indexing can be resource-heavy depending on the number of posts stored, it will \n" +
-                  "run only after the extension popup is closed."
-                }
-              >
-                <InfoIcon />
-              </div>
-            </Match>
-          </Switch>
-        </div>
-      </PageHeaderWrapper>
-      <div class={styles.filters}>
-        <div class={styles.buttons}>
-          <ErrorBoundary fallback={<></>}>
-            <Show when={hasSearchTerm() && search.latest}>
-              {(posts) => (
-                <Switch>
-                  <Match when={posts().length}>
-                    <div class={styles["search-results-text"]}>
-                      Found {posts().length} post
-                      {posts().length === 1 ? "" : "s"}
-                    </div>
-                  </Match>
-                  <Match when={!posts().length && !search.loading}>
-                    <div class={styles["search-results-text"]}>
-                      No posts found
-                    </div>
-                  </Match>
-                </Switch>
-              )}
-            </Show>
-          </ErrorBoundary>
-          <SortButton sortBy={sort()} onClick={() => setNextSort()} />
-          <FiltersButton
-            hasFilters={hasFilters()}
-            popovertarget="search-filters"
-          />
-        </div>
-        <FiltersPopover id="search-filters">
-          <div class={styles["filters-row"]}>
-            <SelectField
-              name="node"
-              label="Search inside"
-              options={nodeOptions.latest}
-              value={formdata.nodeId}
-              onChange={(e) => {
-                setFormdata("nodeId", parseInt(e.target.value));
-                searchPosts();
-              }}
-            />
-            <SelectField
-              name="bookmarked"
-              label="Bookmarked"
-              options={BOOKMARKED_OPTIONS}
-              value={formdata.bookmarked ?? ""}
-              onChange={(e) => {
-                const value = parseInt(e.target.value);
-                const v = isNaN(value) ? null : value ? 1 : 0;
-                setFormdata("bookmarked", v);
-                searchPosts();
-              }}
-            />
-          </div>
-          <div class={styles["filters-row"]}>
-            <InputField
-              type="date"
-              name="startDate"
-              label="Start Date"
-              value={convertToDateString(formdata.startDate)}
-              onChange={(e) => {
-                const val = e.target.valueAsNumber;
-                setFormdata("startDate", isNaN(val) ? null : val);
-                searchPosts();
-              }}
-            />
-            <InputField
-              type="date"
-              name="endDate"
-              label="End Date"
-              value={convertToDateString(formdata.endDate)}
-              onChange={(e) => {
-                const val = e.target.valueAsNumber;
-                setFormdata("endDate", isNaN(val) ? null : val);
-                searchPosts();
-              }}
-            />
-          </div>
-        </FiltersPopover>
-      </div>
-      <ErrorBoundary
-        fallback={(err) => (
-          <div class={styles.error}>
-            {err.message || "An unexpected error happened."}
-          </div>
-        )}
-      >
-        <Show when={search.latest}>
-          {(posts) => (
-            <>
-              <SearchResults
-                posts={posts()}
-                sortBy={sort()}
-                mutateSearchResults={mutate}
-              />
-              <Show
-                when={!hasFilters() && posts().length === SEARCH_RESULTS_LIMIT}
-              >
-                <div class={styles["results-limit-reached"]}>
-                  Try filtering the search results if you didn't find what
-                  you're looking for
-                </div>
-              </Show>
-            </>
-          )}
-        </Show>
-      </ErrorBoundary>
-    </>
-  );
 }
 
-function createNodeOptionsResource() {
-  return createResource(
-    // eslint-disable-next-line solid/reactivity
-    async () => {
-      const response = await sendMessage("nodes/get-options", undefined);
-      if (!response.success) throw new Error(response.errorMsg);
-
-      return response.data;
-    },
-    { initialValue: [] },
-  );
+function useNodeId() {
+  const params = useParams<{ id?: string }>();
+  return () => (params.id ? parseInt(params.id) : null);
 }
 
-function convertToDateString(timestamp: number | null) {
-  if (timestamp === null) return "";
-
-  const dt = new Date(timestamp);
-  const year = `${dt.getFullYear()}`.padStart(4, "0");
-  const month = `${dt.getMonth() + 1}`.padStart(2, "0");
-  const day = `${dt.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function inBookmarksPage(nodeId: number | null) {
+  return nodeId === null;
 }
 
-const BOOKMARKED_OPTIONS = [
-  { label: "Unspecified", value: "" },
-  { label: "Yes", value: 1 },
-  { label: "No", value: 0 },
-];
-
-function getInitialBookmarked(bookmarked?: string) {
-  return bookmarked === "1" ? 1 : bookmarked === "0" ? 0 : null;
-}
-
-function getIntegerValue(date?: string) {
-  const value = parseInt(date ?? "");
-  return !isNaN(value) && value >= 0 ? value : null;
-}
+type SearchPageParams = {
+  previousUrl?: string;
+  nodeName?: string;
+  query?: string;
+};

@@ -7,9 +7,9 @@ import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
 import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
 import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
+import { debounce } from "@/popup/utils/debounce";
 import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
-import { debounce } from "@/popup/utils/search";
 
 export default function FilterBookmarksPage() {
   const [posts, { mutate }] = createFilterResource();

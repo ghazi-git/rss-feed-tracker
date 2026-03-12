@@ -79,6 +79,7 @@ function App() {
           <Route path="/library/folders/:id/edit" component={EditFolder} />
           <Route path="/library/not-found" component={NotFound} />
           <Route path="/bookmarks" component={Bookmarks} />
+          <Route path="/bookmarks/search" component={SearchPage} />
           <Route path="/bookmarks/filter" component={FilterBookmarksPage} />
           <Route path="/preferences" component={Preferences} />
           <Route
