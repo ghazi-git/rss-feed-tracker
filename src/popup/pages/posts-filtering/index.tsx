@@ -1,10 +1,11 @@
 import { useParams, useSearchParams } from "@solidjs/router";
-import { createResource, Show } from "solid-js";
+import { createResource, Setter, Show } from "solid-js";
 
-import { sendMessage } from "@/messaging-wrapper";
+import { FeedPost, sendMessage } from "@/messaging-wrapper";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
 import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
 import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
+import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
 import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
@@ -43,11 +44,12 @@ export default function PostsFilteringPage() {
               <Show when={results().length === 0}>
                 <NoFilterResults />
               </Show>
-              <FilterResults
-                posts={results()}
+              <FilterResultsWrapper
                 isLoading={posts.loading}
-                mutateFilterResults={mutate}
-              />
+                mutateResults={mutate as Setter<FeedPost[] | undefined>}
+              >
+                <FilterResults posts={results()} />
+              </FilterResultsWrapper>
             </>
           )}
         </Show>
