@@ -20,6 +20,6 @@ export async function filterPosts(
 
   return postsWithIndexes.map(([idx, post]) => ({
     ...post,
-    termPosition: { start: idx, end: idx + term.length },
+    termPositions: [{ start: idx, end: idx + term.length }],
   }));
 }

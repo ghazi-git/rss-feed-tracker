@@ -1,33 +1,32 @@
-import { For } from "solid-js";
+import { For, JSX } from "solid-js";
 
-import { FilterResult } from "@/messaging-wrapper";
+import { FilterResult, TermPosition } from "@/messaging-wrapper";
 import Post from "@/popup/pages/node-posts/Post";
 
 export default function FilterResults(props: FilterResultsProps) {
   return (
     <For each={props.posts}>
       {(post) => (
-        <Post post={post}>{highlightText(post.title, post.termPosition)}</Post>
+        <Post post={post}>{highlightText(post.title, post.termPositions)}</Post>
       )}
     </For>
   );
 }
 
-function highlightText(
-  text: string,
-  position: { start: number; end: number } | null,
-) {
-  if (!position) return text;
+function highlightText(text: string, positions: TermPosition[]) {
+  if (positions.length === 0) return text;
 
-  const before = text.substring(0, position.start);
-  const term = text.substring(position.start, position.end);
-  const after = text.substring(position.end);
+  const output: JSX.Element[] = [];
+  let startIdx = 0;
+  for (const pos of positions) {
+    output.push(text.substring(startIdx, pos.start));
+    output.push(<mark>{text.substring(pos.start, pos.end)}</mark>);
+    startIdx = pos.end;
+  }
+  output.push(text.substring(startIdx));
+
   return (
-    <>
-      {before}
-      <mark>{term}</mark>
-      {after}
-    </>
+    <For each={output.filter((elt) => !!elt)}>{(fragment) => fragment}</For>
   );
 }
 

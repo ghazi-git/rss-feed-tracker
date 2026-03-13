@@ -148,7 +148,11 @@ export interface PostsFilterParams {
   query: string;
 }
 export interface FilterResult extends FeedPost {
-  termPosition: { start: number; end: number } | null;
+  termPositions: TermPosition[];
+}
+export interface TermPosition {
+  start: number;
+  end: number;
 }
 interface ToggleUnreadParams {
   feedId: number;
