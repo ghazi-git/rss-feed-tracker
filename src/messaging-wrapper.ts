@@ -84,10 +84,10 @@ interface MessageMap {
   "search-index/rebuild-progress-msg"(): string | null;
   "search-index/update"(data: { indexName: string }): void;
   "search-index/has-unapplied-operations"(): boolean;
-  "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
+  "search-index/trigger-query"(data: SearchQueryParams): FilterResult[];
   "search-index/query"(
     data: SearchQueryParams & { indexName: string },
-  ): SearchResult[];
+  ): FilterResult[];
   "search-index/is-popup-open"(): boolean;
 }
 
@@ -240,10 +240,6 @@ export interface SearchQueryParams {
   query: string;
   nodeId: number | null;
   bookmarked: 0 | 1 | null;
-}
-export interface SearchResult extends FeedPost {
-  // todo make required once highlighting is added
-  highlightedTitle?: string;
 }
 
 export type MessageType = keyof MessageMap;

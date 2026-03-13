@@ -4,9 +4,9 @@ import { createResource, Setter, Show } from "solid-js";
 import { FeedPost, sendMessage } from "@/messaging-wrapper";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
 import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
+import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
 import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
-import SearchResults from "@/popup/pages/search/SearchResults";
 import { debounce } from "@/popup/utils/debounce";
 import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
@@ -51,7 +51,7 @@ export default function SearchPage() {
                 isLoading={posts.loading}
                 mutateResults={mutate as Setter<FeedPost[] | undefined>}
               >
-                <SearchResults posts={results()} />
+                <FilterResults posts={results()} />
               </FilterResultsWrapper>
             </>
           )}

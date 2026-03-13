@@ -19,19 +19,7 @@ export function getPostID(indexedPostID: string) {
 }
 
 export async function getSearchIndex(indexName: string) {
-  const encoder = new Encoder({
-    normalize: true,
-    dedupe: true,
-    cache: true,
-    include: {
-      letter: true,
-      number: true,
-      symbol: false,
-      punctuation: false,
-      control: false,
-      char: "",
-    },
-  });
+  const encoder = getSearchEncoder();
   const index = new Document<IndexedPost, false, IndexedDB>({
     commit: false,
     document: {
@@ -55,3 +43,22 @@ export type IndexedPost = {
   feedId: number;
   bookmarked: 0 | 1;
 };
+
+export function getSearchEncoder() {
+  return new Encoder({
+    // remove accents and convert to lowercase
+    normalize: true,
+    // dedupe false to avoid potential issue with highlighting
+    // https://github.com/nextapps-de/flexsearch/issues/514#issuecomment-3263606047
+    dedupe: false,
+    cache: true,
+    include: {
+      letter: true,
+      number: true,
+      symbol: false,
+      punctuation: false,
+      control: false,
+      char: "",
+    },
+  });
+}
