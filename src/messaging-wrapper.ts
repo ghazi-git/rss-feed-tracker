@@ -84,10 +84,10 @@ interface MessageMap {
   "search-index/rebuild-progress-msg"(): string | null;
   "search-index/update"(data: { indexName: string }): void;
   "search-index/has-unapplied-operations"(): boolean;
-  "search-index/trigger-query"(data: SearchQueryParams): FilterResult[];
+  "search-index/trigger-query"(data: SearchQueryParams): SearchResult[];
   "search-index/query"(
     data: SearchQueryParams & { indexName: string },
-  ): FilterResult[];
+  ): SearchResult[];
   "search-index/is-popup-open"(): boolean;
 }
 
@@ -154,6 +154,9 @@ export interface BookmarksFilterParams {
 }
 export interface FilterResult extends FeedPost {
   termPositions: TermPosition[];
+}
+export interface SearchResult extends FilterResult {
+  relevanceScore: number;
 }
 export interface TermPosition {
   start: number;

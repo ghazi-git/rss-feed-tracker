@@ -6,7 +6,7 @@ export const RECENT_POSTS_LIMIT = 1000;
 // from the folder posts page to the filtering page while "group posts by feed"
 // is enabled, the posts displayed remain the same in the same order
 export const FILTER_RESULTS_LIMIT = PAGE_SIZE;
-export const SEARCH_RESULTS_LIMIT = PAGE_SIZE;
+export const SEARCH_RESULTS_LIMIT = 100;
 export const SEARCH_INDEX_DEFAULT_STORE = "search-index";
 export const SEARCH_INDEX_REBUILDING_LOCK = "search-index-rebuilding";
 export const SEARCH_INDEX_REBUILDING_ALARM = "search-index-rebuilding";

@@ -56,7 +56,14 @@ export async function querySearchIndex(
   );
 
   // determine term positions for highlighting
-  return addTermPositions(params.query, feedPosts);
+  const postsWithHighlights = addTermPositions(params.query, feedPosts);
+
+  // given that flexsearch already ranks the results by relevance, we will give
+  // the first result, the highest score and go from there
+  return postsWithHighlights.map((p, idx) => ({
+    ...p,
+    relevanceScore: SEARCH_RESULTS_LIMIT - idx,
+  }));
 }
 
 function filterByFeedIds(results: IndexSearchResult[], feedIds: Set<number>) {
