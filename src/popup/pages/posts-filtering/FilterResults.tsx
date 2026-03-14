@@ -1,11 +1,26 @@
-import { For, JSX } from "solid-js";
+import { createMemo, For, JSX } from "solid-js";
 
 import { FilterResult, TermPosition } from "@/messaging-wrapper";
 import Post from "@/popup/pages/node-posts/Post";
+import { getGroupedPosts } from "@/popup/utils/posts";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 
 export default function FilterResults(props: FilterResultsProps) {
+  const { preferences } = usePreferencesContext();
+  const groupedPosts = createMemo(() => {
+    const feedIds = new Set(props.posts.map((p) => p.feedId));
+    if (!props.query && preferences.groupFolderPosts && feedIds.size > 1) {
+      // grouping is done only when there is no query. That is to keep posts
+      // ordering the same when going from the posts page to the filtering page
+      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
+      return getGroupedPosts(props.posts, orderByFetchedAt);
+    } else {
+      return props.posts;
+    }
+  });
+
   return (
-    <For each={props.posts}>
+    <For each={groupedPosts()}>
       {(post) => (
         <Post post={post}>{highlightText(post.title, post.termPositions)}</Post>
       )}
@@ -32,4 +47,5 @@ function highlightText(text: string, positions: TermPosition[]) {
 
 interface FilterResultsProps {
   posts: FilterResult[];
+  query: string;
 }

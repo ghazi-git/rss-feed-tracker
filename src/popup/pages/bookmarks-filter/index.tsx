@@ -47,7 +47,10 @@ export default function FilterBookmarksPage() {
                 isLoading={posts.loading}
                 mutateResults={mutate as Setter<FeedPost[] | undefined>}
               >
-                <FilterResults posts={results()} />
+                <FilterResults
+                  posts={results()}
+                  query={searchParams.query || ""}
+                />
               </FilterResultsWrapper>
             </>
           )}
