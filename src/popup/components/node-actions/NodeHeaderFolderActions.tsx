@@ -17,7 +17,7 @@ export default function NodeHeaderFolderActions(props: FolderActionsProps) {
     <>
       <EditFolderMenuItem folderId={props.folderId} />
       <ReloadNodeMenuItem nodeId={props.folderId} />
-      <SearchMenuItem nodeId={props.folderId} />
+      <SearchMenuItem nodeId={props.folderId} nodeName={props.folderName} />
       <Separator />
       <AddFeedMenuItem folderId={props.folderId} />
       <AddFolderMenuItem folderId={props.folderId} />

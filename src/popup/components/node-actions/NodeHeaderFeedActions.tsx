@@ -11,7 +11,7 @@ export default function NodeHeaderFeedActions(props: FeedActionsProps) {
     <>
       <EditFeedMenuItem feedId={props.feedId} />
       <ReloadNodeMenuItem nodeId={props.feedId} />
-      <SearchMenuItem nodeId={props.feedId} />
+      <SearchMenuItem nodeId={props.feedId} nodeName={props.feedName} />
       <Separator />
       <DeleteNodeProvider>
         <DeleteFeedMenuItem
