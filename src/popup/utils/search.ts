@@ -1,4 +1,4 @@
-import { createResource } from "solid-js";
+import { createResource, onCleanup, onMount } from "solid-js";
 
 import { sendMessage } from "@/messaging-wrapper";
 
@@ -22,4 +22,17 @@ export function useSearchIndexState() {
 
   // eslint-disable-next-line solid/reactivity
   return () => !hasOperations.latest;
+}
+
+export function handleSearchShortcut(onShortcutTriggered?: () => void) {
+  const handleShortcut = (event: KeyboardEvent) => {
+    if (event.ctrlKey && event.shiftKey && event.key === "F") {
+      event.preventDefault();
+      onShortcutTriggered?.();
+    }
+  };
+  onMount(() => document.addEventListener("keydown", handleShortcut));
+  onCleanup(() => {
+    document.removeEventListener("keydown", handleShortcut);
+  });
 }

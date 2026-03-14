@@ -37,6 +37,7 @@ import {
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
+import { handleSearchShortcut } from "@/popup/utils/search";
 import { getSearchString } from "@/popup/utils/urls";
 
 import styles from "./index.module.css";
@@ -214,6 +215,13 @@ export default function NodePosts() {
       postsView: postsView(),
     });
     navigate(`/library/nodes/${nodeId()}/filter?${searchString}`);
+  });
+  handleSearchShortcut(() => {
+    const searchString = getSearchString({
+      previousUrl: currentURL(),
+      nodeName: node.latest?.name ?? "",
+    });
+    navigate(`/library/nodes/${nodeId()}/search?${searchString}`);
   });
 
   return (

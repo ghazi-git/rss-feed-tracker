@@ -24,6 +24,7 @@ import {
 } from "@/popup/utils/last-visited-page";
 import { notifyError } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
+import { handleSearchShortcut } from "@/popup/utils/search";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function Bookmarks() {
@@ -103,6 +104,10 @@ export default function Bookmarks() {
       postsView: postsView(),
     });
     navigate(`/bookmarks/filter?${searchString}`);
+  });
+  handleSearchShortcut(() => {
+    const searchString = getSearchString({ previousUrl: currentURL() });
+    navigate(`/bookmarks/search?${searchString}`);
   });
 
   return (
