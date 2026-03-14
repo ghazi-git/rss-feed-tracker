@@ -24,7 +24,6 @@ import {
 } from "@/popup/utils/last-visited-page";
 import { notifyError } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
-import { useSearchIndexState } from "@/popup/utils/search";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function Bookmarks() {
@@ -97,15 +96,13 @@ export default function Bookmarks() {
     }
   });
 
-  const isSearchIndexReady = useSearchIndexState();
   const navigate = useNavigate();
   handleFilterShortcut(() => {
-    const searchString = getSearchString({ previousUrl: currentURL() });
-    if (isSearchIndexReady()) {
-      navigate(`/bookmarks/search?${searchString}`);
-    } else {
-      navigate(`/bookmarks/filter?${searchString}`);
-    }
+    const searchString = getSearchString({
+      previousUrl: currentURL(),
+      postsView: postsView(),
+    });
+    navigate(`/bookmarks/filter?${searchString}`);
   });
 
   return (

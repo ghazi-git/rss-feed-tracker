@@ -1,7 +1,7 @@
 import { useParams, useSearchParams } from "@solidjs/router";
 import { createResource, Setter, Show } from "solid-js";
 
-import { FeedPost, sendMessage } from "@/messaging-wrapper";
+import { FeedPost, PostsView, sendMessage } from "@/messaging-wrapper";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
 import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
 import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
@@ -18,9 +18,10 @@ export default function PostsFilteringPage() {
 
   const [searchParams, setSearchParams] = useSearchParams<FilterPageParams>();
   const placeholder = () => {
+    const postsType = searchParams.postsView === "unread" ? "unread " : "";
     return searchParams.nodeName
-      ? `Filter recent posts in '${searchParams.nodeName}'`
-      : "Filter recent posts";
+      ? `Filter recent ${postsType}posts in '${searchParams.nodeName}'`
+      : `Filter recent ${postsType}posts`;
   };
   const filterPosts = debounce(
     (query: string) => setSearchParams({ query }, { replace: true }),
@@ -64,7 +65,11 @@ function createFilterResource() {
   const nodeId = () => parseInt(params.id);
 
   return createResource(
-    () => ({ query: searchParams.query || "", nodeId: nodeId() }),
+    () => ({
+      query: searchParams.query || "",
+      nodeId: nodeId(),
+      postsView: searchParams.postsView ?? "all",
+    }),
     async (payload) => {
       const resp = await sendMessage("posts/filter", payload);
       if (!resp.success) throw new Error(resp.errorMsg);
@@ -78,4 +83,5 @@ type FilterPageParams = {
   previousUrl?: string;
   nodeName?: string;
   query?: string;
+  postsView?: PostsView;
 };

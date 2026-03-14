@@ -210,7 +210,7 @@ onMessage("posts/mark-all-posts-as-read", (payload, sender, sendResponse) => {
 });
 
 onMessage("posts/filter-bookmarks", (payload, sender, sendResponse) => {
-  filterBookmarks(payload.query)
+  filterBookmarks(payload.query, payload.postsView)
     .then((posts) => {
       sendResponse({ success: true, data: posts, errorMsg: null });
     })
@@ -224,7 +224,7 @@ onMessage("posts/filter-bookmarks", (payload, sender, sendResponse) => {
 });
 
 onMessage("posts/filter", (payload, sender, sendResponse) => {
-  filterNodePosts(payload.nodeId, payload.query)
+  filterNodePosts(payload.nodeId, payload.query, payload.postsView)
     .then((posts) => {
       sendResponse({ success: true, data: posts, errorMsg: null });
     })

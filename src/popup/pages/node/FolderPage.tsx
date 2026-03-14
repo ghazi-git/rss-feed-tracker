@@ -14,7 +14,6 @@ import {
 } from "@/popup/pages/node-posts/unread-count-context";
 import { handleFilterShortcut } from "@/popup/utils/filter";
 import { useCurrentURL } from "@/popup/utils/last-visited-page";
-import { useSearchIndexState } from "@/popup/utils/search";
 import { getSearchString } from "@/popup/utils/urls";
 
 export function FolderPage(props: FolderPageProps) {
@@ -30,7 +29,6 @@ export function FolderPage(props: FolderPageProps) {
     }
   };
 
-  const isSearchIndexReady = useSearchIndexState();
   const navigate = useNavigate();
   const currentURL = useCurrentURL();
   // eslint-disable-next-line solid/reactivity
@@ -38,12 +36,11 @@ export function FolderPage(props: FolderPageProps) {
     const searchString = getSearchString({
       previousUrl: currentURL(),
       nodeName: props.folder.name,
+      // default to filtering all posts when shortcut is triggered from
+      // the folder page
+      postsView: "all",
     });
-    if (isSearchIndexReady()) {
-      navigate(`/library/nodes/${props.folder.id}/search?${searchString}`);
-    } else {
-      navigate(`/library/nodes/${props.folder.id}/filter?${searchString}`);
-    }
+    navigate(`/library/nodes/${props.folder.id}/filter?${searchString}`);
   });
 
   return (

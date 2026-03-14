@@ -43,7 +43,7 @@ interface MessageMap {
   "feed-polling/notify-of-new-posts"(): void;
   "posts/get-unread-bookmarks-count"(): number;
   "posts/get-bookmarks"(data: BookmarkedPostsParams): PostsResponse;
-  "posts/filter-bookmarks"(data: { query: string }): FilterResult[];
+  "posts/filter-bookmarks"(data: BookmarksFilterParams): FilterResult[];
   "posts/list"(data: NodePostsParams): PostsResponse;
   "posts/filter"(data: PostsFilterParams): FilterResult[];
   "posts/toggle-unread"(data: ToggleUnreadParams): void;
@@ -146,6 +146,11 @@ export interface NodePostsParams {
 export interface PostsFilterParams {
   nodeId: number;
   query: string;
+  postsView: PostsView;
+}
+export interface BookmarksFilterParams {
+  query: string;
+  postsView: PostsView;
 }
 export interface FilterResult extends FeedPost {
   termPositions: TermPosition[];

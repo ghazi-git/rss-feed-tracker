@@ -1,7 +1,7 @@
 import { useSearchParams } from "@solidjs/router";
 import { createResource, Setter, Show } from "solid-js";
 
-import { FeedPost, sendMessage } from "@/messaging-wrapper";
+import { FeedPost, PostsView, sendMessage } from "@/messaging-wrapper";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
 import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
 import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
@@ -17,6 +17,10 @@ export default function FilterBookmarksPage() {
   handleExitFilterShortcut();
 
   const [searchParams, setSearchParams] = useSearchParams<FilterPageParams>();
+  const placeholder = () => {
+    const postsType = searchParams.postsView === "unread" ? "unread " : "";
+    return `Filter recent ${postsType}bookmarks`;
+  };
   const filterPosts = debounce(
     (query: string) => setSearchParams({ query }, { replace: true }),
     200,
@@ -30,7 +34,7 @@ export default function FilterBookmarksPage() {
           filterPosts(e.target.value.trim());
         }}
         isLoading={posts.loading}
-        placeholder="Filter recent bookmarks"
+        placeholder={placeholder()}
       />
       <FilterErrorBoundary>
         <Show when={posts.latest}>
@@ -57,7 +61,10 @@ function createFilterResource() {
   const [searchParams] = useSearchParams<FilterPageParams>();
 
   return createResource(
-    () => ({ query: searchParams.query || "" }),
+    () => ({
+      query: searchParams.query || "",
+      postsView: searchParams.postsView ?? "all",
+    }),
     async (payload) => {
       const resp = await sendMessage("posts/filter-bookmarks", payload);
       if (!resp.success) throw new Error(resp.errorMsg);
@@ -70,4 +77,5 @@ function createFilterResource() {
 type FilterPageParams = {
   previousUrl?: string;
   query?: string;
+  postsView?: PostsView;
 };
