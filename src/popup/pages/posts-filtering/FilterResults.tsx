@@ -28,7 +28,7 @@ export default function FilterResults(props: FilterResultsProps) {
   );
 }
 
-function highlightText(text: string, positions: TermPosition[]) {
+export function highlightText(text: string, positions: TermPosition[]) {
   if (positions.length === 0) return text;
 
   const output: JSX.Element[] = [];

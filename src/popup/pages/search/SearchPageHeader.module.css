@@ -1,0 +1,22 @@
+.search {
+  flex-grow: 1;
+  align-self: stretch;
+  position: relative;
+
+  .icon {
+    position: absolute;
+    inset-block-start: calc(50% - var(--size-3) / 2);
+    inset-inline-end: var(--size-2);
+    inline-size: var(--size-3);
+    block-size: auto;
+  }
+
+  input:dir(rtl) + .icon {
+    inset-inline-start: var(--size-1);
+  }
+
+  input {
+    padding-inline-end: var(--size-6);
+    outline-offset: -1px;
+  }
+}

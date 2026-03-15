@@ -1,0 +1,11 @@
+.search-results-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--size-1);
+
+  .search-results-text {
+    margin-inline-end: auto;
+    color: var(--text-2);
+  }
+}

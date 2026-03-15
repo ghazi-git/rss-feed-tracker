@@ -1,15 +1,20 @@
-import { useParams, useSearchParams } from "@solidjs/router";
-import { createResource, Setter, Show } from "solid-js";
+import { useSearchParams } from "@solidjs/router";
+import { Show } from "solid-js";
 
-import { FeedPost, sendMessage } from "@/messaging-wrapper";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
-import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
-import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
 import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
-import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
+import SearchPageHeader from "@/popup/pages/search/SearchPageHeader";
+import SearchResults from "@/popup/pages/search/SearchResults";
+import SearchResultsHeader from "@/popup/pages/search/SearchResultsHeader";
 import { debounce } from "@/popup/utils/debounce";
 import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
+import {
+  createSearchResource,
+  inBookmarksPage,
+  SearchPageParams,
+  useNodeId,
+} from "@/popup/utils/search";
 
 export default function SearchPage() {
   const [posts, { mutate }] = createSearchResource();
@@ -25,14 +30,15 @@ export default function SearchPage() {
       ? `Search posts in '${searchParams.nodeName}'`
       : "Search posts";
   };
-  const searchPosts = debounce(
-    (query: string) => setSearchParams({ query }, { replace: true }),
-    100,
-  );
+  const searchPosts = debounce((query: string) => {
+    if (!query) mutate([]);
+
+    setSearchParams({ query }, { replace: true });
+  }, 100);
 
   return (
     <>
-      <FilterPageHeader
+      <SearchPageHeader
         inputValue={searchParams.query || ""}
         onInput={(e) => {
           searchPosts(e.target.value.trim());
@@ -40,18 +46,16 @@ export default function SearchPage() {
         isLoading={posts.loading}
         placeholder={placeholder()}
       />
+      <SearchResultsHeader posts={posts.latest} isLoading={posts.loading} />
       <FilterErrorBoundary>
         <Show when={posts.latest}>
           {(results) => (
             <>
-              <Show when={results().length === 0}>
-                <NoFilterResults />
-              </Show>
               <FilterResultsWrapper
                 isLoading={posts.loading}
-                mutateResults={mutate as Setter<FeedPost[] | undefined>}
+                mutateResults={mutate}
               >
-                <FilterResults posts={results()} />
+                <SearchResults posts={results()} />
               </FilterResultsWrapper>
             </>
           )}
@@ -60,37 +64,3 @@ export default function SearchPage() {
     </>
   );
 }
-
-function createSearchResource() {
-  const [searchParams] = useSearchParams<SearchPageParams>();
-  const nodeId = useNodeId();
-
-  return createResource(
-    () => ({
-      query: searchParams.query || "",
-      nodeId: nodeId(),
-      bookmarked: (inBookmarksPage(nodeId()) ? 1 : null) as 1 | null,
-    }),
-    async (input) => {
-      const resp = await sendMessage("search-index/trigger-query", input);
-      if (!resp.success) throw new Error(resp.errorMsg);
-
-      return resp.data;
-    },
-  );
-}
-
-function useNodeId() {
-  const params = useParams<{ id?: string }>();
-  return () => (params.id ? parseInt(params.id) : null);
-}
-
-function inBookmarksPage(nodeId: number | null) {
-  return nodeId === null;
-}
-
-type SearchPageParams = {
-  previousUrl?: string;
-  nodeName?: string;
-  query?: string;
-};

@@ -1,4 +1,5 @@
-import { createResource, onCleanup, onMount } from "solid-js";
+import { useParams, useSearchParams } from "@solidjs/router";
+import { Accessor, createResource, onCleanup, onMount } from "solid-js";
 
 import { sendMessage } from "@/messaging-wrapper";
 
@@ -36,3 +37,53 @@ export function handleSearchShortcut(onShortcutTriggered?: () => void) {
     document.removeEventListener("keydown", handleShortcut);
   });
 }
+
+export function createSearchResource() {
+  const [searchParams] = useSearchParams<SearchPageParams>();
+  const nodeId = useNodeId();
+
+  return createResource(
+    () => {
+      const bookmarked: 1 | null = inBookmarksPage(nodeId()) ? 1 : null;
+      const query = searchParams.query || "";
+      if (!query) return null;
+
+      return { query, nodeId: nodeId(), bookmarked };
+    },
+    async (input) => {
+      const resp = await sendMessage("search-index/trigger-query", input);
+      if (!resp.success) throw new Error(resp.errorMsg);
+
+      return resp.data;
+    },
+  );
+}
+
+export function useNodeId() {
+  const params = useParams<{ id?: string }>();
+  return () => (params.id ? parseInt(params.id) : null);
+}
+
+export function inBookmarksPage(nodeId: number | null) {
+  return nodeId === null;
+}
+
+export function useSortBy(): Accessor<SortBy> {
+  const [searchParams] = useSearchParams<SearchPageParams>();
+  return () => searchParams.sortBy ?? "relevance";
+}
+
+export function getNextSortOption(currentSortBy: SortBy): SortBy {
+  const idx = SORT_OPTIONS.indexOf(currentSortBy);
+  return SORT_OPTIONS[(idx + 1) % SORT_OPTIONS.length];
+}
+
+const SORT_OPTIONS = ["relevance", "time_desc", "time_asc"] as const;
+export type SortBy = (typeof SORT_OPTIONS)[number];
+
+export type SearchPageParams = {
+  previousUrl?: string;
+  nodeName?: string;
+  query?: string;
+  sortBy?: SortBy;
+};
