@@ -1,4 +1,4 @@
-import { useSearchParams } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Show } from "solid-js";
 
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
@@ -7,7 +7,10 @@ import SearchPageHeader from "@/popup/pages/search/SearchPageHeader";
 import SearchResults from "@/popup/pages/search/SearchResults";
 import SearchResultsHeader from "@/popup/pages/search/SearchResultsHeader";
 import { debounce } from "@/popup/utils/debounce";
-import { handleExitFilterShortcut } from "@/popup/utils/filter";
+import {
+  handleExitFilterShortcut,
+  handleFilterShortcut,
+} from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import {
   createSearchResource,
@@ -15,11 +18,31 @@ import {
   SearchPageParams,
   useNodeId,
 } from "@/popup/utils/search";
+import { getSearchString } from "@/popup/utils/urls";
 
 export default function SearchPage() {
   const [posts, { mutate }] = createSearchResource();
   restoreScrollPositionAfterInitialFetch(posts);
   handleExitFilterShortcut();
+  const navigate = useNavigate();
+  handleFilterShortcut(() => {
+    if (inBookmarksPage(nodeId())) {
+      const searchString = getSearchString({
+        previousUrl: "/bookmarks",
+        postsView: "all",
+        query: searchParams.query ?? "",
+      });
+      navigate(`/bookmarks/filter?${searchString}`);
+    } else {
+      const searchString = getSearchString({
+        previousUrl: searchParams.previousUrl ?? "/library",
+        nodeName: searchParams.nodeName ?? "",
+        postsView: "all",
+        query: searchParams.query ?? "",
+      });
+      navigate(`/library/nodes/${nodeId()}/filter?${searchString}`);
+    }
+  });
 
   const [searchParams, setSearchParams] = useSearchParams<SearchPageParams>();
   const nodeId = useNodeId();

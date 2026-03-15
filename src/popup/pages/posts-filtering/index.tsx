@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "@solidjs/router";
+import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { createResource, Show } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
@@ -10,11 +10,23 @@ import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
 import { debounce } from "@/popup/utils/debounce";
 import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
+import { handleSearchShortcut, useNodeId } from "@/popup/utils/search";
+import { getSearchString } from "@/popup/utils/urls";
 
 export default function PostsFilteringPage() {
   const [posts, { mutate }] = createFilterResource();
   restoreScrollPositionAfterInitialFetch(posts);
   handleExitFilterShortcut();
+  const navigate = useNavigate();
+  const nodeId = useNodeId();
+  handleSearchShortcut(() => {
+    const searchString = getSearchString({
+      previousUrl: searchParams.previousUrl ?? "/library",
+      nodeName: searchParams.nodeName ?? "",
+      query: searchParams.query ?? "",
+    });
+    navigate(`/library/nodes/${nodeId()}/search?${searchString}`);
+  });
 
   const [searchParams, setSearchParams] = useSearchParams<FilterPageParams>();
   const placeholder = () => {
