@@ -1,7 +1,7 @@
 import { useSearchParams } from "@solidjs/router";
-import { createResource, Setter, Show } from "solid-js";
+import { createResource, Show } from "solid-js";
 
-import { FeedPost, PostsView, sendMessage } from "@/messaging-wrapper";
+import { PostsView, sendMessage } from "@/messaging-wrapper";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
 import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
 import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
@@ -45,7 +45,7 @@ export default function FilterBookmarksPage() {
               </Show>
               <FilterResultsWrapper
                 isLoading={posts.loading}
-                mutateResults={mutate as Setter<FeedPost[] | undefined>}
+                mutateResults={mutate}
               >
                 <FilterResults
                   posts={results()}

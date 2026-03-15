@@ -1,4 +1,4 @@
-import { FlowProps, Setter } from "solid-js";
+import { FlowProps } from "solid-js";
 
 import { FeedPost, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
@@ -80,5 +80,7 @@ export default function FilterResultsWrapper(props: FilterResultsWrapperProps) {
 
 interface FilterResultsWrapperProps extends FlowProps {
   isLoading: boolean;
-  mutateResults: Setter<FeedPost[] | undefined>;
+  mutateResults: (
+    func: (posts: FeedPost[] | undefined) => FeedPost[] | undefined,
+  ) => void;
 }
