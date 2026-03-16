@@ -24,4 +24,9 @@ export default defineManifest({
   },
   permissions: ["storage", "alarms", "offscreen", "scripting"],
   host_permissions: ["http://*/*", "https://*/*"],
+  commands: {
+    _execute_action: {
+      suggested_key: { default: "Ctrl+Shift+S" },
+    },
+  },
 });
