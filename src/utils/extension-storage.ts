@@ -14,7 +14,7 @@ export async function loadPreferences(): Promise<StoredPreferences> {
 }
 
 export const DEFAULT_PREFERENCES: StoredPreferences = {
-  defaultFeedUpdateFrequency: 2 * 60 * 60 * 1000,
+  defaultFeedUpdateFrequency: 4 * 60 * 60 * 1000,
   clickPostToToggleUnread: true,
   orderPostsBy: "publishedAt",
   groupFolderPosts: true,

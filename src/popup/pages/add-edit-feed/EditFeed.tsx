@@ -20,7 +20,7 @@ export default function EditFeed() {
   const [formdata, setFormdata] = createStore<UpdateFeedFormData>({
     url: "",
     name: "",
-    frequency: 2 * 60 * 60 * 1000,
+    frequency: 4 * 60 * 60 * 1000,
     folder: 0,
     iconURL: "",
   });
