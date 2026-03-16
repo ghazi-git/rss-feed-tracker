@@ -8,9 +8,11 @@ import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
 import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
 import { debounce } from "@/popup/utils/debounce";
-import { handleExitFilterShortcut } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
-import { handleSearchShortcut } from "@/popup/utils/search";
+import {
+  handleExitFilterShortcut,
+  handleSearchShortcut,
+} from "@/popup/utils/shortcuts";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function FilterBookmarksPage() {

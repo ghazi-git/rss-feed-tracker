@@ -12,9 +12,11 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
-import { handleFilterShortcut } from "@/popup/utils/filter";
 import { useCurrentURL } from "@/popup/utils/last-visited-page";
-import { handleSearchShortcut } from "@/popup/utils/search";
+import {
+  handleFilterShortcut,
+  handleSearchShortcut,
+} from "@/popup/utils/shortcuts";
 import { getSearchString } from "@/popup/utils/urls";
 
 export function FolderPage(props: FolderPageProps) {

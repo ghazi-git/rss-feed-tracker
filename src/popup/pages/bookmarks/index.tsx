@@ -17,14 +17,16 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
-import { handleFilterShortcut } from "@/popup/utils/filter";
 import {
   useCurrentURL,
   useInitialState,
 } from "@/popup/utils/last-visited-page";
 import { notifyError } from "@/popup/utils/notifications";
 import { createQuery } from "@/popup/utils/query";
-import { handleSearchShortcut } from "@/popup/utils/search";
+import {
+  handleFilterShortcut,
+  handleSearchShortcut,
+} from "@/popup/utils/shortcuts";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function Bookmarks() {

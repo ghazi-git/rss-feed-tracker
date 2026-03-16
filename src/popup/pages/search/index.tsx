@@ -7,10 +7,6 @@ import SearchPageHeader from "@/popup/pages/search/SearchPageHeader";
 import SearchResults from "@/popup/pages/search/SearchResults";
 import SearchResultsHeader from "@/popup/pages/search/SearchResultsHeader";
 import { debounce } from "@/popup/utils/debounce";
-import {
-  handleExitFilterShortcut,
-  handleFilterShortcut,
-} from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import {
   createSearchResource,
@@ -18,6 +14,10 @@ import {
   SearchPageParams,
   useNodeId,
 } from "@/popup/utils/search";
+import {
+  handleExitFilterShortcut,
+  handleFilterShortcut,
+} from "@/popup/utils/shortcuts";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function SearchPage() {

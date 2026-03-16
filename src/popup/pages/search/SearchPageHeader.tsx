@@ -6,10 +6,8 @@ import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import InfoIcon from "@/popup/components/svg-icons/InfoIcon";
 import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
-import {
-  handleSearchShortcut,
-  useSearchIndexState,
-} from "@/popup/utils/search";
+import { useSearchIndexState } from "@/popup/utils/search";
+import { handleSearchShortcut } from "@/popup/utils/shortcuts";
 
 import styles from "./SearchPageHeader.module.css";
 

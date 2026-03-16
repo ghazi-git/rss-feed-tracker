@@ -5,7 +5,7 @@ import { Input } from "@/popup/components/forms/Input";
 import BackLink from "@/popup/components/page-header/BackLink";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import LoadingIcon from "@/popup/components/svg-icons/LoadingIcon";
-import { handleFilterShortcut } from "@/popup/utils/filter";
+import { handleFilterShortcut } from "@/popup/utils/shortcuts";
 
 import styles from "./FilterPageHeader.module.css";
 
