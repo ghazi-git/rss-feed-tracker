@@ -1,0 +1,18 @@
+.page-title-button {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--size-1);
+  min-inline-size: 0;
+
+  svg {
+    flex-shrink: 0;
+    margin-block-start: var(--size-1);
+    inline-size: var(--size-3);
+    opacity: 0.75;
+  }
+}
+
+.updates-off {
+  opacity: 0.6;
+}
