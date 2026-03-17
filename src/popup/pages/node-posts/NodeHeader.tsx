@@ -82,7 +82,7 @@ export default function NodeHeader(props: NodeHeaderProps) {
         <PostsFilter
           unreadCount={props.node.unreadCount}
           pageUrl={`/library/nodes/${props.node.id}/posts`}
-          initialFilter={searchParams.unread === "true" ? "unread" : "all"}
+          postsView={searchParams.unread === "true" ? "unread" : "all"}
           class={styles["posts-filter"]}
           markAsReadMutation={markAsReadMutation}
         />

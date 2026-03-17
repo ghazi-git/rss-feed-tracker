@@ -45,7 +45,7 @@ export default function BookmarksHeader(props: BookmarksHeaderProps) {
       <PostsFilter
         pageUrl="/bookmarks"
         unreadCount={props.unreadCount}
-        initialFilter={searchParams.unread === "true" ? "unread" : "all"}
+        postsView={searchParams.unread === "true" ? "unread" : "all"}
         class={styles["posts-filter"]}
         markAsReadMutation={markAsReadMutation}
       />

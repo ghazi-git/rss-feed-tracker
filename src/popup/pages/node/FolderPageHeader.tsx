@@ -59,7 +59,7 @@ export default function FolderPageHeader(props: FolderPageHeaderProps) {
         <PostsFilter
           unreadCount={props.folder.unreadCount}
           pageUrl={`/library/nodes/${props.folder.id}/posts`}
-          initialFilter={null}
+          postsView={null}
           class={styles["posts-filter"]}
           markAsReadMutation={markAsReadMutation}
         />

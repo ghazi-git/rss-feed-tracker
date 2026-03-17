@@ -1,12 +1,17 @@
-import { createSignal, Show } from "solid-js";
+import { createEffect, createSignal, Show } from "solid-js";
 
+import { PostsView } from "@/messaging-wrapper";
 import Anchor from "@/popup/components/Anchor";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
 
 import styles from "./PostsFilter.module.css";
 
 export default function PostsFilter(props: PostsFilterProps) {
-  const [activeFilter, setActiveFilter] = createSignal(props.initialFilter);
+  const [activeFilter, setActiveFilter] = createSignal<PostsView | null>(null);
+  createEffect(() => {
+    // derive activeFilter from props.postsView in solid 2.0
+    setActiveFilter(props.postsView);
+  });
 
   return (
     <div class={`${props.class} ${styles["filter-options"]}`}>
@@ -45,7 +50,7 @@ interface PostsFilterProps {
   unreadCount: number;
   pageUrl: string;
   class: string;
-  initialFilter: "all" | "unread" | null;
+  postsView: PostsView | null;
   markAsReadMutation: {
     markAll: () => Promise<void>;
     isLoading: () => boolean;
