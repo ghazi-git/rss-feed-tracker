@@ -15,39 +15,43 @@ hotkeys.filter = (event: KeyboardEvent) => {
 };
 
 export function handleSearchShortcut(onShortcutTriggered: () => void) {
-  onMount(() => {
-    hotkeys("ctrl+shift+f", (event) => {
-      event.stopPropagation();
-      onShortcutTriggered();
-    });
-  });
-  onCleanup(() => hotkeys.unbind("ctrl+shift+f"));
+  createShortcut("ctrl+shift+f", () => onShortcutTriggered());
 }
 
 export function handleFilterShortcut(onShortcutTriggered: () => void) {
-  onMount(() => {
-    hotkeys("ctrl+f", (event) => {
-      // avoid the find popup appearing in the current tab which is the default
-      // browser behavior on ctrl+f click
-      event.preventDefault();
-      onShortcutTriggered();
-    });
-  });
-  onCleanup(() => hotkeys.unbind("ctrl+f"));
+  createShortcut("ctrl+f", () => onShortcutTriggered());
 }
 
 export function handleExitFilterShortcut() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams<{ previousUrl?: string }>();
+  createShortcut("escape", () => {
+    navigate(searchParams.previousUrl ?? "/library");
+  });
+}
+
+export function createShortcut(
+  shortcut: Shortcut,
+  onShortcutTriggered: (event: KeyboardEvent) => void,
+) {
   onMount(() => {
-    hotkeys("escape", (event) => {
-      // prevent the default behavior (closing the extension popup)
+    hotkeys(shortcut, (event) => {
+      // avoid default browser actions from triggering (ctrl+f triggers find
+      // in tab, escape closes extension, for example)
       event.preventDefault();
-      navigate(searchParams.previousUrl ?? "/library");
+      // avoid accidentally triggering user-defined shortcuts for other chrome
+      // extensions (chrome://extensions/shortcuts)
+      event.stopPropagation();
+      onShortcutTriggered(event);
     });
   });
-  onCleanup(() => hotkeys.unbind("ctrl+f"));
+  onCleanup(() => hotkeys.unbind(shortcut));
 }
+
+export type Shortcut =
+  | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
+  | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
+  | "escape"; // go from filter/search page to the previous page
 
 /**
  * Copy of hotkeys.filter
