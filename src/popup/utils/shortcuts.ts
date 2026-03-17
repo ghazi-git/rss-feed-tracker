@@ -52,6 +52,8 @@ export type Shortcut =
   | "ctrl+l" // go to library page
   | "ctrl+b" // go to bookmarks page
   | "ctrl+p" // go to preferences page
+  | "ctrl+alt+left" // go to previous page (the same as the browser back button)
+  | "ctrl+alt+right" // go to next page (the same as the browser forward button)
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page

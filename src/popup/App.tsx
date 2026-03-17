@@ -27,6 +27,7 @@ import {
   useCurrentURL,
 } from "@/popup/utils/last-visited-page";
 import { PreferencesProvider } from "@/popup/utils/preferences-context";
+import { createShortcut } from "@/popup/utils/shortcuts";
 import {
   detectSystemTheme,
   enableTheme,
@@ -50,6 +51,9 @@ function App() {
         }
       });
   });
+
+  createShortcut("ctrl+alt+left", () => window.history.back());
+  createShortcut("ctrl+alt+right", () => window.history.forward());
 
   return (
     <PreferencesProvider>
