@@ -55,6 +55,9 @@ export type Shortcut =
   | "ctrl+alt+left" // go to previous page (the same as the browser back button)
   | "ctrl+alt+right" // go to next page (the same as the browser forward button)
   | "ctrl+t" // toggle the feed/folder page title dropdown
+  | "ctrl+m" // mark all posts in feed/folder as read
+  | "ctrl+u" // go to the unread posts page
+  | "ctrl+a" // go to all posts page
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page

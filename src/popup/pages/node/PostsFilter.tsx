@@ -1,8 +1,10 @@
+import { useNavigate } from "@solidjs/router";
 import { createEffect, createSignal, Show } from "solid-js";
 
 import { PostsView } from "@/messaging-wrapper";
 import Anchor from "@/popup/components/Anchor";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
+import { createShortcut } from "@/popup/utils/shortcuts";
 
 import styles from "./PostsFilter.module.css";
 
@@ -12,6 +14,12 @@ export default function PostsFilter(props: PostsFilterProps) {
     // derive activeFilter from props.postsView in solid 2.0
     setActiveFilter(props.postsView);
   });
+  const navigate = useNavigate();
+  createShortcut("ctrl+m", () => {
+    if (props.unreadCount) props.markAsReadMutation.markAll();
+  });
+  createShortcut("ctrl+u", () => navigate(`${props.pageUrl}?unread=true`));
+  createShortcut("ctrl+a", () => navigate(props.pageUrl));
 
   return (
     <div class={`${props.class} ${styles["filter-options"]}`}>
