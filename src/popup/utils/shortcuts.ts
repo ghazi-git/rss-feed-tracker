@@ -58,6 +58,7 @@ export type Shortcut =
   | "ctrl+m" // mark all posts in feed/folder as read
   | "ctrl+u" // go to the unread posts page
   | "ctrl+a" // go to all posts page
+  | "backspace" // go to the previous page (same as clicking the back button in the extension UI)
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page
