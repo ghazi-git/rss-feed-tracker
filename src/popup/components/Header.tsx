@@ -1,7 +1,8 @@
-import { useLocation } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 import { createEffect, createSignal } from "solid-js";
 
 import Anchor from "@/popup/components/Anchor";
+import { createShortcut } from "@/popup/utils/shortcuts";
 
 import styles from "./Header.module.css";
 
@@ -13,6 +14,11 @@ export default function Header() {
     const tab = getCurrentTab(location.pathname);
     setActiveTab(tab);
   });
+
+  const navigate = useNavigate();
+  createShortcut("ctrl+l", () => navigate("/library"));
+  createShortcut("ctrl+b", () => navigate("/bookmarks"));
+  createShortcut("ctrl+p", () => navigate("/preferences"));
 
   return (
     <header class={styles.header}>

@@ -49,6 +49,9 @@ export function createShortcut(
 }
 
 export type Shortcut =
+  | "ctrl+l" // go to library page
+  | "ctrl+b" // go to bookmarks page
+  | "ctrl+p" // go to preferences page
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page
