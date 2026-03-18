@@ -43,6 +43,7 @@ import UnreadCount from "@/popup/pages/node/UnreadCount";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError } from "@/popup/utils/notifications";
+import { createShortcut } from "@/popup/utils/shortcuts";
 
 import styles from "./FolderChild.module.css";
 
@@ -147,6 +148,16 @@ export default function FolderChild(props: FolderChildProps) {
       anchor.focus();
     }
   });
+  const hasFocus = () => anchor.contains(document.activeElement);
+  createShortcut("m", () => {
+    if (
+      props.node.unreadCount &&
+      focusedIndex() === props.nodeIndex &&
+      hasFocus()
+    ) {
+      markAllAsRead();
+    }
+  });
 
   return (
     <div
@@ -191,6 +202,7 @@ export default function FolderChild(props: FolderChildProps) {
               event.preventDefault();
               markAllAsRead();
             }}
+            tabindex="-1"
           />
           <UnstyledButton
             class={styles["unread-link"]}
