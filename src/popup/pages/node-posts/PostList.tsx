@@ -6,6 +6,7 @@ import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import LoadNewPosts from "@/popup/components/LoadNewPosts";
 import NoMorePosts from "@/popup/components/NoMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
+import { ListNavigationContextProvider } from "@/popup/pages/node/list-navigation-context";
 import Posts from "@/popup/pages/node-posts/Posts";
 import {
   ToggleUnreadContext,
@@ -72,7 +73,9 @@ export default function PostList(props: PostListProps) {
         </Show>
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-            <Posts posts={posts()} isFolder={props.isFolderNode} />
+            <ListNavigationContextProvider listLength={postsCount()}>
+              <Posts posts={posts()} isFolder={props.isFolderNode} />
+            </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>
         </ToggleBookmarkedContext.Provider>
         <Show when={query.data.nextPageCursor}>

@@ -21,7 +21,8 @@ html {
   --brand-complementary-light: #c9901e;
   --brand-complementary-dark: #e0bd86;
   --brand-complementary: var(--brand-complementary-light);
-  --header-size: 50px;
+  --header-size: 50px; /* library/bookmarks/preferences */
+  --sticky-page-header-size: 54px; /* containing the page title dropdown and posts filter */
   --error-color-light: var(--red-12);
   --error-color-dark: var(--red-1);
   --error-color: var(--error-color-light);

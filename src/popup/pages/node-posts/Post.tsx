@@ -1,9 +1,19 @@
 import { computePosition, flip } from "@floating-ui/dom";
-import { createSignal, onMount, ParentProps } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  onMount,
+  ParentProps,
+} from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
 import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-context";
 import PostLink from "@/popup/components/PostLink";
+import {
+  getListItemTabindex,
+  useListNavigationContext,
+} from "@/popup/pages/node/list-navigation-context";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
@@ -22,6 +32,16 @@ export default function Post(props: PostProps) {
   onMount(() => {
     if (titleRef.scrollHeight > titleRef.clientHeight) {
       setShowTooltip(true);
+    }
+  });
+  const { focusedIndex, setFocusedIndex } = useListNavigationContext();
+  const tabindex = createMemo(() =>
+    getListItemTabindex(focusedIndex(), props.postIndex),
+  );
+  createEffect(() => {
+    if (focusedIndex() === props.postIndex) {
+      ref.scrollIntoView({ behavior: "auto", block: "nearest" });
+      ref.focus();
     }
   });
 
@@ -89,6 +109,13 @@ export default function Post(props: PostProps) {
           }
         })();
       }}
+      role="listitem"
+      tabindex={tabindex()}
+      onFocus={() => {
+        // update the focusedIndex when tabbing into the element as opposed
+        // to pressing arrowDown
+        if (focusedIndex() === null) setFocusedIndex(props.postIndex);
+      }}
     >
       <div
         ref={titleRef}
@@ -122,4 +149,5 @@ function getVirtualElement(clientX: number, clientY: number) {
 
 interface PostProps extends ParentProps {
   post: FeedPost;
+  postIndex: number;
 }

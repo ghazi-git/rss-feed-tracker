@@ -13,7 +13,7 @@
   align-items: center;
   gap: var(--size-2);
   padding-block: var(--size-2);
-  block-size: 54px;
+  block-size: var(--sticky-page-header-size);
 
   @container page-header scroll-state(stuck: top) {
     --shadow-color: rgb(0 0 0 / 50%);

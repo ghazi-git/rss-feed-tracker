@@ -5,6 +5,7 @@ import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import NoMorePosts from "@/popup/components/NoMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
+import { ListNavigationContextProvider } from "@/popup/pages/node/list-navigation-context";
 import Posts from "@/popup/pages/node-posts/Posts";
 import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
 import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
@@ -76,7 +77,9 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
         <ErrorAlert errorMsg={query.errorMsg} />
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-            <Posts posts={posts()} isFolder={true} />
+            <ListNavigationContextProvider listLength={postsCount()}>
+              <Posts posts={posts()} isFolder={true} />
+            </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>
         </ToggleBookmarkedContext.Provider>
         <Show when={query.data.nextPageCursor}>

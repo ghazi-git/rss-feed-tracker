@@ -25,7 +25,7 @@ export default function Posts(props: PostsProps) {
   return (
     <PostMenuProvider>
       <PostContextMenu />
-      <div class={styles.posts}>
+      <div class={styles.posts} role="list">
         <For each={groupedPosts()}>
           {(post, index) => (
             <>
@@ -36,7 +36,7 @@ export default function Posts(props: PostsProps) {
                   Page {Math.floor(index() / PAGE_SIZE) + 1}
                 </div>
               </Show>
-              <Post post={post} />
+              <Post post={post} postIndex={index()} />
             </>
           )}
         </For>
