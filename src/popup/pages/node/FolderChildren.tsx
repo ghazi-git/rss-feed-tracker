@@ -157,6 +157,23 @@ export default function FolderChildren(props: FolderChildrenProps) {
       navigate(`/library/nodes/${node.id}/posts`);
     }
   });
+  createShortcut("right", () => {
+    const idx = focusedIndex();
+    if (idx !== null && elt.contains(document.activeElement)) {
+      const node = props.childNodes[idx];
+      navigate(`/library/nodes/${node.id}`);
+    }
+  });
+  createShortcut("left", () => {
+    const idx = focusedIndex();
+    if (
+      idx !== null &&
+      props.parentId &&
+      elt.contains(document.activeElement)
+    ) {
+      navigate(`/library/nodes/${props.parentId}`);
+    }
+  });
   return (
     <MoveNodeContext.Provider value={{ modeNodeUpOrDown }}>
       <div ref={elt} class={styles.children} role="list">
@@ -238,4 +255,5 @@ function getSiblingIndex(
 type ChildNode = TreeNode & { markAsReadUntil: number };
 interface FolderChildrenProps {
   childNodes: ChildNode[];
+  parentId: number | null;
 }

@@ -69,7 +69,10 @@ export function FolderPage(props: FolderPageProps) {
           <ListNavigationContextProvider
             listLength={props.folder.children.length}
           >
-            <FolderChildren childNodes={props.folder.children} />
+            <FolderChildren
+              childNodes={props.folder.children}
+              parentId={props.folder.parentId}
+            />
           </ListNavigationContextProvider>
           <DeleteNodeDialog />
         </DeleteNodeProvider>
