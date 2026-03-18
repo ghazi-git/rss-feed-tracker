@@ -137,8 +137,10 @@ export default function ContextMenu(props: ContextMenuProps) {
               event.preventDefault();
               extra.closeContextMenu();
             } else if (event.key === "ArrowDown") {
+              event.stopImmediatePropagation();
               focusItem("next");
             } else if (event.key === "ArrowUp") {
+              event.stopImmediatePropagation();
               focusItem("previous");
             } else if (event.key === "Home" || event.key === "PageUp") {
               focusItem("first");

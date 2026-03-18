@@ -43,9 +43,11 @@ export default function MenuTrigger(props: TriggerProps) {
           openMenu();
           focusItem("first");
         } else if (event.key === "ArrowDown") {
+          event.stopImmediatePropagation();
           openMenu();
           focusItem("first");
         } else if (event.key === "ArrowUp") {
+          event.stopImmediatePropagation();
           openMenu();
           focusItem("last");
         }

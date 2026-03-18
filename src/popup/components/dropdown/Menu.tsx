@@ -39,8 +39,10 @@ export default function Menu(props: FlowProps<MenuProps>) {
               closeMenu();
               focusTrigger();
             } else if (event.key === "ArrowDown") {
+              event.stopImmediatePropagation();
               focusItem("next");
             } else if (event.key === "ArrowUp") {
+              event.stopImmediatePropagation();
               focusItem("previous");
             } else if (event.key === "Home" || event.key === "PageUp") {
               focusItem("first");
