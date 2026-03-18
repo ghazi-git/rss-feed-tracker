@@ -133,6 +133,7 @@ export default function NodePosts() {
   const { node, mutateUnreadCount, mutateMarkAsReadUntil } =
     createNodeResource();
   const isFolderNode = () => node.latest?.type === "folder";
+  const parentNodeId = () => node.latest?.parentId ?? null;
   const [newPostsStore, setNewPostsStore] = createStore<NewPostsStore>({
     hasNewPosts: false,
     unreadCountDelta: null,
@@ -258,6 +259,7 @@ export default function NodePosts() {
           postsView={postsView()}
           nodeId={nodeId()}
           isFolderNode={isFolderNode()}
+          parentNodeId={parentNodeId()}
           hasNewPosts={newPostsStore.hasNewPosts}
           loadNewPosts={loadNewPosts}
         />

@@ -1,6 +1,8 @@
 import { Match, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
+import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
+import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import LoadNewPosts from "@/popup/components/LoadNewPosts";
@@ -13,6 +15,7 @@ import {
   useToggleUnread,
 } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { PAGE_SIZE } from "@/utils/settings";
 
 import { usePostsContext } from "./posts-context";
@@ -50,6 +53,18 @@ export default function PostList(props: PostListProps) {
   const noPostsMsg = () =>
     props.postsView === "all" ? "No posts yet." : "No unread posts found.";
 
+  const { preferences } = usePreferencesContext();
+  const groupPosts = () => props.isFolderNode && preferences.groupFolderPosts;
+  const previousURL = () => {
+    if (props.isFolderNode) {
+      return `/library/nodes/${props.nodeId}`;
+    } else if (props.parentNodeId) {
+      return `/library/nodes/${props.parentNodeId}`;
+    } else {
+      return "/library";
+    }
+  };
+
   return (
     <Switch>
       <Match when={postsCount() === 0 && query.isError}>
@@ -74,7 +89,14 @@ export default function PostList(props: PostListProps) {
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContext.Provider value={{ toggleUnread }}>
             <ListNavigationContextProvider listLength={postsCount()}>
-              <Posts posts={posts()} isFolder={props.isFolderNode} />
+              <PostMenuProvider>
+                <PostContextMenu />
+                <Posts
+                  posts={posts()}
+                  groupPosts={groupPosts()}
+                  previousURL={previousURL()}
+                />
+              </PostMenuProvider>
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>
         </ToggleBookmarkedContext.Provider>
@@ -98,6 +120,7 @@ export default function PostList(props: PostListProps) {
 interface PostListProps {
   nodeId: number;
   isFolderNode: boolean;
+  parentNodeId: number | null;
   postsView: PostsView;
   hasNewPosts: boolean;
   loadNewPosts: () => void;

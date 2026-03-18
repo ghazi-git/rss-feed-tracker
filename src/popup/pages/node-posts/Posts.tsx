@@ -1,20 +1,20 @@
+import { useNavigate } from "@solidjs/router";
 import { createMemo, For, Show } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
-import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
-import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import PageSeparator from "@/popup/pages/node-posts/PageSeparator";
 import Post from "@/popup/pages/node-posts/Post";
 import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
+import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export default function Posts(props: PostsProps) {
   const { preferences } = usePreferencesContext();
-  const groupPosts = () => props.isFolder && preferences.groupFolderPosts;
   const groupedPosts = createMemo(() => {
-    if (groupPosts()) {
+    if (props.groupPosts) {
       const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
       return getGroupedPosts(props.posts, orderByFetchedAt);
     } else {
@@ -22,28 +22,38 @@ export default function Posts(props: PostsProps) {
     }
   });
 
+  let wrapper!: HTMLDivElement;
+  const navigate = useNavigate();
+  const { focusedIndex } = useListNavigationContext();
+  createShortcut("left", () => {
+    const idx = focusedIndex();
+    if (idx !== null && wrapper.contains(document.activeElement)) {
+      navigate(props.previousURL);
+    }
+  });
+
   return (
-    <PostMenuProvider>
-      <PostContextMenu />
-      <PostsWrapper>
-        <For each={groupedPosts()}>
-          {(post, index) => (
-            <>
-              <Show
-                when={groupPosts() && index() > 0 && index() % PAGE_SIZE === 0}
-              >
-                <PageSeparator page={Math.floor(index() / PAGE_SIZE) + 1} />
-              </Show>
-              <Post post={post} postIndex={index()} />
-            </>
-          )}
-        </For>
-      </PostsWrapper>
-    </PostMenuProvider>
+    <PostsWrapper ref={wrapper}>
+      <For each={groupedPosts()}>
+        {(post, index) => (
+          <>
+            <Show
+              when={
+                props.groupPosts && index() > 0 && index() % PAGE_SIZE === 0
+              }
+            >
+              <PageSeparator page={Math.floor(index() / PAGE_SIZE) + 1} />
+            </Show>
+            <Post post={post} postIndex={index()} />
+          </>
+        )}
+      </For>
+    </PostsWrapper>
   );
 }
 
 interface PostsProps {
   posts: FeedPost[];
-  isFolder: boolean;
+  groupPosts: boolean;
+  previousURL: string;
 }

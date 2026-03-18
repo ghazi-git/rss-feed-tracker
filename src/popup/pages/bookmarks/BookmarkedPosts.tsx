@@ -1,13 +1,17 @@
-import { batch, Match, Show, Switch } from "solid-js";
+import { batch, createMemo, For, Match, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
+import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
+import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import LoadMorePosts from "@/popup/components/LoadMorePosts";
 import NoMorePosts from "@/popup/components/NoMorePosts";
 import NoPosts from "@/popup/components/NoPosts";
 import { ListNavigationContextProvider } from "@/popup/pages/node/list-navigation-context";
-import Posts from "@/popup/pages/node-posts/Posts";
+import PageSeparator from "@/popup/pages/node-posts/PageSeparator";
+import Post from "@/popup/pages/node-posts/Post";
 import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
+import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
 import {
   ToggleUnreadContext,
@@ -15,6 +19,8 @@ import {
 } from "@/popup/pages/node-posts/toggle-unread-context";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { getGroupedPosts } from "@/popup/utils/posts";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export function BookmarkedPosts(props: { postsView: PostsView }) {
@@ -56,6 +62,16 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
     }
   };
 
+  const { preferences } = usePreferencesContext();
+  const groupedPosts = createMemo(() => {
+    if (preferences.groupFolderPosts) {
+      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
+      return getGroupedPosts(posts(), orderByFetchedAt);
+    } else {
+      return posts();
+    }
+  });
+
   return (
     <Switch>
       <Match when={postsCount() === 0 && query.isError}>
@@ -78,7 +94,29 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContext.Provider value={{ toggleUnread }}>
             <ListNavigationContextProvider listLength={postsCount()}>
-              <Posts posts={posts()} isFolder={true} />
+              <PostMenuProvider>
+                <PostContextMenu />
+                <PostsWrapper>
+                  <For each={groupedPosts()}>
+                    {(post, index) => (
+                      <>
+                        <Show
+                          when={
+                            preferences.groupFolderPosts &&
+                            index() > 0 &&
+                            index() % PAGE_SIZE === 0
+                          }
+                        >
+                          <PageSeparator
+                            page={Math.floor(index() / PAGE_SIZE) + 1}
+                          />
+                        </Show>
+                        <Post post={post} postIndex={index()} />
+                      </>
+                    )}
+                  </For>
+                </PostsWrapper>
+              </PostMenuProvider>
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>
         </ToggleBookmarkedContext.Provider>
