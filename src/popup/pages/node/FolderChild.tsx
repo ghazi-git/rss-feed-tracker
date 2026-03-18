@@ -26,14 +26,13 @@ import Anchor from "@/popup/components/Anchor";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
 import Dropdown from "@/popup/components/dropdown/Dropdown";
 import Menu from "@/popup/components/dropdown/Menu";
-import MenuTrigger from "@/popup/components/dropdown/MenuTrigger";
 import SingleLineText from "@/popup/components/SingleLineText";
 import FolderIcon from "@/popup/components/svg-icons/FolderIcon";
-import ThreeDotIcon from "@/popup/components/svg-icons/ThreeDotIcon";
 import DropIndicator from "@/popup/pages/node/DropIndicator";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import FolderChildFeedActions from "@/popup/pages/node/FolderChildFeedActions";
 import FolderChildFolderActions from "@/popup/pages/node/FolderChildFolderActions";
+import FolderChildMenuTrigger from "@/popup/pages/node/FolderChildMenuTrigger";
 import {
   getListItemTabindex,
   useListNavigationContext,
@@ -216,14 +215,13 @@ export default function FolderChild(props: FolderChildProps) {
           </UnstyledButton>
         </Show>
         <Dropdown placement="bottom-end" fallbackPlacement="left">
-          <MenuTrigger
-            onClick={(event) => event.preventDefault()}
-            aria-label={
+          <FolderChildMenuTrigger
+            nodeHasFocus={hasFocus}
+            nodeIndex={props.nodeIndex}
+            label={
               props.node.type === "folder" ? "Folder Actions" : "Feed Actions"
             }
-          >
-            <ThreeDotIcon class={styles["post-actions-icon"]} />
-          </MenuTrigger>
+          />
           <Menu>
             <Show
               when={props.node.type === "folder"}

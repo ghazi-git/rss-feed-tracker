@@ -66,6 +66,7 @@ export type Shortcut =
   | "m" // mark as read all posts of the focused feed/folder
   | "u" // go to the unread posts page of the focused feed/folder
   | "a" // go to the all posts page of the focused feed/folder
+  | "t" // toggle the three-dot menu of the focused feed/folder
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page
