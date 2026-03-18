@@ -21,8 +21,10 @@ export default function FilterResults(props: FilterResultsProps) {
 
   return (
     <For each={groupedPosts()}>
-      {(post) => (
-        <Post post={post}>{highlightText(post.title, post.termPositions)}</Post>
+      {(post, index) => (
+        <Post post={post} postIndex={index()}>
+          {highlightText(post.title, post.termPositions)}
+        </Post>
       )}
     </For>
   );

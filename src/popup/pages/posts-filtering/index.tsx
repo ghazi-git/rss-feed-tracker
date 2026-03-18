@@ -2,6 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { createResource, Show } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
+import { ListNavigationContextProvider } from "@/popup/pages/node/list-navigation-context";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
 import FilterPageHeader from "@/popup/pages/posts-filtering/FilterPageHeader";
 import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
@@ -56,7 +57,7 @@ export default function PostsFilteringPage() {
       <FilterErrorBoundary>
         <Show when={posts.latest}>
           {(results) => (
-            <>
+            <ListNavigationContextProvider listLength={results().length}>
               <Show when={results().length === 0}>
                 <NoFilterResults />
               </Show>
@@ -69,7 +70,7 @@ export default function PostsFilteringPage() {
                   query={searchParams.query || ""}
                 />
               </FilterResultsWrapper>
-            </>
+            </ListNavigationContextProvider>
           )}
         </Show>
       </FilterErrorBoundary>

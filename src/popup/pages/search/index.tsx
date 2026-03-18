@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Show } from "solid-js";
 
+import { ListNavigationContextProvider } from "@/popup/pages/node/list-navigation-context";
 import FilterErrorBoundary from "@/popup/pages/posts-filtering/FilterErrorBoundary";
 import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
 import SearchPageHeader from "@/popup/pages/search/SearchPageHeader";
@@ -73,14 +74,14 @@ export default function SearchPage() {
       <FilterErrorBoundary>
         <Show when={posts.latest}>
           {(results) => (
-            <>
+            <ListNavigationContextProvider listLength={results().length}>
               <FilterResultsWrapper
                 isLoading={posts.loading}
                 mutateResults={mutate}
               >
                 <SearchResults posts={results()} />
               </FilterResultsWrapper>
-            </>
+            </ListNavigationContextProvider>
           )}
         </Show>
       </FilterErrorBoundary>

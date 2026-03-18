@@ -69,6 +69,7 @@ export default function FilterResultsWrapper(props: FilterResultsWrapperProps) {
         <ToggleUnreadContext.Provider value={{ toggleUnread }}>
           <div
             class={`${styles["filter-results"]} ${props.isLoading ? styles.loading : ""}`}
+            role="list"
           >
             {props.children}
           </div>
