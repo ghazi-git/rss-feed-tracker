@@ -63,6 +63,8 @@ export type Shortcut =
   | "down" // move down in the folder/feed or posts lists
   | "right" // when a folder/feed is focused, go to that folder/feed page
   | "left" // when a folder/feed or a post is focused, go to the parent folder page
+  | "u" // go to the unread posts page of the focused feed/folder
+  | "a" // go to the all posts page of the focused feed/folder
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page

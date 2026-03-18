@@ -2,14 +2,17 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import { CleanupFn } from "@atlaskit/pragmatic-drag-and-drop/types";
 import { extractInstruction } from "@atlaskit/pragmatic-drag-and-drop-hitbox/list-item";
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge";
+import { useNavigate } from "@solidjs/router";
 import { For, onCleanup, onMount } from "solid-js";
 
 import { TreeNode } from "@/db-setup";
 import { RelativePlacement, sendMessage } from "@/messaging-wrapper";
 import FolderChild from "@/popup/pages/node/FolderChild";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import { MoveNodeContext } from "@/popup/pages/node/move-node-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { createShortcut } from "@/popup/utils/shortcuts";
 
 import styles from "./FolderChildren.module.css";
 
@@ -138,6 +141,22 @@ export default function FolderChildren(props: FolderChildrenProps) {
     }
   };
 
+  const navigate = useNavigate();
+  const { focusedIndex } = useListNavigationContext();
+  createShortcut("u", () => {
+    const idx = focusedIndex();
+    if (idx !== null && elt.contains(document.activeElement)) {
+      const node = props.childNodes[idx];
+      navigate(`/library/nodes/${node.id}/posts?unread=true`);
+    }
+  });
+  createShortcut("a", () => {
+    const idx = focusedIndex();
+    if (idx !== null && elt.contains(document.activeElement)) {
+      const node = props.childNodes[idx];
+      navigate(`/library/nodes/${node.id}/posts`);
+    }
+  });
   return (
     <MoveNodeContext.Provider value={{ modeNodeUpOrDown }}>
       <div ref={elt} class={styles.children} role="list">

@@ -198,6 +198,7 @@ export default function FolderChild(props: FolderChildProps) {
               event.preventDefault();
               navigate(`/library/nodes/${props.node.id}/posts?unread=true`);
             }}
+            tabindex="-1"
           >
             Unread
           </UnstyledButton>
