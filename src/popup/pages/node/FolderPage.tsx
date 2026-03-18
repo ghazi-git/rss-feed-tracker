@@ -7,6 +7,7 @@ import DeleteNodeDialog from "@/popup/components/delete-node-dialog/DeleteNodeDi
 import FolderChildren from "@/popup/pages/node/FolderChildren";
 import FolderNoChildren from "@/popup/pages/node/FolderNoChildren";
 import FolderPageHeader from "@/popup/pages/node/FolderPageHeader";
+import { ListNavigationContextProvider } from "@/popup/pages/node/list-navigation-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import {
   MutateUnreadCountArgs,
@@ -65,7 +66,11 @@ export function FolderPage(props: FolderPageProps) {
         fallback={<FolderNoChildren folderId={props.folder.id} />}
       >
         <DeleteNodeProvider>
-          <FolderChildren childNodes={props.folder.children} />
+          <ListNavigationContextProvider
+            listLength={props.folder.children.length}
+          >
+            <FolderChildren childNodes={props.folder.children} />
+          </ListNavigationContextProvider>
           <DeleteNodeDialog />
         </DeleteNodeProvider>
       </Show>

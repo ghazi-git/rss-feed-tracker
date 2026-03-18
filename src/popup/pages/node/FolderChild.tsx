@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "@solidjs/router";
 import {
   batch,
+  createEffect,
   createMemo,
   createSignal,
   onCleanup,
@@ -33,6 +34,10 @@ import DropIndicator from "@/popup/pages/node/DropIndicator";
 import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import FolderChildFeedActions from "@/popup/pages/node/FolderChildFeedActions";
 import FolderChildFolderActions from "@/popup/pages/node/FolderChildFolderActions";
+import {
+  getListItemTabindex,
+  useListNavigationContext,
+} from "@/popup/pages/node/list-navigation-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
@@ -132,6 +137,17 @@ export default function FolderChild(props: FolderChildProps) {
   });
   onCleanup(() => cleanup?.());
 
+  const { focusedIndex, setFocusedIndex } = useListNavigationContext();
+  const tabindex = createMemo(() =>
+    getListItemTabindex(focusedIndex(), props.nodeIndex),
+  );
+  let anchor!: HTMLAnchorElement;
+  createEffect(() => {
+    if (focusedIndex() === props.nodeIndex) {
+      anchor.focus();
+    }
+  });
+
   return (
     <div
       ref={wrapper}
@@ -142,6 +158,7 @@ export default function FolderChild(props: FolderChildProps) {
         {(placement) => <DropIndicator placement={placement()} />}
       </Show>
       <Anchor
+        ref={anchor}
         class={styles.child}
         classList={{
           [styles["updates-off"]]: updatesOff(),
@@ -149,6 +166,13 @@ export default function FolderChild(props: FolderChildProps) {
           [styles.dragging]: dragging(),
         }}
         href={`/library/nodes/${props.node.id}`}
+        role="listitem"
+        tabindex={tabindex()}
+        onFocus={() => {
+          // update the focusedIndex when tabbing into the element as opposed
+          // to pressing arrowDown
+          if (focusedIndex() === null) setFocusedIndex(props.nodeIndex);
+        }}
       >
         <div class={styles.icon}>
           <Show when={props.node.type === "feed"} fallback={<FolderIcon />}>

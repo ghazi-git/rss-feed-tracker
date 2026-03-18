@@ -140,7 +140,7 @@ export default function FolderChildren(props: FolderChildrenProps) {
 
   return (
     <MoveNodeContext.Provider value={{ modeNodeUpOrDown }}>
-      <div ref={elt} class={styles.children}>
+      <div ref={elt} class={styles.children} role="list">
         <For each={props.childNodes}>
           {(node, index) => (
             <FolderChild
