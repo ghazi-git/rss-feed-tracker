@@ -3,6 +3,7 @@ import { FlowProps } from "solid-js";
 import { FeedPost, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
 import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
+import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { ToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
 import { ToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
@@ -67,12 +68,11 @@ export default function FilterResultsWrapper(props: FilterResultsWrapperProps) {
       <PostContextMenu />
       <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
         <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-          <div
+          <PostsWrapper
             class={`${styles["filter-results"]} ${props.isLoading ? styles.loading : ""}`}
-            role="list"
           >
             {props.children}
-          </div>
+          </PostsWrapper>
         </ToggleUnreadContext.Provider>
       </ToggleBookmarkedContext.Provider>
     </PostMenuProvider>

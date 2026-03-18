@@ -3,12 +3,12 @@ import { createMemo, For, Show } from "solid-js";
 import { FeedPost } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
 import { PostContextMenu } from "@/popup/components/context-menu/PostContextMenu";
+import PageSeparator from "@/popup/pages/node-posts/PageSeparator";
 import Post from "@/popup/pages/node-posts/Post";
+import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { PAGE_SIZE } from "@/utils/settings";
-
-import styles from "./Posts.module.css";
 
 export default function Posts(props: PostsProps) {
   const { preferences } = usePreferencesContext();
@@ -25,22 +25,20 @@ export default function Posts(props: PostsProps) {
   return (
     <PostMenuProvider>
       <PostContextMenu />
-      <div class={styles.posts} role="list">
+      <PostsWrapper>
         <For each={groupedPosts()}>
           {(post, index) => (
             <>
               <Show
                 when={groupPosts() && index() > 0 && index() % PAGE_SIZE === 0}
               >
-                <div class={styles.title}>
-                  Page {Math.floor(index() / PAGE_SIZE) + 1}
-                </div>
+                <PageSeparator page={Math.floor(index() / PAGE_SIZE) + 1} />
               </Show>
               <Post post={post} postIndex={index()} />
             </>
           )}
         </For>
-      </div>
+      </PostsWrapper>
     </PostMenuProvider>
   );
 }

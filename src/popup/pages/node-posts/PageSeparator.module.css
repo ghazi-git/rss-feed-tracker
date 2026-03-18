@@ -1,12 +1,4 @@
-.posts {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  gap: var(--size-2);
-}
-
-.title {
+.separator {
   color: var(--text-2);
   font-size: var(--font-size-1);
   font-weight: var(--font-weight-7);
