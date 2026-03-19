@@ -1,4 +1,4 @@
-import { useLocation } from "@solidjs/router";
+import { useLocation, useSearchParams } from "@solidjs/router";
 import {
   Accessor,
   createContext,
@@ -17,9 +17,22 @@ const ListNavigationContext = createContext<ListNavigationContextType>();
 export function ListNavigationContextProvider(
   props: ListNavigationContextProviderProps,
 ) {
+  const [searchParams, setSearchParams] = useSearchParams<{
+    focusedIndex?: string;
+  }>();
   // track the index of the focused list item
   // null to indicate that no list item is focused
-  const [focusedIndex, setFocusedIndex] = createSignal<number | null>(null);
+  const idx = getFocusedIndexFromSearchParams(searchParams.focusedIndex);
+  const [focusedIndex, setFocusedIndex] = createSignal<number | null>(idx);
+  // save the focused index in search params so that we can retrieve it
+  // if the popup closes accidentally
+  createEffect(
+    on(
+      focusedIndex,
+      (focusedIndex) => setSearchParams({ focusedIndex }, { replace: true }),
+      { defer: true },
+    ),
+  );
   createShortcut("down", () => {
     if (props.listLength > 0) {
       const idx = focusedIndex();
@@ -36,17 +49,30 @@ export function ListNavigationContextProvider(
       setFocusedIndex(Math.max(idx - 1, 0));
     }
   });
+  const resetFocusedIndex = () => {
+    const idx = getFocusedIndexFromSearchParams(searchParams.focusedIndex);
+    setFocusedIndex(idx);
+  };
 
   // reset the focused index on url change
   const location = useLocation();
-  const url = () => location.pathname + location.search;
-  createEffect(on(url, () => setFocusedIndex(null), { defer: true }));
+  const url = () => location.pathname;
+  createEffect(on(url, () => resetFocusedIndex(), { defer: true }));
 
   return (
-    <ListNavigationContext.Provider value={{ focusedIndex, setFocusedIndex }}>
+    <ListNavigationContext.Provider
+      value={{ focusedIndex, setFocusedIndex, resetFocusedIndex }}
+    >
       {props.children}
     </ListNavigationContext.Provider>
   );
+}
+
+function getFocusedIndexFromSearchParams(idx?: string) {
+  if (!idx) return null;
+
+  const index = parseInt(idx);
+  return !isNaN(index) && index >= 0 ? index : null;
 }
 
 export function getListItemTabindex(
@@ -74,6 +100,7 @@ export function useListNavigationContext() {
 interface ListNavigationContextType {
   focusedIndex: Accessor<number | null>;
   setFocusedIndex: Setter<number | null>;
+  resetFocusedIndex: () => void;
 }
 
 interface ListNavigationContextProviderProps extends FlowProps {

@@ -1,4 +1,5 @@
-import { For } from "solid-js";
+import { useSearchParams } from "@solidjs/router";
+import { createEffect, For, on } from "solid-js";
 
 import { SearchResult } from "@/messaging-wrapper";
 import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
@@ -7,7 +8,7 @@ import { useToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-book
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { highlightText } from "@/popup/pages/posts-filtering/FilterResults";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
-import { useSortBy } from "@/popup/utils/search";
+import { SearchPageParams, useSortBy } from "@/popup/utils/search";
 import {
   createCommentShortcuts,
   createPostBookmarkShortcut,
@@ -30,13 +31,25 @@ export default function SearchResults(props: SearchResultsProps) {
       );
     }
   };
-  const { focusedIndex } = useListNavigationContext();
+  const { focusedIndex, resetFocusedIndex } = useListNavigationContext();
   createCommentShortcuts(sortedPosts, focusedIndex);
   createPostLinkShortcuts(sortedPosts, focusedIndex);
   const { toggleBookmarked } = useToggleBookmarkedContext();
   createPostBookmarkShortcut(sortedPosts, focusedIndex, toggleBookmarked);
   const { toggleUnread } = useToggleUnreadContext();
   createPostUnreadShortcut(sortedPosts, focusedIndex, toggleUnread);
+  // reset the focused index on query or sortBy changes
+  const [searchParams] = useSearchParams<SearchPageParams>();
+  createEffect(
+    on(
+      () => ({
+        query: searchParams.query,
+        sortBy: searchParams.sortBy,
+      }),
+      () => resetFocusedIndex(),
+      { defer: true },
+    ),
+  );
 
   return (
     <For each={sortedPosts()}>

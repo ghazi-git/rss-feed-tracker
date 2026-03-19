@@ -1,4 +1,5 @@
-import { createMemo, For, Show } from "solid-js";
+import { useSearchParams } from "@solidjs/router";
+import { createEffect, createMemo, For, on, Show } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
 import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
@@ -27,7 +28,7 @@ export default function Posts(props: PostsProps) {
       return props.posts;
     }
   });
-  const { focusedIndex } = useListNavigationContext();
+  const { focusedIndex, resetFocusedIndex } = useListNavigationContext();
   // eslint-disable-next-line solid/reactivity
   createCommentShortcuts(groupedPosts, focusedIndex);
   // eslint-disable-next-line solid/reactivity
@@ -38,6 +39,15 @@ export default function Posts(props: PostsProps) {
   const { toggleUnread } = useToggleUnreadContext();
   // eslint-disable-next-line solid/reactivity
   createPostUnreadShortcut(groupedPosts, focusedIndex, toggleUnread);
+  // reset the focused index when moving between unread and all posts pages
+  const [searchParams] = useSearchParams<{ unread?: string }>();
+  createEffect(
+    on(
+      () => ({ unread: searchParams.unread }),
+      () => resetFocusedIndex(),
+      { defer: true },
+    ),
+  );
 
   return (
     <PostsWrapper>
