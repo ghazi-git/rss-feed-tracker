@@ -165,12 +165,7 @@ export default function FolderChildren(props: FolderChildrenProps) {
     }
   });
   createShortcut("left", () => {
-    const idx = focusedIndex();
-    if (
-      idx !== null &&
-      props.parentId &&
-      elt.contains(document.activeElement)
-    ) {
+    if (props.parentId) {
       navigate(`/library/nodes/${props.parentId}`);
     }
   });

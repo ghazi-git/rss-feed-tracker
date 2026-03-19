@@ -1,14 +1,11 @@
-import { useNavigate } from "@solidjs/router";
 import { createMemo, For, Show } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
-import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import PageSeparator from "@/popup/pages/node-posts/PageSeparator";
 import Post from "@/popup/pages/node-posts/Post";
 import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
-import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export default function Posts(props: PostsProps) {
@@ -22,18 +19,8 @@ export default function Posts(props: PostsProps) {
     }
   });
 
-  let wrapper!: HTMLDivElement;
-  const navigate = useNavigate();
-  const { focusedIndex } = useListNavigationContext();
-  createShortcut("left", () => {
-    const idx = focusedIndex();
-    if (idx !== null && wrapper.contains(document.activeElement)) {
-      navigate(props.previousURL);
-    }
-  });
-
   return (
-    <PostsWrapper ref={wrapper}>
+    <PostsWrapper>
       <For each={groupedPosts()}>
         {(post, index) => (
           <>
@@ -55,5 +42,4 @@ export default function Posts(props: PostsProps) {
 interface PostsProps {
   posts: FeedPost[];
   groupPosts: boolean;
-  previousURL: string;
 }

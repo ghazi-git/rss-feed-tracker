@@ -1,3 +1,4 @@
+import { useNavigate } from "@solidjs/router";
 import { Match, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
@@ -16,6 +17,7 @@ import {
 } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
+import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 import { usePostsContext } from "./posts-context";
@@ -55,15 +57,16 @@ export default function PostList(props: PostListProps) {
 
   const { preferences } = usePreferencesContext();
   const groupPosts = () => props.isFolderNode && preferences.groupFolderPosts;
-  const previousURL = () => {
+  const navigate = useNavigate();
+  createShortcut("left", () => {
     if (props.isFolderNode) {
-      return `/library/nodes/${props.nodeId}`;
+      navigate(`/library/nodes/${props.nodeId}`);
     } else if (props.parentNodeId) {
-      return `/library/nodes/${props.parentNodeId}`;
+      navigate(`/library/nodes/${props.parentNodeId}`);
     } else {
-      return "/library";
+      navigate("/library");
     }
-  };
+  });
 
   return (
     <Switch>
@@ -91,11 +94,7 @@ export default function PostList(props: PostListProps) {
             <ListNavigationContextProvider listLength={postsCount()}>
               <PostMenuProvider>
                 <PostContextMenu />
-                <Posts
-                  posts={posts()}
-                  groupPosts={groupPosts()}
-                  previousURL={previousURL()}
-                />
+                <Posts posts={posts()} groupPosts={groupPosts()} />
               </PostMenuProvider>
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>
