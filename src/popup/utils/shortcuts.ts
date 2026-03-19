@@ -168,6 +168,7 @@ export type Shortcut =
   | "shift+k" // open the comments link (if any) of the focused post in a new window and move to that window
   | "ctrl+shift+k" // open the comments link (if any) of the focused post in a new incognito window and move to that window
   | "b" // to bookmark or remove the bookmark of the focused post
+  | "l" // to load more posts in the node posts page
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page

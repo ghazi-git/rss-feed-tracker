@@ -67,6 +67,10 @@ export default function PostList(props: PostListProps) {
       navigate("/library");
     }
   });
+  const hasMorePosts = () => !!query.data.nextPageCursor;
+  createShortcut("l", () => {
+    if (hasMorePosts()) fetchPosts();
+  });
 
   return (
     <Switch>
@@ -99,7 +103,7 @@ export default function PostList(props: PostListProps) {
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>
         </ToggleBookmarkedContext.Provider>
-        <Show when={query.data.nextPageCursor}>
+        <Show when={hasMorePosts()}>
           <LoadMorePosts
             postsCount={postsCount()}
             loading={query.isLoading}
@@ -108,7 +112,7 @@ export default function PostList(props: PostListProps) {
             }}
           />
         </Show>
-        <Show when={!query.data.nextPageCursor && postsCount() >= PAGE_SIZE}>
+        <Show when={!hasMorePosts() && postsCount() >= PAGE_SIZE}>
           <NoMorePosts postsCount={postsCount()} />
         </Show>
       </Match>

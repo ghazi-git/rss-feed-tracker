@@ -18,6 +18,7 @@ import {
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
+import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export function BookmarkedPosts(props: { postsView: PostsView }) {
@@ -60,6 +61,10 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
   };
 
   const { preferences } = usePreferencesContext();
+  const hasMorePosts = () => !!query.data.nextPageCursor;
+  createShortcut("l", () => {
+    if (hasMorePosts()) fetchPosts();
+  });
 
   return (
     <Switch>
@@ -93,7 +98,7 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>
         </ToggleBookmarkedContext.Provider>
-        <Show when={query.data.nextPageCursor}>
+        <Show when={hasMorePosts()}>
           <LoadMorePosts
             postsCount={postsCount()}
             loading={query.isLoading}
@@ -102,7 +107,7 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
             }}
           />
         </Show>
-        <Show when={!query.data.nextPageCursor && postsCount() >= PAGE_SIZE}>
+        <Show when={!hasMorePosts() && postsCount() >= PAGE_SIZE}>
           <NoMorePosts postsCount={postsCount()} />
         </Show>
       </Match>
