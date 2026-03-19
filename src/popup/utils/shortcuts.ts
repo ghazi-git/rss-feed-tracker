@@ -81,6 +81,23 @@ export function createCommentShortcuts(
   });
 }
 
+export function createPostBookmarkShortcut(
+  posts: Accessor<FeedPost[]>,
+  focusedIndex: Accessor<number | null>,
+  toggleBookmarked: (
+    feedId: number,
+    guid: string,
+    bookmarked: boolean,
+  ) => Promise<void>,
+) {
+  createShortcut("b", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post) {
+      toggleBookmarked(post.feedId, post.guid, !post.bookmarked);
+    }
+  });
+}
+
 function getPost(posts: FeedPost[], focusedIndex: number | null) {
   return focusedIndex !== null ? posts[focusedIndex] : null;
 }
@@ -133,6 +150,7 @@ export type Shortcut =
   | "ctrl+k" // open the comments link (if any) of the focused post in a new tab but keep the focus on the extension popup
   | "shift+k" // open the comments link (if any) of the focused post in a new window and move to that window
   | "ctrl+shift+k" // open the comments link (if any) of the focused post in a new incognito window and move to that window
+  | "b" // to bookmark or remove the bookmark of the focused post
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page

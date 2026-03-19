@@ -3,10 +3,12 @@ import { createMemo, For, JSX } from "solid-js";
 import { FilterResult, TermPosition } from "@/messaging-wrapper";
 import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import Post from "@/popup/pages/node-posts/Post";
+import { useToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import {
   createCommentShortcuts,
+  createPostBookmarkShortcut,
   createPostLinkShortcuts,
 } from "@/popup/utils/shortcuts";
 
@@ -28,6 +30,9 @@ export default function FilterResults(props: FilterResultsProps) {
   createCommentShortcuts(groupedPosts, focusedIndex);
   // eslint-disable-next-line solid/reactivity
   createPostLinkShortcuts(groupedPosts, focusedIndex);
+  const { toggleBookmarked } = useToggleBookmarkedContext();
+  // eslint-disable-next-line solid/reactivity
+  createPostBookmarkShortcut(groupedPosts, focusedIndex, toggleBookmarked);
 
   return (
     <For each={groupedPosts()}>

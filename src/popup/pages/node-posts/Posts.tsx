@@ -5,10 +5,12 @@ import { useListNavigationContext } from "@/popup/pages/node/list-navigation-con
 import PageSeparator from "@/popup/pages/node-posts/PageSeparator";
 import Post from "@/popup/pages/node-posts/Post";
 import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
+import { useToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import {
   createCommentShortcuts,
+  createPostBookmarkShortcut,
   createPostLinkShortcuts,
 } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
@@ -28,6 +30,9 @@ export default function Posts(props: PostsProps) {
   createCommentShortcuts(groupedPosts, focusedIndex);
   // eslint-disable-next-line solid/reactivity
   createPostLinkShortcuts(groupedPosts, focusedIndex);
+  const { toggleBookmarked } = useToggleBookmarkedContext();
+  // eslint-disable-next-line solid/reactivity
+  createPostBookmarkShortcut(groupedPosts, focusedIndex, toggleBookmarked);
 
   return (
     <PostsWrapper>
