@@ -16,6 +16,7 @@ import {
 } from "@/popup/pages/node/list-navigation-context";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
+import { showLinkPreview } from "@/popup/store/link-preview";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
@@ -115,6 +116,8 @@ export default function Post(props: PostProps) {
         // update the focusedIndex when tabbing into the element as opposed
         // to pressing arrowDown
         if (focusedIndex() === null) setFocusedIndex(props.postIndex);
+
+        showLinkPreview(props.post.url);
       }}
     >
       <div
