@@ -15,6 +15,9 @@ import { notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFeed() {
+  let input!: HTMLInputElement;
+  onMount(() => input.focus());
+
   const { mutation, sendMsg } = createMutation("feeds/update");
   const navigate = useNavigate();
   const [formdata, setFormdata] = createStore<UpdateFeedFormData>({
@@ -61,6 +64,7 @@ export default function EditFeed() {
       >
         <ErrorAlert errorMsg={mutation.errorMsg} />
         <InputField
+          ref={input}
           type="url"
           name="url"
           label="URL"

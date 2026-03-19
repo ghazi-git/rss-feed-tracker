@@ -25,6 +25,9 @@ import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import styles from "./AddFeed.module.css";
 
 export default function AddFeed() {
+  let input!: HTMLInputElement;
+  onMount(() => input.focus());
+
   const { mutation: createFeedMutation, sendMsg: createFeed } =
     createMutation("feeds/create");
   const { preferences } = usePreferencesContext();
@@ -93,6 +96,7 @@ export default function AddFeed() {
       >
         <ErrorAlert errorMsg={createFeedMutation.errorMsg} />
         <InputField
+          ref={input}
           type="url"
           name="url"
           label="URL"

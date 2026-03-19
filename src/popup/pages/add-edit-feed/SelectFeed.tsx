@@ -4,6 +4,7 @@ import {
   createSignal,
   For,
   Match,
+  onMount,
   Show,
   Switch,
 } from "solid-js";
@@ -21,6 +22,9 @@ import { glogger } from "@/utils/logging";
 import styles from "./SelectFeed.module.css";
 
 export default function SelectFeed() {
+  let input!: HTMLInputElement;
+  onMount(() => input.focus());
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams<{
     parentFolderId?: string;
@@ -63,6 +67,7 @@ export default function SelectFeed() {
       >
         <div class={styles["enter-url"]}>
           <InputField
+            ref={input}
             type="url"
             name="url"
             placeholder="Enter Feed URL"

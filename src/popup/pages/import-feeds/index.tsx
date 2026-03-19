@@ -13,6 +13,9 @@ import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 
 export default function ImportFeeds() {
+  let input!: HTMLInputElement;
+  onMount(() => input.focus());
+
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = createSignal<string | null>(null);
   const { mutation, sendMsg: importOPML } = createMutation("opml/import");
@@ -85,6 +88,7 @@ export default function ImportFeeds() {
       >
         <ErrorAlert errorMsg={errorMsg() || mutation.errorMsg} />
         <InputField
+          ref={input}
           type="file"
           name="file"
           label="OPML File"

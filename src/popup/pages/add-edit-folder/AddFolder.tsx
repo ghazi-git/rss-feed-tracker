@@ -13,6 +13,9 @@ import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 
 export default function AddFolder() {
+  let input!: HTMLInputElement;
+  onMount(() => input.focus());
+
   const [searchParams] = useSearchParams<{
     parentFolderId?: string;
     previousUrl?: string;
@@ -65,6 +68,7 @@ export default function AddFolder() {
       >
         <ErrorAlert errorMsg={mutation.errorMsg} />
         <InputField
+          ref={input}
           type="text"
           name="name"
           label="Name"

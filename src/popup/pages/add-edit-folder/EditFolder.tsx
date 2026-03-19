@@ -14,6 +14,9 @@ import { notifySuccess } from "@/popup/utils/notifications";
 import { getSearchString } from "@/popup/utils/urls";
 
 export default function EditFolder() {
+  let input!: HTMLInputElement;
+  onMount(() => input.focus());
+
   const { mutation, sendMsg } = createMutation("folders/update");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams<{
@@ -74,6 +77,7 @@ export default function EditFolder() {
       >
         <ErrorAlert errorMsg={mutation.errorMsg} />
         <InputField
+          ref={input}
           type="text"
           name="name"
           label="Name"
