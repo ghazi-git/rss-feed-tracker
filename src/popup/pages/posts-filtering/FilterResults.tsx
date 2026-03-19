@@ -5,7 +5,10 @@ import { useListNavigationContext } from "@/popup/pages/node/list-navigation-con
 import Post from "@/popup/pages/node-posts/Post";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
-import { createCommentShortcuts } from "@/popup/utils/shortcuts";
+import {
+  createCommentShortcuts,
+  createPostLinkShortcuts,
+} from "@/popup/utils/shortcuts";
 
 export default function FilterResults(props: FilterResultsProps) {
   const { preferences } = usePreferencesContext();
@@ -23,6 +26,8 @@ export default function FilterResults(props: FilterResultsProps) {
   const { focusedIndex } = useListNavigationContext();
   // eslint-disable-next-line solid/reactivity
   createCommentShortcuts(groupedPosts, focusedIndex);
+  // eslint-disable-next-line solid/reactivity
+  createPostLinkShortcuts(groupedPosts, focusedIndex);
 
   return (
     <For each={groupedPosts()}>

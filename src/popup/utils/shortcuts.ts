@@ -3,7 +3,9 @@ import hotkeys from "hotkeys-js";
 import { Accessor, onCleanup, onMount } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
+import { notifyError, notifyInfo } from "@/popup/utils/notifications";
 import { openTab, openWindow } from "@/popup/utils/urls";
+import { glogger } from "@/utils/logging";
 
 hotkeys.filter = (event: KeyboardEvent) => {
   // allow shortcuts using the ctrl key even from within form fields
@@ -30,6 +32,30 @@ export function handleExitFilterShortcut() {
   const [searchParams] = useSearchParams<{ previousUrl?: string }>();
   createShortcut("escape", () => {
     navigate(searchParams.previousUrl ?? "/library");
+  });
+}
+
+export function createPostLinkShortcuts(
+  posts: Accessor<FeedPost[]>,
+  focusedIndex: Accessor<number | null>,
+) {
+  createShortcut("ctrl+shift+enter", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post) openWindow(post.url, true);
+  });
+  createShortcut("ctrl+c", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post) {
+      navigator.clipboard
+        .writeText(post.url)
+        .then(() => {
+          notifyInfo("Link copied.", { duration: 1000 });
+        })
+        .catch((e) => {
+          glogger.error("copy-link: failure", e);
+          notifyError("Failed to copy the link.");
+        });
+    }
   });
 }
 
@@ -96,10 +122,17 @@ export type Shortcut =
   | "u" // go to the unread posts page of the focused feed/folder
   | "a" // go to the all posts page of the focused feed/folder
   | "t" // toggle the three-dot menu of the focused feed/folder
-  | "k" // open the comments link (if any) of the selected post in a new tab and move to that tab
-  | "ctrl+k" // open the comments link (if any) of the selected post in a new tab but keep the focus on the extension popup
-  | "shift+k" // open the comments link (if any) of the selected post in a new window and move to that window
-  | "ctrl+shift+k" // open the comments link (if any) of the selected post in a new incognito window and move to that window
+  // given that the post is an anchor tag:
+  // - enter already opens the link in a new tab or toggles the unread status of the post depending on the user preferences
+  // - ctrl+enter already opens the link in a new tab
+  // - shift+enter already opens the link in a new window
+  // so below we're only adding a shortcut for ctrl+shift+enter
+  | "ctrl+shift+enter" // open the focused post in a new incognito window and move to that window
+  | "ctrl+c" // copy the link of the focused post
+  | "k" // open the comments link (if any) of the focused post in a new tab and move to that tab
+  | "ctrl+k" // open the comments link (if any) of the focused post in a new tab but keep the focus on the extension popup
+  | "shift+k" // open the comments link (if any) of the focused post in a new window and move to that window
+  | "ctrl+shift+k" // open the comments link (if any) of the focused post in a new incognito window and move to that window
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page

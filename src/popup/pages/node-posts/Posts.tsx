@@ -7,7 +7,10 @@ import Post from "@/popup/pages/node-posts/Post";
 import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
-import { createCommentShortcuts } from "@/popup/utils/shortcuts";
+import {
+  createCommentShortcuts,
+  createPostLinkShortcuts,
+} from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export default function Posts(props: PostsProps) {
@@ -23,6 +26,8 @@ export default function Posts(props: PostsProps) {
   const { focusedIndex } = useListNavigationContext();
   // eslint-disable-next-line solid/reactivity
   createCommentShortcuts(groupedPosts, focusedIndex);
+  // eslint-disable-next-line solid/reactivity
+  createPostLinkShortcuts(groupedPosts, focusedIndex);
 
   return (
     <PostsWrapper>
