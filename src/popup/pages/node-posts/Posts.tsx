@@ -1,11 +1,13 @@
 import { createMemo, For, Show } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import PageSeparator from "@/popup/pages/node-posts/PageSeparator";
 import Post from "@/popup/pages/node-posts/Post";
 import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
+import { createCommentShortcuts } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
 export default function Posts(props: PostsProps) {
@@ -18,6 +20,9 @@ export default function Posts(props: PostsProps) {
       return props.posts;
     }
   });
+  const { focusedIndex } = useListNavigationContext();
+  // eslint-disable-next-line solid/reactivity
+  createCommentShortcuts(groupedPosts, focusedIndex);
 
   return (
     <PostsWrapper>

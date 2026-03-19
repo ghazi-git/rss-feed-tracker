@@ -1,6 +1,9 @@
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import hotkeys from "hotkeys-js";
-import { onCleanup, onMount } from "solid-js";
+import { Accessor, onCleanup, onMount } from "solid-js";
+
+import { FeedPost } from "@/messaging-wrapper";
+import { openTab, openWindow } from "@/popup/utils/urls";
 
 hotkeys.filter = (event: KeyboardEvent) => {
   // allow shortcuts using the ctrl key even from within form fields
@@ -28,6 +31,32 @@ export function handleExitFilterShortcut() {
   createShortcut("escape", () => {
     navigate(searchParams.previousUrl ?? "/library");
   });
+}
+
+export function createCommentShortcuts(
+  posts: Accessor<FeedPost[]>,
+  focusedIndex: Accessor<number | null>,
+) {
+  createShortcut("k", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post?.commentsURL) openTab(post.commentsURL, true);
+  });
+  createShortcut("ctrl+k", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post?.commentsURL) openTab(post.commentsURL);
+  });
+  createShortcut("shift+k", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post?.commentsURL) openWindow(post.commentsURL);
+  });
+  createShortcut("ctrl+shift+k", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post?.commentsURL) openWindow(post.commentsURL, true);
+  });
+}
+
+function getPost(posts: FeedPost[], focusedIndex: number | null) {
+  return focusedIndex !== null ? posts[focusedIndex] : null;
 }
 
 export function createShortcut(
@@ -67,6 +96,10 @@ export type Shortcut =
   | "u" // go to the unread posts page of the focused feed/folder
   | "a" // go to the all posts page of the focused feed/folder
   | "t" // toggle the three-dot menu of the focused feed/folder
+  | "k" // open the comments link (if any) of the selected post in a new tab and move to that tab
+  | "ctrl+k" // open the comments link (if any) of the selected post in a new tab but keep the focus on the extension popup
+  | "shift+k" // open the comments link (if any) of the selected post in a new window and move to that window
+  | "ctrl+shift+k" // open the comments link (if any) of the selected post in a new incognito window and move to that window
   | "ctrl+f" // go to filter posts page. Enabled in feed/folder/bookmarks pages
   | "ctrl+shift+f" // go to search posts page. Enabled in feed/folder/bookmarks pages
   | "escape"; // go from filter/search page to the previous page

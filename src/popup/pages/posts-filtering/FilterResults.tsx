@@ -1,9 +1,11 @@
 import { createMemo, For, JSX } from "solid-js";
 
 import { FilterResult, TermPosition } from "@/messaging-wrapper";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import Post from "@/popup/pages/node-posts/Post";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
+import { createCommentShortcuts } from "@/popup/utils/shortcuts";
 
 export default function FilterResults(props: FilterResultsProps) {
   const { preferences } = usePreferencesContext();
@@ -18,6 +20,9 @@ export default function FilterResults(props: FilterResultsProps) {
       return props.posts;
     }
   });
+  const { focusedIndex } = useListNavigationContext();
+  // eslint-disable-next-line solid/reactivity
+  createCommentShortcuts(groupedPosts, focusedIndex);
 
   return (
     <For each={groupedPosts()}>

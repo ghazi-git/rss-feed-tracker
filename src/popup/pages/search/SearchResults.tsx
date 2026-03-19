@@ -1,10 +1,12 @@
 import { For } from "solid-js";
 
 import { SearchResult } from "@/messaging-wrapper";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import Post from "@/popup/pages/node-posts/Post";
 import { highlightText } from "@/popup/pages/posts-filtering/FilterResults";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { useSortBy } from "@/popup/utils/search";
+import { createCommentShortcuts } from "@/popup/utils/shortcuts";
 
 export default function SearchResults(props: SearchResultsProps) {
   const sortBy = useSortBy();
@@ -21,6 +23,8 @@ export default function SearchResults(props: SearchResultsProps) {
       );
     }
   };
+  const { focusedIndex } = useListNavigationContext();
+  createCommentShortcuts(sortedPosts, focusedIndex);
 
   return (
     <For each={sortedPosts()}>
