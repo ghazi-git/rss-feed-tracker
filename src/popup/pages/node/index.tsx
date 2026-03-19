@@ -1,4 +1,4 @@
-import { Navigate, useParams } from "@solidjs/router";
+import { Navigate, useParams, useSearchParams } from "@solidjs/router";
 import {
   createEffect,
   Match,
@@ -110,9 +110,7 @@ export default function Node() {
             {(currentNode) => (
               <Show
                 when={folderNode()}
-                fallback={
-                  <Navigate href={`/library/nodes/${currentNode().id}/posts`} />
-                }
+                fallback={<NavigateToPostsPage id={currentNode().id} />}
               >
                 {(folder) => <FolderPage folder={folder()} />}
               </Show>
@@ -122,4 +120,14 @@ export default function Node() {
       </ReloadFeedsContext.Provider>
     </NodeContext.Provider>
   );
+}
+
+function NavigateToPostsPage(props: { id: number }) {
+  // forward focusedIndex
+  const [searchParams] = useSearchParams<{ focusedIndex?: string }>();
+  const search = () =>
+    searchParams.focusedIndex
+      ? `?focusedIndex=${searchParams.focusedIndex}`
+      : "";
+  return <Navigate href={`/library/nodes/${props.id}/posts${search()}`} />;
 }

@@ -147,26 +147,26 @@ export default function FolderChildren(props: FolderChildrenProps) {
     const idx = focusedIndex();
     if (idx !== null && elt.contains(document.activeElement)) {
       const node = props.childNodes[idx];
-      navigate(`/library/nodes/${node.id}/posts?unread=true`);
+      navigate(`/library/nodes/${node.id}/posts?unread=true&focusedIndex=0`);
     }
   });
   createShortcut("a", () => {
     const idx = focusedIndex();
     if (idx !== null && elt.contains(document.activeElement)) {
       const node = props.childNodes[idx];
-      navigate(`/library/nodes/${node.id}/posts`);
+      navigate(`/library/nodes/${node.id}/posts?focusedIndex=0`);
     }
   });
   createShortcut("right", () => {
     const idx = focusedIndex();
     if (idx !== null && elt.contains(document.activeElement)) {
       const node = props.childNodes[idx];
-      navigate(`/library/nodes/${node.id}`);
+      navigate(`/library/nodes/${node.id}?focusedIndex=0`);
     }
   });
   createShortcut("left", () => {
     if (props.parentId) {
-      navigate(`/library/nodes/${props.parentId}`);
+      navigate(`/library/nodes/${props.parentId}?focusedIndex=0`);
     }
   });
   return (

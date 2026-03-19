@@ -18,8 +18,10 @@ export default function PostsFilter(props: PostsFilterProps) {
   createShortcut("ctrl+m", () => {
     if (props.unreadCount) props.markAsReadMutation.markAll();
   });
-  createShortcut("ctrl+u", () => navigate(`${props.pageUrl}?unread=true`));
-  createShortcut("ctrl+a", () => navigate(props.pageUrl));
+  createShortcut("ctrl+u", () =>
+    navigate(`${props.pageUrl}?unread=true&focusedIndex=0`),
+  );
+  createShortcut("ctrl+a", () => navigate(`${props.pageUrl}?focusedIndex=0`));
 
   return (
     <div class={`${props.class} ${styles["filter-options"]}`}>
