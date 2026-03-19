@@ -6,12 +6,14 @@ import PageSeparator from "@/popup/pages/node-posts/PageSeparator";
 import Post from "@/popup/pages/node-posts/Post";
 import PostsWrapper from "@/popup/pages/node-posts/PostsWrapper";
 import { useToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
+import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import {
   createCommentShortcuts,
   createPostBookmarkShortcut,
   createPostLinkShortcuts,
+  createPostUnreadShortcut,
 } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
@@ -33,6 +35,9 @@ export default function Posts(props: PostsProps) {
   const { toggleBookmarked } = useToggleBookmarkedContext();
   // eslint-disable-next-line solid/reactivity
   createPostBookmarkShortcut(groupedPosts, focusedIndex, toggleBookmarked);
+  const { toggleUnread } = useToggleUnreadContext();
+  // eslint-disable-next-line solid/reactivity
+  createPostUnreadShortcut(groupedPosts, focusedIndex, toggleUnread);
 
   return (
     <PostsWrapper>

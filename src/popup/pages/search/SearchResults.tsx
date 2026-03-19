@@ -4,6 +4,7 @@ import { SearchResult } from "@/messaging-wrapper";
 import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import Post from "@/popup/pages/node-posts/Post";
 import { useToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
+import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { highlightText } from "@/popup/pages/posts-filtering/FilterResults";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { useSortBy } from "@/popup/utils/search";
@@ -11,6 +12,7 @@ import {
   createCommentShortcuts,
   createPostBookmarkShortcut,
   createPostLinkShortcuts,
+  createPostUnreadShortcut,
 } from "@/popup/utils/shortcuts";
 
 export default function SearchResults(props: SearchResultsProps) {
@@ -33,6 +35,8 @@ export default function SearchResults(props: SearchResultsProps) {
   createPostLinkShortcuts(sortedPosts, focusedIndex);
   const { toggleBookmarked } = useToggleBookmarkedContext();
   createPostBookmarkShortcut(sortedPosts, focusedIndex, toggleBookmarked);
+  const { toggleUnread } = useToggleUnreadContext();
+  createPostUnreadShortcut(sortedPosts, focusedIndex, toggleUnread);
 
   return (
     <For each={sortedPosts()}>

@@ -98,6 +98,23 @@ export function createPostBookmarkShortcut(
   });
 }
 
+export function createPostUnreadShortcut(
+  posts: Accessor<FeedPost[]>,
+  focusedIndex: Accessor<number | null>,
+  toggleUnread: (
+    feedId: number,
+    guid: string,
+    unread: boolean,
+  ) => Promise<void>,
+) {
+  createShortcut("m", () => {
+    const post = getPost(posts(), focusedIndex());
+    if (post) {
+      toggleUnread(post.feedId, post.guid, !post.unread);
+    }
+  });
+}
+
 function getPost(posts: FeedPost[], focusedIndex: number | null) {
   return focusedIndex !== null ? posts[focusedIndex] : null;
 }
@@ -135,7 +152,7 @@ export type Shortcut =
   | "down" // move down in the folder/feed or posts lists
   | "right" // when a folder/feed is focused, go to that folder/feed page
   | "left" // when a folder/feed or a post is focused, go to the parent folder page
-  | "m" // mark as read all posts of the focused feed/folder
+  | "m" // mark as read all posts of the focused feed/folder. mark the focused post as read or unread in a posts page
   | "u" // go to the unread posts page of the focused feed/folder
   | "a" // go to the all posts page of the focused feed/folder
   | "t" // toggle the three-dot menu of the focused feed/folder
