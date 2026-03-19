@@ -25,7 +25,7 @@ export default function CommentsLink(props: { url: string }) {
     <div
       class={styles.link}
       role="link"
-      tabindex="0"
+      tabindex="-1"
       title="Open comments link"
       onClick={(event) => {
         openLink(event);

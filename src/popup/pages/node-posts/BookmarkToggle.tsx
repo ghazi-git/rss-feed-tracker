@@ -29,7 +29,7 @@ export default function BookmarkToggle(props: BookmarkToggleProps) {
         }}
         title={props.bookmarked ? "Delete bookmark" : "Bookmark"}
         role="button"
-        tabindex="0"
+        tabindex="-1"
       >
         {props.bookmarked ? <BookmarkedIcon /> : <BookmarkIcon />}
       </div>

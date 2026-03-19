@@ -26,7 +26,7 @@ export default function UnreadToggle(props: UnreadToggleProps) {
         }}
         title={props.unread ? "Mark as read" : "Mark as unread"}
         role="button"
-        tabindex="0"
+        tabindex="-1"
       />
     </div>
   );
