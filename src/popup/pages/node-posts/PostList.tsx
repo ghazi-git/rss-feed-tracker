@@ -1,5 +1,5 @@
 import { useNavigate } from "@solidjs/router";
-import { Match, Show, Switch } from "solid-js";
+import { createMemo, Match, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
@@ -16,6 +16,7 @@ import {
   useToggleUnread,
 } from "@/popup/pages/node-posts/toggle-unread-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
@@ -26,6 +27,16 @@ import { ToggleBookmarkedContext } from "./toggle-bookmarked-context";
 export default function PostList(props: PostListProps) {
   const { query, posts, setPosts, fetchPosts } = usePostsContext();
   const postsCount = () => posts().length;
+  const { preferences } = usePreferencesContext();
+  const groupPosts = () => props.isFolderNode && preferences.groupFolderPosts;
+  const groupedPosts = createMemo(() => {
+    if (groupPosts()) {
+      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
+      return getGroupedPosts(posts(), orderByFetchedAt);
+    } else {
+      return posts();
+    }
+  });
 
   const toggleUnread = useToggleUnread();
   const toggleBookmarked = async (
@@ -55,8 +66,6 @@ export default function PostList(props: PostListProps) {
   const noPostsMsg = () =>
     props.postsView === "all" ? "No posts yet." : "No unread posts found.";
 
-  const { preferences } = usePreferencesContext();
-  const groupPosts = () => props.isFolderNode && preferences.groupFolderPosts;
   const navigate = useNavigate();
   createShortcut("left", () => {
     if (props.isFolderNode) {
@@ -98,7 +107,7 @@ export default function PostList(props: PostListProps) {
             <ListNavigationContextProvider listLength={postsCount()}>
               <PostMenuProvider>
                 <PostContextMenu />
-                <Posts posts={posts()} groupPosts={groupPosts()} />
+                <Posts posts={groupedPosts()} groupPosts={groupPosts()} />
               </PostMenuProvider>
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>

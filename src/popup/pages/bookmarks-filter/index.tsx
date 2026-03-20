@@ -9,6 +9,7 @@ import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
 import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
 import { debounce } from "@/popup/utils/debounce";
+import { useGroupedFilterResults } from "@/popup/utils/filter";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import {
   handleExitFilterShortcut,
@@ -18,6 +19,8 @@ import { getSearchString } from "@/popup/utils/urls";
 
 export default function FilterBookmarksPage() {
   const [posts, { mutate }] = createFilterResource();
+  const groupedPosts = useGroupedFilterResults(posts);
+
   restoreScrollPositionAfterInitialFetch(posts);
   handleExitFilterShortcut();
   const navigate = useNavigate();
@@ -50,7 +53,7 @@ export default function FilterBookmarksPage() {
         placeholder={placeholder()}
       />
       <FilterErrorBoundary>
-        <Show when={posts.latest}>
+        <Show when={groupedPosts()}>
           {(results) => (
             <ListNavigationContextProvider listLength={results().length}>
               <Show when={results().length === 0}>
@@ -60,10 +63,7 @@ export default function FilterBookmarksPage() {
                 isLoading={posts.loading}
                 mutateResults={mutate}
               >
-                <FilterResults
-                  posts={results()}
-                  query={searchParams.query || ""}
-                />
+                <FilterResults posts={results()} />
               </FilterResultsWrapper>
             </ListNavigationContextProvider>
           )}

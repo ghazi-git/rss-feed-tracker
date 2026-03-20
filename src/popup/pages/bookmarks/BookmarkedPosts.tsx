@@ -1,4 +1,4 @@
-import { batch, Match, Show, Switch } from "solid-js";
+import { batch, createMemo, Match, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
@@ -17,6 +17,7 @@ import {
 } from "@/popup/pages/node-posts/toggle-unread-context";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { notifyError } from "@/popup/utils/notifications";
+import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
@@ -25,6 +26,16 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
   const { mutateUnreadCount } = useUnreadCountContext();
   const { query, posts, setPosts, fetchPosts } = usePostsContext();
   const postsCount = () => posts().length;
+  const { preferences } = usePreferencesContext();
+  const groupPosts = () => preferences.groupFolderPosts;
+  const groupedPosts = createMemo(() => {
+    if (groupPosts()) {
+      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
+      return getGroupedPosts(posts(), orderByFetchedAt);
+    } else {
+      return posts();
+    }
+  });
 
   const toggleUnread = useToggleUnread();
   const toggleBookmarked = async (
@@ -60,7 +71,6 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
     }
   };
 
-  const { preferences } = usePreferencesContext();
   const hasMorePosts = () => !!query.data.nextPageCursor;
   createShortcut("l", () => {
     if (hasMorePosts()) fetchPosts();
@@ -90,10 +100,7 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
             <ListNavigationContextProvider listLength={postsCount()}>
               <PostMenuProvider>
                 <PostContextMenu />
-                <Posts
-                  posts={posts()}
-                  groupPosts={preferences.groupFolderPosts}
-                />
+                <Posts posts={groupedPosts()} groupPosts={groupPosts()} />
               </PostMenuProvider>
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>

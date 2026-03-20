@@ -1,13 +1,11 @@
 import { useSearchParams } from "@solidjs/router";
-import { createEffect, createMemo, For, JSX, on } from "solid-js";
+import { createEffect, For, JSX, on } from "solid-js";
 
 import { FilterResult, TermPosition } from "@/messaging-wrapper";
 import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import Post from "@/popup/pages/node-posts/Post";
 import { useToggleBookmarkedContext } from "@/popup/pages/node-posts/toggle-bookmarked-context";
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
-import { getGroupedPosts } from "@/popup/utils/posts";
-import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import {
   createCommentShortcuts,
   createPostBookmarkShortcut,
@@ -16,29 +14,14 @@ import {
 } from "@/popup/utils/shortcuts";
 
 export default function FilterResults(props: FilterResultsProps) {
-  const { preferences } = usePreferencesContext();
-  const groupedPosts = createMemo(() => {
-    const feedIds = new Set(props.posts.map((p) => p.feedId));
-    if (!props.query && preferences.groupFolderPosts && feedIds.size > 1) {
-      // grouping is done only when there is no query. That is to keep posts
-      // ordering the same when going from the posts page to the filtering page
-      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
-      return getGroupedPosts(props.posts, orderByFetchedAt);
-    } else {
-      return props.posts;
-    }
-  });
+  const posts = () => props.posts;
   const { focusedIndex, resetFocusedIndex } = useListNavigationContext();
-  // eslint-disable-next-line solid/reactivity
-  createCommentShortcuts(groupedPosts, focusedIndex);
-  // eslint-disable-next-line solid/reactivity
-  createPostLinkShortcuts(groupedPosts, focusedIndex);
+  createCommentShortcuts(posts, focusedIndex);
+  createPostLinkShortcuts(posts, focusedIndex);
   const { toggleBookmarked } = useToggleBookmarkedContext();
-  // eslint-disable-next-line solid/reactivity
-  createPostBookmarkShortcut(groupedPosts, focusedIndex, toggleBookmarked);
+  createPostBookmarkShortcut(posts, focusedIndex, toggleBookmarked);
   const { toggleUnread } = useToggleUnreadContext();
-  // eslint-disable-next-line solid/reactivity
-  createPostUnreadShortcut(groupedPosts, focusedIndex, toggleUnread);
+  createPostUnreadShortcut(posts, focusedIndex, toggleUnread);
   // reset the focused index on query changes
   const [searchParams] = useSearchParams<{ query?: string }>();
   createEffect(
@@ -50,7 +33,7 @@ export default function FilterResults(props: FilterResultsProps) {
   );
 
   return (
-    <For each={groupedPosts()}>
+    <For each={posts()}>
       {(post, index) => (
         <Post post={post} postIndex={index()}>
           {highlightText(post.title, post.termPositions)}
@@ -79,5 +62,4 @@ export function highlightText(text: string, positions: TermPosition[]) {
 
 interface FilterResultsProps {
   posts: FilterResult[];
-  query: string;
 }
