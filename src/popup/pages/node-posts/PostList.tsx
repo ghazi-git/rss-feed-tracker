@@ -71,9 +71,9 @@ export default function PostList(props: PostListProps) {
   const navigate = useNavigate();
   createShortcut("left", () => {
     if (props.isFolderNode) {
-      navigate(`/library/nodes/${props.nodeId}?focusedIndex=0`);
+      navigate(`/library/nodes/${props.nodeId}?keyboardNav=true`);
     } else if (props.parentNodeId) {
-      navigate(`/library/nodes/${props.parentNodeId}?focusedIndex=0`);
+      navigate(`/library/nodes/${props.parentNodeId}?keyboardNav=true`);
     } else {
       navigate("/library");
     }

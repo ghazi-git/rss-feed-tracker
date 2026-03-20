@@ -16,8 +16,8 @@ export default function Header() {
   });
 
   const navigate = useNavigate();
-  createShortcut("ctrl+l", () => navigate('/library?focusedIndex=0"'));
-  createShortcut("ctrl+b", () => navigate("/bookmarks?focusedIndex=0"));
+  createShortcut("ctrl+l", () => navigate("/library?keyboardNav=true"));
+  createShortcut("ctrl+b", () => navigate("/bookmarks?keyboardNav=true"));
   createShortcut("ctrl+p", () => navigate("/preferences"));
 
   return (

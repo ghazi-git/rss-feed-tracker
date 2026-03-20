@@ -149,26 +149,26 @@ export default function FolderChildren(props: FolderChildrenProps) {
     if (item !== null && elt.contains(document.activeElement)) {
       const nodeId = getNodeIdFromListItem(item);
       if (nodeId)
-        navigate(`/library/nodes/${nodeId}/posts?unread=true&focusedIndex=0`);
+        navigate(`/library/nodes/${nodeId}/posts?unread=true&keyboardNav=true`);
     }
   });
   createShortcut("a", () => {
     const item = focusedItem();
     if (item !== null && elt.contains(document.activeElement)) {
       const nodeId = getNodeIdFromListItem(item);
-      if (nodeId) navigate(`/library/nodes/${nodeId}/posts?focusedIndex=0`);
+      if (nodeId) navigate(`/library/nodes/${nodeId}/posts?keyboardNav=true`);
     }
   });
   createShortcut("right", () => {
     const item = focusedItem();
     if (item !== null && elt.contains(document.activeElement)) {
       const nodeId = getNodeIdFromListItem(item);
-      if (nodeId) navigate(`/library/nodes/${nodeId}?focusedIndex=0`);
+      if (nodeId) navigate(`/library/nodes/${nodeId}?keyboardNav=true`);
     }
   });
   createShortcut("left", () => {
     if (props.parentId) {
-      navigate(`/library/nodes/${props.parentId}?focusedIndex=0`);
+      navigate(`/library/nodes/${props.parentId}?keyboardNav=true`);
     }
   });
   return (
