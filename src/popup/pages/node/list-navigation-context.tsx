@@ -34,18 +34,18 @@ export function ListNavigationContextProvider(
     ),
   );
   createShortcut("down", () => {
-    if (props.listLength > 0) {
+    if (props.items.length > 0) {
       const idx = focusedIndex();
       if (idx === null) {
         setFocusedIndex(0);
       } else {
-        setFocusedIndex(Math.min(idx + 1, props.listLength - 1));
+        setFocusedIndex(Math.min(idx + 1, props.items.length - 1));
       }
     }
   });
   createShortcut("up", () => {
     const idx = focusedIndex();
-    if (props.listLength > 0 && idx !== null) {
+    if (props.items.length > 0 && idx !== null) {
       setFocusedIndex(Math.max(idx - 1, 0));
     }
   });
@@ -104,5 +104,5 @@ interface ListNavigationContextType {
 }
 
 interface ListNavigationContextProviderProps extends FlowProps {
-  listLength: number;
+  items: string[];
 }

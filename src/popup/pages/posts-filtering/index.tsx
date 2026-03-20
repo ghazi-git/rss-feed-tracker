@@ -10,6 +10,7 @@ import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWra
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
 import { debounce } from "@/popup/utils/debounce";
 import { useGroupedFilterResults } from "@/popup/utils/filter";
+import { getListItemsFromPosts } from "@/popup/utils/keyboard-nav";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import { useNodeId } from "@/popup/utils/search";
 import {
@@ -60,7 +61,9 @@ export default function PostsFilteringPage() {
       <FilterErrorBoundary>
         <Show when={groupedPosts()}>
           {(results) => (
-            <ListNavigationContextProvider listLength={results().length}>
+            <ListNavigationContextProvider
+              items={getListItemsFromPosts(results())}
+            >
               <Show when={results().length === 0}>
                 <NoFilterResults />
               </Show>

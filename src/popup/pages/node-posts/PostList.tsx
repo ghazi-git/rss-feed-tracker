@@ -15,6 +15,7 @@ import {
   ToggleUnreadContext,
   useToggleUnread,
 } from "@/popup/pages/node-posts/toggle-unread-context";
+import { getListItemsFromPosts } from "@/popup/utils/keyboard-nav";
 import { notifyError } from "@/popup/utils/notifications";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
@@ -37,6 +38,7 @@ export default function PostList(props: PostListProps) {
       return posts();
     }
   });
+  const keyboardNavItems = () => getListItemsFromPosts(groupedPosts());
 
   const toggleUnread = useToggleUnread();
   const toggleBookmarked = async (
@@ -104,7 +106,7 @@ export default function PostList(props: PostListProps) {
         </Show>
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-            <ListNavigationContextProvider listLength={postsCount()}>
+            <ListNavigationContextProvider items={keyboardNavItems()}>
               <PostMenuProvider>
                 <PostContextMenu />
                 <Posts posts={groupedPosts()} groupPosts={groupPosts()} />

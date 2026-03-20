@@ -8,6 +8,7 @@ import SearchPageHeader from "@/popup/pages/search/SearchPageHeader";
 import SearchResults from "@/popup/pages/search/SearchResults";
 import SearchResultsHeader from "@/popup/pages/search/SearchResultsHeader";
 import { debounce } from "@/popup/utils/debounce";
+import { getListItemsFromPosts } from "@/popup/utils/keyboard-nav";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import {
@@ -92,7 +93,9 @@ export default function SearchPage() {
       <FilterErrorBoundary>
         <Show when={sortedPosts()}>
           {(results) => (
-            <ListNavigationContextProvider listLength={results().length}>
+            <ListNavigationContextProvider
+              items={getListItemsFromPosts(results())}
+            >
               <FilterResultsWrapper
                 isLoading={posts.loading}
                 mutateResults={mutate}
