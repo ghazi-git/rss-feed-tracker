@@ -69,7 +69,10 @@ export function FolderPage(props: FolderPageProps) {
         fallback={<FolderNoChildren folderId={props.folder.id} />}
       >
         <DeleteNodeProvider>
-          <ListNavigationContextProvider items={keyboardNavItems()}>
+          <ListNavigationContextProvider
+            items={keyboardNavItems()}
+            reset={props.folder.id}
+          >
             <FolderChildren
               childNodes={props.folder.children}
               parentId={props.folder.parentId}

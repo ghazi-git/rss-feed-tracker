@@ -1,4 +1,4 @@
-import { useLocation, useSearchParams } from "@solidjs/router";
+import { useSearchParams } from "@solidjs/router";
 import {
   Accessor,
   createContext,
@@ -69,10 +69,14 @@ export function ListNavigationContextProvider(
     setFocusedItem(item);
   };
 
-  // reset the focused index on url change
-  const location = useLocation();
-  const url = () => location.pathname;
-  createEffect(on(url, () => resetFocusedItem(), { defer: true }));
+  // reset the focused index when the reset prop changes
+  createEffect(
+    on(
+      () => props.reset,
+      () => resetFocusedItem(),
+      { defer: true },
+    ),
+  );
 
   return (
     <ListNavigationContext.Provider
@@ -102,4 +106,5 @@ interface ListNavigationContextType {
 
 interface ListNavigationContextProviderProps extends FlowProps {
   items: string[];
+  reset?: number;
 }
