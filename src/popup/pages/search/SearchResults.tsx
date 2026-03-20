@@ -17,13 +17,13 @@ import {
 
 export default function SearchResults(props: SearchResultsProps) {
   const posts = () => props.posts;
-  const { focusedIndex, resetFocusedIndex } = useListNavigationContext();
-  createCommentShortcuts(posts, focusedIndex);
-  createPostLinkShortcuts(posts, focusedIndex);
+  const { focusedItem, resetFocusedItem } = useListNavigationContext();
+  createCommentShortcuts(posts, focusedItem);
+  createPostLinkShortcuts(posts, focusedItem);
   const { toggleBookmarked } = useToggleBookmarkedContext();
-  createPostBookmarkShortcut(posts, focusedIndex, toggleBookmarked);
+  createPostBookmarkShortcut(posts, focusedItem, toggleBookmarked);
   const { toggleUnread } = useToggleUnreadContext();
-  createPostUnreadShortcut(posts, focusedIndex, toggleUnread);
+  createPostUnreadShortcut(posts, focusedItem, toggleUnread);
   // reset the focused index on query or sortBy changes
   const [searchParams] = useSearchParams<SearchPageParams>();
   createEffect(
@@ -32,7 +32,7 @@ export default function SearchResults(props: SearchResultsProps) {
         query: searchParams.query,
         sortBy: searchParams.sortBy,
       }),
-      () => resetFocusedIndex(),
+      () => resetFocusedItem(),
       { defer: true },
     ),
   );

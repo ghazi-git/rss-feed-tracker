@@ -18,72 +18,69 @@ export function ListNavigationContextProvider(
   props: ListNavigationContextProviderProps,
 ) {
   const [searchParams, setSearchParams] = useSearchParams<{
-    focusedIndex?: string;
+    focusedItem?: string;
+    keyboardNav?: string;
   }>();
-  // track the index of the focused list item
+  const focusedItemFromSearchParams = () => {
+    const id = searchParams.focusedItem;
+    if (id && props.items.includes(id)) return id;
+
+    if (searchParams.keyboardNav === "true" && props.items.length > 0) {
+      return props.items[0];
+    }
+
+    return null;
+  };
+  // track the id of the focused list item
   // null to indicate that no list item is focused
-  const idx = getFocusedIndexFromSearchParams(searchParams.focusedIndex);
-  const [focusedIndex, setFocusedIndex] = createSignal<number | null>(idx);
-  // save the focused index in search params so that we can retrieve it
-  // if the popup closes accidentally
-  createEffect(
-    on(
-      focusedIndex,
-      (focusedIndex) => setSearchParams({ focusedIndex }, { replace: true }),
-      { defer: true },
-    ),
+  const [focusedItem, setFocusedItem] = createSignal<string | null>(
+    focusedItemFromSearchParams(),
   );
+  // save the focused item in search params so that we can retrieve it
+  // if the popup closes accidentally
+  createEffect(() => {
+    setSearchParams({ focusedItem: focusedItem() }, { replace: true });
+  });
   createShortcut("down", () => {
     if (props.items.length > 0) {
-      const idx = focusedIndex();
-      if (idx === null) {
-        setFocusedIndex(0);
+      const item = focusedItem();
+      if (item === null) {
+        setFocusedItem(props.items[0]);
       } else {
-        setFocusedIndex(Math.min(idx + 1, props.items.length - 1));
+        const idx = props.items.indexOf(item);
+        // focus the first item if the id is not found
+        const next = Math.min(idx + 1, props.items.length - 1);
+        setFocusedItem(props.items[next]);
       }
     }
   });
   createShortcut("up", () => {
-    const idx = focusedIndex();
-    if (props.items.length > 0 && idx !== null) {
-      setFocusedIndex(Math.max(idx - 1, 0));
+    const item = focusedItem();
+    if (props.items.length > 0 && item !== null) {
+      const idx = props.items.indexOf(item);
+      if (idx >= 0) {
+        const prev = Math.max(idx - 1, 0);
+        setFocusedItem(props.items[prev]);
+      }
     }
   });
-  const resetFocusedIndex = () => {
-    const idx = getFocusedIndexFromSearchParams(searchParams.focusedIndex);
-    setFocusedIndex(idx);
+  const resetFocusedItem = () => {
+    const item = focusedItemFromSearchParams();
+    setFocusedItem(item);
   };
 
   // reset the focused index on url change
   const location = useLocation();
   const url = () => location.pathname;
-  createEffect(on(url, () => resetFocusedIndex(), { defer: true }));
+  createEffect(on(url, () => resetFocusedItem(), { defer: true }));
 
   return (
     <ListNavigationContext.Provider
-      value={{ focusedIndex, setFocusedIndex, resetFocusedIndex }}
+      value={{ focusedItem, setFocusedItem, resetFocusedItem }}
     >
       {props.children}
     </ListNavigationContext.Provider>
   );
-}
-
-function getFocusedIndexFromSearchParams(idx?: string) {
-  if (!idx) return null;
-
-  const index = parseInt(idx);
-  return !isNaN(index) && index >= 0 ? index : null;
-}
-
-export function getListItemTabindex(
-  focusedIndex: number | null,
-  itemIndex: number,
-) {
-  // when no item is focused, make the first one focusable
-  if (focusedIndex === null && itemIndex === 0) return 0;
-  // this item is focused
-  else if (focusedIndex === itemIndex) return 0;
-  else return -1;
 }
 
 export function useListNavigationContext() {
@@ -98,9 +95,9 @@ export function useListNavigationContext() {
 }
 
 interface ListNavigationContextType {
-  focusedIndex: Accessor<number | null>;
-  setFocusedIndex: Setter<number | null>;
-  resetFocusedIndex: () => void;
+  focusedItem: Accessor<string | null>;
+  setFocusedItem: Setter<string | null>;
+  resetFocusedItem: () => void;
 }
 
 interface ListNavigationContextProviderProps extends FlowProps {

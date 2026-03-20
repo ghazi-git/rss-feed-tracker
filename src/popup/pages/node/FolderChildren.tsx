@@ -11,6 +11,7 @@ import FolderChild from "@/popup/pages/node/FolderChild";
 import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import { MoveNodeContext } from "@/popup/pages/node/move-node-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
+import { getNodeIdFromListItem } from "@/popup/utils/keyboard-nav";
 import { notifyError } from "@/popup/utils/notifications";
 import { createShortcut } from "@/popup/utils/shortcuts";
 
@@ -142,26 +143,27 @@ export default function FolderChildren(props: FolderChildrenProps) {
   };
 
   const navigate = useNavigate();
-  const { focusedIndex } = useListNavigationContext();
+  const { focusedItem } = useListNavigationContext();
   createShortcut("u", () => {
-    const idx = focusedIndex();
-    if (idx !== null && elt.contains(document.activeElement)) {
-      const node = props.childNodes[idx];
-      navigate(`/library/nodes/${node.id}/posts?unread=true&focusedIndex=0`);
+    const item = focusedItem();
+    if (item !== null && elt.contains(document.activeElement)) {
+      const nodeId = getNodeIdFromListItem(item);
+      if (nodeId)
+        navigate(`/library/nodes/${nodeId}/posts?unread=true&focusedIndex=0`);
     }
   });
   createShortcut("a", () => {
-    const idx = focusedIndex();
-    if (idx !== null && elt.contains(document.activeElement)) {
-      const node = props.childNodes[idx];
-      navigate(`/library/nodes/${node.id}/posts?focusedIndex=0`);
+    const item = focusedItem();
+    if (item !== null && elt.contains(document.activeElement)) {
+      const nodeId = getNodeIdFromListItem(item);
+      if (nodeId) navigate(`/library/nodes/${nodeId}/posts?focusedIndex=0`);
     }
   });
   createShortcut("right", () => {
-    const idx = focusedIndex();
-    if (idx !== null && elt.contains(document.activeElement)) {
-      const node = props.childNodes[idx];
-      navigate(`/library/nodes/${node.id}?focusedIndex=0`);
+    const item = focusedItem();
+    if (item !== null && elt.contains(document.activeElement)) {
+      const nodeId = getNodeIdFromListItem(item);
+      if (nodeId) navigate(`/library/nodes/${nodeId}?focusedIndex=0`);
     }
   });
   createShortcut("left", () => {

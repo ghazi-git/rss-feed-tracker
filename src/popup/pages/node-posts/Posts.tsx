@@ -18,19 +18,19 @@ import { PAGE_SIZE } from "@/utils/settings";
 
 export default function Posts(props: PostsProps) {
   const posts = () => props.posts;
-  const { focusedIndex, resetFocusedIndex } = useListNavigationContext();
-  createCommentShortcuts(posts, focusedIndex);
-  createPostLinkShortcuts(posts, focusedIndex);
+  const { focusedItem, resetFocusedItem } = useListNavigationContext();
+  createCommentShortcuts(posts, focusedItem);
+  createPostLinkShortcuts(posts, focusedItem);
   const { toggleBookmarked } = useToggleBookmarkedContext();
-  createPostBookmarkShortcut(posts, focusedIndex, toggleBookmarked);
+  createPostBookmarkShortcut(posts, focusedItem, toggleBookmarked);
   const { toggleUnread } = useToggleUnreadContext();
-  createPostUnreadShortcut(posts, focusedIndex, toggleUnread);
+  createPostUnreadShortcut(posts, focusedItem, toggleUnread);
   // reset the focused index when moving between unread and all posts pages
   const [searchParams] = useSearchParams<{ unread?: string }>();
   createEffect(
     on(
       () => ({ unread: searchParams.unread }),
-      () => resetFocusedIndex(),
+      () => resetFocusedItem(),
       { defer: true },
     ),
   );

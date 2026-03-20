@@ -3,6 +3,7 @@ import hotkeys from "hotkeys-js";
 import { Accessor, onCleanup, onMount } from "solid-js";
 
 import { FeedPost } from "@/messaging-wrapper";
+import { getPostIdFromListItem } from "@/popup/utils/keyboard-nav";
 import { notifyError, notifyInfo } from "@/popup/utils/notifications";
 import { openTab, openWindow } from "@/popup/utils/urls";
 import { glogger } from "@/utils/logging";
@@ -37,14 +38,14 @@ export function handleExitFilterShortcut() {
 
 export function createPostLinkShortcuts(
   posts: Accessor<FeedPost[]>,
-  focusedIndex: Accessor<number | null>,
+  focusedItem: Accessor<string | null>,
 ) {
   createShortcut("ctrl+shift+enter", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post) openWindow(post.url, true);
   });
   createShortcut("ctrl+c", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post) {
       navigator.clipboard
         .writeText(post.url)
@@ -61,29 +62,29 @@ export function createPostLinkShortcuts(
 
 export function createCommentShortcuts(
   posts: Accessor<FeedPost[]>,
-  focusedIndex: Accessor<number | null>,
+  focusedItem: Accessor<string | null>,
 ) {
   createShortcut("k", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post?.commentsURL) openTab(post.commentsURL, true);
   });
   createShortcut("ctrl+k", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post?.commentsURL) openTab(post.commentsURL);
   });
   createShortcut("shift+k", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post?.commentsURL) openWindow(post.commentsURL);
   });
   createShortcut("ctrl+shift+k", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post?.commentsURL) openWindow(post.commentsURL, true);
   });
 }
 
 export function createPostBookmarkShortcut(
   posts: Accessor<FeedPost[]>,
-  focusedIndex: Accessor<number | null>,
+  focusedItem: Accessor<string | null>,
   toggleBookmarked: (
     feedId: number,
     guid: string,
@@ -91,7 +92,7 @@ export function createPostBookmarkShortcut(
   ) => Promise<void>,
 ) {
   createShortcut("b", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post) {
       toggleBookmarked(post.feedId, post.guid, !post.bookmarked);
     }
@@ -100,7 +101,7 @@ export function createPostBookmarkShortcut(
 
 export function createPostUnreadShortcut(
   posts: Accessor<FeedPost[]>,
-  focusedIndex: Accessor<number | null>,
+  focusedItem: Accessor<string | null>,
   toggleUnread: (
     feedId: number,
     guid: string,
@@ -108,15 +109,19 @@ export function createPostUnreadShortcut(
   ) => Promise<void>,
 ) {
   createShortcut("m", () => {
-    const post = getPost(posts(), focusedIndex());
+    const post = getPost(posts(), focusedItem());
     if (post) {
       toggleUnread(post.feedId, post.guid, !post.unread);
     }
   });
 }
 
-function getPost(posts: FeedPost[], focusedIndex: number | null) {
-  return focusedIndex !== null ? posts[focusedIndex] : null;
+function getPost(posts: FeedPost[], focusedItem: string | null) {
+  const id = getPostIdFromListItem(focusedItem);
+  if (!id) return null;
+
+  const post = posts.find((p) => p.feedId === id.feedId && p.guid === id.guid);
+  return post ?? null;
 }
 
 export function createShortcut(
