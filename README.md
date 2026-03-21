@@ -5,12 +5,13 @@ An RSS feed reader as a chrome extension
 ## Features
 
 - Fully client-side RSS Reader. No account required. No tracking. Your data stays on your device.
-- Back up and restore all the extension data (feeds, folders, posts and settings).
+- Back up and restore all the extension data (feeds, folders, posts and settings). Details of the backup format can
+  be found [below](#backup-format).
 - Export and import feeds as OPML.
 - Organize feeds into folders with drag and drop support.
 - Search for posts already fetched by the extension.
 - Support RSS, Atom and JSON feeds.
-- Support for keyboard navigation.
+- Support for keyboard navigation. The list of shortcuts is [below](#keyboard-navigation).
 - Light and dark themes.
 
 ### Nice Extras
