@@ -162,6 +162,8 @@ export default function FolderChild(props: FolderChildProps) {
   });
   const actionsTabindex = () =>
     isFocusedNode(focusedItem(), props.node.id) ? 0 : -1;
+  const childURL = () => `/library/nodes/${props.node.id}`;
+  const childPostsURL = () => `/library/nodes/${props.node.id}/posts`;
 
   return (
     <div
@@ -180,7 +182,7 @@ export default function FolderChild(props: FolderChildProps) {
           [styles["drop-inside"]]: dropIndicator() === "combine",
           [styles.dragging]: dragging(),
         }}
-        href={`/library/nodes/${props.node.id}`}
+        href={childURL()}
         role="listitem"
         tabindex={tabindex()}
         onFocus={() => {
@@ -188,6 +190,12 @@ export default function FolderChild(props: FolderChildProps) {
           // to pressing arrowDown
           if (focusedItem() === null) {
             setFocusedItem(getListItemFromNode(props.node));
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            navigate(`${childURL()}?keyboardNav=true`);
           }
         }}
       >
@@ -214,7 +222,14 @@ export default function FolderChild(props: FolderChildProps) {
             class={styles["unread-link"]}
             onClick={(event) => {
               event.preventDefault();
-              navigate(`/library/nodes/${props.node.id}/posts?unread=true`);
+              navigate(`${childPostsURL()}?unread=true`);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                event.stopPropagation();
+                navigate(`${childPostsURL()}?unread=true&keyboardNav=true`);
+              }
             }}
             tabindex={actionsTabindex()}
           >

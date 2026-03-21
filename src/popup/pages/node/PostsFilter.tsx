@@ -30,6 +30,12 @@ export default function PostsFilter(props: PostsFilterProps) {
         class={`${styles.filter} ${styles.unread}`}
         classList={{ [styles.active]: activeFilter() === "unread" }}
         onClick={() => setActiveFilter("unread")}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            navigate(`${props.pageUrl}?unread=true&keyboardNav=true`);
+          }
+        }}
       >
         <Show when={props.unreadCount}>
           <UnreadCount
@@ -49,6 +55,12 @@ export default function PostsFilter(props: PostsFilterProps) {
         class={`${styles.filter} ${styles.all}`}
         classList={{ [styles.active]: activeFilter() === "all" }}
         onClick={() => setActiveFilter("all")}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            navigate(`${props.pageUrl}?keyboardNav=true`);
+          }
+        }}
       >
         <span>All</span>
       </Anchor>
