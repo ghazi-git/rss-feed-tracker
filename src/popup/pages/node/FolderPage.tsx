@@ -75,6 +75,7 @@ export function FolderPage(props: FolderPageProps) {
           >
             <FolderChildren
               childNodes={props.folder.children}
+              folderId={props.folder.id}
               parentId={props.folder.parentId}
             />
           </ListNavigationContextProvider>

@@ -189,7 +189,7 @@ export default function FolderChild(props: FolderChildProps) {
           // update the focusedItem when tabbing into the element as opposed
           // to pressing arrowDown
           if (focusedItem() === null) {
-            setFocusedItem(getListItemFromNode(props.node));
+            setFocusedItem(getListItemFromNode(props.node.id));
           }
         }}
         onKeyDown={(event) => {

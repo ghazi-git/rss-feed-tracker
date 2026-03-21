@@ -15,7 +15,10 @@ import {
   ToggleUnreadContext,
   useToggleUnread,
 } from "@/popup/pages/node-posts/toggle-unread-context";
-import { getListItemsFromPosts } from "@/popup/utils/keyboard-nav";
+import {
+  getListItemFromNode,
+  getListItemsFromPosts,
+} from "@/popup/utils/keyboard-nav";
 import { notifyError } from "@/popup/utils/notifications";
 import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
@@ -71,9 +74,14 @@ export default function PostList(props: PostListProps) {
   const navigate = useNavigate();
   createShortcut("left", () => {
     if (props.isFolderNode) {
+      // keep keyboardNav so that when moving from folder posts page back to
+      // the folder page, the first node is focused.
       navigate(`/library/nodes/${props.nodeId}?keyboardNav=true`);
     } else if (props.parentNodeId) {
-      navigate(`/library/nodes/${props.parentNodeId}?keyboardNav=true`);
+      // add focusedItem so that when moving from feed posts page back to
+      // the parent folder page, the feed is focused.
+      const item = getListItemFromNode(props.nodeId);
+      navigate(`/library/nodes/${props.parentNodeId}?focusedItem=${item}`);
     } else {
       navigate("/library");
     }

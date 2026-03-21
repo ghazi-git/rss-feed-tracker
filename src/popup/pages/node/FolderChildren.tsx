@@ -11,7 +11,10 @@ import FolderChild from "@/popup/pages/node/FolderChild";
 import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import { MoveNodeContext } from "@/popup/pages/node/move-node-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
-import { getNodeIdFromListItem } from "@/popup/utils/keyboard-nav";
+import {
+  getListItemFromNode,
+  getNodeIdFromListItem,
+} from "@/popup/utils/keyboard-nav";
 import { notifyError } from "@/popup/utils/notifications";
 import { createShortcut } from "@/popup/utils/shortcuts";
 
@@ -168,7 +171,8 @@ export default function FolderChildren(props: FolderChildrenProps) {
   });
   createShortcut("left", () => {
     if (props.parentId) {
-      navigate(`/library/nodes/${props.parentId}?keyboardNav=true`);
+      const item = getListItemFromNode(props.folderId);
+      navigate(`/library/nodes/${props.parentId}?focusedItem=${item}`);
     }
   });
   return (
@@ -252,5 +256,6 @@ function getSiblingIndex(
 type ChildNode = TreeNode & { markAsReadUntil: number };
 interface FolderChildrenProps {
   childNodes: ChildNode[];
+  folderId: number;
   parentId: number | null;
 }

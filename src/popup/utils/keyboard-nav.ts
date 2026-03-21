@@ -37,11 +37,11 @@ export function getPostIdFromListItem(listItem: string | null) {
 }
 
 export function getListItemsFromNodes(nodes: TreeNode[]) {
-  return nodes.map((n) => getListItemFromNode(n));
+  return nodes.map((n) => getListItemFromNode(n.id));
 }
 
-export function getListItemFromNode(node: TreeNode) {
-  return `${node.id}`;
+export function getListItemFromNode(nodeId: number) {
+  return `${nodeId}`;
 }
 
 export function isFocusedNode(listItem: string | null, nodeId: number) {
