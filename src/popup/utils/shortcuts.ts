@@ -128,18 +128,17 @@ export function createShortcut(
   shortcut: Shortcut,
   onShortcutTriggered: (event: KeyboardEvent) => void,
 ) {
-  onMount(() => {
-    hotkeys(shortcut, (event) => {
-      // avoid default browser actions from triggering (ctrl+f triggers find
-      // in tab, escape closes extension, for example)
-      event.preventDefault();
-      // avoid accidentally triggering user-defined shortcuts for other chrome
-      // extensions (chrome://extensions/shortcuts)
-      event.stopPropagation();
-      onShortcutTriggered(event);
-    });
-  });
-  onCleanup(() => hotkeys.unbind(shortcut));
+  const handler = (event: KeyboardEvent) => {
+    // avoid default browser actions from triggering (ctrl+f triggers find
+    // in tab, escape closes extension, for example)
+    event.preventDefault();
+    // avoid accidentally triggering user-defined shortcuts for other chrome
+    // extensions (chrome://extensions/shortcuts)
+    event.stopPropagation();
+    onShortcutTriggered(event);
+  };
+  onMount(() => hotkeys(shortcut, handler));
+  onCleanup(() => hotkeys.unbind(shortcut, handler));
 }
 
 export type Shortcut =
