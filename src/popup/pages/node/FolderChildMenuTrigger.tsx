@@ -39,6 +39,7 @@ export default function FolderChildMenuTrigger(
         // don't open the menu on arrow up/down to avoid conflicting with using
         // arrow up/down for navigating the folder children
         if (event.key === "Enter" || event.key === " ") {
+          event.stopPropagation();
           openMenu();
           focusItem("first");
         }
