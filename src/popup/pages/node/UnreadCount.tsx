@@ -21,6 +21,9 @@ export default function UnreadCount(props: UnreadCountProps) {
       onClick={(e) => {
         props.onClick(e);
       }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") event.stopPropagation();
+      }}
       title="Mark all as read"
       disabled={props.isLoading}
       tabindex={props.tabindex}
