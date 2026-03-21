@@ -36,5 +36,5 @@ interface UnreadCountProps {
   isLoading: boolean;
   count: number;
   onClick: JSX.EventHandler<HTMLButtonElement, MouseEvent>;
-  tabindex?: string;
+  tabindex?: number;
 }

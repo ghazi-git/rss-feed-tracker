@@ -6,7 +6,7 @@ import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./CommentsLink.module.css";
 
-export default function CommentsLink(props: { url: string }) {
+export default function CommentsLink(props: CommentsLinkProps) {
   const openLink = (event: MouseEvent | KeyboardEvent) => {
     event.preventDefault();
     event.stopPropagation();
@@ -25,7 +25,7 @@ export default function CommentsLink(props: { url: string }) {
     <div
       class={styles.link}
       role="link"
-      tabindex="-1"
+      tabindex={props.tabindex}
       title="Open comments link"
       onClick={(event) => {
         openLink(event);
@@ -67,4 +67,9 @@ export default function CommentsLink(props: { url: string }) {
       <CommentsIcon />
     </div>
   );
+}
+
+interface CommentsLinkProps {
+  url: string;
+  tabindex: number;
 }

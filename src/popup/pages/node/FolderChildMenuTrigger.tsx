@@ -34,7 +34,15 @@ export default function FolderChildMenuTrigger(
     <MenuTrigger
       onClick={(event) => event.preventDefault()}
       aria-label={props.label}
-      tabindex="-1"
+      tabindex={props.tabindex}
+      onKeyDown={(event) => {
+        // don't open the menu on arrow up/down to avoid conflicting with using
+        // arrow up/down for navigating the folder children
+        if (event.key === "Enter" || event.key === " ") {
+          openMenu();
+          focusItem("first");
+        }
+      }}
     >
       <ThreeDotIcon class={styles.icon} />
     </MenuTrigger>
@@ -45,4 +53,5 @@ interface FolderChildMenuTriggerProps {
   label: string;
   htmlElementHasFocus: () => boolean;
   nodeId: number;
+  tabindex: number;
 }

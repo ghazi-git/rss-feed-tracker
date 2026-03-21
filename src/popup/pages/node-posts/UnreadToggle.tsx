@@ -26,7 +26,7 @@ export default function UnreadToggle(props: UnreadToggleProps) {
         }}
         title={props.unread ? "Mark as read" : "Mark as unread"}
         role="button"
-        tabindex="-1"
+        tabindex={props.tabindex}
       />
     </div>
   );
@@ -35,4 +35,5 @@ export default function UnreadToggle(props: UnreadToggleProps) {
 interface UnreadToggleProps {
   unread: boolean;
   onToggleUnread: (event: Event) => Promise<void>;
+  tabindex: number;
 }

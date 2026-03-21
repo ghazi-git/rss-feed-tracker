@@ -160,6 +160,8 @@ export default function FolderChild(props: FolderChildProps) {
       markAllAsRead();
     }
   });
+  const actionsTabindex = () =>
+    isFocusedNode(focusedItem(), props.node.id) ? 0 : -1;
 
   return (
     <div
@@ -206,7 +208,7 @@ export default function FolderChild(props: FolderChildProps) {
               event.preventDefault();
               markAllAsRead();
             }}
-            tabindex="-1"
+            tabindex={actionsTabindex()}
           />
           <UnstyledButton
             class={styles["unread-link"]}
@@ -214,7 +216,7 @@ export default function FolderChild(props: FolderChildProps) {
               event.preventDefault();
               navigate(`/library/nodes/${props.node.id}/posts?unread=true`);
             }}
-            tabindex="-1"
+            tabindex={actionsTabindex()}
           >
             Unread
           </UnstyledButton>
@@ -226,6 +228,7 @@ export default function FolderChild(props: FolderChildProps) {
             label={
               props.node.type === "folder" ? "Folder Actions" : "Feed Actions"
             }
+            tabindex={actionsTabindex()}
           />
           <Menu>
             <Show
