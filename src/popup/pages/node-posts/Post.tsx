@@ -10,13 +10,11 @@ import {
 import { FeedPost } from "@/messaging-wrapper";
 import { usePostMenuContext } from "@/popup/components/context-menu/post-menu-context";
 import PostLink from "@/popup/components/PostLink";
-import {
-  getListItemTabindex,
-  useListNavigationContext,
-} from "@/popup/pages/node/list-navigation-context";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import PostFooter from "@/popup/pages/node-posts/PostFooter";
 import { useToggleUnreadContext } from "@/popup/pages/node-posts/toggle-unread-context";
 import { showLinkPreview } from "@/popup/store/link-preview";
+import { getListItemFromPost, isFocusedPost } from "@/popup/utils/keyboard-nav";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
@@ -35,12 +33,17 @@ export default function Post(props: PostProps) {
       setShowTooltip(true);
     }
   });
-  const { focusedIndex, setFocusedIndex } = useListNavigationContext();
-  const tabindex = createMemo(() =>
-    getListItemTabindex(focusedIndex(), props.postIndex),
-  );
+  const { focusedItem, setFocusedItem } = useListNavigationContext();
+  const tabindex = createMemo(() => {
+    const item = focusedItem();
+    // when no item is focused, make the first one focusable
+    if (item === null && props.postIndex === 0) return 0;
+    // this item is focused
+    else if (isFocusedPost(item, props.post.feedId, props.post.guid)) return 0;
+    else return -1;
+  });
   createEffect(() => {
-    if (focusedIndex() === props.postIndex) {
+    if (isFocusedPost(focusedItem(), props.post.feedId, props.post.guid)) {
       ref.scrollIntoView({ behavior: "auto", block: "nearest" });
       ref.focus();
     }
@@ -113,9 +116,12 @@ export default function Post(props: PostProps) {
       role="listitem"
       tabindex={tabindex()}
       onFocus={() => {
-        // update the focusedIndex when tabbing into the element as opposed
+        // update the focusedItem when tabbing into the element as opposed
         // to pressing arrowDown
-        if (focusedIndex() === null) setFocusedIndex(props.postIndex);
+        if (focusedItem() === null) {
+          const item = getListItemFromPost(props.post);
+          setFocusedItem(item);
+        }
 
         showLinkPreview(props.post.url);
       }}

@@ -1,6 +1,6 @@
 # RSS Feed Tracker
 
-Chrome extension to manage RSS feeds.
+An RSS feed reader as a chrome extension
 
 ## Features
 
@@ -10,6 +10,7 @@ Chrome extension to manage RSS feeds.
 - Organize feeds into folders with drag and drop support.
 - Search for posts already fetched by the extension.
 - Support RSS, Atom and JSON feeds.
+- Support for keyboard navigation.
 - Light and dark themes.
 
 ### Nice Extras
@@ -17,7 +18,9 @@ Chrome extension to manage RSS feeds.
 - Pick up where you left off if the popup closes accidentally.
 - Mark posts as read by clicking them (with a setting to allow clicks to open the post instead).
 - Middle and right-click to open a post.
-- The back/forward mouse buttons work just like in the browser tabs.
+- The back/forward mouse buttons work just like in the browser tabs. Or, use the keyboard shortcuts instead
+  `ctrl+alt+left`/`ctrl+alt+right`.
+- `ctrl+f` to filter recent posts and `ctrl+shift+f` to search all posts.
 - Hover over a link to view the URL at the bottom of the extension popup (Chrome does not do this for links
   in the extension popup).
 - An icon with a link to the comments URL is added to the bottom of the post when a comments link is available. This
@@ -93,6 +96,53 @@ The backup is a zip file containing the following JSON files:
   - `bookmarked` can be `1` (bookmarked) or `0` (not bookmarked)
   - `publishedAt` time the post was published according to the feed. Represented as an integer (milliseconds since epoch).
   - `fetchedAt` time the post was fetched by the extension. Represented as an integer (milliseconds since epoch).
+
+## Keyboard Navigation
+
+Tabbing through the UI elements and using arrows allow you to do almost everything. Still, some of the following
+shortcuts might prove useful:
+
+- `ctrl+shift+s` to open/close the extension popup (can be configured from `chrome://extensions/shortcuts`)
+- Top-header shortcuts
+  - `ctrl+l` go to the "Library" page
+  - `ctrl+b` go to the "Bookmarks" page
+  - `ctrl+p` go to the "Preferences" page
+- Filter/Search posts
+  - `ctrl+f` go to the filter posts page. Enabled in feed/folder/bookmarks/search pages
+  - `ctrl+shift+f` go to the search posts page. Enabled in feed/folder/bookmarks/filter pages
+  - `escape` exit from filter/search page and go back to the previous page
+- Back/forward navigation (the same as the browser back/forward buttons)
+  - `ctrl+alt+left` go back
+  - `ctrl+alt+right` go forward
+- Page Header Navigation (under "Library")
+  - `ctrl+t` toggle the feed/folder title dropdown
+  - `ctrl+m` mark all posts in the current feed/folder as read
+  - `ctrl+u` go to the unread posts page of the current feed/folder
+  - `ctrl+a` go to all posts page of the current feed/folder
+  - `backspace` go to the previous page (same as clicking the back button that is rendered in the extension UI)
+- Navigating the folders/feeds hierarchy
+  - `up`/`down` move up/down in the folder/feed list
+  - `right`/`enter` when a folder/feed is focused, go to that folder/feed page
+  - `left` go to the parent folder page
+  - `t` toggle the three-dot menu of the focused feed/folder
+  - `m` mark as read all posts of the focused feed/folder.
+  - `u` go to the unread posts page of the focused feed/folder
+  - `a` go to the all posts page of the focused feed/folder
+- Posts page
+  - `up`/`down` move up/down in the posts list
+  - `left` go to the parent folder page
+  - `l` load more posts
+  - `enter` opens the link in a new tab or toggles the unread status of the post depending on the user preferences
+  - `ctrl+enter` opens the link in a new tab
+  - `shift+enter` opens the link in a new window
+  - `ctrl+shift+enter` open the focused post in a new incognito window and move to that window
+  - `ctrl+c` copy the link of the focused post
+  - `k` open the comments link (if any) of the focused post in a new tab and move to that tab
+  - `ctrl+k` open the comments link (if any) of the focused post in a new tab but keep the focus on the extension popup
+  - `shift+k` open the comments link (if any) of the focused post in a new window and move to that window
+  - `ctrl+shift+k` open the comments link (if any) of the focused post in a new incognito window and move to that window
+  - `b` bookmark or remove the bookmark of the focused post
+  - `m` mark the focused post as read or unread
 
 ## Running the project locally
 

@@ -1,4 +1,5 @@
 import { useNavigate } from "@solidjs/router";
+import { Signal } from "solid-js";
 
 import ActionButton from "@/popup/components/buttons/ActionButton";
 import UnstyledButton from "@/popup/components/buttons/UnstyledButton";
@@ -6,7 +7,9 @@ import { useDeleteNodeContext } from "@/popup/components/delete-node-dialog/cont
 import { useDropdownContext } from "@/popup/components/dropdown/context";
 import ErrorAlert from "@/popup/components/ErrorAlert";
 import CloseIcon from "@/popup/components/svg-icons/CloseIcon";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
+import { getListItemFromNode, isFocusedNode } from "@/popup/utils/keyboard-nav";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError, notifySuccess } from "@/popup/utils/notifications";
 
@@ -39,8 +42,11 @@ export default function DeleteNodeDialog() {
       : feedMutation.isLoading;
 
   const mutateNode = useMutateNode();
+  const itemSignal = useFocusedItem();
   const removeChildNode = (deletedNodeId: number) => {
-    if (mutateNode) {
+    if (mutateNode && itemSignal) {
+      const [focusedItem, setFocusedItem] = itemSignal;
+      let nextFocusedItem: string | null = null;
       mutateNode((resp) => {
         const deletionIdx = resp.children.findIndex(
           (n) => n.id === deletedNodeId,
@@ -48,15 +54,33 @@ export default function DeleteNodeDialog() {
         if (deletionIdx >= 0) {
           const deletedNode = resp.children[deletionIdx];
           const nodeUnreadCount = resp.unreadCount - deletedNode.unreadCount;
+          const updatedChildren = resp.children.toSpliced(deletionIdx, 1);
+          // determine the item to be focused next for keyboard navigation in
+          // case the deleted node is currently the focused item
+          if (
+            updatedChildren.length > 0 &&
+            isFocusedNode(focusedItem(), deletedNode.id)
+          ) {
+            const newItemAtDeletedIndex =
+              updatedChildren[
+                Math.min(deletionIdx, updatedChildren.length - 1)
+              ];
+            nextFocusedItem = getListItemFromNode(newItemAtDeletedIndex.id);
+          }
           return {
             ...resp,
             unreadCount: Math.max(nodeUnreadCount, 0),
-            children: resp.children.toSpliced(deletionIdx, 1),
+            children: updatedChildren,
           };
         }
 
         return resp;
       });
+      if (nextFocusedItem) {
+        // the timeout ensures the node gets focused otherwise the html body
+        // gets focused by default after closing the modal
+        setTimeout(() => setFocusedItem(nextFocusedItem));
+      }
     }
   };
 
@@ -172,6 +196,18 @@ function useMutateNode() {
   try {
     const { mutateNode } = useNodeContext();
     return mutateNode;
+  } catch {
+    return undefined;
+  }
+}
+
+function useFocusedItem() {
+  // list navigation context is provided in the Node component only where we
+  // display folder children. That's where we potentially need to update the
+  // focused list item
+  try {
+    const { focusedItem, setFocusedItem } = useListNavigationContext();
+    return [focusedItem, setFocusedItem] as Signal<string | null>;
   } catch {
     return undefined;
   }

@@ -123,11 +123,9 @@ export default function Node() {
 }
 
 function NavigateToPostsPage(props: { id: number }) {
-  // forward focusedIndex
-  const [searchParams] = useSearchParams<{ focusedIndex?: string }>();
+  // forward keyboardNav
+  const [searchParams] = useSearchParams<{ keyboardNav?: string }>();
   const search = () =>
-    searchParams.focusedIndex
-      ? `?focusedIndex=${searchParams.focusedIndex}`
-      : "";
+    searchParams.keyboardNav === "true" ? `?keyboardNav=true` : "";
   return <Navigate href={`/library/nodes/${props.id}/posts${search()}`} />;
 }

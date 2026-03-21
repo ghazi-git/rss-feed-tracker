@@ -26,6 +26,7 @@ export default function MenuItem(props: FlowProps<MenuItemProps>) {
       onClick={(event) => onItemClicked(event)}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
+          event.stopPropagation();
           onItemClicked(event);
         }
       }}

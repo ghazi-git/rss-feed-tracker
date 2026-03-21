@@ -13,6 +13,7 @@ import {
   MutateUnreadCountArgs,
   UnreadCountContext,
 } from "@/popup/pages/node-posts/unread-count-context";
+import { getListItemsFromNodes } from "@/popup/utils/keyboard-nav";
 import { useCurrentURL } from "@/popup/utils/last-visited-page";
 import {
   handleFilterShortcut,
@@ -55,6 +56,8 @@ export function FolderPage(props: FolderPageProps) {
     navigate(`/library/nodes/${props.folder.id}/search?${searchString}`);
   });
 
+  const keyboardNavItems = () => getListItemsFromNodes(props.folder.children);
+
   return (
     <UnreadCountContext.Provider value={{ mutateUnreadCount }}>
       <FolderPageHeader
@@ -65,17 +68,19 @@ export function FolderPage(props: FolderPageProps) {
         when={props.folder.children.length > 0}
         fallback={<FolderNoChildren folderId={props.folder.id} />}
       >
-        <DeleteNodeProvider>
-          <ListNavigationContextProvider
-            listLength={props.folder.children.length}
-          >
+        <ListNavigationContextProvider
+          items={keyboardNavItems()}
+          reset={props.folder.id}
+        >
+          <DeleteNodeProvider>
             <FolderChildren
               childNodes={props.folder.children}
+              folderId={props.folder.id}
               parentId={props.folder.parentId}
             />
-          </ListNavigationContextProvider>
-          <DeleteNodeDialog />
-        </DeleteNodeProvider>
+            <DeleteNodeDialog />
+          </DeleteNodeProvider>
+        </ListNavigationContextProvider>
       </Show>
     </UnreadCountContext.Provider>
   );

@@ -11,7 +11,7 @@ export default function MoveNodeDownMenuItem(props: MoveNodeDownMenuItemProps) {
         if (!props.disabled) {
           modeNodeUpOrDown(props.nodeId, "down").then(() => {
             closeMenu();
-            focusTrigger();
+            setTimeout(focusTrigger, 20);
           });
         }
       }}

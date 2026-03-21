@@ -9,6 +9,8 @@ import FilterResults from "@/popup/pages/posts-filtering/FilterResults";
 import FilterResultsWrapper from "@/popup/pages/posts-filtering/FilterResultsWrapper";
 import NoFilterResults from "@/popup/pages/posts-filtering/NoFilterResults";
 import { debounce } from "@/popup/utils/debounce";
+import { useGroupedFilterResults } from "@/popup/utils/filter";
+import { getListItemsFromPosts } from "@/popup/utils/keyboard-nav";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
 import { useNodeId } from "@/popup/utils/search";
 import {
@@ -19,6 +21,8 @@ import { getSearchString } from "@/popup/utils/urls";
 
 export default function PostsFilteringPage() {
   const [posts, { mutate }] = createFilterResource();
+  const groupedPosts = useGroupedFilterResults(posts);
+
   restoreScrollPositionAfterInitialFetch(posts);
   handleExitFilterShortcut();
   const navigate = useNavigate();
@@ -55,9 +59,11 @@ export default function PostsFilteringPage() {
         placeholder={placeholder()}
       />
       <FilterErrorBoundary>
-        <Show when={posts.latest}>
+        <Show when={groupedPosts()}>
           {(results) => (
-            <ListNavigationContextProvider listLength={results().length}>
+            <ListNavigationContextProvider
+              items={getListItemsFromPosts(results())}
+            >
               <Show when={results().length === 0}>
                 <NoFilterResults />
               </Show>
@@ -65,10 +71,7 @@ export default function PostsFilteringPage() {
                 isLoading={posts.loading}
                 mutateResults={mutate}
               >
-                <FilterResults
-                  posts={results()}
-                  query={searchParams.query || ""}
-                />
+                <FilterResults posts={results()} />
               </FilterResultsWrapper>
             </ListNavigationContextProvider>
           )}

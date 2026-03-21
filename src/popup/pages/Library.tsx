@@ -8,12 +8,10 @@ import styles from "./Library.module.css";
 
 export default function Library() {
   const navigate = useNavigate();
-  // forward focusedIndex
-  const [searchParams] = useSearchParams<{ focusedIndex?: string }>();
+  // forward keyboardNav
+  const [searchParams] = useSearchParams<{ keyboardNav?: string }>();
   const search = () =>
-    searchParams.focusedIndex
-      ? `?focusedIndex=${searchParams.focusedIndex}`
-      : "";
+    searchParams.keyboardNav === "true" ? `?keyboardNav=true` : "";
   onMount(async () => {
     const resp = await sendMessage("folders/get-root", undefined);
     if (resp.success && resp.data.hasChildNodes) {

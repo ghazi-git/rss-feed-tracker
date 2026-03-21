@@ -1,5 +1,5 @@
 import { useNavigate } from "@solidjs/router";
-import { Match, Show, Switch } from "solid-js";
+import { createMemo, Match, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
@@ -15,7 +15,12 @@ import {
   ToggleUnreadContext,
   useToggleUnread,
 } from "@/popup/pages/node-posts/toggle-unread-context";
+import {
+  getListItemFromNode,
+  getListItemsFromPosts,
+} from "@/popup/utils/keyboard-nav";
 import { notifyError } from "@/popup/utils/notifications";
+import { getGroupedPosts } from "@/popup/utils/posts";
 import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
@@ -26,6 +31,17 @@ import { ToggleBookmarkedContext } from "./toggle-bookmarked-context";
 export default function PostList(props: PostListProps) {
   const { query, posts, setPosts, fetchPosts } = usePostsContext();
   const postsCount = () => posts().length;
+  const { preferences } = usePreferencesContext();
+  const groupPosts = () => props.isFolderNode && preferences.groupFolderPosts;
+  const groupedPosts = createMemo(() => {
+    if (groupPosts()) {
+      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
+      return getGroupedPosts(posts(), orderByFetchedAt);
+    } else {
+      return posts();
+    }
+  });
+  const keyboardNavItems = () => getListItemsFromPosts(groupedPosts());
 
   const toggleUnread = useToggleUnread();
   const toggleBookmarked = async (
@@ -55,14 +71,17 @@ export default function PostList(props: PostListProps) {
   const noPostsMsg = () =>
     props.postsView === "all" ? "No posts yet." : "No unread posts found.";
 
-  const { preferences } = usePreferencesContext();
-  const groupPosts = () => props.isFolderNode && preferences.groupFolderPosts;
   const navigate = useNavigate();
   createShortcut("left", () => {
     if (props.isFolderNode) {
-      navigate(`/library/nodes/${props.nodeId}?focusedIndex=0`);
+      // keep keyboardNav so that when moving from folder posts page back to
+      // the folder page, the first node is focused.
+      navigate(`/library/nodes/${props.nodeId}?keyboardNav=true`);
     } else if (props.parentNodeId) {
-      navigate(`/library/nodes/${props.parentNodeId}?focusedIndex=0`);
+      // add focusedItem so that when moving from feed posts page back to
+      // the parent folder page, the feed is focused.
+      const item = getListItemFromNode(props.nodeId);
+      navigate(`/library/nodes/${props.parentNodeId}?focusedItem=${item}`);
     } else {
       navigate("/library");
     }
@@ -95,10 +114,10 @@ export default function PostList(props: PostListProps) {
         </Show>
         <ToggleBookmarkedContext.Provider value={{ toggleBookmarked }}>
           <ToggleUnreadContext.Provider value={{ toggleUnread }}>
-            <ListNavigationContextProvider listLength={postsCount()}>
+            <ListNavigationContextProvider items={keyboardNavItems()}>
               <PostMenuProvider>
                 <PostContextMenu />
-                <Posts posts={posts()} groupPosts={groupPosts()} />
+                <Posts posts={groupedPosts()} groupPosts={groupPosts()} />
               </PostMenuProvider>
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>

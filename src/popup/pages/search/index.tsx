@@ -8,12 +8,15 @@ import SearchPageHeader from "@/popup/pages/search/SearchPageHeader";
 import SearchResults from "@/popup/pages/search/SearchResults";
 import SearchResultsHeader from "@/popup/pages/search/SearchResultsHeader";
 import { debounce } from "@/popup/utils/debounce";
+import { getListItemsFromPosts } from "@/popup/utils/keyboard-nav";
 import { restoreScrollPositionAfterInitialFetch } from "@/popup/utils/last-visited-page";
+import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import {
   createSearchResource,
   inBookmarksPage,
   SearchPageParams,
   useNodeId,
+  useSortBy,
 } from "@/popup/utils/search";
 import {
   handleExitFilterShortcut,
@@ -23,6 +26,22 @@ import { getSearchString } from "@/popup/utils/urls";
 
 export default function SearchPage() {
   const [posts, { mutate }] = createSearchResource();
+  const sortBy = useSortBy();
+  const { preferences } = usePreferencesContext();
+  const sortedPosts = () => {
+    if (!posts.latest) return posts.latest;
+
+    const feedPosts = posts.latest;
+    const sortField = preferences.orderPostsBy;
+    if (sortBy() === "time_desc") {
+      return feedPosts.toSorted((a, b) => b[sortField] - a[sortField]);
+    } else if (sortBy() === "time_asc") {
+      return feedPosts.toSorted((a, b) => a[sortField] - b[sortField]);
+    } else {
+      return feedPosts.toSorted((a, b) => b.relevanceScore - a.relevanceScore);
+    }
+  };
+
   restoreScrollPositionAfterInitialFetch(posts);
   handleExitFilterShortcut();
   const navigate = useNavigate();
@@ -72,9 +91,11 @@ export default function SearchPage() {
       />
       <SearchResultsHeader posts={posts.latest} isLoading={posts.loading} />
       <FilterErrorBoundary>
-        <Show when={posts.latest}>
+        <Show when={sortedPosts()}>
           {(results) => (
-            <ListNavigationContextProvider listLength={results().length}>
+            <ListNavigationContextProvider
+              items={getListItemsFromPosts(results())}
+            >
               <FilterResultsWrapper
                 isLoading={posts.loading}
                 mutateResults={mutate}

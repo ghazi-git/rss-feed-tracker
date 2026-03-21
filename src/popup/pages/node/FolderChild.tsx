@@ -33,13 +33,11 @@ import FeedFavicon from "@/popup/pages/node/FeedFavicon";
 import FolderChildFeedActions from "@/popup/pages/node/FolderChildFeedActions";
 import FolderChildFolderActions from "@/popup/pages/node/FolderChildFolderActions";
 import FolderChildMenuTrigger from "@/popup/pages/node/FolderChildMenuTrigger";
-import {
-  getListItemTabindex,
-  useListNavigationContext,
-} from "@/popup/pages/node/list-navigation-context";
+import { useListNavigationContext } from "@/popup/pages/node/list-navigation-context";
 import { useNodeContext } from "@/popup/pages/node/node-context";
 import UnreadCount from "@/popup/pages/node/UnreadCount";
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
+import { getListItemFromNode, isFocusedNode } from "@/popup/utils/keyboard-nav";
 import { createMutation } from "@/popup/utils/mutation";
 import { notifyError } from "@/popup/utils/notifications";
 import { createShortcut } from "@/popup/utils/shortcuts";
@@ -137,13 +135,18 @@ export default function FolderChild(props: FolderChildProps) {
   });
   onCleanup(() => cleanup?.());
 
-  const { focusedIndex, setFocusedIndex } = useListNavigationContext();
-  const tabindex = createMemo(() =>
-    getListItemTabindex(focusedIndex(), props.nodeIndex),
-  );
+  const { focusedItem, setFocusedItem } = useListNavigationContext();
+  const tabindex = createMemo(() => {
+    const item = focusedItem();
+    // when no item is focused, make the first one focusable
+    if (item === null && props.nodeIndex === 0) return 0;
+    // this item is focused
+    else if (isFocusedNode(item, props.node.id)) return 0;
+    else return -1;
+  });
   let anchor!: HTMLAnchorElement;
   createEffect(() => {
-    if (focusedIndex() === props.nodeIndex) {
+    if (isFocusedNode(focusedItem(), props.node.id)) {
       anchor.focus();
     }
   });
@@ -151,12 +154,16 @@ export default function FolderChild(props: FolderChildProps) {
   createShortcut("m", () => {
     if (
       props.node.unreadCount &&
-      focusedIndex() === props.nodeIndex &&
+      isFocusedNode(focusedItem(), props.node.id) &&
       hasFocus()
     ) {
       markAllAsRead();
     }
   });
+  const actionsTabindex = () =>
+    isFocusedNode(focusedItem(), props.node.id) ? 0 : -1;
+  const childURL = () => `/library/nodes/${props.node.id}`;
+  const childPostsURL = () => `/library/nodes/${props.node.id}/posts`;
 
   return (
     <div
@@ -175,13 +182,21 @@ export default function FolderChild(props: FolderChildProps) {
           [styles["drop-inside"]]: dropIndicator() === "combine",
           [styles.dragging]: dragging(),
         }}
-        href={`/library/nodes/${props.node.id}`}
+        href={childURL()}
         role="listitem"
         tabindex={tabindex()}
         onFocus={() => {
-          // update the focusedIndex when tabbing into the element as opposed
+          // update the focusedItem when tabbing into the element as opposed
           // to pressing arrowDown
-          if (focusedIndex() === null) setFocusedIndex(props.nodeIndex);
+          if (focusedItem() === null) {
+            setFocusedItem(getListItemFromNode(props.node.id));
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            navigate(`${childURL()}?keyboardNav=true`);
+          }
         }}
       >
         <div class={styles.icon}>
@@ -201,26 +216,34 @@ export default function FolderChild(props: FolderChildProps) {
               event.preventDefault();
               markAllAsRead();
             }}
-            tabindex="-1"
+            tabindex={actionsTabindex()}
           />
           <UnstyledButton
             class={styles["unread-link"]}
             onClick={(event) => {
               event.preventDefault();
-              navigate(`/library/nodes/${props.node.id}/posts?unread=true`);
+              navigate(`${childPostsURL()}?unread=true`);
             }}
-            tabindex="-1"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                event.stopPropagation();
+                navigate(`${childPostsURL()}?unread=true&keyboardNav=true`);
+              }
+            }}
+            tabindex={actionsTabindex()}
           >
             Unread
           </UnstyledButton>
         </Show>
         <Dropdown placement="bottom-end" fallbackPlacement="left">
           <FolderChildMenuTrigger
-            nodeHasFocus={hasFocus}
-            nodeIndex={props.nodeIndex}
+            htmlElementHasFocus={hasFocus}
+            nodeId={props.node.id}
             label={
               props.node.type === "folder" ? "Folder Actions" : "Feed Actions"
             }
+            tabindex={actionsTabindex()}
           />
           <Menu>
             <Show
