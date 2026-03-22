@@ -13,4 +13,9 @@
       text-decoration-color: var(--text-2);
     }
   }
+
+  span {
+    font-size: var(--font-size-00);
+    color: var(--text-2);
+  }
 }

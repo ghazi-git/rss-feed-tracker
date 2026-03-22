@@ -20,6 +20,14 @@ export default function ExtensionVersion() {
       >
         (Report an issue)
       </a>
+      <span>◆</span>
+      <a
+        href="https://github.com/ghazi-git/rss-feed-tracker#keyboard-navigation"
+        title="https://github.com/ghazi-git/rss-feed-tracker#keyboard-navigation"
+        target="_blank"
+      >
+        Keyboard Shortcuts
+      </a>
     </div>
   );
 }
