@@ -2,9 +2,10 @@ import { defineManifest } from "@crxjs/vite-plugin";
 
 import pkg from "./package.json";
 
-export default defineManifest({
+export default defineManifest(async (env) => ({
   manifest_version: 3,
-  name: pkg.name,
+  name:
+    env.mode === "development" ? "RSS Feed Tracker (DEV)" : "RSS Feed Tracker",
   version: pkg.version,
   // require v141 to be able to use getAll with descending order
   minimum_chrome_version: "141",
@@ -14,7 +15,10 @@ export default defineManifest({
     128: "public/rss-feed-tracker-logo-128x128.png",
   },
   action: {
-    default_icon: "public/rss-feed-tracker-logo-48x48.png",
+    default_icon:
+      env.mode === "development"
+        ? "public/rss-feed-tracker-logo-dev.png"
+        : "public/rss-feed-tracker-logo-48x48.png",
     default_popup: "src/popup/index.html",
     default_title: "RSS Feed Tracker",
   },
@@ -29,4 +33,4 @@ export default defineManifest({
       suggested_key: { default: "Ctrl+Shift+S" },
     },
   },
-});
+}));
