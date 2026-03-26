@@ -129,7 +129,7 @@ export default function DeleteNodeDialog() {
   return (
     <dialog
       ref={dialogRef}
-      id="delete-dialog"
+      id={store.modalId}
       class={styles.dialog}
       closedby="any"
       onToggle={(event) => {
@@ -157,7 +157,7 @@ export default function DeleteNodeDialog() {
         <h2>{modalTitle()}</h2>
         <UnstyledButton
           command="close"
-          commandfor="delete-dialog"
+          commandfor={store.modalId}
           aria-label="Close modal"
         >
           <CloseIcon />
@@ -172,7 +172,7 @@ export default function DeleteNodeDialog() {
         <UnstyledButton
           class={styles.cancel}
           command="close"
-          commandfor="delete-dialog"
+          commandfor={store.modalId}
         >
           Cancel
         </UnstyledButton>

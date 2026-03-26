@@ -1,4 +1,4 @@
-import { createContext, FlowProps, useContext } from "solid-js";
+import { createContext, createUniqueId, FlowProps, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 const DeleteNodeContext = createContext<{
@@ -8,6 +8,7 @@ const DeleteNodeContext = createContext<{
 
 export function DeleteNodeProvider(props: FlowProps) {
   const [store, setStore] = createStore<DeleteNodeStore>({
+    modalId: `delete-dialog-${createUniqueId()}`,
     nodeId: null,
     nodeType: null,
     modalText: null,
@@ -21,16 +22,15 @@ export function DeleteNodeProvider(props: FlowProps) {
     deletionTrigger,
     parentFolderId,
   ) => {
-    setStore({
+    setStore(({ modalId }) => ({
+      modalId,
       nodeId: id,
       nodeType: type,
       modalText: text,
       deletionTrigger,
       parentFolderId,
-    });
-    const dialog = document.getElementById(
-      "delete-dialog",
-    ) as HTMLDialogElement;
+    }));
+    const dialog = document.getElementById(store.modalId) as HTMLDialogElement;
     dialog.showModal();
   };
 
@@ -51,6 +51,7 @@ export function useDeleteNodeContext() {
 
 type DeleteNodeStore =
   | {
+      modalId: string;
       nodeId: number;
       nodeType: "feed" | "folder";
       modalText: string;
@@ -58,6 +59,7 @@ type DeleteNodeStore =
       parentFolderId: number | null;
     }
   | {
+      modalId: string;
       nodeId: null;
       nodeType: null;
       modalText: null;
