@@ -152,7 +152,7 @@ function CopyLinkButton(props: { url: string }) {
         navigator.clipboard
           .writeText(props.url)
           .then(() => {
-            notifyInfo("Link copied.", { duration: 2000 });
+            notifyInfo("Link copied.", { duration: 1000 });
           })
           .catch((e) => {
             glogger.error("copy-link: failure", e);

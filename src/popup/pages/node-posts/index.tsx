@@ -143,7 +143,9 @@ export default function NodePosts() {
   const reloadFeeds = async (id: number) => {
     await reload({ id });
     if (mutation.isSuccess) {
-      notifySuccess(getReloadSuccessMessage(mutation.data.newPostsCount));
+      notifySuccess(getReloadSuccessMessage(mutation.data.newPostsCount), {
+        duration: 5000,
+      });
       const hasNewPosts = !!mutation.data.newPostsCount;
       if (hasNewPosts) {
         setNewPostsStore(({ unreadCountDelta }) => ({

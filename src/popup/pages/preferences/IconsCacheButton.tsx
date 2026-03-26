@@ -17,11 +17,9 @@ export default function IconsCacheButton() {
           const deleted = await caches.delete(ICONS_CACHE);
           setClearingCache(false);
           if (deleted) {
-            notifySuccess("The cache was cleared.", { duration: 3000 });
+            notifySuccess("The cache was cleared.");
           } else {
-            notifyInfo("The cache has already been cleared.", {
-              duration: 3000,
-            });
+            notifyInfo("The cache has already been cleared.");
           }
         }
       }

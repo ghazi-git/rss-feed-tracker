@@ -81,7 +81,9 @@ export default function Node() {
   const reloadFeeds = async (id: number) => {
     await reload({ id });
     if (mutation.isSuccess) {
-      notifySuccess(getReloadSuccessMessage(mutation.data.newPostsCount));
+      notifySuccess(getReloadSuccessMessage(mutation.data.newPostsCount), {
+        duration: 5000,
+      });
       await fetchNode({ id: nodeId() });
       if (query.isError) {
         notifyError(query.errorMsg);

@@ -69,6 +69,7 @@ export default function ImportFeeds() {
     if (mutation.isSuccess) {
       notifySuccess(
         "Feeds created. The posts are being loaded in the background.",
+        { duration: 5000 },
       );
       navigate(`/library/nodes/${parent}`);
     }
