@@ -1,7 +1,7 @@
 import { onCleanup } from "solid-js";
 
 import CommentsIcon from "@/popup/components/svg-icons/CommentsIcon";
-import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";
+import { hideLinkPreview, showLinkPreview } from "@/popup/utils/link-preview";
 import { openTab, openWindow } from "@/popup/utils/urls";
 
 import styles from "./CommentsLink.module.css";

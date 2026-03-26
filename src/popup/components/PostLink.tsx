@@ -1,7 +1,7 @@
 import { A, AnchorProps } from "@solidjs/router";
 import { onCleanup, splitProps } from "solid-js";
 
-import { hideLinkPreview, showLinkPreview } from "@/popup/store/link-preview";
+import { hideLinkPreview, showLinkPreview } from "@/popup/utils/link-preview";
 
 import styles from "./PostLink.module.css";
 
