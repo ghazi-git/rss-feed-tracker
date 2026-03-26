@@ -115,10 +115,19 @@ export default function Post(props: PostProps) {
       }}
       role="listitem"
       tabindex={tabindex()}
-      onFocus={() => {
+      onFocus={(event) => {
         // update the focusedItem when tabbing into the element as opposed
         // to pressing arrowDown
-        if (focusedItem() === null) {
+        // @ts-expect-error sourceCapabilities is chrome-only. When it's null,
+        // it means the focus was triggered via the keyboard. By adding the
+        // condition, we avoid setting the focused item when the user clicks
+        // the post with the mouse. Setting the focused item when using the
+        // mouse may trigger the 'scrollIntoView' under `Post.createEffect`
+        // at unexpected times (when viewing the list of unread posts and
+        // clickPostToToggleUnread is true and after toggling a post unread
+        // then scrolling down past that post, then clicking mark all as unread,
+        // the user gets scrolled to the last focused post automatically)
+        if (focusedItem() === null && !event.sourceCapabilities) {
           const item = getListItemFromPost(props.post);
           setFocusedItem(item);
         }
