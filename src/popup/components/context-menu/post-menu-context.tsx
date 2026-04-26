@@ -25,7 +25,7 @@ export function PostMenuProvider(props: FlowProps) {
   });
   const registerMenuRef = (ref: HTMLDivElement) => setStore("menuRef", ref);
   const showMenu = (
-    triggerRef: HTMLElement,
+    triggerRef: HTMLElement | null,
     url: string,
     top: number,
     left: number,
@@ -69,7 +69,7 @@ interface PostMenuContextType {
   store: PostMenuStore;
   registerMenuRef: (ref: HTMLDivElement) => void;
   showMenu: (
-    triggerRef: HTMLElement,
+    triggerRef: HTMLElement | null,
     url: string,
     top: number,
     left: number,

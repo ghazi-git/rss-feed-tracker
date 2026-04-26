@@ -103,13 +103,26 @@ export default function Post(props: PostProps) {
           // button=2 indicates a right-click, otherwise it's keyboard triggered
           // and in that case we should focus the first item according to WAI
           // ARIA rules for menus
-          const focusFirstItem = event.button !== 2;
+          const keyboardNav = event.button !== 2;
+          // pass the trigger ref only when the user is using the keyboard.
+          // The passed triggerRef is used to focus the post that triggered
+          // the context menu after the menu is hidden. That is the expected
+          // behavior during keyboard navigation. But, focusing the post after
+          // hiding a menu opened with the mouse results in setting the
+          // focusedItem in the onFocus handler. Setting the focused item when
+          // using the mouse may trigger the 'scrollIntoView' under `Post.createEffect`
+          // at unexpected times (when viewing the list of unread posts and
+          // clickPostToToggleUnread is true and after toggling a post unread
+          // then scrolling down past that post, then clicking mark all as unread,
+          // the user gets scrolled to the last focused post automatically)
+          const triggerRef = keyboardNav ? ref : null;
+          const url = props.post.url;
           if (props.post.unread) {
             const feedId = props.post.feedId;
             const guid = props.post.guid;
-            showMenu(ref, props.post.url, y, x, focusFirstItem, feedId, guid);
+            showMenu(triggerRef, url, y, x, keyboardNav, feedId, guid);
           } else {
-            showMenu(ref, props.post.url, y, x, focusFirstItem);
+            showMenu(triggerRef, url, y, x, keyboardNav);
           }
         })();
       }}
