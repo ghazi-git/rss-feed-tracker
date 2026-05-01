@@ -1,16 +1,16 @@
 # RSS Feed Tracker
 
-An RSS feed reader as a chrome extension
+Manage your RSS Feeds from the extension popup.
 
 ## Features
 
-- Fully client-side RSS Reader. No account required. No tracking. Your data stays on your device.
-- Back up and restore all the extension data (feeds, folders, posts and settings). Details of the backup format can
-  be found [below](#backup-format).
+- Manage RSS feeds locally. No account required. Your data stays on your device.
+- Back up and restore all the extension data (feeds, folders, posts, bookmarks and settings). Details of the backup
+  format can be found [below](#backup-format).
 - Export and import feeds as OPML.
 - Organize feeds into folders with drag and drop support.
 - Search for posts already fetched by the extension.
-- Support RSS, Atom and JSON feeds.
+- Support for RSS, Atom and JSON feeds.
 - Support for keyboard navigation. The list of shortcuts is [below](#keyboard-navigation).
 - Light and dark themes.
 
@@ -33,11 +33,10 @@ An RSS feed reader as a chrome extension
 
 ## Limitations
 
-- Cannot view the full post in the extension. I think it's best to view posts on the author's website. Extracting
-  the posts text from the original page and displaying it in the extension directly feels wrong on so many levels
-  and iframes don't always work.
+- No Sync with other devices. Make sure to create extension backups regularly from the "Preferences" tab.
+- Cannot view the full post in the extension. I think it's best to view posts on the author's website and the extension
+  popup isn't the place for reading articles anyway.
 - No notifications. I don't like notifications.
-- No Sync with other devices.
 
 ## Why create this extension
 
