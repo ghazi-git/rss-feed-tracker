@@ -65,8 +65,9 @@ The backup is a zip file containing the following JSON files:
     - `groupFolderPosts` can be `true` or `false`. If `true` and when displaying posts inside a folder, posts for
       feed X will be shown first, then posts for feed Y, ... This grouping will be done for each page of posts.
   - `backupFiles`
-    - `feeds_folders` the filename containing the feeds and folders data.
+    - `feeds_folders` the filename containing the feeds and folders data. Usually set to `nodes.json`.
     - `posts` an array of filenames (0 or more) containing the feed posts. Each file contains at most 20K posts.
+      Usually named `posts_xxxx.json`.
 
 - `nodes.json` contains an array of feeds and folders. Each object has the following properties
   - `id` auto-incremented integer.
