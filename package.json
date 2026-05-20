@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "lint": "lefthook run pre-commit --all-files",
-    "build": "vite build"
+    "build": "vite build",
+    "release": "release-it"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "1.8.1",

@@ -14,4 +14,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Mark as read, bookmark and search posts.
 - Back up and restore all the extension data (feeds, folders, posts and settings).
 - Export and import feeds as OPML.
+- Support for keyboard navigation.
 - Light and dark themes.
