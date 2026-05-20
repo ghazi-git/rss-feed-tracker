@@ -173,7 +173,7 @@ npm run dev
 ## Release Process
 
 - [optional] Set env variable
-  `GITHUB_TOKEN` ([generate token](https://github.com/settings/tokens/new?scopes=repo&description=indexeddb-browser-github-release))
+  `GITHUB_TOKEN` ([generate token](https://github.com/settings/tokens/new?scopes=repo&description=extension-github-release))
 - Run `npm run release` which includes:
   - Pull the latest changes `git pull`.
   - Check for linting issues `npm run lint`.
