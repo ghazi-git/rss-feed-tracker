@@ -7,6 +7,7 @@ export default defineManifest(async (env) => ({
   name:
     env.mode === "development" ? "RSS Feed Tracker (DEV)" : "RSS Feed Tracker",
   version: pkg.version,
+  description: "Manage your RSS Feeds from the extension popup.",
   // require v141 to be able to use getAll with descending order
   minimum_chrome_version: "141",
   icons: {
