@@ -2,6 +2,8 @@
 
 Manage your RSS Feeds from the extension popup.
 
+[![Available in chrome webstore icon](https://developer.chrome.com/static/docs/webstore/branding/image/tbyBjqi7Zu733AAKA5n4.png)](https://chromewebstore.google.com/detail/rss-feed-tracker/bkhbcilgeakfdfpjmikgplahfphcglnf)
+
 ## Features
 
 - Manage RSS feeds locally. No account required. Your data stays on your device.
