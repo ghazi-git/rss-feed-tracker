@@ -1,5 +1,5 @@
 import { parseFeed } from "feedsmith";
-import type { Atom, Json, Rss } from "feedsmith/types";
+import { Atom, Json, Rdf, Rss } from "feedsmith/types";
 
 import { FeedParseError, HttpError } from "@/background/utils/errors";
 import { Post } from "@/db-setup";
@@ -50,7 +50,8 @@ function parseFeedContent(feedURL: string, feedContent: string): ParsedFeed {
     } else if (format === "json") {
       return getJSONFeedContent(feed as Json.Feed<string>, feedURL);
     } else {
-      throw new FeedParseError("Unsupported feed format.");
+      // format===rdf
+      return getRDFFeedContent(feed as Rdf.Feed<string>, feedURL);
     }
   } catch (e) {
     if (e instanceof FeedParseError) throw e;
@@ -156,6 +157,31 @@ function getJSONFeedContent(
     url: feedURL,
     posts: posts,
   };
+}
+
+/**
+ * Here are few test feeds
+ * https://www.bis.org/doclist/rss_all_categories.rss
+ * https://www.mhlw.go.jp/stf/news.rdf
+ * https://www.jpcert.or.jp/rss/jpcert.rdf
+ */
+function getRDFFeedContent(
+  feed: Rdf.Feed<string>,
+  feedURL: string,
+): ParsedFeed {
+  const items = feed.items ?? [];
+  const posts: ParsedPost[] = [];
+  for (const item of items) {
+    const guid = item.link;
+    const url = item.link;
+
+    const title = item.title || url;
+    const publishedAt = getTimestamp(item.dc?.date) || Date.now();
+    posts.push({ guid, url, title, publishedAt, commentsURL: null });
+  }
+
+  const favicon = getFaviconURL(feed.link);
+  return { name: feed.title, favicon, url: feedURL, posts };
 }
 
 function getFaviconURL(website: string | undefined) {

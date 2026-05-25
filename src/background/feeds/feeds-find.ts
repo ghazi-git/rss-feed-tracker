@@ -67,13 +67,11 @@ async function fetchHTML(url: string) {
 function parseAsFeed(html: string) {
   try {
     const { format, feed } = parseFeed(html);
-    if (["rss", "atom", "json"].includes(format)) {
-      const description = format === "atom" ? feed.subtitle : feed.description;
-      return {
-        title: feed.title || "No Title Found",
-        description: description || "No description found.",
-      };
-    }
+    const description = format === "atom" ? feed.subtitle : feed.description;
+    return {
+      title: feed.title || "No Title Found",
+      description: description || "No description found.",
+    };
   } catch {}
   return null;
 }

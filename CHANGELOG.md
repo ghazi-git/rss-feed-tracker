@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- Support the RDF feed format (aka RSS 1.0).
+
 ## [1.0.0] - 2026-05-20
 
 ### Added
