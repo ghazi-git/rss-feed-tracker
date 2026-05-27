@@ -1,6 +1,8 @@
 import { useSearchParams } from "@solidjs/router";
 import { batch } from "solid-js";
 
+import BackLinkPlaceholder from "@/popup/components/page-header/BackLinkPlaceholder";
+import BookmarksTitleButton from "@/popup/components/page-header/BookmarksTitleButton";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PostsFilter from "@/popup/pages/node/PostsFilter";
 import { usePostsContext } from "@/popup/pages/node-posts/posts-context";
@@ -42,6 +44,8 @@ export default function BookmarksHeader(props: BookmarksHeaderProps) {
 
   return (
     <PageHeaderWrapper sticky={true}>
+      <BackLinkPlaceholder />
+      <BookmarksTitleButton />
       <PostsFilter
         pageUrl="/bookmarks"
         unreadCount={props.unreadCount}

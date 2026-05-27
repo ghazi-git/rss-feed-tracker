@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- Add a page title to the bookmarks page.
+
 ### Changed
 
 - Don't group posts in the bookmarks page.
