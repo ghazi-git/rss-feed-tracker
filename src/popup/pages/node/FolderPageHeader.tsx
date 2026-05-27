@@ -2,6 +2,7 @@ import { Show } from "solid-js";
 
 import { Folder } from "@/db-setup";
 import BackLink from "@/popup/components/page-header/BackLink";
+import BackLinkPlaceholder from "@/popup/components/page-header/BackLinkPlaceholder";
 import PageHeaderWrapper from "@/popup/components/page-header/PageHeaderWrapper";
 import PageTitleButton from "@/popup/components/page-header/PageTitleButton";
 import { useNodeContext } from "@/popup/pages/node/node-context";
@@ -38,10 +39,7 @@ export default function FolderPageHeader(props: FolderPageHeaderProps) {
 
   return (
     <PageHeaderWrapper sticky={true}>
-      <Show
-        when={props.folder.parentId}
-        fallback={<div class={styles["previous-url-placeholder"]} />}
-      >
+      <Show when={props.folder.parentId} fallback={<BackLinkPlaceholder />}>
         <BackLink
           url={`/library/nodes/${props.folder.parentId}`}
           class={styles["previous-url"]}

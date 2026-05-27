@@ -1,0 +1,5 @@
+.previous-url-placeholder {
+  /* inline-size = back link previous icon width + 2 * inline padding */
+  inline-size: calc(var(--size-4) + 2 * var(--size-2));
+  flex-shrink: 0;
+}
