@@ -1,4 +1,4 @@
-import { batch, createMemo, Match, Show, Switch } from "solid-js";
+import { batch, Match, Show, Switch } from "solid-js";
 
 import { PostsView, sendMessage } from "@/messaging-wrapper";
 import { PostMenuProvider } from "@/popup/components/context-menu/post-menu-context";
@@ -18,8 +18,6 @@ import {
 import { useUnreadCountContext } from "@/popup/pages/node-posts/unread-count-context";
 import { getListItemsFromPosts } from "@/popup/utils/keyboard-nav";
 import { notifyError } from "@/popup/utils/notifications";
-import { getGroupedPosts } from "@/popup/utils/posts";
-import { usePreferencesContext } from "@/popup/utils/preferences-context";
 import { createShortcut } from "@/popup/utils/shortcuts";
 import { PAGE_SIZE } from "@/utils/settings";
 
@@ -27,17 +25,7 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
   const { mutateUnreadCount } = useUnreadCountContext();
   const { query, posts, setPosts, fetchPosts } = usePostsContext();
   const postsCount = () => posts().length;
-  const { preferences } = usePreferencesContext();
-  const groupPosts = () => preferences.groupFolderPosts;
-  const groupedPosts = createMemo(() => {
-    if (groupPosts()) {
-      const orderByFetchedAt = preferences.orderPostsBy === "fetchedAt";
-      return getGroupedPosts(posts(), orderByFetchedAt);
-    } else {
-      return posts();
-    }
-  });
-  const keyboardNavItems = () => getListItemsFromPosts(groupedPosts());
+  const keyboardNavItems = () => getListItemsFromPosts(posts());
 
   const toggleUnread = useToggleUnread();
   const toggleBookmarked = async (
@@ -102,7 +90,7 @@ export function BookmarkedPosts(props: { postsView: PostsView }) {
             <ListNavigationContextProvider items={keyboardNavItems()}>
               <PostMenuProvider>
                 <PostContextMenu />
-                <Posts posts={groupedPosts()} groupPosts={groupPosts()} />
+                <Posts posts={posts()} groupPosts={false} />
               </PostMenuProvider>
             </ListNavigationContextProvider>
           </ToggleUnreadContext.Provider>

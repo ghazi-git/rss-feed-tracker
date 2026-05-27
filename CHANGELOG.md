@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- Don't group posts in the bookmarks page.
+
 ## [1.1.0] - 2026-05-25
 
 ### Added
